@@ -1,4 +1,4 @@
-package com.example.quran_companion
+package com.duso.qurancompanion
 
 import io.flutter.embedding.android.FlutterActivity
 
