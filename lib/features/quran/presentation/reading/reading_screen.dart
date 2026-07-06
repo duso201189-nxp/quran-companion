@@ -650,99 +650,116 @@ class AyahCard extends ConsumerWidget {
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   // ---- Hàng đầu: huy hiệu số Ayah + trạng thái + hành động ----
-                  Row(
+                  // Wrap (không phải Row+Spacer): khi cờ trạng thái +
+                  // sajdah + đủ icon hành động không vừa 1 hàng (màn
+                  // hẹp, hoặc trạng thái có nhãn dài), nhóm icon tự
+                  // xuống dòng thay vì tràn (RenderFlex overflow).
+                  Wrap(
+                    alignment: WrapAlignment.spaceBetween,
+                    crossAxisAlignment: WrapCrossAlignment.center,
+                    runSpacing: 8,
                     children: [
-                      _AyahNumberBadge(
-                        surahId: content.ayah.surahId,
-                        ayahNumber: content.ayah.ayahNumber,
-                      ),
-                      if (annotation.status != AyahStatus.none) ...[
-                        const SizedBox(width: 10),
-                        Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 10,
-                            vertical: 4,
+                      Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          _AyahNumberBadge(
+                            surahId: content.ayah.surahId,
+                            ayahNumber: content.ayah.ayahNumber,
                           ),
-                          decoration: BoxDecoration(
-                            color: scheme.tertiaryContainer,
-                            borderRadius: BorderRadius.circular(999),
+                          if (annotation.status != AyahStatus.none) ...[
+                            const SizedBox(width: 10),
+                            Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 10,
+                                vertical: 4,
+                              ),
+                              decoration: BoxDecoration(
+                                color: scheme.tertiaryContainer,
+                                borderRadius: BorderRadius.circular(999),
+                              ),
+                              child: Text(
+                                switch (annotation.status) {
+                                  AyahStatus.learning => l10n.statusLearning,
+                                  AyahStatus.learned => l10n.statusLearned,
+                                  AyahStatus.review => l10n.statusReview,
+                                  AyahStatus.none => '',
+                                },
+                                style: textTheme.labelSmall?.copyWith(
+                                  color: scheme.onTertiaryContainer,
+                                ),
+                              ),
+                            ),
+                          ],
+                          if (content.ayah.sajdah) ...[
+                            const SizedBox(width: 8),
+                            Tooltip(
+                              message: l10n.sajdahAyah,
+                              child: Icon(
+                                Icons.self_improvement_rounded,
+                                size: 20,
+                                color: scheme.tertiary,
+                                semanticLabel: l10n.sajdahAyah,
+                              ),
+                            ),
+                          ],
+                        ],
+                      ),
+                      Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          _ActionIcon(
+                            tooltip: l10n.bookmarkLabel,
+                            icon: annotation.bookmarked
+                                ? Icons.bookmark_rounded
+                                : Icons.bookmark_border_rounded,
+                            color: annotation.bookmarked
+                                ? scheme.primary
+                                : scheme.onSurfaceVariant,
+                            onPressed: () => ref
+                                .read(userContentRepositoryProvider)
+                                .toggleBookmark(content.ayah.id),
                           ),
-                          child: Text(
-                            switch (annotation.status) {
-                              AyahStatus.learning => l10n.statusLearning,
-                              AyahStatus.learned => l10n.statusLearned,
-                              AyahStatus.review => l10n.statusReview,
-                              AyahStatus.none => '',
-                            },
-                            style: textTheme.labelSmall
-                                ?.copyWith(color: scheme.onTertiaryContainer),
+                          _ActionIcon(
+                            tooltip: l10n.favoriteLabel,
+                            icon: annotation.favorited
+                                ? Icons.favorite_rounded
+                                : Icons.favorite_border_rounded,
+                            color: annotation.favorited
+                                ? scheme.tertiary
+                                : scheme.onSurfaceVariant,
+                            onPressed: () => ref
+                                .read(userContentRepositoryProvider)
+                                .toggleFavorite(content.ayah.id),
                           ),
-                        ),
-                      ],
-                      if (content.ayah.sajdah) ...[
-                        const SizedBox(width: 8),
-                        Tooltip(
-                          message: l10n.sajdahAyah,
-                          child: Icon(
-                            Icons.self_improvement_rounded,
-                            size: 20,
-                            color: scheme.tertiary,
-                            semanticLabel: l10n.sajdahAyah,
+                          _ActionIcon(
+                            tooltip: l10n.copyAyah,
+                            icon: Icons.copy_rounded,
+                            color: scheme.onSurfaceVariant,
+                            onPressed: () => _copyAyah(context, l10n),
                           ),
-                        ),
-                      ],
-                      const Spacer(),
-                      _ActionIcon(
-                        tooltip: l10n.bookmarkLabel,
-                        icon: annotation.bookmarked
-                            ? Icons.bookmark_rounded
-                            : Icons.bookmark_border_rounded,
-                        color: annotation.bookmarked
-                            ? scheme.primary
-                            : scheme.onSurfaceVariant,
-                        onPressed: () => ref
-                            .read(userContentRepositoryProvider)
-                            .toggleBookmark(content.ayah.id),
-                      ),
-                      _ActionIcon(
-                        tooltip: l10n.favoriteLabel,
-                        icon: annotation.favorited
-                            ? Icons.favorite_rounded
-                            : Icons.favorite_border_rounded,
-                        color: annotation.favorited
-                            ? scheme.tertiary
-                            : scheme.onSurfaceVariant,
-                        onPressed: () => ref
-                            .read(userContentRepositoryProvider)
-                            .toggleFavorite(content.ayah.id),
-                      ),
-                      _ActionIcon(
-                        tooltip: l10n.copyAyah,
-                        icon: Icons.copy_rounded,
-                        color: scheme.onSurfaceVariant,
-                        onPressed: () => _copyAyah(context, l10n),
-                      ),
-                      _ActionIcon(
-                        tooltip: l10n.shareAyah,
-                        icon: Icons.share_rounded,
-                        color: scheme.onSurfaceVariant,
-                        onPressed: () =>
-                            _copyAyah(context, l10n, forShare: true),
-                      ),
-                      if (onPlay != null)
-                        _ActionIcon(
-                          tooltip: l10n.playFromHere,
-                          icon: isPlayingThis
-                              ? Icons.graphic_eq_rounded
-                              : Icons.play_arrow_rounded,
-                          color: scheme.primary,
-                          onPressed: onPlay!,
-                        ),
-                      _ActionIcon(
-                        tooltip: l10n.moreActions,
-                        icon: Icons.more_horiz_rounded,
-                        color: scheme.onSurfaceVariant,
-                        onPressed: () => _openActionsSheet(context),
+                          _ActionIcon(
+                            tooltip: l10n.shareAyah,
+                            icon: Icons.share_rounded,
+                            color: scheme.onSurfaceVariant,
+                            onPressed: () =>
+                                _copyAyah(context, l10n, forShare: true),
+                          ),
+                          if (onPlay != null)
+                            _ActionIcon(
+                              tooltip: l10n.playFromHere,
+                              icon: isPlayingThis
+                                  ? Icons.graphic_eq_rounded
+                                  : Icons.play_arrow_rounded,
+                              color: scheme.primary,
+                              onPressed: onPlay!,
+                            ),
+                          _ActionIcon(
+                            tooltip: l10n.moreActions,
+                            icon: Icons.more_horiz_rounded,
+                            color: scheme.onSurfaceVariant,
+                            onPressed: () => _openActionsSheet(context),
+                          ),
+                        ],
                       ),
                     ],
                   ),
