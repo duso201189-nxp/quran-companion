@@ -1,0 +1,275 @@
+# =============================================================
+# CI — Qur'an Companion
+#
+# Nguyên tắc: nhánh main LUÔN ở trạng thái build được
+# trên CẢ BA nền tảng Android · Web · iOS.
+#
+# Luồng:
+#   secret-scan   : quét key/secret bị lộ (chạy song song)
+#   quality       : format -> analyze -> pub outdated -> test
+#                   -> coverage gate >= 80%
+#   build-android : APK debug        (cần quality pass)
+#   build-web     : Web release      (cần quality pass)
+#   build-ios     : iOS no-codesign  (cần quality pass)
+#
+# Build thất bại -> GitHub email người push + commit đánh dấu ❌.
+# =============================================================
+
+name: CI
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  # Ghim phiên bản Flutter để build tái lập được.
+  FLUTTER_VERSION: '3.22.3'
+  # Ngưỡng coverage tối thiểu (%). Thấp hơn -> CI fail.
+  MIN_COVERAGE: '80'
+
+jobs:
+  # -----------------------------------------------------------
+  # 0) QUÉT SECRET — phát hiện API key bị commit nhầm
+  # -----------------------------------------------------------
+  secret-scan:
+    name: Secret Scan (gitleaks)
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Lấy mã nguồn (toàn bộ lịch sử để quét mọi commit)
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Quét secret trong lịch sử git
+        uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  # -----------------------------------------------------------
+  # 1) CHẤT LƯỢNG MÃ NGUỒN
+  # -----------------------------------------------------------
+  quality:
+    name: Format · Analyze · Test · Coverage
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Lấy mã nguồn
+        uses: actions/checkout@v4
+
+      - name: Cài Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          cache: true
+
+      - name: Tải dependencies
+        run: flutter pub get
+
+      - name: Cache dữ liệu Qur'an
+        uses: actions/cache@v4
+        with:
+          path: assets/database/quran.sqlite
+          key: quran-db-v1-${{ hashFiles('tool/build_quran_db.py') }}
+
+      - name: Build dữ liệu Qur'an (nếu chưa có cache)
+        run: |
+          if [ ! -f assets/database/quran.sqlite ]; then
+            python3 tool/build_quran_db.py
+          fi
+
+      - name: Sinh code (Drift, l10n)
+        run: dart run build_runner build --delete-conflicting-outputs
+
+      - name: Kiểm tra format
+        run: dart format --output=none --set-exit-code lib test
+
+      - name: Phân tích tĩnh (mọi cảnh báo đều fail)
+        run: flutter analyze --fatal-infos
+
+      - name: Kiểm tra package lỗi thời (thông tin, không chặn)
+        # Không fail build — kết quả hiện trong log để review
+        # định kỳ hằng tháng theo quy trình trong README.
+        run: flutter pub outdated || true
+
+      - name: Chạy unit & widget test
+        run: flutter test --coverage
+
+      - name: Coverage gate >= 80%
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq lcov
+          # Loại trừ file bootstrap (main.dart chỉ gọi runApp,
+          # không chứa logic) và file sinh tự động.
+          lcov --remove coverage/lcov.info \
+            'lib/main.dart' \
+            '**/*.g.dart' \
+            '*/lib/core/database/connection/*' \
+            -o coverage/filtered.info
+          PCT=$(lcov --summary coverage/filtered.info 2>&1 \
+            | awk '/lines\.+:/ {gsub("%","",$2); print $2}')
+          echo "==> Line coverage: ${PCT}% (yeu cau >= ${MIN_COVERAGE}%)"
+          awk -v p="$PCT" -v m="$MIN_COVERAGE" \
+            'BEGIN { exit (p+0 >= m+0 ? 0 : 1) }' \
+            || { echo "::error::Coverage ${PCT}% thap hon nguong ${MIN_COVERAGE}%"; exit 1; }
+
+      - name: Lưu báo cáo coverage
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage
+          path: coverage/
+          retention-days: 14
+
+  # -----------------------------------------------------------
+  # 2) BUILD ANDROID (debug)
+  # -----------------------------------------------------------
+  build-android:
+    name: Build Android APK (debug)
+    needs: quality
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Cài Java 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Cài Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          cache: true
+
+      - run: flutter pub get
+
+      - name: Cache dữ liệu Qur'an
+        uses: actions/cache@v4
+        with:
+          path: assets/database/quran.sqlite
+          key: quran-db-v1-${{ hashFiles('tool/build_quran_db.py') }}
+
+      - name: Build dữ liệu Qur'an (nếu chưa có cache)
+        run: |
+          if [ ! -f assets/database/quran.sqlite ]; then
+            python3 tool/build_quran_db.py
+          fi
+
+      - name: Sinh code (Drift, l10n)
+        run: dart run build_runner build --delete-conflicting-outputs
+
+      - name: Build APK debug
+        run: flutter build apk --debug
+
+      - name: Ghi kích thước APK vào summary
+        run: |
+          SIZE=$(du -h build/app/outputs/flutter-apk/app-debug.apk | cut -f1)
+          echo "### 📦 APK debug: $SIZE" >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Lưu APK để tải về kiểm tra
+        uses: actions/upload-artifact@v4
+        with:
+          name: app-debug-apk
+          path: build/app/outputs/flutter-apk/app-debug.apk
+          retention-days: 7
+
+  # -----------------------------------------------------------
+  # 3) BUILD WEB (release)
+  # -----------------------------------------------------------
+  build-web:
+    name: Build Web (release)
+    needs: quality
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Cài Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          cache: true
+
+      - run: flutter pub get
+
+      - name: Cache dữ liệu Qur'an
+        uses: actions/cache@v4
+        with:
+          path: assets/database/quran.sqlite
+          key: quran-db-v1-${{ hashFiles('tool/build_quran_db.py') }}
+
+      - name: Build dữ liệu Qur'an (nếu chưa có cache)
+        run: |
+          if [ ! -f assets/database/quran.sqlite ]; then
+            python3 tool/build_quran_db.py
+          fi
+
+      - name: Sinh code (Drift, l10n)
+        run: dart run build_runner build --delete-conflicting-outputs
+
+      - name: Build Web
+        run: flutter build web --release
+
+      - name: Ghi kích thước Web bundle vào summary
+        run: |
+          SIZE=$(du -sh build/web | cut -f1)
+          echo "### 🌐 Web bundle: $SIZE" >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Lưu bản build Web
+        uses: actions/upload-artifact@v4
+        with:
+          name: web-build
+          path: build/web
+          retention-days: 7
+
+  # -----------------------------------------------------------
+  # 4) BUILD iOS (không ký — chỉ xác nhận compile được)
+  #
+  # LƯU Ý CHI PHÍ: runner macOS tính phút x10 so với Linux
+  # trên repo private. Nếu cần tiết kiệm, giới hạn job này
+  # chỉ chạy trên nhánh main (xem README mục CI/CD).
+  # -----------------------------------------------------------
+  build-ios:
+    name: Build iOS (no codesign)
+    needs: quality
+    runs-on: macos-latest
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Cài Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          cache: true
+
+      - run: flutter pub get
+
+      - name: Cache dữ liệu Qur'an
+        uses: actions/cache@v4
+        with:
+          path: assets/database/quran.sqlite
+          key: quran-db-v1-${{ hashFiles('tool/build_quran_db.py') }}
+
+      - name: Build dữ liệu Qur'an (nếu chưa có cache)
+        run: |
+          if [ ! -f assets/database/quran.sqlite ]; then
+            python3 tool/build_quran_db.py
+          fi
+
+      - name: Sinh code (Drift, l10n)
+        run: dart run build_runner build --delete-conflicting-outputs
+
+      - name: Build iOS (không ký)
+        run: flutter build ios --no-codesign

@@ -1,0 +1,3 @@
+# Thêm các dòng này vào .gitignore do `flutter create` sinh ra:
+assets/database/quran.sqlite
+*.g.dart

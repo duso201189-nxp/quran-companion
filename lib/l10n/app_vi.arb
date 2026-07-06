@@ -1,0 +1,145 @@
+{
+  "@@locale": "vi",
+  "appTitle": "Qur'an Companion",
+  "tabHome": "Trang chủ",
+  "tabQuran": "Qur'an",
+  "tabStudy": "Học",
+  "tabStats": "Thống kê",
+  "tabProfile": "Hồ sơ",
+  "sectionAppearance": "Giao diện",
+  "sectionLanguage": "Ngôn ngữ",
+  "themeLight": "Sáng",
+  "themeSystem": "Hệ thống",
+  "themeDark": "Tối",
+  "languageVietnamese": "Tiếng Việt",
+  "languageEnglish": "English",
+  "languageArabic": "العربية",
+  "profilePersonalInfo": "Thông tin cá nhân",
+  "profileGoal": "Mục tiêu học",
+  "profileSync": "Đồng bộ đám mây",
+  "comingInStep": "Sẽ xây dựng ở Bước {step}",
+  "@comingInStep": {
+    "placeholders": {
+      "step": {
+        "type": "int"
+      }
+    }
+  },
+  "placeholderHome": "Bước 8 sẽ xây dựng Dashboard học tập: tiếp tục đọc, tiến độ hôm nay, chuỗi ngày học, câu Qur'an trong ngày.",
+  "placeholderQuran": "Bước 3 sẽ hiển thị danh sách 114 Surah với tìm kiếm và bộ lọc Mecca / Madinah.",
+  "placeholderStudy": "Bước 9 sẽ xây dựng Flashcard (Spaced Repetition) và Quiz.",
+  "placeholderStats": "Bước 9 sẽ hiển thị biểu đồ: chuỗi ngày học, tổng Ayah, thời gian học, nhật ký học.",
+  "searchSurahHint": "Tìm Surah theo tên hoặc số...",
+  "filterAll": "Tất cả",
+  "revelationMecca": "Mecca",
+  "revelationMadinah": "Madinah",
+  "surahAyahCount": "{count} câu",
+  "@surahAyahCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "errorLoadData": "Không tải được dữ liệu. Vui lòng thử lại.",
+  "retry": "Thử lại",
+  "emptySearchResults": "Không tìm thấy Surah nào phù hợp.",
+  "displaySettings": "Hiển thị",
+  "readingFontSize": "Cỡ chữ Ả Rập",
+  "showTransliteration": "Phiên âm Latin",
+  "showVietnamese": "Bản dịch tiếng Việt",
+  "showEnglish": "Bản dịch tiếng Anh",
+  "surahNotFound": "Không tìm thấy Surah này.",
+  "surahNoContent": "Surah chưa có nội dung. Hãy build lại dữ liệu (docs/DATA_PIPELINE.md).",
+  "ayahSemanticLabel": "Ayah {number}",
+  "@ayahSemanticLabel": {
+    "placeholders": {
+      "number": {
+        "type": "int"
+      }
+    }
+  },
+  "sajdahAyah": "Ayah có sajdah (quỳ lạy)",
+  "focusMode": "Chế độ tập trung",
+  "readingModeMushaf": "Chế độ Mushaf",
+  "readingModeList": "Chế độ danh sách",
+  "pageLabel": "Trang {number}",
+  "@pageLabel": {
+    "placeholders": {
+      "number": {
+        "type": "int"
+      }
+    }
+  },
+  "play": "Phát",
+  "pause": "Tạm dừng",
+  "nextAyah": "Ayah kế",
+  "previousAyah": "Ayah trước",
+  "repeatMode": "Chế độ lặp",
+  "stopAudio": "Dừng nghe",
+  "selectReciter": "Chọn Qari",
+  "playFromHere": "Nghe từ Ayah này",
+  "bookmarkLabel": "Bookmark",
+  "statusLabel": "Trạng thái học",
+  "statusNone": "Chưa đọc",
+  "statusLearning": "Đang học",
+  "statusLearned": "Đã học",
+  "statusReview": "Cần ôn",
+  "noteLabel": "Ghi chú",
+  "addNote": "Thêm ghi chú",
+  "editNote": "Sửa ghi chú",
+  "noteHint": "Hỗ trợ **đậm** và *nghiêng*",
+  "save": "Lưu",
+  "cancel": "Hủy",
+  "copyAyah": "Sao chép",
+  "shareAyah": "Chia sẻ",
+  "ayahCopied": "Đã sao chép vào bộ nhớ tạm",
+  "moreActions": "Thêm",
+  "continueReading": "Đọc tiếp",
+  "startReading": "Bắt đầu đọc",
+  "todaysVerse": "Câu Qur'an hôm nay",
+  "dailyProgress": "Tiến độ hôm nay",
+  "lastRead": "Đọc gần đây",
+  "quickAccess": "Truy cập nhanh",
+  "learningStreak": "Chuỗi ngày học",
+  "streakDays": "{count} ngày",
+  "@streakDays": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "recentSurahs": "Surah gần đây",
+  "ayahsReadLabel": "Ayah đã đọc",
+  "minutesLabel": "Phút học",
+  "myBookmarks": "Bookmark của tôi",
+  "studyFlashcards": "Flashcard",
+  "studyFlashcardsDesc": "Ghi nhớ Ayah bằng thẻ hai mặt",
+  "studySpaced": "Lặp lại ngắt quãng",
+  "studySpacedDesc": "Ôn đúng lúc sắp quên — nhớ lâu hơn",
+  "studyQuiz": "Trắc nghiệm",
+  "studyQuizDesc": "Kiểm tra nhanh kiến thức Surah",
+  "studyDailyReview": "Ôn tập hằng ngày",
+  "studyDailyReviewDesc": "Danh sách Ayah cần ôn hôm nay",
+  "comingSoon": "Sắp ra mắt",
+  "statsReadingDays": "Ngày đọc",
+  "statsAyahsRead": "Ayah đã đọc",
+  "statsMinutes": "Phút học",
+  "statsCompletion": "Hoàn thành Qur'an",
+  "statsCurrentStreak": "Chuỗi hiện tại",
+  "statsLongestStreak": "Chuỗi dài nhất",
+  "statsWeeklyActivity": "Hoạt động 7 ngày qua",
+  "statsNoData": "Bắt đầu đọc để ghi nhận thống kê.",
+  "sectionAbout": "Giới thiệu",
+  "aboutSources": "Nguồn dữ liệu",
+  "aboutSourcesDetail": "Văn bản Ả Rập & bản dịch: Tanzil.net · QuranEnc.com. Audio: EveryAyah.com. Font: KFGQPC (King Fahd Complex).",
+  "versionLabel": "Phiên bản",
+  "audioError": "Không phát được audio. Kiểm tra kết nối mạng.",
+  "audioLoading": "Đang tải audio...",
+  "favoriteLabel": "Yêu thích",
+  "copyArabic": "Sao chép chữ Ả Rập",
+  "copyTranslation": "Sao chép bản dịch",
+  "searchResultsAyahs": "Kết quả trong nội dung",
+  "searchNoAyahResults": "Không tìm thấy Ayah nào phù hợp."
+}

@@ -1,0 +1,145 @@
+{
+  "@@locale": "ar",
+  "appTitle": "رفيق القرآن",
+  "tabHome": "الرئيسية",
+  "tabQuran": "القرآن",
+  "tabStudy": "التعلّم",
+  "tabStats": "الإحصائيات",
+  "tabProfile": "الملف الشخصي",
+  "sectionAppearance": "المظهر",
+  "sectionLanguage": "اللغة",
+  "themeLight": "فاتح",
+  "themeSystem": "النظام",
+  "themeDark": "داكن",
+  "languageVietnamese": "Tiếng Việt",
+  "languageEnglish": "English",
+  "languageArabic": "العربية",
+  "profilePersonalInfo": "المعلومات الشخصية",
+  "profileGoal": "هدف التعلم",
+  "profileSync": "المزامنة السحابية",
+  "comingInStep": "سيتم بناؤه في الخطوة {step}",
+  "@comingInStep": {
+    "placeholders": {
+      "step": {
+        "type": "int"
+      }
+    }
+  },
+  "placeholderHome": "الخطوة 8 ستبني لوحة التعلم: متابعة القراءة، تقدم اليوم، سلسلة الأيام، آية اليوم.",
+  "placeholderQuran": "الخطوة 3 ستعرض 114 سورة مع البحث والتصفية (مكية / مدنية).",
+  "placeholderStudy": "الخطوة 9 ستبني البطاقات التعليمية (التكرار المتباعد) والاختبارات.",
+  "placeholderStats": "الخطوة 9 ستعرض الرسوم البيانية: سلسلة الأيام، مجموع الآيات، وقت الدراسة، اليوميات.",
+  "searchSurahHint": "ابحث عن سورة بالاسم أو الرقم...",
+  "filterAll": "الكل",
+  "revelationMecca": "مكية",
+  "revelationMadinah": "مدنية",
+  "surahAyahCount": "{count} آية",
+  "@surahAyahCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "errorLoadData": "تعذر تحميل البيانات. حاول مرة أخرى.",
+  "retry": "إعادة المحاولة",
+  "emptySearchResults": "لا توجد سورة مطابقة للبحث.",
+  "displaySettings": "العرض",
+  "readingFontSize": "حجم الخط العربي",
+  "showTransliteration": "النقل الصوتي",
+  "showVietnamese": "الترجمة الفيتنامية",
+  "showEnglish": "الترجمة الإنجليزية",
+  "surahNotFound": "لم يتم العثور على هذه السورة.",
+  "surahNoContent": "لا يوجد محتوى لهذه السورة.",
+  "ayahSemanticLabel": "الآية {number}",
+  "@ayahSemanticLabel": {
+    "placeholders": {
+      "number": {
+        "type": "int"
+      }
+    }
+  },
+  "sajdahAyah": "آية سجدة",
+  "focusMode": "وضع التركيز",
+  "readingModeMushaf": "وضع المصحف",
+  "readingModeList": "وضع القائمة",
+  "pageLabel": "صفحة {number}",
+  "@pageLabel": {
+    "placeholders": {
+      "number": {
+        "type": "int"
+      }
+    }
+  },
+  "play": "تشغيل",
+  "pause": "إيقاف مؤقت",
+  "nextAyah": "الآية التالية",
+  "previousAyah": "الآية السابقة",
+  "repeatMode": "وضع التكرار",
+  "stopAudio": "إيقاف الصوت",
+  "selectReciter": "اختر القارئ",
+  "playFromHere": "التشغيل من هذه الآية",
+  "bookmarkLabel": "إشارة مرجعية",
+  "statusLabel": "حالة التعلم",
+  "statusNone": "غير مقروءة",
+  "statusLearning": "قيد التعلم",
+  "statusLearned": "تم تعلمها",
+  "statusReview": "للمراجعة",
+  "noteLabel": "ملاحظة",
+  "addNote": "إضافة ملاحظة",
+  "editNote": "تعديل الملاحظة",
+  "noteHint": "يدعم **غامق** و *مائل*",
+  "save": "حفظ",
+  "cancel": "إلغاء",
+  "copyAyah": "نسخ",
+  "shareAyah": "مشاركة",
+  "ayahCopied": "تم النسخ إلى الحافظة",
+  "moreActions": "المزيد",
+  "continueReading": "متابعة القراءة",
+  "startReading": "ابدأ القراءة",
+  "todaysVerse": "آية اليوم",
+  "dailyProgress": "تقدم اليوم",
+  "lastRead": "آخر قراءة",
+  "quickAccess": "وصول سريع",
+  "learningStreak": "سلسلة أيام التعلم",
+  "streakDays": "{count} يوم",
+  "@streakDays": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "recentSurahs": "السور الأخيرة",
+  "ayahsReadLabel": "آيات مقروءة",
+  "minutesLabel": "دقائق",
+  "myBookmarks": "علاماتي المرجعية",
+  "studyFlashcards": "بطاقات تعليمية",
+  "studyFlashcardsDesc": "احفظ الآيات ببطاقات ذات وجهين",
+  "studySpaced": "تكرار متباعد",
+  "studySpacedDesc": "راجع قبل النسيان — تذكر أطول",
+  "studyQuiz": "اختبار",
+  "studyQuizDesc": "اختبارات سريعة لكل سورة",
+  "studyDailyReview": "مراجعة يومية",
+  "studyDailyReviewDesc": "آيات مستحقة للمراجعة اليوم",
+  "comingSoon": "قريباً",
+  "statsReadingDays": "أيام القراءة",
+  "statsAyahsRead": "الآيات المقروءة",
+  "statsMinutes": "دقائق الدراسة",
+  "statsCompletion": "إتمام القرآن",
+  "statsCurrentStreak": "السلسلة الحالية",
+  "statsLongestStreak": "أطول سلسلة",
+  "statsWeeklyActivity": "آخر ٧ أيام",
+  "statsNoData": "ابدأ القراءة لتسجيل الإحصاءات.",
+  "sectionAbout": "حول",
+  "aboutSources": "مصادر البيانات",
+  "aboutSourcesDetail": "النص العربي والترجمات: Tanzil.net · QuranEnc.com. الصوت: EveryAyah.com. الخط: مجمع الملك فهد.",
+  "versionLabel": "الإصدار",
+  "audioError": "تعذر التشغيل. تحقق من الاتصال.",
+  "audioLoading": "جارٍ تحميل الصوت...",
+  "favoriteLabel": "المفضلة",
+  "copyArabic": "نسخ النص العربي",
+  "copyTranslation": "نسخ الترجمة",
+  "searchResultsAyahs": "نتائج في المحتوى",
+  "searchNoAyahResults": "لا توجد آيات مطابقة."
+}

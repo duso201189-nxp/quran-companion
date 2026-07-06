@@ -1,0 +1,52 @@
+# =============================================================
+# Tiêu chuẩn phân tích tĩnh — chuẩn Production
+#
+# CI chạy `flutter analyze --fatal-infos`:
+# mọi vi phạm dưới đây đều làm build FAIL.
+# =============================================================
+
+include: package:flutter_lints/flutter.yaml
+
+analyzer:
+  language:
+    # Cấm ép kiểu ngầm và dynamic ngầm — bắt lỗi kiểu ngay khi compile.
+    strict-casts: true
+    strict-inference: true
+    strict-raw-types: true
+  errors:
+    # Thiếu case trong switch enum = lỗi, không phải cảnh báo.
+    missing_enum_constant_in_switch: error
+  exclude:
+    # File sinh tự động (Drift, Riverpod codegen ở các bước sau)
+    # không cần đạt chuẩn lint viết tay.
+    - '**/*.g.dart'
+    - '**/*.freezed.dart'
+
+linter:
+  rules:
+    # --- An toàn ---
+    - avoid_dynamic_calls          # cấm gọi hàm trên biến dynamic
+    - avoid_print                  # dùng logger, không dùng print
+    - avoid_slow_async_io
+    - cancel_subscriptions         # tránh rò rỉ StreamSubscription
+    - close_sinks                  # tránh rò rỉ StreamController
+    - throw_in_finally
+    - unawaited_futures            # Future bị bỏ quên phải khai báo rõ
+
+    # --- Hiệu năng ---
+    - prefer_const_constructors
+    - prefer_const_constructors_in_immutables
+    - prefer_const_declarations
+    - prefer_const_literals_to_create_immutables
+    - prefer_final_locals
+    - prefer_final_in_for_each
+
+    # --- Dễ đọc, dễ bảo trì ---
+    - always_declare_return_types
+    - directives_ordering          # import sắp xếp thống nhất
+    - prefer_single_quotes
+    - require_trailing_commas      # format ổn định, diff sạch
+    - sort_pub_dependencies
+    - type_annotate_public_apis    # API công khai phải khai báo kiểu
+    - unnecessary_lambdas
+    - unnecessary_parenthesis

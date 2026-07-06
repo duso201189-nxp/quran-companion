@@ -1,0 +1,4 @@
+# File môi trường thật chứa key -> KHÔNG BAO GIỜ commit.
+*.json
+# Chỉ commit file mẫu (không chứa giá trị thật).
+!*.example.json

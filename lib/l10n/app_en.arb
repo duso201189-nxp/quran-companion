@@ -1,0 +1,145 @@
+{
+  "@@locale": "en",
+  "appTitle": "Qur'an Companion",
+  "tabHome": "Home",
+  "tabQuran": "Qur'an",
+  "tabStudy": "Study",
+  "tabStats": "Statistics",
+  "tabProfile": "Profile",
+  "sectionAppearance": "Appearance",
+  "sectionLanguage": "Language",
+  "themeLight": "Light",
+  "themeSystem": "System",
+  "themeDark": "Dark",
+  "languageVietnamese": "Tiếng Việt",
+  "languageEnglish": "English",
+  "languageArabic": "العربية",
+  "profilePersonalInfo": "Personal information",
+  "profileGoal": "Learning goal",
+  "profileSync": "Cloud sync",
+  "comingInStep": "Coming in Step {step}",
+  "@comingInStep": {
+    "placeholders": {
+      "step": {
+        "type": "int"
+      }
+    }
+  },
+  "placeholderHome": "Step 8 will build the learning dashboard: continue reading, today's progress, study streak, verse of the day.",
+  "placeholderQuran": "Step 3 will show all 114 Surahs with search and Mecca / Madinah filters.",
+  "placeholderStudy": "Step 9 will build Flashcards (Spaced Repetition) and Quizzes.",
+  "placeholderStats": "Step 9 will show charts: study streak, total Ayahs, study time, daily journal.",
+  "searchSurahHint": "Search Surah by name or number...",
+  "filterAll": "All",
+  "revelationMecca": "Mecca",
+  "revelationMadinah": "Madinah",
+  "surahAyahCount": "{count} verses",
+  "@surahAyahCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "errorLoadData": "Could not load data. Please try again.",
+  "retry": "Retry",
+  "emptySearchResults": "No Surah matches your search.",
+  "displaySettings": "Display",
+  "readingFontSize": "Arabic font size",
+  "showTransliteration": "Transliteration",
+  "showVietnamese": "Vietnamese translation",
+  "showEnglish": "English translation",
+  "surahNotFound": "This Surah was not found.",
+  "surahNoContent": "No content for this Surah. Rebuild the data (docs/DATA_PIPELINE.md).",
+  "ayahSemanticLabel": "Ayah {number}",
+  "@ayahSemanticLabel": {
+    "placeholders": {
+      "number": {
+        "type": "int"
+      }
+    }
+  },
+  "sajdahAyah": "Sajdah (prostration) ayah",
+  "focusMode": "Focus mode",
+  "readingModeMushaf": "Mushaf mode",
+  "readingModeList": "List mode",
+  "pageLabel": "Page {number}",
+  "@pageLabel": {
+    "placeholders": {
+      "number": {
+        "type": "int"
+      }
+    }
+  },
+  "play": "Play",
+  "pause": "Pause",
+  "nextAyah": "Next ayah",
+  "previousAyah": "Previous ayah",
+  "repeatMode": "Repeat mode",
+  "stopAudio": "Stop audio",
+  "selectReciter": "Select reciter",
+  "playFromHere": "Play from this ayah",
+  "bookmarkLabel": "Bookmark",
+  "statusLabel": "Learning status",
+  "statusNone": "Unread",
+  "statusLearning": "Learning",
+  "statusLearned": "Learned",
+  "statusReview": "To review",
+  "noteLabel": "Note",
+  "addNote": "Add note",
+  "editNote": "Edit note",
+  "noteHint": "Supports **bold** and *italic*",
+  "save": "Save",
+  "cancel": "Cancel",
+  "copyAyah": "Copy",
+  "shareAyah": "Share",
+  "ayahCopied": "Copied to clipboard",
+  "moreActions": "More",
+  "continueReading": "Continue reading",
+  "startReading": "Start reading",
+  "todaysVerse": "Today's verse",
+  "dailyProgress": "Daily progress",
+  "lastRead": "Last read",
+  "quickAccess": "Quick access",
+  "learningStreak": "Learning streak",
+  "streakDays": "{count} days",
+  "@streakDays": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "recentSurahs": "Recent Surahs",
+  "ayahsReadLabel": "Ayahs read",
+  "minutesLabel": "Minutes",
+  "myBookmarks": "My bookmarks",
+  "studyFlashcards": "Flashcards",
+  "studyFlashcardsDesc": "Memorize ayahs with two-sided cards",
+  "studySpaced": "Spaced repetition",
+  "studySpacedDesc": "Review right before you forget — remember longer",
+  "studyQuiz": "Quiz",
+  "studyQuizDesc": "Quick knowledge checks per Surah",
+  "studyDailyReview": "Daily review",
+  "studyDailyReviewDesc": "Ayahs due for review today",
+  "comingSoon": "Coming soon",
+  "statsReadingDays": "Reading days",
+  "statsAyahsRead": "Ayahs read",
+  "statsMinutes": "Minutes studied",
+  "statsCompletion": "Qur'an completion",
+  "statsCurrentStreak": "Current streak",
+  "statsLongestStreak": "Longest streak",
+  "statsWeeklyActivity": "Last 7 days",
+  "statsNoData": "Start reading to record statistics.",
+  "sectionAbout": "About",
+  "aboutSources": "Data sources",
+  "aboutSourcesDetail": "Arabic text & translations: Tanzil.net · QuranEnc.com. Audio: EveryAyah.com. Font: KFGQPC (King Fahd Complex).",
+  "versionLabel": "Version",
+  "audioError": "Playback failed. Check your connection.",
+  "audioLoading": "Loading audio...",
+  "favoriteLabel": "Favorite",
+  "copyArabic": "Copy Arabic",
+  "copyTranslation": "Copy translation",
+  "searchResultsAyahs": "Results in content",
+  "searchNoAyahResults": "No matching ayahs found."
+}

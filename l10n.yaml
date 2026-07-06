@@ -1,0 +1,6 @@
+# Cấu hình sinh code Localization từ file ARB.
+# Chạy tự động khi `flutter pub get` / build (generate: true trong pubspec).
+arb-dir: lib/l10n
+template-arb-file: app_vi.arb
+output-localizations-file: app_localizations.dart
+nullable-getter: false
