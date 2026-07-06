@@ -34,6 +34,7 @@ dev_dependencies:
     sdk: flutter
   integration_test:
     sdk: flutter
+  sqlite3: ^3.3.4
 
 flutter:
   uses-material-design: true
