@@ -16,7 +16,7 @@ Nền tảng: **Android · iOS · iPad · Web · Desktop (tương lai)**.
 
 ## Cài đặt lần đầu
 
-Yêu cầu: Flutter **3.22.3** (khớp với CI — xem `FLUTTER_VERSION` trong
+Yêu cầu: Flutter **3.44.4** (khớp với CI — xem `FLUTTER_VERSION` trong
 `.github/workflows/ci.yml`).
 
 ```bash

@@ -6,7 +6,6 @@ Lộ trình: xem ROADMAP.md. Checklist phát hành: RELEASE_CHECKLIST.md.
 - [ ] Tên tiếng Việt chuẩn cho 114 Surah (hiện dùng tên Latin trong
       data; thay qua bản data mới, không sửa code)
 - [ ] Nguồn word-by-word tiếng Việt cho Bước 9 (lemmas/word_instances)
-- [ ] Xác minh phiên bản Flutter trên máy dev khớp CI (3.22.3)
 
 ## Kỹ thuật ngắn hạn
 - [ ] Nối IoCacheManager vào AudioController (ưu tiên file offline

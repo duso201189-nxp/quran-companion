@@ -27,8 +27,11 @@ concurrency:
   cancel-in-progress: true
 
 env:
-  # Ghim phiên bản Flutter để build tái lập được.
-  FLUTTER_VERSION: '3.22.3'
+  # Ghim phiên bản Flutter để build tái lập được. Phải khớp (hoặc mới
+  # hơn) SDK tối thiểu mà các dependency đã resolve thực sự cần —
+  # drift 2.34.x yêu cầu Dart >=3.10, nên Flutter quá cũ khiến
+  # `flutter pub get` fail thẳng ở bước cài dependencies.
+  FLUTTER_VERSION: '3.44.4'
   # Ngưỡng coverage tối thiểu (%). Thấp hơn -> CI fail.
   MIN_COVERAGE: '80'
 
