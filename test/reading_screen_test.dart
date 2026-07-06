@@ -1,3 +1,4 @@
+import 'package:drift/drift.dart' show driftRuntimeOptions;
 import 'package:drift/native.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -98,17 +99,30 @@ class _FakeRepo implements QuranRepository {
       const [];
 }
 
+/// UserDatabase của lần gọi [_app] gần nhất — [_testReading] đóng lại
+/// ngay trong thân test (xem lý do bên dưới).
+UserDatabase? _lastUserDb;
+
 Future<Widget> _app(QuranRepository repo, {int surahId = 1}) async {
   SharedPreferences.setMockInitialValues({});
   final sp = await SharedPreferences.getInstance();
+  // Mỗi test tạo UserDatabase riêng (cô lập dữ liệu) — phải đóng lại
+  // sau test, nếu không sẽ rò rỉ isolate/connection SQLite in-memory
+  // và trigger cảnh báo "UserDatabase created multiple times" của Drift
+  // khi nhiều test chạy chung 1 process. KHÔNG đóng qua addTearDown:
+  // addTearDown chạy sau khi callback testWidgets đã return, lúc đó
+  // tester.runAsync không còn coi mình "trong" một test đang chạy nữa
+  // và treo vĩnh viễn (xác nhận bằng debug print — before/after
+  // runAsync không bao giờ in ra after). Thay vào đó [_testReading]
+  // đóng database ngay trong thân callback, trước khi nó return.
+  final userDb = UserDatabase(NativeDatabase.memory());
+  _lastUserDb = userDb;
   return ProviderScope(
     overrides: [
       quranRepositoryProvider.overrideWithValue(repo),
       sharedPreferencesProvider.overrideWithValue(sp),
       ayahAudioPlayerProvider.overrideWithValue(FakeAyahAudioPlayer()),
-      userDatabaseProvider.overrideWithValue(
-        UserDatabase(NativeDatabase.memory()),
-      ),
+      userDatabaseProvider.overrideWithValue(userDb),
     ],
     child: MaterialApp(
       locale: const Locale('vi'),
@@ -131,10 +145,22 @@ void _testReading(String description, WidgetTesterCallback body) {
     // khi drift đóng stream + isolate dọn dẹp.
     await tester.pump(const Duration(seconds: 1));
     await tester.pump(const Duration(seconds: 1));
+    final db = _lastUserDb;
+    _lastUserDb = null;
+    if (db != null) {
+      await tester.runAsync(db.close);
+    }
   });
 }
 
 void main() {
+  // Mỗi test cố ý tạo UserDatabase in-memory riêng để cô lập dữ liệu
+  // (xem _app/_testReading) — không phải lỗi dùng chung 1 kết nối,
+  // nên tắt cảnh báo "created multiple times" của Drift cho file này.
+  setUpAll(() {
+    driftRuntimeOptions.dontWarnAboutMultipleDatabases = true;
+  });
+
   _testReading('loading -> nội dung Ayah hiển thị đủ các lớp mặc định',
       (tester) async {
     await tester.pumpWidget(await _app(_FakeRepo()));
@@ -207,8 +233,9 @@ void main() {
 
   _testReading('surah không tồn tại -> thông báo Không tìm thấy',
       (tester) async {
-    await tester
-        .pumpWidget(await _app(_FakeRepo(surahExists: false), surahId: 999));
+    await tester.pumpWidget(
+      await _app(_FakeRepo(surahExists: false), surahId: 999),
+    );
     await tester.pumpAndSettle();
 
     expect(find.text('Không tìm thấy Surah này.'), findsOneWidget);
