@@ -23,10 +23,18 @@ mở database lần đầu vốn thuộc về startup).
 
 | Chỉ số | Máy dev | Android tầm trung | Đạt? |
 |---|---|---|---|
-| Startup cold | _chưa đo_ | _chưa đo_ | — |
+| Startup cold | 161.6 ms¹ | _chưa đo_ | ✅ (máy dev) |
 | getAyahsOfSurah(2) | _chưa đo_ | _chưa đo_ | — |
 | FTS MATCH 'rahman' | _chưa đo_ | _chưa đo_ | — |
 | APK debug size | _CI in ra_ | — | — |
+
+¹ Đo bằng `flutter run --profile --trace-startup -d windows` (Windows
+desktop — không phải thiết bị Android, môi trường này không có thiết
+bị Android thật để đo). `timeToFirstFrameRasterizedMicros` =
+161,574 µs; `timeToFirstFrameMicros` (framework) = 75,286 µs. Cả hai
+đều rất xa dưới ngưỡng 2.000 ms, nhưng KHÔNG thay thế cho số đo trên
+Android tầm trung thật — dòng đó vẫn "chưa đo" và phải đo trước khi
+phát hành (xem RELEASE_CHECKLIST.md).
 
 Thiết kế phục vụ ngưỡng 50ms đã có: 9 index phủ mọi trục truy vấn
 (surah+ayah_number composite, juz, hizb, page, sajdah partial,
