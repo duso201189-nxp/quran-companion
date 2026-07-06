@@ -42,6 +42,31 @@ cho chi tiết từng commit). Mục đã ✅ là đã XÁC MINH THẬT (chạy 
       database mở lazy, provider async trên Trang chủ không chặn frame
       đầu — xác minh bằng đọc code trực tiếp, không chỉ tin tài liệu
 
+## Kỹ thuật — Đã xác minh (Phase 3, kiểm thử thật trên emulator)
+- [x] Chạy toàn bộ tính năng chính bằng tay trên Android emulator thật
+      (adb, không phải chỉ widget test): cả 5 tab (Trang chủ, Đọc,
+      Bookmark, Thống kê, Hồ sơ), 3 chế độ đọc, phát âm thanh, ghi
+      chú/bookmark/yêu thích, đổi giao diện sáng/tối + ngôn ngữ
+- [x] Phát hiện + sửa 2 lỗi UI thật (RenderFlex overflow) mà
+      `flutter analyze`/test/code review trước đó KHÔNG bắt được:
+      1) header thẻ Ayah tràn ngang khi đủ 6 nút hành động + badge +
+      trạng thái + icon sujud — sửa bằng `Wrap` 2 hàng thay `Row`+
+      `Spacer` (lib/features/quran/presentation/reading/reading_screen.dart)
+      2) biểu đồ tuần Thống kê tràn dọc 2px — sửa bằng tăng chiều cao
+      SizedBox 120→132 (lib/features/stats/presentation/stats_screen.dart)
+- [x] Regression cuối: `flutter analyze` 0 lỗi, `flutter test` 136/136
+      pass, `integration_test/app_e2e_test.dart` pass trên emulator thật
+      (không phải mock) sau khi sửa cả 2 lỗi trên
+- [x] Cài đặt APK **release** (R8-minified) thật lên emulator, mở lại
+      từ đầu, chụp màn hình Trang chủ + màn Đọc để xác nhận bản build
+      minified chạy đúng — không chỉ "build thành công" mà còn "chạy
+      đúng" dưới điều kiện release thật
+- [x] CI xanh trên commit cuối cùng đã build release (xác minh qua
+      GitHub Actions API, không suy đoán)
+- [ ] Chưa test bằng TalkBack/screen reader thật (chỉ mới kiểm thử
+      chức năng bằng tay, chưa audit accessibility chuyên sâu — xem
+      mục "Accessibility audit" bên dưới, vẫn còn treo)
+
 ## Kỹ thuật — Còn thiếu / đã biết, chưa xử lý
 - [ ] **Ký thật cho phát hành**: hiện release build dùng
       signingConfigs debug (quyết định của người dùng ở Phase 2, chỉ
