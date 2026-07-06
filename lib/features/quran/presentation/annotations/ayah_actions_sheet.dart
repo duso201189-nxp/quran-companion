@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart' show Clipboard, ClipboardData;
-import 'package:quran_companion/l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:quran_companion/l10n/app_localizations.dart';
 
 import '../../data/user_content_providers.dart';
 import '../../domain/entities/ayah_annotation.dart';
@@ -43,10 +43,9 @@ class AyahActionsSheet extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context);
     final repo = ref.read(userContentRepositoryProvider);
-    final annotation = ref
-            .watch(ayahAnnotationsProvider(surahId))
-            .valueOrNull?[ayahId] ??
-        AyahAnnotation.empty;
+    final annotation =
+        ref.watch(ayahAnnotationsProvider(surahId)).valueOrNull?[ayahId] ??
+            AyahAnnotation.empty;
 
     return SafeArea(
       child: SingleChildScrollView(
@@ -65,9 +64,7 @@ class AyahActionsSheet extends ConsumerWidget {
             SwitchListTile(
               contentPadding: EdgeInsets.zero,
               secondary: Icon(
-                annotation.bookmarked
-                    ? Icons.bookmark
-                    : Icons.bookmark_border,
+                annotation.bookmarked ? Icons.bookmark : Icons.bookmark_border,
               ),
               title: Text(l10n.bookmarkLabel),
               value: annotation.bookmarked,
@@ -76,9 +73,7 @@ class AyahActionsSheet extends ConsumerWidget {
             SwitchListTile(
               contentPadding: EdgeInsets.zero,
               secondary: Icon(
-                annotation.favorited
-                    ? Icons.favorite
-                    : Icons.favorite_border,
+                annotation.favorited ? Icons.favorite : Icons.favorite_border,
               ),
               title: Text(l10n.favoriteLabel),
               value: annotation.favorited,
@@ -112,8 +107,7 @@ class AyahActionsSheet extends ConsumerWidget {
                       child: _ColorDot(
                         color: kHighlightColorValues[name]!,
                         colorName: name,
-                        selected:
-                            annotation.highlightColors.contains(name),
+                        selected: annotation.highlightColors.contains(name),
                         onTap: () => repo.toggleHighlight(ayahId, name),
                       ),
                     ),
@@ -148,8 +142,7 @@ class AyahActionsSheet extends ConsumerWidget {
                 ),
               ],
               selected: {annotation.status},
-              onSelectionChanged: (sel) =>
-                  repo.setStatus(ayahId, sel.first),
+              onSelectionChanged: (sel) => repo.setStatus(ayahId, sel.first),
             ),
             const SizedBox(height: 8),
 
@@ -171,8 +164,11 @@ class AyahActionsSheet extends ConsumerWidget {
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                     ),
-              onTap: () => _openNoteDialog(context, repo.saveNote,
-                  initial: annotation.note ?? ''),
+              onTap: () => _openNoteDialog(
+                context,
+                repo.saveNote,
+                initial: annotation.note ?? '',
+              ),
             ),
           ],
         ),

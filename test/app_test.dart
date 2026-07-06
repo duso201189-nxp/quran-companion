@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-
 import 'package:quran_companion/app/app.dart';
 import 'package:quran_companion/app/locale/locale_controller.dart';
 import 'package:quran_companion/app/theme/theme_controller.dart';
@@ -14,6 +12,7 @@ import 'package:quran_companion/features/quran/domain/entities/reciter.dart';
 import 'package:quran_companion/features/quran/domain/entities/surah.dart';
 import 'package:quran_companion/features/quran/domain/entities/translation_source.dart';
 import 'package:quran_companion/features/quran/domain/repositories/quran_repository.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 /// Repository giả tối giản — app_test chỉ kiểm điều hướng/theme,
 /// không kiểm dữ liệu; tránh mở database thật trong test harness.
@@ -146,9 +145,7 @@ void main() {
       final container = await makeContainer();
       addTearDown(container.dispose);
 
-      await container
-          .read(localeControllerProvider.notifier)
-          .setLanguage('en');
+      await container.read(localeControllerProvider.notifier).setLanguage('en');
 
       expect(container.read(localeControllerProvider), const Locale('en'));
       expect(
@@ -163,9 +160,7 @@ void main() {
       final container = await makeContainer();
       addTearDown(container.dispose);
 
-      await container
-          .read(localeControllerProvider.notifier)
-          .setLanguage('fr');
+      await container.read(localeControllerProvider.notifier).setLanguage('fr');
 
       expect(container.read(localeControllerProvider), const Locale('vi'));
     });

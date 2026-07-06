@@ -1,9 +1,8 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-
 import 'package:quran_companion/core/storage/prefs_provider.dart';
 import 'package:quran_companion/features/quran/presentation/reading/reading_settings.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 Future<ProviderContainer> _container({
   Map<String, Object> prefs = const {},
@@ -28,8 +27,7 @@ void main() {
     expect(s.showEnglish, isFalse);
   });
 
-  test('setArabicScale lưu bền và clamp trong khoảng cho phép',
-      () async {
+  test('setArabicScale lưu bền và clamp trong khoảng cho phép', () async {
     final c = await _container();
     addTearDown(c.dispose);
 
@@ -64,9 +62,7 @@ void main() {
 
     expect(c.read(readingSettingsProvider).mode, ReadingMode.list);
 
-    await c
-        .read(readingSettingsProvider.notifier)
-        .setMode(ReadingMode.mushaf);
+    await c.read(readingSettingsProvider.notifier).setMode(ReadingMode.mushaf);
 
     expect(c.read(readingSettingsProvider).mode, ReadingMode.mushaf);
     expect(

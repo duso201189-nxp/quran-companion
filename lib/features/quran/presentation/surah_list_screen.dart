@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:quran_companion/l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:quran_companion/l10n/app_localizations.dart';
 
 import '../../../app/router.dart';
 import '../../../app/theme/app_theme.dart';
@@ -28,12 +28,10 @@ class SurahListScreen extends ConsumerWidget {
           _SearchAndFilterBar(l10n: l10n),
           Expanded(
             child: surahsAsync.when(
-              loading: () =>
-                  const Center(child: CircularProgressIndicator()),
+              loading: () => const Center(child: CircularProgressIndicator()),
               error: (error, _) => _ErrorState(l10n: l10n),
               data: (surahs) {
-                final query =
-                    ref.watch(surahSearchQueryProvider).trim();
+                final query = ref.watch(surahSearchQueryProvider).trim();
                 // Không tìm kiếm: danh sách 114 Surah như thường.
                 if (query.isEmpty) {
                   return surahs.isEmpty
@@ -97,8 +95,7 @@ class _SearchAndFilterBar extends ConsumerWidget {
             ],
             selected: {filter},
             onSelectionChanged: (selection) =>
-                ref.read(surahFilterProvider.notifier).state =
-                    selection.first,
+                ref.read(surahFilterProvider.notifier).state = selection.first,
           ),
         ],
       ),
@@ -146,8 +143,7 @@ class SurahTile extends StatelessWidget {
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
         child: ListTile(
-          onTap: () =>
-              context.push(AppRoutes.surahReading(surah.id)),
+          onTap: () => context.push(AppRoutes.surahReading(surah.id)),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(14),
           ),
@@ -173,8 +169,7 @@ class SurahTile extends StatelessWidget {
           ),
           title: Text(
             surah.nameLatin,
-            style: textTheme.titleMedium
-                ?.copyWith(fontWeight: FontWeight.w700),
+            style: textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700),
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
           ),
@@ -182,8 +177,8 @@ class SurahTile extends StatelessWidget {
             padding: const EdgeInsets.only(top: 2),
             child: Text(
               '${l10n.surahAyahCount(surah.ayahCount)} · $placeLabel',
-              style: textTheme.bodySmall
-                  ?.copyWith(color: scheme.onSurfaceVariant),
+              style:
+                  textTheme.bodySmall?.copyWith(color: scheme.onSurfaceVariant),
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
             ),
@@ -323,8 +318,7 @@ class _AyahResultTile extends ConsumerWidget {
               Text(
                 '${result.surahNameLatin} · '
                 '${result.surahId}:${result.ayahNumber}',
-                style: textTheme.labelMedium
-                    ?.copyWith(color: scheme.primary),
+                style: textTheme.labelMedium?.copyWith(color: scheme.primary),
               ),
               const SizedBox(height: 8),
               Text.rich(

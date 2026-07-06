@@ -2,14 +2,14 @@ import 'package:drift/drift.dart';
 
 import '../../../core/database/app_database.dart';
 import '../domain/entities/ayah.dart';
-import '../domain/entities/ayah_search_result.dart';
-import 'fts_query.dart';
-import 'transliteration_repository.dart';
 import '../domain/entities/ayah_content.dart';
+import '../domain/entities/ayah_search_result.dart';
 import '../domain/entities/reciter.dart';
 import '../domain/entities/surah.dart';
 import '../domain/entities/translation_source.dart';
 import '../domain/repositories/quran_repository.dart';
+import 'fts_query.dart';
+import 'transliteration_repository.dart';
 
 /// Triển khai QuranRepository trên Drift.
 class QuranRepositoryImpl implements QuranRepository {
@@ -32,8 +32,7 @@ class QuranRepositoryImpl implements QuranRepository {
 
   @override
   Future<Surah?> getSurahById(int id) async {
-    final row = await (_db.select(_db.surahs)
-          ..where((t) => t.id.equals(id)))
+    final row = await (_db.select(_db.surahs)..where((t) => t.id.equals(id)))
         .getSingleOrNull();
     return row == null ? null : _surahFromRow(row);
   }
@@ -79,8 +78,7 @@ class QuranRepositoryImpl implements QuranRepository {
       final text = source.type == TransliterationRepository.sourceType
           ? _transliteration.normalize(translation.content)
           : translation.content;
-      (byAyah[translation.ayahId] ??= <String, String>{})[source.code] =
-          text;
+      (byAyah[translation.ayahId] ??= <String, String>{})[source.code] = text;
     }
 
     return [

@@ -66,8 +66,7 @@ class StatsScreen extends ConsumerWidget {
                 ? (constraints.maxWidth - 860) / 2
                 : 16.0;
             return ListView(
-              padding:
-                  EdgeInsets.fromLTRB(horizontal, 12, horizontal, 24),
+              padding: EdgeInsets.fromLTRB(horizontal, 12, horizontal, 24),
               children: [
                 if (!hasData) ...[
                   _EmptyHint(text: l10n.statsNoData),
@@ -98,8 +97,7 @@ class StatsScreen extends ConsumerWidget {
                 _CompletionCard(
                   label: l10n.statsCompletion,
                   percent: stats.completionPercent,
-                  detail:
-                      '${stats.ayahsRead} / ${StatsStore.totalAyahs}',
+                  detail: '${stats.ayahsRead} / ${StatsStore.totalAyahs}',
                 ),
               ],
             );
@@ -126,8 +124,11 @@ class _EmptyHint extends StatelessWidget {
       ),
       child: Row(
         children: [
-          Icon(Icons.info_outline_rounded,
-              size: 20, color: scheme.onSecondaryContainer),
+          Icon(
+            Icons.info_outline_rounded,
+            size: 20,
+            color: scheme.onSecondaryContainer,
+          ),
           const SizedBox(width: 10),
           Expanded(
             child: Text(
@@ -174,15 +175,15 @@ class _MetricCard extends StatelessWidget {
           FittedBox(
             child: Text(
               value,
-              style: textTheme.titleLarge
-                  ?.copyWith(fontWeight: FontWeight.w700),
+              style:
+                  textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w700),
             ),
           ),
           const SizedBox(height: 2),
           Text(
             label,
-            style: textTheme.labelSmall
-                ?.copyWith(color: scheme.onSurfaceVariant),
+            style:
+                textTheme.labelSmall?.copyWith(color: scheme.onSurfaceVariant),
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
           ),
@@ -203,9 +204,8 @@ class _WeeklyChartCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
     final textTheme = Theme.of(context).textTheme;
-    final maxMinutes = data
-        .map((d) => d.minutes)
-        .fold<int>(0, (a, b) => a > b ? a : b);
+    final maxMinutes =
+        data.map((d) => d.minutes).fold<int>(0, (a, b) => a > b ? a : b);
     final dayFormat = DateFormat.E(
       Localizations.localeOf(context).toLanguageTag(),
     );
@@ -221,8 +221,7 @@ class _WeeklyChartCard extends StatelessWidget {
         children: [
           Text(
             title,
-            style: textTheme.titleSmall
-                ?.copyWith(fontWeight: FontWeight.w700),
+            style: textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w700),
           ),
           const SizedBox(height: 16),
           SizedBox(
@@ -233,8 +232,7 @@ class _WeeklyChartCard extends StatelessWidget {
                 for (final d in data)
                   Expanded(
                     child: Padding(
-                      padding:
-                          const EdgeInsets.symmetric(horizontal: 5),
+                      padding: const EdgeInsets.symmetric(horizontal: 5),
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.end,
                         children: [
@@ -250,8 +248,7 @@ class _WeeklyChartCard extends StatelessWidget {
                             message:
                                 '${dayFormat.format(d.day)}: ${d.minutes}′',
                             child: AnimatedContainer(
-                              duration:
-                                  const Duration(milliseconds: 300),
+                              duration: const Duration(milliseconds: 300),
                               height: maxMinutes == 0
                                   ? 4
                                   : 4 + 76 * (d.minutes / maxMinutes),
@@ -259,8 +256,7 @@ class _WeeklyChartCard extends StatelessWidget {
                                 color: d.minutes > 0
                                     ? scheme.primary
                                     : scheme.surfaceContainerHighest,
-                                borderRadius:
-                                    BorderRadius.circular(6),
+                                borderRadius: BorderRadius.circular(6),
                               ),
                             ),
                           ),
@@ -316,8 +312,8 @@ class _CompletionCard extends StatelessWidget {
             children: [
               Text(
                 label,
-                style: textTheme.titleSmall
-                    ?.copyWith(fontWeight: FontWeight.w700),
+                style:
+                    textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w700),
               ),
               Text(
                 detail,

@@ -1,9 +1,10 @@
+import 'package:drift/native.dart';
 import 'package:flutter/material.dart';
-import 'package:quran_companion/l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-
+import 'package:quran_companion/core/audio/ayah_audio_player.dart';
+import 'package:quran_companion/core/database/user/user_database.dart';
+import 'package:quran_companion/core/database/user/user_database_providers.dart';
 import 'package:quran_companion/core/storage/prefs_provider.dart';
 import 'package:quran_companion/features/quran/data/quran_providers.dart';
 import 'package:quran_companion/features/quran/domain/entities/ayah.dart';
@@ -13,11 +14,9 @@ import 'package:quran_companion/features/quran/domain/entities/reciter.dart';
 import 'package:quran_companion/features/quran/domain/entities/surah.dart';
 import 'package:quran_companion/features/quran/domain/entities/translation_source.dart';
 import 'package:quran_companion/features/quran/domain/repositories/quran_repository.dart';
-import 'package:drift/native.dart';
-import 'package:quran_companion/core/audio/ayah_audio_player.dart';
-import 'package:quran_companion/core/database/user/user_database.dart';
-import 'package:quran_companion/core/database/user/user_database_providers.dart';
 import 'package:quran_companion/features/quran/presentation/reading/reading_screen.dart';
+import 'package:quran_companion/l10n/app_localizations.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'fixtures/fake_audio_player.dart';
 
@@ -67,8 +66,7 @@ class _FakeRepo implements QuranRepository {
   final bool empty;
 
   @override
-  Future<Surah?> getSurahById(int id) async =>
-      surahExists ? _surah : null;
+  Future<Surah?> getSurahById(int id) async => surahExists ? _surah : null;
 
   @override
   Future<List<AyahContent>> getAyahsOfSurah(int surahId) async =>
@@ -166,8 +164,7 @@ void main() {
     expect(find.textContaining('2 câu'), findsOneWidget);
   });
 
-  _testReading('bật lớp English trong sheet -> hiển thị ngay',
-      (tester) async {
+  _testReading('bật lớp English trong sheet -> hiển thị ngay', (tester) async {
     await tester.pumpWidget(await _app(_FakeRepo()));
     await tester.pumpAndSettle();
 
@@ -187,10 +184,8 @@ void main() {
     await tester.pumpWidget(await _app(_FakeRepo()));
     await tester.pumpAndSettle();
 
-    double arabicSize() => tester
-        .widget<Text>(find.text('نص عربي ١'))
-        .style!
-        .fontSize!;
+    double arabicSize() =>
+        tester.widget<Text>(find.text('نص عربي ١')).style!.fontSize!;
     final before = arabicSize();
 
     await tester.tap(find.byIcon(Icons.text_fields));

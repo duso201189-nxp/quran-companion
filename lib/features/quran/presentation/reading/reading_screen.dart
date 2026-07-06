@@ -4,18 +4,18 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart'
     show Clipboard, ClipboardData, LogicalKeyboardKey;
-import 'package:quran_companion/l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:quran_companion/l10n/app_localizations.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 
 import '../../../../app/router.dart';
 import '../../../../app/theme/app_theme.dart';
 import '../../../stats/data/stats_store.dart';
-import '../../domain/entities/ayah_content.dart';
-import '../../domain/entities/surah.dart';
 import '../../data/user_content_providers.dart';
 import '../../domain/entities/ayah_annotation.dart';
+import '../../domain/entities/ayah_content.dart';
+import '../../domain/entities/surah.dart';
 import '../annotations/ayah_actions_sheet.dart';
 import '../audio/audio_bar.dart';
 import '../audio/audio_controller.dart';
@@ -66,8 +66,7 @@ class _ReadingScreenState extends ConsumerState<ReadingScreen> {
   void initState() {
     super.initState();
     _initialAyahIndex =
-        ref.read(readingPositionStoreProvider).positionFor(widget.surahId) ??
-            0;
+        ref.read(readingPositionStoreProvider).positionFor(widget.surahId) ?? 0;
     _positionsListener.itemPositions.addListener(_onPositionsChanged);
     _statsStore = ref.read(statsStoreProvider);
     unawaited(_statsStore.markToday());
@@ -175,12 +174,10 @@ class _ReadingScreenState extends ConsumerState<ReadingScreen> {
       bindings: {
         const SingleActivator(LogicalKeyboardKey.space): () =>
             _shortcutPlayPause(reading),
-        const SingleActivator(LogicalKeyboardKey.arrowRight): () => ref
-            .read(audioControllerProvider.notifier)
-            .nextAyah(),
-        const SingleActivator(LogicalKeyboardKey.arrowLeft): () => ref
-            .read(audioControllerProvider.notifier)
-            .previousAyah(),
+        const SingleActivator(LogicalKeyboardKey.arrowRight): () =>
+            ref.read(audioControllerProvider.notifier).nextAyah(),
+        const SingleActivator(LogicalKeyboardKey.arrowLeft): () =>
+            ref.read(audioControllerProvider.notifier).previousAyah(),
         const SingleActivator(LogicalKeyboardKey.equal): () =>
             _shortcutScale(0.1),
         const SingleActivator(LogicalKeyboardKey.add): () =>
@@ -200,89 +197,89 @@ class _ReadingScreenState extends ConsumerState<ReadingScreen> {
       child: Focus(
         autofocus: true,
         child: Scaffold(
-      bottomNavigationBar: _focusMode ? null : const AudioBar(),
-      appBar: _focusMode
-          ? null
-          : AppBar(
-              title: reading.maybeWhen(
-                data: (data) => Text(data.surah.nameLatin),
-                orElse: () => const SizedBox.shrink(),
+          bottomNavigationBar: _focusMode ? null : const AudioBar(),
+          appBar: _focusMode
+              ? null
+              : AppBar(
+                  title: reading.maybeWhen(
+                    data: (data) => Text(data.surah.nameLatin),
+                    orElse: () => const SizedBox.shrink(),
+                  ),
+                  actions: [
+                    IconButton(
+                      tooltip: l10n.focusMode,
+                      icon: const Icon(Icons.center_focus_strong),
+                      onPressed: () => setState(() => _focusMode = true),
+                    ),
+                    IconButton(
+                      tooltip: settings.mode == ReadingMode.list
+                          ? l10n.readingModeMushaf
+                          : l10n.readingModeList,
+                      icon: Icon(
+                        settings.mode == ReadingMode.list
+                            ? Icons.auto_stories_outlined
+                            : Icons.view_agenda_outlined,
+                      ),
+                      onPressed: () => unawaited(
+                        ref.read(readingSettingsProvider.notifier).setMode(
+                              settings.mode == ReadingMode.list
+                                  ? ReadingMode.mushaf
+                                  : ReadingMode.list,
+                            ),
+                      ),
+                    ),
+                    IconButton(
+                      tooltip: l10n.displaySettings,
+                      icon: const Icon(Icons.text_fields),
+                      onPressed: () => _openDisplaySettings(context),
+                    ),
+                  ],
+                ),
+          body: SafeArea(
+            child: reading.when(
+              loading: () => const Center(child: CircularProgressIndicator()),
+              error: (error, _) => _ReadingErrorState(
+                l10n: l10n,
+                notFound: error is SurahNotFoundException,
+                onRetry: () =>
+                    ref.invalidate(surahReadingProvider(widget.surahId)),
               ),
-              actions: [
-                IconButton(
-                  tooltip: l10n.focusMode,
-                  icon: const Icon(Icons.center_focus_strong),
-                  onPressed: () => setState(() => _focusMode = true),
-                ),
-                IconButton(
-                  tooltip: settings.mode == ReadingMode.list
-                      ? l10n.readingModeMushaf
-                      : l10n.readingModeList,
-                  icon: Icon(
-                    settings.mode == ReadingMode.list
-                        ? Icons.auto_stories_outlined
-                        : Icons.view_agenda_outlined,
-                  ),
-                  onPressed: () => unawaited(
-                    ref.read(readingSettingsProvider.notifier).setMode(
-                          settings.mode == ReadingMode.list
-                              ? ReadingMode.mushaf
-                              : ReadingMode.list,
-                        ),
-                  ),
-                ),
-                IconButton(
-                  tooltip: l10n.displaySettings,
-                  icon: const Icon(Icons.text_fields),
-                  onPressed: () => _openDisplaySettings(context),
-                ),
-              ],
+              data: (data) {
+                if (data.ayahs.isEmpty) {
+                  return _ReadingEmptyState(l10n: l10n);
+                }
+                final content = settings.mode == ReadingMode.mushaf
+                    ? _MushafView(
+                        ayahs: data.ayahs,
+                        settings: settings,
+                        focus: _focusMode,
+                        initialAyahIndex: _initialAyahIndex,
+                        onPageFirstAyah: _savePage,
+                      )
+                    : _AyahListView(
+                        surah: data.surah,
+                        ayahs: data.ayahs,
+                        surahId: widget.surahId,
+                        focus: _focusMode,
+                        // Vị trí 0 = chưa đọc dở -> mở từ ĐẦU trang (kèm
+                        // header Surah); đọc dở -> nhảy thẳng tới Ayah đó.
+                        initialScrollIndex: _initialAyahIndex == 0
+                            ? 0
+                            : min(_initialAyahIndex + 1, data.ayahs.length),
+                        itemScrollController: _itemScrollController,
+                        itemPositionsListener: _positionsListener,
+                      );
+                return GestureDetector(
+                  behavior: HitTestBehavior.translucent,
+                  onTap: _onTap,
+                  onScaleStart: _onScaleStart,
+                  onScaleUpdate: _onScaleUpdate,
+                  onScaleEnd: _onScaleEnd,
+                  child: content,
+                );
+              },
             ),
-      body: SafeArea(
-        child: reading.when(
-          loading: () => const Center(child: CircularProgressIndicator()),
-          error: (error, _) => _ReadingErrorState(
-            l10n: l10n,
-            notFound: error is SurahNotFoundException,
-            onRetry: () =>
-                ref.invalidate(surahReadingProvider(widget.surahId)),
           ),
-          data: (data) {
-            if (data.ayahs.isEmpty) {
-              return _ReadingEmptyState(l10n: l10n);
-            }
-            final content = settings.mode == ReadingMode.mushaf
-                ? _MushafView(
-                    ayahs: data.ayahs,
-                    settings: settings,
-                    focus: _focusMode,
-                    initialAyahIndex: _initialAyahIndex,
-                    onPageFirstAyah: _savePage,
-                  )
-                : _AyahListView(
-                    surah: data.surah,
-                    ayahs: data.ayahs,
-                    surahId: widget.surahId,
-                    focus: _focusMode,
-                    // Vị trí 0 = chưa đọc dở -> mở từ ĐẦU trang (kèm
-                    // header Surah); đọc dở -> nhảy thẳng tới Ayah đó.
-                    initialScrollIndex: _initialAyahIndex == 0
-                        ? 0
-                        : min(_initialAyahIndex + 1, data.ayahs.length),
-                    itemScrollController: _itemScrollController,
-                    itemPositionsListener: _positionsListener,
-                  );
-            return GestureDetector(
-              behavior: HitTestBehavior.translucent,
-              onTap: _onTap,
-              onScaleStart: _onScaleStart,
-              onScaleUpdate: _onScaleUpdate,
-              onScaleEnd: _onScaleEnd,
-              child: content,
-            );
-          },
-        ),
-      ),
         ),
       ),
     );
@@ -373,13 +370,12 @@ class _AyahListView extends ConsumerWidget {
             return AyahCard(
               content: ayahs[index - 1],
               focus: focus,
-              onPlay: () => ref
-                  .read(audioControllerProvider.notifier)
-                  .playSurah(
-                    surahId: surahId,
-                    ayahs: [for (final a in ayahs) a.ayah],
-                    startIndex: index - 1,
-                  ),
+              onPlay: () =>
+                  ref.read(audioControllerProvider.notifier).playSurah(
+                        surahId: surahId,
+                        ayahs: [for (final a in ayahs) a.ayah],
+                        startIndex: index - 1,
+                      ),
             );
           },
         );
@@ -431,8 +427,7 @@ class _MushafViewState extends State<_MushafView> {
       // Mushaf lật từ phải sang trái như bản in.
       reverse: true,
       itemCount: _pages.length,
-      onPageChanged: (i) =>
-          widget.onPageFirstAyah(_pages[i].firstAyahIndex),
+      onPageChanged: (i) => widget.onPageFirstAyah(_pages[i].firstAyahIndex),
       itemBuilder: (context, index) {
         final page = _pages[index];
         final width = MediaQuery.sizeOf(context).width;
@@ -529,8 +524,8 @@ class _SurahHeader extends StatelessWidget {
           const SizedBox(height: 4),
           Text(
             '${l10n.surahAyahCount(surah.ayahCount)} · $placeLabel',
-            style: textTheme.bodyMedium
-                ?.copyWith(color: scheme.onSurfaceVariant),
+            style:
+                textTheme.bodyMedium?.copyWith(color: scheme.onSurfaceVariant),
           ),
         ],
       ),
@@ -625,203 +620,201 @@ class AyahCard extends ConsumerWidget {
         padding: const EdgeInsets.only(bottom: 24),
         child: _HoverBuilder(
           builder: (hovered) => GestureDetector(
-          onLongPress: () => _openActionsSheet(context),
-          child: AnimatedContainer(
-            duration: const Duration(milliseconds: 250),
-            decoration: BoxDecoration(
-              color: hovered
-                  ? Color.alphaBlend(
-                      scheme.primaryContainer.withValues(alpha: 0.10),
-                      cardColor,
-                    )
-                  : cardColor,
-              borderRadius: BorderRadius.circular(16),
-              border: Border.all(
+            onLongPress: () => _openActionsSheet(context),
+            child: AnimatedContainer(
+              duration: const Duration(milliseconds: 250),
+              decoration: BoxDecoration(
                 color: hovered
-                    ? scheme.primary.withValues(alpha: 0.30)
-                    : Colors.transparent,
+                    ? Color.alphaBlend(
+                        scheme.primaryContainer.withValues(alpha: 0.10),
+                        cardColor,
+                      )
+                    : cardColor,
+                borderRadius: BorderRadius.circular(16),
+                border: Border.all(
+                  color: hovered
+                      ? scheme.primary.withValues(alpha: 0.30)
+                      : Colors.transparent,
+                ),
+                boxShadow: [
+                  BoxShadow(
+                    color:
+                        Colors.black.withValues(alpha: hovered ? 0.28 : 0.18),
+                    blurRadius: hovered ? 18 : 12,
+                    offset: Offset(0, hovered ? 6 : 4),
+                  ),
+                ],
               ),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black
-                      .withValues(alpha: hovered ? 0.28 : 0.18),
-                  blurRadius: hovered ? 18 : 12,
-                  offset: Offset(0, hovered ? 6 : 4),
-                ),
-              ],
-            ),
-            padding: const EdgeInsets.all(24),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                // ---- Hàng đầu: huy hiệu số Ayah + trạng thái + hành động ----
-                Row(
-                  children: [
-                    _AyahNumberBadge(
-                      surahId: content.ayah.surahId,
-                      ayahNumber: content.ayah.ayahNumber,
-                    ),
-                    if (annotation.status != AyahStatus.none) ...[
-                      const SizedBox(width: 10),
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 10,
-                          vertical: 4,
-                        ),
-                        decoration: BoxDecoration(
-                          color: scheme.tertiaryContainer,
-                          borderRadius: BorderRadius.circular(999),
-                        ),
-                        child: Text(
-                          switch (annotation.status) {
-                            AyahStatus.learning => l10n.statusLearning,
-                            AyahStatus.learned => l10n.statusLearned,
-                            AyahStatus.review => l10n.statusReview,
-                            AyahStatus.none => '',
-                          },
-                          style: textTheme.labelSmall
-                              ?.copyWith(color: scheme.onTertiaryContainer),
-                        ),
+              padding: const EdgeInsets.all(24),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  // ---- Hàng đầu: huy hiệu số Ayah + trạng thái + hành động ----
+                  Row(
+                    children: [
+                      _AyahNumberBadge(
+                        surahId: content.ayah.surahId,
+                        ayahNumber: content.ayah.ayahNumber,
                       ),
-                    ],
-                    if (content.ayah.sajdah) ...[
-                      const SizedBox(width: 8),
-                      Tooltip(
-                        message: l10n.sajdahAyah,
-                        child: Icon(
-                          Icons.self_improvement_rounded,
-                          size: 20,
-                          color: scheme.tertiary,
-                          semanticLabel: l10n.sajdahAyah,
+                      if (annotation.status != AyahStatus.none) ...[
+                        const SizedBox(width: 10),
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 10,
+                            vertical: 4,
+                          ),
+                          decoration: BoxDecoration(
+                            color: scheme.tertiaryContainer,
+                            borderRadius: BorderRadius.circular(999),
+                          ),
+                          child: Text(
+                            switch (annotation.status) {
+                              AyahStatus.learning => l10n.statusLearning,
+                              AyahStatus.learned => l10n.statusLearned,
+                              AyahStatus.review => l10n.statusReview,
+                              AyahStatus.none => '',
+                            },
+                            style: textTheme.labelSmall
+                                ?.copyWith(color: scheme.onTertiaryContainer),
+                          ),
                         ),
-                      ),
-                    ],
-                    const Spacer(),
-                    _ActionIcon(
-                      tooltip: l10n.bookmarkLabel,
-                      icon: annotation.bookmarked
-                          ? Icons.bookmark_rounded
-                          : Icons.bookmark_border_rounded,
-                      color: annotation.bookmarked
-                          ? scheme.primary
-                          : scheme.onSurfaceVariant,
-                      onPressed: () => ref
-                          .read(userContentRepositoryProvider)
-                          .toggleBookmark(content.ayah.id),
-                    ),
-                    _ActionIcon(
-                      tooltip: l10n.favoriteLabel,
-                      icon: annotation.favorited
-                          ? Icons.favorite_rounded
-                          : Icons.favorite_border_rounded,
-                      color: annotation.favorited
-                          ? scheme.tertiary
-                          : scheme.onSurfaceVariant,
-                      onPressed: () => ref
-                          .read(userContentRepositoryProvider)
-                          .toggleFavorite(content.ayah.id),
-                    ),
-                    _ActionIcon(
-                      tooltip: l10n.copyAyah,
-                      icon: Icons.copy_rounded,
-                      color: scheme.onSurfaceVariant,
-                      onPressed: () => _copyAyah(context, l10n),
-                    ),
-                    _ActionIcon(
-                      tooltip: l10n.shareAyah,
-                      icon: Icons.share_rounded,
-                      color: scheme.onSurfaceVariant,
-                      onPressed: () =>
-                          _copyAyah(context, l10n, forShare: true),
-                    ),
-                    if (onPlay != null)
+                      ],
+                      if (content.ayah.sajdah) ...[
+                        const SizedBox(width: 8),
+                        Tooltip(
+                          message: l10n.sajdahAyah,
+                          child: Icon(
+                            Icons.self_improvement_rounded,
+                            size: 20,
+                            color: scheme.tertiary,
+                            semanticLabel: l10n.sajdahAyah,
+                          ),
+                        ),
+                      ],
+                      const Spacer(),
                       _ActionIcon(
-                        tooltip: l10n.playFromHere,
-                        icon: isPlayingThis
-                            ? Icons.graphic_eq_rounded
-                            : Icons.play_arrow_rounded,
-                        color: scheme.primary,
-                        onPressed: onPlay!,
+                        tooltip: l10n.bookmarkLabel,
+                        icon: annotation.bookmarked
+                            ? Icons.bookmark_rounded
+                            : Icons.bookmark_border_rounded,
+                        color: annotation.bookmarked
+                            ? scheme.primary
+                            : scheme.onSurfaceVariant,
+                        onPressed: () => ref
+                            .read(userContentRepositoryProvider)
+                            .toggleBookmark(content.ayah.id),
                       ),
-                    _ActionIcon(
-                      tooltip: l10n.moreActions,
-                      icon: Icons.more_horiz_rounded,
-                      color: scheme.onSurfaceVariant,
-                      onPressed: () => _openActionsSheet(context),
+                      _ActionIcon(
+                        tooltip: l10n.favoriteLabel,
+                        icon: annotation.favorited
+                            ? Icons.favorite_rounded
+                            : Icons.favorite_border_rounded,
+                        color: annotation.favorited
+                            ? scheme.tertiary
+                            : scheme.onSurfaceVariant,
+                        onPressed: () => ref
+                            .read(userContentRepositoryProvider)
+                            .toggleFavorite(content.ayah.id),
+                      ),
+                      _ActionIcon(
+                        tooltip: l10n.copyAyah,
+                        icon: Icons.copy_rounded,
+                        color: scheme.onSurfaceVariant,
+                        onPressed: () => _copyAyah(context, l10n),
+                      ),
+                      _ActionIcon(
+                        tooltip: l10n.shareAyah,
+                        icon: Icons.share_rounded,
+                        color: scheme.onSurfaceVariant,
+                        onPressed: () =>
+                            _copyAyah(context, l10n, forShare: true),
+                      ),
+                      if (onPlay != null)
+                        _ActionIcon(
+                          tooltip: l10n.playFromHere,
+                          icon: isPlayingThis
+                              ? Icons.graphic_eq_rounded
+                              : Icons.play_arrow_rounded,
+                          color: scheme.primary,
+                          onPressed: onPlay!,
+                        ),
+                      _ActionIcon(
+                        tooltip: l10n.moreActions,
+                        icon: Icons.more_horiz_rounded,
+                        color: scheme.onSurfaceVariant,
+                        onPressed: () => _openActionsSheet(context),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 18),
+
+                  // ---- Văn bản Qur'an ----
+                  Text(
+                    content.ayah.textUthmani,
+                    textDirection: TextDirection.rtl,
+                    textAlign: TextAlign.right,
+                    style: arabicStyle,
+                  ),
+                  const SizedBox(height: 16),
+
+                  // ---- Phiên âm ----
+                  if (settings.showTransliteration && translit != null) ...[
+                    Text(
+                      translit,
+                      style: TextStyle(
+                        fontFamily: AppTheme.latinFont,
+                        fontStyle: FontStyle.italic,
+                        fontSize: 18,
+                        height: 1.6,
+                        color: scheme.onSurfaceVariant.withValues(alpha: 0.85),
+                      ),
                     ),
+                    const SizedBox(height: 12),
                   ],
-                ),
-                const SizedBox(height: 18),
 
-                // ---- Văn bản Qur'an ----
-                Text(
-                  content.ayah.textUthmani,
-                  textDirection: TextDirection.rtl,
-                  textAlign: TextAlign.right,
-                  style: arabicStyle,
-                ),
-                const SizedBox(height: 16),
-
-                // ---- Phiên âm ----
-                if (settings.showTransliteration && translit != null) ...[
-                  Text(
-                    translit,
-                    style: TextStyle(
-                      fontFamily: AppTheme.latinFont,
-                      fontStyle: FontStyle.italic,
-                      fontSize: 18,
-                      height: 1.6,
-                      color: scheme.onSurfaceVariant
-                          .withValues(alpha: 0.85),
+                  // ---- Bản dịch ----
+                  if (settings.showVietnamese && vi != null) ...[
+                    Text(
+                      vi,
+                      style: TextStyle(
+                        fontFamily: AppTheme.latinFont,
+                        fontSize: 18,
+                        height: 1.65,
+                        color: scheme.onSurface,
+                      ),
                     ),
-                  ),
-                  const SizedBox(height: 12),
+                    const SizedBox(height: 12),
+                  ],
+                  if (settings.showEnglish && en != null) ...[
+                    Text(
+                      en,
+                      style: TextStyle(
+                        fontFamily: AppTheme.latinFont,
+                        fontSize: 16,
+                        height: 1.6,
+                        color: scheme.onSurfaceVariant,
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                  ],
+
+                  // ---- Ghi chú người dùng ----
+                  if (annotation.note != null)
+                    Container(
+                      width: double.infinity,
+                      padding: const EdgeInsets.all(12),
+                      decoration: BoxDecoration(
+                        color: scheme.tertiaryContainer.withValues(alpha: 0.4),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: Text(
+                        annotation.note!,
+                        style: textTheme.bodySmall?.copyWith(height: 1.5),
+                      ),
+                    ),
                 ],
-
-                // ---- Bản dịch ----
-                if (settings.showVietnamese && vi != null) ...[
-                  Text(
-                    vi,
-                    style: TextStyle(
-                      fontFamily: AppTheme.latinFont,
-                      fontSize: 18,
-                      height: 1.65,
-                      color: scheme.onSurface,
-                    ),
-                  ),
-                  const SizedBox(height: 12),
-                ],
-                if (settings.showEnglish && en != null) ...[
-                  Text(
-                    en,
-                    style: TextStyle(
-                      fontFamily: AppTheme.latinFont,
-                      fontSize: 16,
-                      height: 1.6,
-                      color: scheme.onSurfaceVariant,
-                    ),
-                  ),
-                  const SizedBox(height: 12),
-                ],
-
-                // ---- Ghi chú người dùng ----
-                if (annotation.note != null)
-                  Container(
-                    width: double.infinity,
-                    padding: const EdgeInsets.all(12),
-                    decoration: BoxDecoration(
-                      color: scheme.tertiaryContainer
-                          .withValues(alpha: 0.4),
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: Text(
-                      annotation.note!,
-                      style: textTheme.bodySmall?.copyWith(height: 1.5),
-                    ),
-                  ),
-              ],
+              ),
             ),
-          ),
           ),
         ),
       ),
@@ -838,8 +831,7 @@ class AyahCard extends ConsumerWidget {
         ayahId: content.ayah.id,
         ayahNumber: content.ayah.ayahNumber,
         arabicText: content.ayah.textUthmani,
-        translationText:
-            content.texts['vi_main'] ?? content.texts['en_sahih'],
+        translationText: content.texts['vi_main'] ?? content.texts['en_sahih'],
       ),
     );
   }
@@ -1067,9 +1059,7 @@ class _ReadingErrorState extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Icon(
-              notFound
-                  ? Icons.menu_book_outlined
-                  : Icons.cloud_off_outlined,
+              notFound ? Icons.menu_book_outlined : Icons.cloud_off_outlined,
               size: 56,
               color: scheme.error,
             ),

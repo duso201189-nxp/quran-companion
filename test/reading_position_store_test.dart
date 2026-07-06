@@ -1,9 +1,8 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-
 import 'package:quran_companion/core/storage/prefs_provider.dart';
 import 'package:quran_companion/features/quran/presentation/reading/reading_position_store.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 Future<ProviderContainer> _container({
   Map<String, Object> prefs = const {},

@@ -1,16 +1,15 @@
 import 'package:flutter/material.dart';
-import 'package:quran_companion/l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
-
 import 'package:quran_companion/features/quran/data/quran_providers.dart';
-import 'package:quran_companion/features/quran/domain/entities/ayah_search_result.dart';
 import 'package:quran_companion/features/quran/domain/entities/ayah_content.dart';
+import 'package:quran_companion/features/quran/domain/entities/ayah_search_result.dart';
 import 'package:quran_companion/features/quran/domain/entities/reciter.dart';
 import 'package:quran_companion/features/quran/domain/entities/surah.dart';
 import 'package:quran_companion/features/quran/domain/entities/translation_source.dart';
 import 'package:quran_companion/features/quran/domain/repositories/quran_repository.dart';
 import 'package:quran_companion/features/quran/presentation/surah_list_screen.dart';
+import 'package:quran_companion/l10n/app_localizations.dart';
 
 /// Repository giả — điều khiển được kết quả trả về cho từng test.
 class _FakeQuranRepository implements QuranRepository {
@@ -96,8 +95,7 @@ void main() {
     await tester.pumpAndSettle();
   });
 
-  testWidgets('data state: hiển thị Surah với đủ thông tin',
-      (tester) async {
+  testWidgets('data state: hiển thị Surah với đủ thông tin', (tester) async {
     await tester.pumpWidget(_app(_FakeQuranRepository(_testSurahs)));
     await tester.pumpAndSettle();
 

@@ -31,48 +31,58 @@ final routerProvider = Provider<GoRouter>((ref) {
         builder: (context, state, navigationShell) =>
             AppScaffold(navigationShell: navigationShell),
         branches: [
-          StatefulShellBranch(routes: [
-            GoRoute(
-              path: AppRoutes.home,
-              builder: (context, state) => const HomeScreen(),
-            ),
-          ]),
-          StatefulShellBranch(routes: [
-            GoRoute(
-              path: AppRoutes.quran,
-              builder: (context, state) => const SurahListScreen(),
-              routes: [
-                GoRoute(
-                  path: 'surah/:id',
-                  builder: (context, state) {
-                    // Deep link id hỏng ('abc', '0') -> surahId 0,
-                    // ReadingScreen hiển thị SurahNotFound thay vì crash.
-                    final id =
-                        int.tryParse(state.pathParameters['id'] ?? '') ?? 0;
-                    return ReadingScreen(surahId: id);
-                  },
-                ),
-              ],
-            ),
-          ]),
-          StatefulShellBranch(routes: [
-            GoRoute(
-              path: AppRoutes.study,
-              builder: (context, state) => const StudyScreen(),
-            ),
-          ]),
-          StatefulShellBranch(routes: [
-            GoRoute(
-              path: AppRoutes.stats,
-              builder: (context, state) => const StatsScreen(),
-            ),
-          ]),
-          StatefulShellBranch(routes: [
-            GoRoute(
-              path: AppRoutes.profile,
-              builder: (context, state) => const ProfileScreen(),
-            ),
-          ]),
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: AppRoutes.home,
+                builder: (context, state) => const HomeScreen(),
+              ),
+            ],
+          ),
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: AppRoutes.quran,
+                builder: (context, state) => const SurahListScreen(),
+                routes: [
+                  GoRoute(
+                    path: 'surah/:id',
+                    builder: (context, state) {
+                      // Deep link id hỏng ('abc', '0') -> surahId 0,
+                      // ReadingScreen hiển thị SurahNotFound thay vì crash.
+                      final id =
+                          int.tryParse(state.pathParameters['id'] ?? '') ?? 0;
+                      return ReadingScreen(surahId: id);
+                    },
+                  ),
+                ],
+              ),
+            ],
+          ),
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: AppRoutes.study,
+                builder: (context, state) => const StudyScreen(),
+              ),
+            ],
+          ),
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: AppRoutes.stats,
+                builder: (context, state) => const StatsScreen(),
+              ),
+            ],
+          ),
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: AppRoutes.profile,
+                builder: (context, state) => const ProfileScreen(),
+              ),
+            ],
+          ),
         ],
       ),
     ],

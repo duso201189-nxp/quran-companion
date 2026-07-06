@@ -1,19 +1,18 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-
 import 'package:quran_companion/core/audio/audio_url.dart';
 import 'package:quran_companion/core/audio/ayah_audio_player.dart';
 import 'package:quran_companion/core/storage/prefs_provider.dart';
 import 'package:quran_companion/features/quran/data/quran_providers.dart';
-import 'package:quran_companion/features/quran/domain/entities/ayah_search_result.dart';
 import 'package:quran_companion/features/quran/domain/entities/ayah.dart';
 import 'package:quran_companion/features/quran/domain/entities/ayah_content.dart';
+import 'package:quran_companion/features/quran/domain/entities/ayah_search_result.dart';
 import 'package:quran_companion/features/quran/domain/entities/reciter.dart';
 import 'package:quran_companion/features/quran/domain/entities/surah.dart';
 import 'package:quran_companion/features/quran/domain/entities/translation_source.dart';
 import 'package:quran_companion/features/quran/domain/repositories/quran_repository.dart';
 import 'package:quran_companion/features/quran/presentation/audio/audio_controller.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'fixtures/fake_audio_player.dart';
 
@@ -155,8 +154,7 @@ void main() {
     expect(container.read(audioControllerProvider).speed, 0.75);
   });
 
-  test('cycleRepeat: off -> one -> all -> off, đẩy xuống player',
-      () async {
+  test('cycleRepeat: off -> one -> all -> off, đẩy xuống player', () async {
     final c = container.read(audioControllerProvider.notifier);
     await c.playSurah(surahId: 2, ayahs: _ayahs(1));
 

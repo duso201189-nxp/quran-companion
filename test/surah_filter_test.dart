@@ -25,12 +25,30 @@ Surah _surah(
 
 void main() {
   final surahs = [
-    _surah(1, 'Al-Fatihah', 'Khai Đề', RevelationPlace.mecca,
-        arabic: 'الفاتحة', en: 'The Opening'),
-    _surah(2, 'Al-Baqarah', 'Con Bò Cái', RevelationPlace.madinah,
-        arabic: 'البقرة', en: 'The Cow'),
-    _surah(114, 'An-Nas', 'Nhân Loại', RevelationPlace.mecca,
-        arabic: 'الناس', en: 'Mankind'),
+    _surah(
+      1,
+      'Al-Fatihah',
+      'Khai Đề',
+      RevelationPlace.mecca,
+      arabic: 'الفاتحة',
+      en: 'The Opening',
+    ),
+    _surah(
+      2,
+      'Al-Baqarah',
+      'Con Bò Cái',
+      RevelationPlace.madinah,
+      arabic: 'البقرة',
+      en: 'The Cow',
+    ),
+    _surah(
+      114,
+      'An-Nas',
+      'Nhân Loại',
+      RevelationPlace.mecca,
+      arabic: 'الناس',
+      en: 'Mankind',
+    ),
   ];
 
   group('foldDiacritics', () {
@@ -48,8 +66,7 @@ void main() {
 
   group('filterSurahs', () {
     test('query rỗng + filter all -> giữ nguyên', () {
-      final result =
-          filterSurahs(surahs, query: '', filter: SurahFilter.all);
+      final result = filterSurahs(surahs, query: '', filter: SurahFilter.all);
       expect(result.length, 3);
     });
 

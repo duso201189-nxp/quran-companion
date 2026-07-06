@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:quran_companion/l10n/app_localizations.dart';
 import 'package:go_router/go_router.dart';
+import 'package:quran_companion/l10n/app_localizations.dart';
 
 /// Khung điều hướng chính, tự thích ứng theo kích thước màn hình:
 ///
@@ -106,8 +106,7 @@ class AppScaffold extends StatelessWidget {
                       icon: Icon(d.icon),
                       selectedIcon: Icon(d.selectedIcon),
                       label: Text(d.label),
-                      padding:
-                          const EdgeInsets.symmetric(vertical: 4),
+                      padding: const EdgeInsets.symmetric(vertical: 4),
                     ),
                 ],
               ),

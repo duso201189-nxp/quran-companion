@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:quran_companion/l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:quran_companion/l10n/app_localizations.dart';
 
 import 'locale/locale_controller.dart';
 import 'router.dart';

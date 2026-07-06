@@ -49,8 +49,8 @@ class UserContentRepositoryImpl implements UserContentRepository {
           ..where((t) => t.ayahId.isIn(ayahIds) & alive(t)))
         .watch();
 
-    return _combineLatest5(bookmarks, highlights, notes, statuses,
-        favorites, (bm, hl, nt, st, fv) {
+    return _combineLatest5(bookmarks, highlights, notes, statuses, favorites,
+        (bm, hl, nt, st, fv) {
       final map = <int, _MutableAnnotation>{};
       _MutableAnnotation of(int id) =>
           map.putIfAbsent(id, _MutableAnnotation.new);
@@ -65,8 +65,8 @@ class UserContentRepositoryImpl implements UserContentRepository {
         of(row.ayahId).note = row.content;
       }
       for (final row in st) {
-        of(row.ayahId).status = AyahStatus.values.asNameMap()[row.status] ??
-            AyahStatus.none;
+        of(row.ayahId).status =
+            AyahStatus.values.asNameMap()[row.status] ?? AyahStatus.none;
       }
       for (final row in fv) {
         of(row.ayahId).favorited = true;
@@ -99,8 +99,7 @@ class UserContentRepositoryImpl implements UserContentRepository {
     }
     // Đảo trạng thái sống/xóa của bản ghi hiện có (giữ nguyên UUID
     // để bản sync là update, không phải delete+insert).
-    await (_db.update(_db.bookmarks)
-          ..where((t) => t.id.equals(existing.id)))
+    await (_db.update(_db.bookmarks)..where((t) => t.id.equals(existing.id)))
         .write(
       BookmarksCompanion(
         deletedAt: Value(existing.deletedAt == null ? now : null),
@@ -128,8 +127,7 @@ class UserContentRepositoryImpl implements UserContentRepository {
           );
       return;
     }
-    await (_db.update(_db.favorites)
-          ..where((t) => t.id.equals(existing.id)))
+    await (_db.update(_db.favorites)..where((t) => t.id.equals(existing.id)))
         .write(
       FavoritesCompanion(
         deletedAt: Value(existing.deletedAt == null ? now : null),
@@ -159,8 +157,7 @@ class UserContentRepositoryImpl implements UserContentRepository {
           );
       return;
     }
-    await (_db.update(_db.highlights)
-          ..where((t) => t.id.equals(existing.id)))
+    await (_db.update(_db.highlights)..where((t) => t.id.equals(existing.id)))
         .write(
       HighlightsCompanion(
         deletedAt: Value(existing.deletedAt == null ? now : null),
@@ -180,8 +177,7 @@ class UserContentRepositoryImpl implements UserContentRepository {
 
     if (trimmed.isEmpty) {
       if (existing != null && existing.deletedAt == null) {
-        await (_db.update(_db.notes)
-              ..where((t) => t.id.equals(existing.id)))
+        await (_db.update(_db.notes)..where((t) => t.id.equals(existing.id)))
             .write(
           NotesCompanion(
             deletedAt: Value(now),
@@ -204,8 +200,7 @@ class UserContentRepositoryImpl implements UserContentRepository {
           );
       return;
     }
-    await (_db.update(_db.notes)..where((t) => t.id.equals(existing.id)))
-        .write(
+    await (_db.update(_db.notes)..where((t) => t.id.equals(existing.id))).write(
       NotesCompanion(
         content: Value(trimmed),
         deletedAt: const Value(null),
@@ -248,8 +243,7 @@ class UserContentRepositoryImpl implements UserContentRepository {
           );
       return;
     }
-    await (_db.update(_db.ayahStatuses)
-          ..where((t) => t.id.equals(existing.id)))
+    await (_db.update(_db.ayahStatuses)..where((t) => t.id.equals(existing.id)))
         .write(
       AyahStatusesCompanion(
         status: Value(status.name),
@@ -308,31 +302,46 @@ Stream<R> _combineLatest5<A, B, C, D, E, R>(
   controller = StreamController<R>(
     onListen: () {
       subs.addAll([
-        a.listen((v) {
-          va = v;
-          ha = true;
-          emit();
-        }, onError: controller.addError),
-        b.listen((v) {
-          vb = v;
-          hb = true;
-          emit();
-        }, onError: controller.addError),
-        c.listen((v) {
-          vc = v;
-          hc = true;
-          emit();
-        }, onError: controller.addError),
-        d.listen((v) {
-          vd = v;
-          hd = true;
-          emit();
-        }, onError: controller.addError),
-        e.listen((v) {
-          ve = v;
-          he = true;
-          emit();
-        }, onError: controller.addError),
+        a.listen(
+          (v) {
+            va = v;
+            ha = true;
+            emit();
+          },
+          onError: controller.addError,
+        ),
+        b.listen(
+          (v) {
+            vb = v;
+            hb = true;
+            emit();
+          },
+          onError: controller.addError,
+        ),
+        c.listen(
+          (v) {
+            vc = v;
+            hc = true;
+            emit();
+          },
+          onError: controller.addError,
+        ),
+        d.listen(
+          (v) {
+            vd = v;
+            hd = true;
+            emit();
+          },
+          onError: controller.addError,
+        ),
+        e.listen(
+          (v) {
+            ve = v;
+            he = true;
+            emit();
+          },
+          onError: controller.addError,
+        ),
       ]);
     },
     onCancel: () async {
