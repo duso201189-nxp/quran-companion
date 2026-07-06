@@ -14,8 +14,14 @@ part 'app_database.g.dart';
 /// Database NGƯỜI DÙNG (nhóm B) sẽ là một database Drift RIÊNG
 /// (Bước 6) — tách file để cập nhật nội dung không đụng dữ liệu học.
 @DriftDatabase(
-  tables: [Surahs, Ayahs, TranslationSources, Translations, Reciters,
-    MetaEntries,],
+  tables: [
+    Surahs,
+    Ayahs,
+    TranslationSources,
+    Translations,
+    Reciters,
+    MetaEntries,
+  ],
 )
 class AppDatabase extends _$AppDatabase {
   AppDatabase(super.executor);

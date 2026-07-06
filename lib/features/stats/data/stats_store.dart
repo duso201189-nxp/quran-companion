@@ -20,8 +20,7 @@ class StatsStore {
 
   static const int totalAyahs = 6236;
 
-  static String dayKey(DateTime d) =>
-      '${d.year.toString().padLeft(4, '0')}-'
+  static String dayKey(DateTime d) => '${d.year.toString().padLeft(4, '0')}-'
       '${d.month.toString().padLeft(2, '0')}-'
       '${d.day.toString().padLeft(2, '0')}';
 
@@ -38,9 +37,7 @@ class StatsStore {
     updated.sort();
     await prefs.setStringList(
       kDays,
-      updated.length > 400
-          ? updated.sublist(updated.length - 400)
-          : updated,
+      updated.length > 400 ? updated.sublist(updated.length - 400) : updated,
     );
   }
 
@@ -144,8 +141,7 @@ class StatsStore {
     return total;
   }
 
-  double get completionPercent =>
-      (ayahsRead / totalAyahs * 100).clamp(0, 100);
+  double get completionPercent => (ayahsRead / totalAyahs * 100).clamp(0, 100);
 }
 
 final statsStoreProvider = Provider<StatsStore>(StatsStore.new);

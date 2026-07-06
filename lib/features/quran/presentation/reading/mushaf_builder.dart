@@ -3,11 +3,7 @@ import '../../domain/entities/ayah_content.dart';
 /// Chuyển số sang chữ số Ả Rập-Ấn: 114 -> ١١٤ (dấu kết Ayah Mushaf).
 String toArabicDigits(int number) {
   const digits = ['٠', '١', '٢', '٣', '٤', '٥', '٦', '٧', '٨', '٩'];
-  return number
-      .toString()
-      .split('')
-      .map((c) => digits[int.parse(c)])
-      .join();
+  return number.toString().split('').map((c) => digits[int.parse(c)]).join();
 }
 
 /// Một trang Mushaf: các Ayah nối liền thành khối văn bản,

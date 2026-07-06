@@ -91,7 +91,9 @@ jobs:
         run: dart run build_runner build --delete-conflicting-outputs
 
       - name: Kiểm tra format
-        run: dart format --output=none --set-exit-code lib test
+        # --set-exit-code bị đổi tên thành --set-exit-if-changed từ
+        # Dart 3.7+ (đi kèm Flutter 3.44.4 dùng ở FLUTTER_VERSION trên).
+        run: dart format --output=none --set-exit-if-changed lib test
 
       - name: Phân tích tĩnh (mọi cảnh báo đều fail)
         run: flutter analyze --fatal-infos

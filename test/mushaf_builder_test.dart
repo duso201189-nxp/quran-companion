@@ -46,8 +46,7 @@ void main() {
       expect(pages.single.text, contains('﴿١﴾'));
     });
 
-    test('Ayah thiếu số trang -> gom trang 0, không mất nội dung',
-        () {
+    test('Ayah thiếu số trang -> gom trang 0, không mất nội dung', () {
       final pages = buildMushafPages([_ayah(1, 1), _ayah(2, 2)]);
 
       expect(pages.single.pageNumber, 0);

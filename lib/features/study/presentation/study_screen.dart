@@ -48,8 +48,7 @@ class StudyScreen extends StatelessWidget {
                 ? (constraints.maxWidth - 860) / 2
                 : 16.0;
             return GridView.count(
-              padding:
-                  EdgeInsets.fromLTRB(horizontal, 12, horizontal, 24),
+              padding: EdgeInsets.fromLTRB(horizontal, 12, horizontal, 24),
               crossAxisCount: wide ? 2 : 1,
               mainAxisSpacing: 14,
               crossAxisSpacing: 14,

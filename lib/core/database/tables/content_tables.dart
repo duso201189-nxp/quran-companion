@@ -47,8 +47,7 @@ class Ayahs extends Table {
   IntColumn get page => integer().nullable()();
 
   /// Ayah có vị trí quỳ lạy (sajdah tilawah) hay không.
-  BoolColumn get sajdah =>
-      boolean().withDefault(const Constant(false))();
+  BoolColumn get sajdah => boolean().withDefault(const Constant(false))();
 
   @override
   Set<Column<Object>> get primaryKey => {id};

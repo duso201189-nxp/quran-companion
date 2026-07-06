@@ -27,10 +27,9 @@ class ReadingPositionStore {
 
   /// Các Surah đọc gần nhất (mới → cũ, tối đa 6) — cho Trang chủ.
   List<int> get recentSurahIds => [
-        for (final s in _read
-                .read(sharedPreferencesProvider)
-                .getStringList(kRecent) ??
-            const <String>[])
+        for (final s
+            in _read.read(sharedPreferencesProvider).getStringList(kRecent) ??
+                const <String>[])
           if (int.tryParse(s) != null) int.parse(s),
       ];
 

@@ -21,8 +21,8 @@ typedef SurahReading = ({Surah surah, List<AyahContent> ayahs});
 /// autoDispose: rời màn hình là giải phóng bộ nhớ — đọc Surah 2
 /// (286 ayah × 4 lớp văn bản) không được tích lũy RAM khi
 /// người dùng duyệt nhiều Surah liên tiếp.
-final surahReadingProvider = FutureProvider.autoDispose
-    .family<SurahReading, int>((ref, surahId) async {
+final surahReadingProvider =
+    FutureProvider.autoDispose.family<SurahReading, int>((ref, surahId) async {
   final repo = ref.watch(quranRepositoryProvider);
   final surah = await repo.getSurahById(surahId);
   if (surah == null) {

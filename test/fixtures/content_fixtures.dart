@@ -1,4 +1,3 @@
-
 import 'package:quran_companion/core/database/app_database.dart';
 
 /// Dữ liệu mẫu CHỈ DÙNG CHO TEST (in-memory database).

@@ -106,9 +106,7 @@ class ReadingSettingsController extends Notifier<ReadingSettings> {
 
   Future<void> setMode(ReadingMode mode) async {
     state = state.copyWith(mode: mode);
-    await ref
-        .read(sharedPreferencesProvider)
-        .setString(_kMode, mode.name);
+    await ref.read(sharedPreferencesProvider).setString(_kMode, mode.name);
   }
 
   Future<void> setShowTransliteration(bool value) async {

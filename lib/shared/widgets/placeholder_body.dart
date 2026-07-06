@@ -33,8 +33,8 @@ class PlaceholderBody extends StatelessWidget {
               Text(
                 description,
                 textAlign: TextAlign.center,
-                style: text.bodyMedium
-                    ?.copyWith(color: scheme.onSurfaceVariant),
+                style:
+                    text.bodyMedium?.copyWith(color: scheme.onSurfaceVariant),
               ),
             ],
           ),

@@ -44,11 +44,8 @@ String? ftsMatchExpression(String raw) {
 
   // Biến thể alef wasla (ٱ U+0671) cho từ bắt đầu bằng ا U+0627.
   final wasla = [
-    for (final t in tokens)
-      t.startsWith('ا') ? 'ٱ${t.substring(1)}' : t,
+    for (final t in tokens) t.startsWith('ا') ? 'ٱ${t.substring(1)}' : t,
   ];
   final same = wasla.join(' ') == tokens.join(' ');
-  return same
-      ? phrase(tokens)
-      : '(${phrase(tokens)}) OR (${phrase(wasla)})';
+  return same ? phrase(tokens) : '(${phrase(tokens)}) OR (${phrase(wasla)})';
 }

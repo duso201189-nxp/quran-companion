@@ -58,49 +58,52 @@ void main() {
     });
   });
 
-  group('searchAyahs (asset thật)', () {
-    final assetFile = File('assets/database/quran.sqlite');
-    late AppDatabase db;
-    late QuranRepositoryImpl repo;
+  group(
+    'searchAyahs (asset thật)',
+    () {
+      final assetFile = File('assets/database/quran.sqlite');
+      late AppDatabase db;
+      late QuranRepositoryImpl repo;
 
-    setUpAll(() {
-      db = AppDatabase(NativeDatabase(assetFile));
-      repo = QuranRepositoryImpl(db);
-    });
+      setUpAll(() {
+        db = AppDatabase(NativeDatabase(assetFile));
+        repo = QuranRepositoryImpl(db);
+      });
 
-    tearDownAll(() async => db.close());
+      tearDownAll(() async => db.close());
 
-    test('tiếng Việt có dấu lẫn không dấu ra cùng kết quả', () async {
-      final withMarks = await repo.searchAyahs('Nhân danh Allah');
-      final without = await repo.searchAyahs('nhan danh allah');
-      expect(withMarks, isNotEmpty);
-      expect(
-        withMarks.map((r) => r.ayahId),
-        equals(without.map((r) => r.ayahId)),
-      );
-      expect(withMarks.first.ayahId, 1); // 1:1 Bismillah
-    });
+      test('tiếng Việt có dấu lẫn không dấu ra cùng kết quả', () async {
+        final withMarks = await repo.searchAyahs('Nhân danh Allah');
+        final without = await repo.searchAyahs('nhan danh allah');
+        expect(withMarks, isNotEmpty);
+        expect(
+          withMarks.map((r) => r.ayahId),
+          equals(without.map((r) => r.ayahId)),
+        );
+        expect(withMarks.first.ayahId, 1); // 1:1 Bismillah
+      });
 
-    test('Ả Rập gõ alef thường vẫn khớp alef wasla', () async {
-      final results = await repo.searchAyahs('الرحمن');
-      expect(results, isNotEmpty);
-      expect(results.first.surahNameLatin, isNotEmpty);
-    });
+      test('Ả Rập gõ alef thường vẫn khớp alef wasla', () async {
+        final results = await repo.searchAyahs('الرحمن');
+        expect(results, isNotEmpty);
+        expect(results.first.surahNameLatin, isNotEmpty);
+      });
 
-    test('tiếng Anh', () async {
-      final results = await repo.searchAyahs('mercy', limit: 10);
-      expect(results, isNotEmpty);
-      expect(results.length, lessThanOrEqualTo(10));
-    });
+      test('tiếng Anh', () async {
+        final results = await repo.searchAyahs('mercy', limit: 10);
+        expect(results, isNotEmpty);
+        expect(results.length, lessThanOrEqualTo(10));
+      });
 
-    test('thứ tự Mushaf (ayah_id tăng dần)', () async {
-      final results = await repo.searchAyahs('Allah', limit: 30);
-      final ids = results.map((r) => r.ayahId).toList();
-      expect(ids, orderedEquals([...ids]..sort()));
-    });
-  },
-      skip: File('assets/database/quran.sqlite').existsSync()
-          ? false
-          : 'assets/database/quran.sqlite chưa build — '
-              'chạy tool/build_quran_db.py',);
+      test('thứ tự Mushaf (ayah_id tăng dần)', () async {
+        final results = await repo.searchAyahs('Allah', limit: 30);
+        final ids = results.map((r) => r.ayahId).toList();
+        expect(ids, orderedEquals([...ids]..sort()));
+      });
+    },
+    skip: File('assets/database/quran.sqlite').existsSync()
+        ? false
+        : 'assets/database/quran.sqlite chưa build — '
+            'chạy tool/build_quran_db.py',
+  );
 }

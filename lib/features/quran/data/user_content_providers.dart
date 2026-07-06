@@ -15,6 +15,6 @@ final ayahAnnotationsProvider = StreamProvider.autoDispose
     .family<Map<int, AyahAnnotation>, int>((ref, surahId) async* {
   final reading = await ref.watch(surahReadingProvider(surahId).future);
   yield* ref.watch(userContentRepositoryProvider).watchAnnotationsForAyahs(
-        [for (final a in reading.ayahs) a.ayah.id],
-      );
+    [for (final a in reading.ayahs) a.ayah.id],
+  );
 });

@@ -61,8 +61,7 @@ void main() {
 
     test('metadata nguồn (license, url) được ánh xạ', () async {
       final sources = await repo.getEnabledSources();
-      final translit =
-          sources.singleWhere((s) => s.code == 'translit_latin');
+      final translit = sources.singleWhere((s) => s.code == 'translit_latin');
 
       expect(translit.type, SourceType.transliteration);
       expect(translit.license, 'fixture-license');
@@ -72,8 +71,7 @@ void main() {
   });
 
   group('QuranRepository — Ayah + văn bản', () {
-    test('getAyahsOfSurah: đủ ayah, đúng thứ tự, đủ lớp văn bản',
-        () async {
+    test('getAyahsOfSurah: đủ ayah, đúng thứ tự, đủ lớp văn bản', () async {
       final ayahs = await repo.getAyahsOfSurah(1);
 
       expect(ayahs.length, 7);

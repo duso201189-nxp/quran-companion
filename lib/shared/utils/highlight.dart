@@ -50,13 +50,10 @@ _FoldedText _foldWithMap(String original) {
 List<(int, int)> matchRanges(String text, String query) {
   final folded = _foldWithMap(text);
   final isArabic = _arabicChar.hasMatch(query);
-  final foldedQuery = isArabic
-      ? foldArabic(query).replaceAll('ٱ', 'ا')
-      : foldDiacritics(query);
-  final tokens = foldedQuery
-      .split(RegExp(r'\s+'))
-      .where((t) => t.isNotEmpty)
-      .toList();
+  final foldedQuery =
+      isArabic ? foldArabic(query).replaceAll('ٱ', 'ا') : foldDiacritics(query);
+  final tokens =
+      foldedQuery.split(RegExp(r'\s+')).where((t) => t.isNotEmpty).toList();
   if (tokens.isEmpty) return const [];
 
   final ranges = <(int, int)>[];

@@ -9,8 +9,7 @@ import '../domain/entities/surah.dart';
 enum SurahFilter { all, mecca, madinah }
 
 /// Nạp 114 Surah từ repository (AsyncValue: loading/error/data).
-final surahListProvider =
-    FutureProvider<List<Surah>>((ref) async {
+final surahListProvider = FutureProvider<List<Surah>>((ref) async {
   return ref.watch(quranRepositoryProvider).getAllSurahs();
 });
 

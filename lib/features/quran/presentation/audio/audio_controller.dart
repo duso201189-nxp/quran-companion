@@ -86,8 +86,7 @@ class AudioState {
       position: position ?? this.position,
       duration: clearDuration ? null : duration ?? this.duration,
       loading: loading ?? this.loading,
-      errorMessage:
-          clearError ? null : errorMessage ?? this.errorMessage,
+      errorMessage: clearError ? null : errorMessage ?? this.errorMessage,
     );
   }
 
@@ -155,8 +154,7 @@ class AudioController extends Notifier<AudioState> {
           state = state.copyWith(loading: loading);
         }
         // Hết playlist (repeat off) -> hiển thị nút phát lại.
-        if (processing == AyahPlayerProcessing.completed &&
-            state.playing) {
+        if (processing == AyahPlayerProcessing.completed && state.playing) {
           state = state.copyWith(playing: false);
         }
       }),
@@ -252,8 +250,8 @@ class AudioController extends Notifier<AudioState> {
 
   /// Xoay vòng lặp: off -> one (lặp Ayah) -> all (lặp Surah) -> off.
   Future<void> cycleRepeat() async {
-    final next = RepeatMode
-        .values[(state.repeat.index + 1) % RepeatMode.values.length];
+    final next =
+        RepeatMode.values[(state.repeat.index + 1) % RepeatMode.values.length];
     state = state.copyWith(repeat: next);
     if (state.active) await _player.setRepeatMode(next);
   }
