@@ -17,8 +17,20 @@ import '../../stats/data/stats_store.dart';
 final todaysVerseProvider =
     FutureProvider<({Surah surah, AyahContent content})?>((ref) async {
   const picks = <(int, int)>[
-    (2, 255), (1, 5), (94, 5), (3, 190), (55, 13), (93, 3), (103, 2),
-    (13, 28), (17, 80), (112, 1), (2, 286), (29, 69), (20, 114), (49, 13),
+    (2, 255),
+    (1, 5),
+    (94, 5),
+    (3, 190),
+    (55, 13),
+    (93, 3),
+    (103, 2),
+    (13, 28),
+    (17, 80),
+    (112, 1),
+    (2, 286),
+    (29, 69),
+    (20, 114),
+    (49, 13),
   ];
   final day = DateTime.now().difference(DateTime(2026)).inDays;
   final (surahId, ayahNo) = picks[day % picks.length];
@@ -62,7 +74,7 @@ class HomeScreen extends ConsumerWidget {
               children: [
                 _ContinueReadingCard(
                   l10n: l10n,
-                  lastSurah: surahById[positions.lastSurahId],
+                  lastSurah: surahById[positions.lastSurahId] ?? surahById[1],
                   lastAyahIndex: positions.lastSurahId == null
                       ? null
                       : positions.positionFor(positions.lastSurahId!),
@@ -82,9 +94,8 @@ class HomeScreen extends ConsumerWidget {
                       if (surahById[id] != null)
                         ActionChip(
                           avatar: CircleAvatar(
-                            backgroundColor: Theme.of(context)
-                                .colorScheme
-                                .primaryContainer,
+                            backgroundColor:
+                                Theme.of(context).colorScheme.primaryContainer,
                             child: Text(
                               '$id',
                               style: const TextStyle(fontSize: 11),
@@ -105,8 +116,7 @@ class HomeScreen extends ConsumerWidget {
                     child: ListView.separated(
                       scrollDirection: Axis.horizontal,
                       itemCount: positions.recentSurahIds.length,
-                      separatorBuilder: (_, __) =>
-                          const SizedBox(width: 10),
+                      separatorBuilder: (_, __) => const SizedBox(width: 10),
                       itemBuilder: (context, i) {
                         final id = positions.recentSurahIds[i];
                         final surah = surahById[id];
@@ -182,8 +192,7 @@ class _ContinueReadingCard extends StatelessWidget {
         ),
         child: InkWell(
           borderRadius: BorderRadius.circular(20),
-          onTap: () =>
-              context.push(AppRoutes.surahReading(surah?.id ?? 1)),
+          onTap: () => context.push(AppRoutes.surahReading(surah?.id ?? 1)),
           child: Padding(
             padding: const EdgeInsets.all(24),
             child: Row(
@@ -211,13 +220,13 @@ class _ContinueReadingCard extends StatelessWidget {
                             ? l10n.startReading
                             : l10n.continueReading,
                         style: textTheme.labelLarge?.copyWith(
-                          color: scheme.onPrimaryContainer
-                              .withValues(alpha: 0.8),
+                          color:
+                              scheme.onPrimaryContainer.withValues(alpha: 0.8),
                         ),
                       ),
                       const SizedBox(height: 4),
                       Text(
-                        surah == null ? 'Al-Fatihah' : surah.nameLatin,
+                        surah?.nameLatin ?? l10n.tabQuran,
                         style: textTheme.titleLarge?.copyWith(
                           fontWeight: FontWeight.w700,
                           color: scheme.onPrimaryContainer,
@@ -316,16 +325,15 @@ class _StatChip extends StatelessWidget {
           const SizedBox(height: 6),
           Text(
             value,
-            style: textTheme.titleMedium
-                ?.copyWith(fontWeight: FontWeight.w700),
+            style: textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700),
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
           ),
           const SizedBox(height: 2),
           Text(
             label,
-            style: textTheme.labelSmall
-                ?.copyWith(color: scheme.onSurfaceVariant),
+            style:
+                textTheme.labelSmall?.copyWith(color: scheme.onSurfaceVariant),
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
             textAlign: TextAlign.center,
@@ -353,10 +361,8 @@ class _TodaysVerseCard extends ConsumerWidget {
         if (data == null) return const SizedBox.shrink();
         final locale = Localizations.localeOf(context).languageCode;
         final translation = locale == 'vi'
-            ? data.content.texts['vi_main'] ??
-                data.content.texts['en_sahih']
-            : data.content.texts['en_sahih'] ??
-                data.content.texts['vi_main'];
+            ? data.content.texts['vi_main'] ?? data.content.texts['en_sahih']
+            : data.content.texts['en_sahih'] ?? data.content.texts['vi_main'];
         return Container(
           width: double.infinity,
           padding: const EdgeInsets.all(24),
@@ -380,8 +386,8 @@ class _TodaysVerseCard extends ConsumerWidget {
                   const SizedBox(width: 8),
                   Text(
                     l10n.todaysVerse,
-                    style: textTheme.labelLarge
-                        ?.copyWith(color: scheme.primary),
+                    style:
+                        textTheme.labelLarge?.copyWith(color: scheme.primary),
                   ),
                 ],
               ),
@@ -458,8 +464,8 @@ class _RecentSurahCard extends StatelessWidget {
             children: [
               Text(
                 surah.nameLatin,
-                style: textTheme.titleSmall
-                    ?.copyWith(fontWeight: FontWeight.w700),
+                style:
+                    textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w700),
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
               ),
