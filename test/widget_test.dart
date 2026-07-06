@@ -1,13 +1,18 @@
-// Smoke test cơ bản: đảm bảo widget gốc dựng được trong ProviderScope.
-// Các bài test đầy đủ của ứng dụng nằm ở app_test.dart.
+// Smoke test: app phải dựng, pump và ổn định KHÔNG lỗi/exception.
+// Các bài test hành vi chi tiết (điều hướng, theme, ngôn ngữ) nằm ở
+// app_test.dart; file này chỉ trả lời "app có khởi động được không".
 
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import 'package:quran_companion/app/app.dart';
+import 'fixtures/app_harness.dart';
 
 void main() {
-  testWidgets('QuranCompanionApp can be constructed', (tester) async {
-    expect(const ProviderScope(child: QuranCompanionApp()), isNotNull);
+  testWidgets('QuranCompanionApp khởi động không lỗi, vào thẳng Trang chủ',
+      (tester) async {
+    await tester.pumpWidget(await makeApp());
+    await tester.pumpAndSettle();
+
+    expect(tester.takeException(), isNull);
+    expect(find.text('Trang chủ'), findsWidgets);
   });
 }
