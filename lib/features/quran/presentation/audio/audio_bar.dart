@@ -76,8 +76,7 @@ class AudioBar extends ConsumerWidget {
               ),
 
             Padding(
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
               child: Row(
                 children: [
                   IconButton(
@@ -199,31 +198,34 @@ class ReciterPickerSheet extends ConsumerWidget {
           padding: const EdgeInsets.all(32),
           child: Text(l10n.errorLoadData, textAlign: TextAlign.center),
         ),
-        data: (list) => ListView(
-          shrinkWrap: true,
-          children: [
-            Padding(
-              padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
-              child: Text(
-                l10n.selectReciter,
-                style: Theme.of(context).textTheme.titleMedium,
+        data: (list) => RadioGroup<String>(
+          groupValue: selected?.code,
+          onChanged: (code) async {
+            if (code == null) return;
+            final reciter = list.firstWhere((r) => r.code == code);
+            await ref
+                .read(audioControllerProvider.notifier)
+                .selectReciter(reciter);
+            if (context.mounted) Navigator.pop(context);
+          },
+          child: ListView(
+            shrinkWrap: true,
+            children: [
+              Padding(
+                padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
+                child: Text(
+                  l10n.selectReciter,
+                  style: Theme.of(context).textTheme.titleMedium,
+                ),
               ),
-            ),
-            for (final r in list)
-              RadioListTile<String>(
-                value: r.code,
-                groupValue: selected?.code,
-                title: Text(r.name),
-                subtitle:
-                    r.nameArabic == null ? null : Text(r.nameArabic!),
-                onChanged: (_) async {
-                  await ref
-                      .read(audioControllerProvider.notifier)
-                      .selectReciter(r);
-                  if (context.mounted) Navigator.pop(context);
-                },
-              ),
-          ],
+              for (final r in list)
+                RadioListTile<String>(
+                  value: r.code,
+                  title: Text(r.name),
+                  subtitle: r.nameArabic == null ? null : Text(r.nameArabic!),
+                ),
+            ],
+          ),
         ),
       ),
     );
