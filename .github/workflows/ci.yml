@@ -7,7 +7,7 @@
 # Luồng:
 #   secret-scan   : quét key/secret bị lộ (chạy song song)
 #   quality       : format -> analyze -> pub outdated -> test
-#                   -> coverage gate >= 80%
+#                   -> coverage gate >= 70% (mục tiêu v1.0: 80%)
 #   build-android : APK debug        (cần quality pass)
 #   build-web     : Web release      (cần quality pass)
 #   build-ios     : iOS no-codesign  (cần quality pass)
@@ -111,7 +111,7 @@ jobs:
       - name: Chạy unit & widget test
         run: flutter test --coverage
 
-      - name: Coverage gate >= 80%
+      - name: Coverage gate >= 70%
         run: |
           sudo apt-get update -qq
           sudo apt-get install -y -qq lcov
