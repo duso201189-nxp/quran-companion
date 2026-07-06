@@ -1,9 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 import 'package:quran_companion/l10n/app_localizations.dart';
 
 import '../../../app/locale/locale_controller.dart';
 import '../../../app/theme/theme_controller.dart';
+
+/// Phiên bản app — đọc từ metadata build (pubspec.yaml), không
+/// hard-code, để nhãn hiển thị luôn khớp bản thật đang chạy.
+final packageInfoProvider = FutureProvider<PackageInfo>(
+  (ref) => PackageInfo.fromPlatform(),
+);
 
 /// Màn hình Hồ sơ.
 ///
@@ -17,6 +24,7 @@ class ProfileScreen extends ConsumerWidget {
     final l10n = AppLocalizations.of(context);
     final themeMode = ref.watch(themeControllerProvider);
     final locale = ref.watch(localeControllerProvider);
+    final packageInfo = ref.watch(packageInfoProvider);
 
     return Scaffold(
       appBar: AppBar(title: Text(l10n.tabProfile)),
@@ -109,7 +117,13 @@ class ProfileScreen extends ConsumerWidget {
           ListTile(
             leading: const Icon(Icons.info_outline_rounded),
             title: Text(l10n.versionLabel),
-            subtitle: const Text('0.6.0'),
+            subtitle: Text(
+              packageInfo.when(
+                data: (info) => '${info.version}+${info.buildNumber}',
+                loading: () => '…',
+                error: (_, __) => '—',
+              ),
+            ),
           ),
           const SizedBox(height: 16),
         ],
