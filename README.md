@@ -55,7 +55,8 @@ flutter test --coverage     # phải 100% pass
 ## CI/CD
 
 Mỗi push/PR tự chạy: secret scan (gitleaks) → format → analyze
-→ `pub outdated` (thông tin) → test → **coverage gate ≥ 80%**
+→ `pub outdated` (thông tin) → test → **coverage gate ≥ 70%**
+(mục tiêu 80% khi phát hành v1.0 — xem ARCHITECTURE.md mục 9)
 → build song song Android APK + Web + iOS (no-codesign).
 
 - Nhánh `main` được bảo vệ: chỉ merge khi CI xanh toàn bộ.
