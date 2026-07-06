@@ -348,6 +348,7 @@ Stream<R> _combineLatest5<A, B, C, D, E, R>(
       for (final s in subs) {
         await s.cancel();
       }
+      await controller.close();
     },
   );
   return controller.stream;
