@@ -22,10 +22,10 @@ QueryExecutor openContentConnection() {
     final file = File(p.join(dir.path, DatabaseConstants.contentFileName));
     final versionMarker = File('${file.path}.version');
 
-    final installedVersion = await versionMarker.exists()
+    final installedVersion = versionMarker.existsSync()
         ? (await versionMarker.readAsString()).trim()
         : null;
-    final needsCopy = !await file.exists() ||
+    final needsCopy = !file.existsSync() ||
         installedVersion != DatabaseConstants.expectedDataVersion;
 
     if (needsCopy) {

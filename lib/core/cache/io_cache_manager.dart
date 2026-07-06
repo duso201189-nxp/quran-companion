@@ -52,7 +52,7 @@ class IoCacheManager implements CacheManager {
       _dirSize(_reciterDir(reciterCode));
 
   Future<int> _dirSize(Directory dir) async {
-    if (!await dir.exists()) return 0;
+    if (!dir.existsSync()) return 0;
     var total = 0;
     await for (final entity in dir.list(recursive: true)) {
       if (entity is File) {
@@ -64,7 +64,7 @@ class IoCacheManager implements CacheManager {
 
   @override
   Future<void> clearAll() async {
-    if (await rootDirectory.exists()) {
+    if (rootDirectory.existsSync()) {
       await rootDirectory.delete(recursive: true);
     }
   }
@@ -72,7 +72,7 @@ class IoCacheManager implements CacheManager {
   @override
   Future<void> clearReciter(String reciterCode) async {
     final dir = _reciterDir(reciterCode);
-    if (await dir.exists()) {
+    if (dir.existsSync()) {
       await dir.delete(recursive: true);
     }
   }
@@ -84,7 +84,7 @@ class IoCacheManager implements CacheManager {
     required int ayahNumber,
   }) async {
     final file = _ayahFile(reciterCode, surahId, ayahNumber);
-    return await file.exists() ? file.uri : null;
+    return file.existsSync() ? file.uri : null;
   }
 
   @override
@@ -99,7 +99,7 @@ class IoCacheManager implements CacheManager {
     yield PrefetchProgress(done: done, total: ayahCount);
     for (var n = 1; n <= ayahCount; n++) {
       final file = _ayahFile(reciterCode, surahId, n);
-      if (!await file.exists()) {
+      if (!file.existsSync()) {
         try {
           final bytes = await _download(
             Uri.parse(
