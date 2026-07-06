@@ -225,7 +225,10 @@ class _WeeklyChartCard extends StatelessWidget {
           ),
           const SizedBox(height: 16),
           SizedBox(
-            height: 120,
+            // 120 vừa đủ tràn 2px khi có nhãn số phút + cột cao nhất
+            // (nhãn phút ~16 + spacing 4 + cột tối đa 80 + spacing 6 +
+            // nhãn thứ ~16 = 122). Chừa dư để không tràn.
+            height: 132,
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.end,
               children: [
