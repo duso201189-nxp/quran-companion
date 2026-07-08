@@ -1,0 +1,30 @@
+# EIS Project Profile — conforms to eis-core/schemas/project-profile.schema.md
+#
+# Pins this project to a specific, tagged EIS Core version. See
+# PROJECT_CONSTITUTION.md and CLAUDE.md for what this actually means for
+# day-to-day work in this repository.
+
+eis_core_version: "0.1.0"
+eis_core_path: "C:/Users/Admin/Documents/eis-core"
+
+# KNOWN GAP, stated honestly rather than implied to work: no Claude Code
+# adapter (eis-core/adapters/claude-code/) has been built yet — Phase 4b
+# was never executed across EIS Core's own build (Phases 1-8). This field
+# names the intended future adapter; it does not mean skills/prompts/
+# workflows are wired into real invokable tools yet. They are followed by
+# hand, per each artifact's own "discipline-enforced, not compiler-
+# enforced" note. Matches the same "schema-complete, instance-deferred"
+# pattern already used inside EIS Core itself (see
+# eis-core/schemas/task-claim.schema.md).
+active_adapter: claude-code
+
+project_roles:
+  constitution_owner: duso
+  architecture_owner: duso
+  data_owner: duso
+  security_owner: duso
+  release_owner: duso
+  planning_owner: duso
+
+# May only tighten a Core numeric threshold, never loosen — none overridden yet.
+threshold_overrides: {}
