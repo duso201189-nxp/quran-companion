@@ -77,6 +77,70 @@ class UserContentRepositoryImpl implements UserContentRepository {
     });
   }
 
+  // ------------------- Thư viện của tôi (xem tất cả) -------------------
+
+  @override
+  Stream<List<({int ayahId, int savedAt})>> watchAllBookmarks() {
+    final q = _db.select(_db.bookmarks)
+      ..where((t) => t.deletedAt.isNull())
+      ..orderBy([(t) => OrderingTerm.desc(t.createdAt)]);
+    return q.watch().map(
+          (rows) => [
+            for (final r in rows) (ayahId: r.ayahId, savedAt: r.createdAt),
+          ],
+        );
+  }
+
+  @override
+  Stream<List<({int ayahId, int savedAt})>> watchAllFavorites() {
+    final q = _db.select(_db.favorites)
+      ..where((t) => t.deletedAt.isNull())
+      ..orderBy([(t) => OrderingTerm.desc(t.createdAt)]);
+    return q.watch().map(
+          (rows) => [
+            for (final r in rows) (ayahId: r.ayahId, savedAt: r.createdAt),
+          ],
+        );
+  }
+
+  @override
+  Stream<List<({int ayahId, String note, int savedAt})>> watchAllNotes() {
+    final q = _db.select(_db.notes)
+      ..where((t) => t.deletedAt.isNull())
+      ..orderBy([(t) => OrderingTerm.desc(t.updatedAt)]);
+    return q.watch().map(
+          (rows) => [
+            for (final r in rows)
+              (ayahId: r.ayahId, note: r.content, savedAt: r.updatedAt),
+          ],
+        );
+  }
+
+  @override
+  Stream<List<({int ayahId, Set<String> colors, int savedAt})>>
+      watchAllHighlights() {
+    final q = _db.select(_db.highlights)
+      ..where((t) => t.deletedAt.isNull())
+      ..orderBy([(t) => OrderingTerm.desc(t.updatedAt)]);
+    return q.watch().map((rows) {
+      // rows đã sắp mới nhất trước -> Ayah xuất hiện lần đầu giữ
+      // savedAt mới nhất; thứ tự chèn = thứ tự hiển thị mới→cũ.
+      final byAyah = <int, ({Set<String> colors, int savedAt})>{};
+      for (final r in rows) {
+        final cur = byAyah[r.ayahId];
+        if (cur == null) {
+          byAyah[r.ayahId] = (colors: {r.color}, savedAt: r.updatedAt);
+        } else {
+          cur.colors.add(r.color);
+        }
+      }
+      return [
+        for (final e in byAyah.entries)
+          (ayahId: e.key, colors: e.value.colors, savedAt: e.value.savedAt),
+      ];
+    });
+  }
+
   // ------------------------- write -------------------------
 
   @override

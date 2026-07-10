@@ -48,6 +48,9 @@ class _FakeQuranRepository implements QuranRepository {
     int limit = 40,
   }) async =>
       const [];
+
+  @override
+  Future<List<AyahSearchResult>> getAyahsByIds(List<int> ids) async => const [];
 }
 
 final _testSurahs = [

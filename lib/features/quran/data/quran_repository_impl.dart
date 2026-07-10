@@ -136,13 +136,25 @@ class QuranRepositoryImpl implements QuranRepository {
       ],
     ).get();
     final ids = [for (final r in idRows) r.read<int>('ayah_id')];
+    return _headersForIds(ids);
+  }
+
+  @override
+  Future<List<AyahSearchResult>> getAyahsByIds(List<int> ids) =>
+      _headersForIds(ids.toSet().toList());
+
+  /// Nạp Ayah + tên Surah + bản dịch hiển thị cho danh sách id,
+  /// trả về theo thứ tự id tăng dần. Dùng chung cho tìm kiếm và
+  /// Thư viện của tôi.
+  Future<List<AyahSearchResult>> _headersForIds(List<int> ids) async {
     if (ids.isEmpty) return const [];
 
-    // 2) Nạp Ayah + tên Surah + bản dịch hiển thị cho các id đó.
     final ayahRows = await (_db.select(_db.ayahs)
           ..where((t) => t.id.isIn(ids))
           ..orderBy([(t) => OrderingTerm.asc(t.id)]))
         .get();
+    if (ayahRows.isEmpty) return const [];
+
     final surahIds = {for (final a in ayahRows) a.surahId};
     final surahRows = await (_db.select(_db.surahs)
           ..where((t) => t.id.isIn(surahIds.toList())))

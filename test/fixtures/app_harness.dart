@@ -50,6 +50,9 @@ class FakeQuranRepo implements QuranRepository {
     int limit = 40,
   }) async =>
       const [];
+
+  @override
+  Future<List<AyahSearchResult>> getAyahsByIds(List<int> ids) async => const [];
 }
 
 /// Tạo ProviderContainer với SharedPreferences giả cho unit test.
