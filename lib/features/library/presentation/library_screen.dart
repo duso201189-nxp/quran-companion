@@ -83,7 +83,8 @@ class LibraryScreen extends ConsumerWidget {
           ayahIndex: item.ayah.ayahNumber - 1,
         );
     if (context.mounted) {
-      unawaited(context.push(AppRoutes.surahReading(item.ayah.surahId)));
+      // Route đọc full-screen (ngoài vỏ tab) — tránh xung đột shell.
+      unawaited(context.push(AppRoutes.read(item.ayah.surahId)));
     }
   }
 }

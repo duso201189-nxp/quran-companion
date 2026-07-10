@@ -120,4 +120,53 @@ void main() {
     await tester.tap(find.byIcon(Icons.close));
     await tester.pump(const Duration(milliseconds: 500));
   });
+
+  testWidgets('Thư viện của tôi: bookmark một Ayah rồi mở lại từ Hồ sơ',
+      (tester) async {
+    await app.main();
+    await tester.pump();
+
+    // Vào tab Qur'an, mở Al-Fatihah.
+    final quranTab = find.byIcon(Icons.menu_book_outlined);
+    await pumpUntilFound(tester, quranTab);
+    await tester.tap(quranTab);
+    await tester.pump();
+    await pumpUntilFound(tester, find.text('Al-Fatihah'));
+    await tester.tap(find.text('Al-Fatihah'));
+    await tester.pump();
+
+    // Chờ trang đọc, đảm bảo có ít nhất một Ayah được bookmark
+    // (bấm nút bookmark nếu Ayah đang chưa lưu — bền với trạng thái cũ).
+    await pumpUntilFound(
+      tester,
+      find.textContaining(RegExp('[ء-ي]')),
+      timeout: const Duration(seconds: 30),
+    );
+    final unbookmarked = find.byIcon(Icons.bookmark_border_rounded);
+    if (unbookmarked.evaluate().isNotEmpty) {
+      await tester.tap(unbookmarked.first);
+      await tester.pump(const Duration(seconds: 1));
+    }
+
+    // Trang đọc vẫn giữ thanh điều hướng (là route con của tab Qur'an)
+    // -> sang tab Hồ sơ trực tiếp, mở Thư viện của tôi.
+    final profileTab = find.byIcon(Icons.person_outlined);
+    await pumpUntilFound(tester, profileTab);
+    await tester.tap(profileTab);
+    await tester.pump();
+    await pumpUntilFound(tester, find.text('Thư viện của tôi'));
+    await tester.tap(find.text('Thư viện của tôi'));
+    await tester.pumpAndSettle();
+
+    // Tab Đã lưu (mặc định) chứa một Ayah của Al-Fatihah.
+    await pumpUntilFound(tester, find.textContaining('Al-Fatihah · 1:'));
+
+    // Chạm -> nhảy tới trang đọc, văn bản Ả Rập hiển thị.
+    await tester.tap(find.textContaining('Al-Fatihah · 1:').first);
+    await pumpUntilFound(
+      tester,
+      find.textContaining(RegExp('[ء-ي]')),
+      timeout: const Duration(seconds: 30),
+    );
+  });
 }
