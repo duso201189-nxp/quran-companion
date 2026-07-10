@@ -275,4 +275,71 @@ void main() {
     };
     expect(ids.length, 4);
   });
+
+  group('Thư viện của tôi: watchAll*', () {
+    test('bookmarks mới nhất trước, bỏ bản đã xóa', () async {
+      fakeNow = 1000;
+      await repo.toggleBookmark(10);
+      fakeNow = 2000;
+      await repo.toggleBookmark(20);
+      fakeNow = 3000;
+      await repo.toggleBookmark(30);
+      // Xóa (soft-delete) ayah 20.
+      fakeNow = 4000;
+      await repo.toggleBookmark(20);
+
+      final rows = await repo.watchAllBookmarks().first;
+      expect(rows.map((r) => r.ayahId), [30, 10]); // 20 đã xóa
+      expect(rows.first.savedAt, 3000);
+    });
+
+    test('favorites mới nhất trước', () async {
+      fakeNow = 1000;
+      await repo.toggleFavorite(5);
+      fakeNow = 2000;
+      await repo.toggleFavorite(9);
+
+      final rows = await repo.watchAllFavorites().first;
+      expect(rows.map((r) => r.ayahId), [9, 5]);
+    });
+
+    test('notes kèm nội dung, bỏ note rỗng (đã xóa)', () async {
+      fakeNow = 1000;
+      await repo.saveNote(7, 'ghi chú A');
+      fakeNow = 2000;
+      await repo.saveNote(8, 'ghi chú B');
+      fakeNow = 3000;
+      await repo.saveNote(7, ''); // xóa note của ayah 7
+
+      final rows = await repo.watchAllNotes().first;
+      expect(rows.map((r) => r.ayahId), [8]);
+      expect(rows.single.note, 'ghi chú B');
+    });
+
+    test('highlights gộp nhiều màu theo từng Ayah', () async {
+      fakeNow = 1000;
+      await repo.toggleHighlight(3, 'green');
+      fakeNow = 1500;
+      await repo.toggleHighlight(3, 'amber');
+      fakeNow = 2000;
+      await repo.toggleHighlight(4, 'blue');
+
+      final rows = await repo.watchAllHighlights().first;
+      // Ayah 4 cập nhật gần nhất -> đứng trước.
+      expect(rows.map((r) => r.ayahId), [4, 3]);
+      final ayah3 = rows.firstWhere((r) => r.ayahId == 3);
+      expect(ayah3.colors, {'green', 'amber'});
+    });
+
+    test('realtime: thêm bookmark -> stream phát lại', () async {
+      final emissions = <int>[];
+      final sub =
+          repo.watchAllBookmarks().listen((rows) => emissions.add(rows.length));
+      await Future<void>.delayed(Duration.zero);
+      await repo.toggleBookmark(99);
+      await Future<void>.delayed(Duration.zero);
+      await sub.cancel();
+      expect(emissions.last, greaterThan(emissions.first));
+    });
+  });
 }
