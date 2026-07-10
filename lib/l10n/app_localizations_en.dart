@@ -345,4 +345,31 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get searchNoAyahResults => 'No matching ayahs found.';
+
+  @override
+  String get libraryTitle => 'My Library';
+
+  @override
+  String get libraryBookmarks => 'Bookmarks';
+
+  @override
+  String get libraryFavorites => 'Favorites';
+
+  @override
+  String get libraryNotes => 'Notes';
+
+  @override
+  String get libraryHighlights => 'Highlights';
+
+  @override
+  String get libraryEmptyBookmarks => 'No bookmarked ayahs yet.';
+
+  @override
+  String get libraryEmptyFavorites => 'No favorite ayahs yet.';
+
+  @override
+  String get libraryEmptyNotes => 'No notes yet.';
+
+  @override
+  String get libraryEmptyHighlights => 'No highlighted ayahs yet.';
 }

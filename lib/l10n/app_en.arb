@@ -141,5 +141,14 @@
   "copyArabic": "Copy Arabic",
   "copyTranslation": "Copy translation",
   "searchResultsAyahs": "Results in content",
-  "searchNoAyahResults": "No matching ayahs found."
+  "searchNoAyahResults": "No matching ayahs found.",
+  "libraryTitle": "My Library",
+  "libraryBookmarks": "Bookmarks",
+  "libraryFavorites": "Favorites",
+  "libraryNotes": "Notes",
+  "libraryHighlights": "Highlights",
+  "libraryEmptyBookmarks": "No bookmarked ayahs yet.",
+  "libraryEmptyFavorites": "No favorite ayahs yet.",
+  "libraryEmptyNotes": "No notes yet.",
+  "libraryEmptyHighlights": "No highlighted ayahs yet."
 }
