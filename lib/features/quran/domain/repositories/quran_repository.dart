@@ -28,4 +28,9 @@ abstract interface class QuranRepository {
   /// Tìm toàn văn trong nội dung (Ả Rập / phiên âm / Việt / Anh)
   /// qua chỉ mục FTS5 đóng gói sẵn. Kết quả theo thứ tự Mushaf.
   Future<List<AyahSearchResult>> searchAyahs(String query, {int limit});
+
+  /// Header (tên Surah + văn bản + bản dịch) cho danh sách id Ayah
+  /// bất kỳ — dùng cho Thư viện của tôi. Bỏ qua id không tồn tại;
+  /// trả về theo thứ tự id tăng dần (Mushaf).
+  Future<List<AyahSearchResult>> getAyahsByIds(List<int> ids);
 }
