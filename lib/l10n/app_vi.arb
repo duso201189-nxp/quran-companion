@@ -141,5 +141,14 @@
   "copyArabic": "Sao chép chữ Ả Rập",
   "copyTranslation": "Sao chép bản dịch",
   "searchResultsAyahs": "Kết quả trong nội dung",
-  "searchNoAyahResults": "Không tìm thấy Ayah nào phù hợp."
+  "searchNoAyahResults": "Không tìm thấy Ayah nào phù hợp.",
+  "libraryTitle": "Thư viện của tôi",
+  "libraryBookmarks": "Đã lưu",
+  "libraryFavorites": "Yêu thích",
+  "libraryNotes": "Ghi chú",
+  "libraryHighlights": "Tô màu",
+  "libraryEmptyBookmarks": "Chưa có Ayah nào được lưu.",
+  "libraryEmptyFavorites": "Chưa có Ayah yêu thích nào.",
+  "libraryEmptyNotes": "Chưa có ghi chú nào.",
+  "libraryEmptyHighlights": "Chưa tô màu Ayah nào."
 }

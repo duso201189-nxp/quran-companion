@@ -344,4 +344,31 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get searchNoAyahResults => 'Không tìm thấy Ayah nào phù hợp.';
+
+  @override
+  String get libraryTitle => 'Thư viện của tôi';
+
+  @override
+  String get libraryBookmarks => 'Đã lưu';
+
+  @override
+  String get libraryFavorites => 'Yêu thích';
+
+  @override
+  String get libraryNotes => 'Ghi chú';
+
+  @override
+  String get libraryHighlights => 'Tô màu';
+
+  @override
+  String get libraryEmptyBookmarks => 'Chưa có Ayah nào được lưu.';
+
+  @override
+  String get libraryEmptyFavorites => 'Chưa có Ayah yêu thích nào.';
+
+  @override
+  String get libraryEmptyNotes => 'Chưa có ghi chú nào.';
+
+  @override
+  String get libraryEmptyHighlights => 'Chưa tô màu Ayah nào.';
 }

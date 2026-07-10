@@ -141,5 +141,14 @@
   "copyArabic": "نسخ النص العربي",
   "copyTranslation": "نسخ الترجمة",
   "searchResultsAyahs": "نتائج في المحتوى",
-  "searchNoAyahResults": "لا توجد آيات مطابقة."
+  "searchNoAyahResults": "لا توجد آيات مطابقة.",
+  "libraryTitle": "مكتبتي",
+  "libraryBookmarks": "المحفوظة",
+  "libraryFavorites": "المفضلة",
+  "libraryNotes": "الملاحظات",
+  "libraryHighlights": "التظليل",
+  "libraryEmptyBookmarks": "لا آيات محفوظة بعد.",
+  "libraryEmptyFavorites": "لا آيات مفضلة بعد.",
+  "libraryEmptyNotes": "لا ملاحظات بعد.",
+  "libraryEmptyHighlights": "لا آيات مظللة بعد."
 }
