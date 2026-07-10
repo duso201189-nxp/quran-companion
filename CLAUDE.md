@@ -53,6 +53,8 @@ keystore (see `RELEASE_CHECKLIST.md`'s keystore-security section).
 `docs/adr/` — Decision Records for this project (first one:
 adopting EIS itself). `docs/reports/` — point-in-time deep-dive reports,
 archived once superseded (migrated here: `SPRINT2_REPORT.md`,
-`TRANSLITERATION_REPORT.md`). `docs/verification/`, `docs/knowledge/` —
-not created yet; created the first time something real needs to go
-there, not pre-emptively.
+`TRANSLITERATION_REPORT.md`). `docs/verification/` — Verification
+Records; created at Phase 10 (EIS Core's own build) when this project's
+Constitution was first checked for real. `docs/knowledge/` — still not
+created; created the first time something real needs to go there, not
+pre-emptively.
