@@ -228,6 +228,13 @@ void main() {
   });
 
   _testReading('ayah sajdah có biểu tượng riêng', (tester) async {
+    // Bố cục thẻ cao hơn (Phase 12 polish) -> viewport cao để cả Ayah
+    // 2 (có sajdah) nằm trong khung nhìn, khỏi phải cuộn.
+    tester.view.physicalSize = const Size(800, 1600);
+    tester.view.devicePixelRatio = 1.0;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+
     await tester.pumpWidget(await _app(_FakeRepo()));
     await tester.pumpAndSettle();
 
