@@ -13,6 +13,7 @@ import '../../../../app/router.dart';
 import '../../../../app/theme/app_theme.dart';
 import '../../../stats/data/stats_store.dart';
 import '../../data/user_content_providers.dart';
+import '../../domain/basmalah.dart';
 import '../../domain/entities/ayah_annotation.dart';
 import '../../domain/entities/ayah_content.dart';
 import '../../domain/entities/surah.dart';
@@ -367,9 +368,15 @@ class _AyahListView extends ConsumerWidget {
           itemCount: ayahs.length + 1,
           itemBuilder: (context, index) {
             if (index == 0) {
+              // Basmalah trang trí = 4 từ đầu của Ayah 1 (lấy TỪ DỮ
+              // LIỆU), chỉ với Surah có Basmalah dẫn đầu (≠ 1, 9).
+              final basmalah = surahHasLeadingBasmalah(surahId) &&
+                      ayahs.isNotEmpty
+                  ? splitLeadingBasmalah(ayahs.first.ayah.textUthmani).basmalah
+                  : null;
               return focus
                   ? const SizedBox.shrink()
-                  : _SurahHeader(surah: surah);
+                  : _SurahHeader(surah: surah, basmalah: basmalah);
             }
             return AyahCard(
               content: ayahs[index - 1],
@@ -479,21 +486,16 @@ class _MushafViewState extends State<_MushafView> {
 
 // ==================== THÀNH PHẦN CHUNG ====================
 
-/// Basmalah trang trí — CHỈ hình ảnh, KHÔNG phải một Ayah. Hằng số
-/// cố định (không lấy từ database): không đánh số, không chọn /
-/// bookmark / yêu thích / highlight / chia sẻ. Chuỗi Uthmani chuẩn.
-const String _kBasmalah = 'بِسْمِ ٱللَّهِ ٱلرَّحْمَٰنِ ٱلرَّحِيمِ';
-
-/// Có hiển thị Basmalah trang trí ở đầu Surah không?
-/// - Surah 1 (Al-Fatihah): Basmalah CHÍNH là Ayah 1 -> không lặp lại.
-/// - Surah 9 (At-Tawbah): theo Mushaf, không có Basmalah.
-/// - Mọi Surah khác: có.
-bool _showDecorativeBasmalah(int surahId) => surahId != 1 && surahId != 9;
-
 class _SurahHeader extends StatelessWidget {
-  const _SurahHeader({required this.surah});
+  const _SurahHeader({required this.surah, this.basmalah});
 
   final Surah surah;
+
+  /// Basmalah trang trí (lấy TỪ DỮ LIỆU Ayah 1) — hiển thị bên dưới
+  /// thẻ tên Surah, thuần hình ảnh: không đánh số, không chọn /
+  /// bookmark / yêu thích / highlight / chia sẻ. null = không hiển
+  /// thị (Surah 1 & 9).
+  final String? basmalah;
 
   @override
   Widget build(BuildContext context) {
@@ -565,11 +567,12 @@ class _SurahHeader extends StatelessWidget {
         ),
 
         // Basmalah trang trí (thuần hình ảnh) — đúng luật Mushaf.
-        if (_showDecorativeBasmalah(surah.id))
+        // Lấy từ dữ liệu Ayah 1 (tách sẵn); null với Surah 1 & 9.
+        if (basmalah != null)
           Padding(
             padding: const EdgeInsets.only(top: 22, bottom: 4),
             child: Text(
-              _kBasmalah,
+              basmalah!,
               textDirection: TextDirection.rtl,
               textAlign: TextAlign.center,
               style: quranTextStyle(
@@ -681,6 +684,14 @@ class AyahCard extends ConsumerWidget {
         ),
       );
     }
+
+    // Chế độ Danh sách: Ayah 1 của Surah có Basmalah dẫn đầu bỏ phần
+    // Basmalah (đã đưa lên header trang trí) -> chỉ một Basmalah.
+    final displayArabic = ayahDisplayText(
+      surahId: content.ayah.surahId,
+      ayahNumber: content.ayah.ayahNumber,
+      textUthmani: content.ayah.textUthmani,
+    );
 
     final translit = content.texts['translit_latin'];
     final vi = content.texts['vi_main'];
@@ -855,7 +866,7 @@ class AyahCard extends ConsumerWidget {
                   Padding(
                     padding: const EdgeInsets.symmetric(vertical: 6),
                     child: Text(
-                      content.ayah.textUthmani,
+                      displayArabic,
                       textDirection: TextDirection.rtl,
                       textAlign: TextAlign.center,
                       style: arabicStyle,
@@ -951,7 +962,12 @@ class AyahCard extends ConsumerWidget {
         surahId: content.ayah.surahId,
         ayahId: content.ayah.id,
         ayahNumber: content.ayah.ayahNumber,
-        arabicText: content.ayah.textUthmani,
+        // Nhất quán với phần hiển thị: Ayah 1 không kèm Basmalah.
+        arabicText: ayahDisplayText(
+          surahId: content.ayah.surahId,
+          ayahNumber: content.ayah.ayahNumber,
+          textUthmani: content.ayah.textUthmani,
+        ),
         translationText: content.texts['vi_main'] ?? content.texts['en_sahih'],
       ),
     );
@@ -965,7 +981,14 @@ class AyahCard extends ConsumerWidget {
     bool forShare = false,
   }) async {
     final messenger = ScaffoldMessenger.of(context);
-    final buf = StringBuffer(content.ayah.textUthmani);
+    // Nhất quán với phần hiển thị: Ayah 1 không kèm Basmalah.
+    final buf = StringBuffer(
+      ayahDisplayText(
+        surahId: content.ayah.surahId,
+        ayahNumber: content.ayah.ayahNumber,
+        textUthmani: content.ayah.textUthmani,
+      ),
+    );
     for (final text in [
       content.texts['translit_latin'],
       content.texts['vi_main'],

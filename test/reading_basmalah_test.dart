@@ -21,13 +21,26 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import 'fixtures/fake_audio_player.dart';
 
-/// Repo giả cho một Surah id tùy chọn, đúng 1 Ayah có văn bản KHÔNG
-/// chứa "بِسْمِ" -> nhờ vậy phát hiện được Basmalah TRANG TRÍ (nếu có)
-/// bằng cách tìm chuỗi "بِسْمِ".
+/// Repo giả cho một Surah id, mô phỏng ĐÚNG cách dữ liệu Uthmani lưu
+/// Basmalah: nhúng vào đầu Ayah 1 (trừ Surah 9); Surah 1 = Basmalah
+/// đứng riêng làm Ayah 1.
 class _Repo implements QuranRepository {
   _Repo(this.surahId);
 
   final int surahId;
+
+  static const _basmalah = 'بِسْمِ ٱللَّهِ ٱلرَّحْمَٰنِ ٱلرَّحِيمِ';
+
+  String get _ayah1Text {
+    switch (surahId) {
+      case 1:
+        return _basmalah; // Basmalah CHÍNH là Ayah 1
+      case 9:
+        return 'بَرَآءَةٌ مِّنَ ٱللَّهِ'; // At-Tawbah: không Basmalah
+      default:
+        return '$_basmalah الٓمٓ'; // Basmalah nhúng đầu Ayah 1
+    }
+  }
 
   Surah get _surah => Surah(
         id: surahId,
@@ -50,7 +63,7 @@ class _Repo implements QuranRepository {
             id: 1,
             surahId: surahId,
             ayahNumber: 1,
-            textUthmani: 'نص عربي',
+            textUthmani: _ayah1Text,
             juz: 1,
           ),
           texts: const {'vi_main': 'việt'},
@@ -100,6 +113,13 @@ Future<Widget> _app(int surahId) async {
 
 void _test(String description, Future<void> Function(WidgetTester) body) {
   testWidgets(description, (tester) async {
+    // Viewport cao để cả header (Basmalah) và thẻ Ayah 1 nằm trong
+    // khung nhìn, không phải cuộn.
+    tester.view.physicalSize = const Size(800, 1600);
+    tester.view.devicePixelRatio = 1.0;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+
     await body(tester);
     await tester.pumpWidget(const SizedBox.shrink());
     await tester.pump(const Duration(seconds: 1));
@@ -116,10 +136,15 @@ void main() {
 
   final basmalah = find.textContaining('بِسْمِ');
 
-  _test('Surah thường (2): hiển thị Basmalah trang trí', (tester) async {
+  _test('Surah thường (2): ĐÚNG MỘT Basmalah (header), Ayah 1 = الٓمٓ',
+      (tester) async {
     await tester.pumpWidget(await _app(2));
     await tester.pumpAndSettle();
+
+    // Chỉ một Basmalah trên màn hình (header trang trí), KHÔNG lặp.
     expect(basmalah, findsOneWidget);
+    // Thẻ Ayah 1 hiển thị phần còn lại (không kèm Basmalah).
+    expect(find.textContaining('الٓمٓ'), findsOneWidget);
   });
 
   _test('Surah 9 (At-Tawbah): KHÔNG có Basmalah', (tester) async {
@@ -128,11 +153,12 @@ void main() {
     expect(basmalah, findsNothing);
   });
 
-  _test('Surah 1 (Al-Fatihah): KHÔNG lặp Basmalah trang trí', (tester) async {
+  _test('Surah 1 (Al-Fatihah): ĐÚNG MỘT Basmalah (là Ayah 1, không header)',
+      (tester) async {
     await tester.pumpWidget(await _app(1));
     await tester.pumpAndSettle();
-    // Ayah văn bản là 'نص عربي' (không chứa بِسْمِ) nên nếu thấy بِسْمِ
-    // tức là bản trang trí bị thêm nhầm.
-    expect(basmalah, findsNothing);
+    // Basmalah là Ayah 1 -> hiện đúng một lần trong thẻ Ayah, không
+    // có bản trang trí trùng lặp ở header.
+    expect(basmalah, findsOneWidget);
   });
 }
