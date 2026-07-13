@@ -62,7 +62,16 @@ class HomeScreen extends ConsumerWidget {
     };
 
     return Scaffold(
-      appBar: AppBar(title: Text(l10n.tabHome)),
+      appBar: AppBar(
+        title: Text(l10n.tabHome),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.search),
+            tooltip: l10n.searchLabel,
+            onPressed: () => context.push(AppRoutes.search),
+          ),
+        ],
+      ),
       body: SafeArea(
         child: LayoutBuilder(
           builder: (context, constraints) {

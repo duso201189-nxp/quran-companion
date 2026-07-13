@@ -5,6 +5,62 @@ Phiên bản theo [Semantic Versioning](https://semver.org/lang/vi/).
 
 ## [Unreleased]
 
+### Added — Sprint 7.1: Nền tảng UI Tìm kiếm (Bước 7 — xem "Chưa làm" bên dưới, chưa xong)
+- Màn hình Tìm kiếm (`/search`) — route top-level push full-screen,
+  cùng mẫu với "Thư viện của tôi" (không phải tab thứ 6). Điểm vào từ
+  nút tìm kiếm trên Trang chủ và tab Qur'an.
+- Ô nhập từ khoá thay tiêu đề AppBar (gợi ý placeholder, nút xoá khi
+  có chữ); chuyển đổi Tìm kiếm / Hỏi AI ("Hỏi AI" hiển thị khoá sẵn —
+  Sắp ra mắt); Scope Chips (Tất cả / Qur'an / Ghi chú của tôi) — Mode
+  và Scope là hai trục độc lập hoàn toàn.
+- Bốn trạng thái thân màn hình, mỗi trạng thái là một component dùng
+  chung cho MỌI domain tương lai (Qur'an hôm nay; Hadith/Ghi chú/Trả
+  lời AI sau này — xem ADR `DR-2026-0002`): `SearchEmptyState` (tiêu
+  đề + gợi ý cách gõ + 2 khu vực placeholder cho Recent/Suggestions),
+  `SearchLoadingSkeleton`, `SearchErrorState`, `ResultCard` +
+  `SearchResultSection` (factory `.fromAyah`/`.ayahs` dùng lại đúng
+  entity domain có sẵn, không bịa shape mới).
+- Chạm một kết quả lưu vị trí đọc (dùng lại `ReadingPositionStore` có
+  sẵn, không tạo cơ chế lưu trữ mới) và mở đúng Ayah trên trang đọc
+  qua route top-level `/read/:id` — hàm dùng chung mới
+  `openAyahInReadingScreen` (`reading_navigation.dart`), theo đúng
+  cơ chế `LibraryScreen` đã dùng (không phải route lồng trong shell
+  `/quran/surah/:id`, vốn gây xung đột Navigator khi push từ ngoài
+  vỏ tab — phát hiện và sửa trong sprint này).
+- Bộ chuyển trạng thái dành cho dev (biểu tượng bọ trên AppBar) để
+  xem trước cả 4 trạng thái không cần gõ hay có dữ liệu thật — CHỈ
+  tồn tại ở debug build (`kDebugMode`), xác nhận bằng build
+  `--release` thật + kiểm tra bundle không còn dấu vết.
+- ADR `DR-2026-0002` (9 quyết định kiến trúc cho Search, kèm đánh
+  đổi/phương án đã loại/mở rộng tương lai) viết trước khi code.
+
+### Đã kiểm tra toàn diện (không đổi giao diện hiện có)
+- Accessibility: header semantics cho tiêu đề khu vực, vùng chạm
+  ≥ 48dp, RTL (mirror layout + hướng chữ đúng theo nội dung), cỡ chữ
+  200% không tràn, thứ tự đọc khớp thứ tự hiển thị.
+- Dark mode: rà soát không còn màu hard-code trong tính năng Search;
+  đo tương phản chữ tô đậm (WCAG) ở cả 2 theme — đều vượt ngưỡng.
+- Responsive: 320–1300px (điện thoại hẹp đến desktop), không tràn
+  layout kể cả khi kết hợp cỡ chữ 200%.
+
+### Tests
+- +87 test cho tính năng Search (widget + unit), gộp bộ helper/
+  fixture dùng chung (`test/fixtures/search_test_harness.dart`) —
+  tổng dự án 244 test, tất cả qua `dart format` /
+  `flutter analyze --fatal-infos` / `flutter test`.
+
+### Chưa làm (Sprint 7.2 trở đi — Bước 7 CHƯA hoàn tất)
+- Search engine thật: chưa nối `QuranRepository.searchAyahs` (FTS5
+  `search_index`) vào UI đã xây — kết quả hiện chỉ xem được qua bộ
+  chuyển trạng thái dành cho dev với dữ liệu mẫu tĩnh.
+- Recent Searches, Suggestions, Filters, Ask AI thật — khung UI đã có
+  chỗ (2 khu vực placeholder trong Empty State, nút Mode "Hỏi AI" đã
+  khoá) nhưng chưa nối dữ liệu/logic.
+- Danh sách `source_code` hardcode trong
+  `quran_repository_impl.searchAyahs` chưa sửa thành đọc động từ
+  `translation_sources` (nợ kỹ thuật đã ghi nhận từ lúc review kiến
+  trúc, xem TODO.md).
+
 ## [0.6.0] — Sprint 6: Chú thích người dùng + User Database
 
 ### Added
