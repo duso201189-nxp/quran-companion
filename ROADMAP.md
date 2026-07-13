@@ -18,7 +18,7 @@
 | 4 | Trang đọc + Focus/Mushaf/gesture/vị trí | ✅ v0.4.5 |
 | 5 | Audio (Qari, tốc độ, lặp, cache offline) | ✅ v0.5.0 — chờ xác nhận thiết bị |
 | 6 | Bookmark + Highlight + Note + Trạng thái + User DB | 🔨 v0.6.0 — Sprint này |
-| 7 | Tìm kiếm toàn văn (FTS5 đã build sẵn) | Tiếp theo |
+| 7 | Tìm kiếm toàn văn (FTS5 đã build sẵn) | 🔨 Sprint 7.1 xong (nền tảng UI: màn hình, 4 trạng thái, điều hướng) — engine tìm kiếm thật (nối FTS5) là Sprint 7.2 |
 | 8 | Dashboard: Journey, Daily Goal, Streak, Khatm %, Revision Queue, Collections | — |
 | 9 | Flashcard SM-2 + Quiz + Thống kê + Nhật ký | v1.5 |
 | 10 | Authentication (Supabase) | v1.5 |

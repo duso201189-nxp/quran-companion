@@ -345,6 +345,37 @@ class AppLocalizationsAr extends AppLocalizations {
   String get searchNoAyahResults => 'لا توجد آيات مطابقة.';
 
   @override
+  String get searchLabel => 'بحث';
+
+  @override
+  String get searchAskLabel => 'اسأل الذكاء الاصطناعي';
+
+  @override
+  String get searchQueryHint => 'ابحث في القرآن...';
+
+  @override
+  String get searchClearTooltip => 'مسح';
+
+  @override
+  String get searchScopeMyNotes => 'ملاحظاتي';
+
+  @override
+  String get searchEmptyTitle => 'ابحث عمّا تريده في القرآن';
+
+  @override
+  String get searchEmptySubtitle =>
+      'اكتب اسم سورة، رقم آية (مثل 2:255)، أو كلمة مفتاحية.';
+
+  @override
+  String get searchEmptyRecentSectionTitle => 'الأخيرة';
+
+  @override
+  String get searchEmptySuggestedSectionTitle => 'مقترح';
+
+  @override
+  String get searchLoadingLabel => 'جارٍ البحث...';
+
+  @override
   String get libraryTitle => 'مكتبتي';
 
   @override

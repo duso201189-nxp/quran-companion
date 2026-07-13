@@ -6,6 +6,7 @@ import '../features/library/presentation/library_screen.dart';
 import '../features/profile/presentation/profile_screen.dart';
 import '../features/quran/presentation/reading/reading_screen.dart';
 import '../features/quran/presentation/surah_list_screen.dart';
+import '../features/search/presentation/search_screen.dart';
 import '../features/stats/presentation/stats_screen.dart';
 import '../features/study/presentation/study_screen.dart';
 import '../shared/widgets/app_scaffold.dart';
@@ -20,6 +21,10 @@ abstract final class AppRoutes {
 
   /// Thư viện của tôi — màn hình push full-screen (không phải tab).
   static const String library = '/library';
+
+  /// Tìm kiếm — màn hình push full-screen (không phải tab), giống
+  /// [library]. Xem DR-2026-0002 mục 1.
+  static const String search = '/search';
 
   /// Trang đọc trong tab Qur'an (giữ thanh điều hướng): /quran/surah/2
   static String surahReading(int surahId) => '/quran/surah/$surahId';
@@ -104,6 +109,11 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: AppRoutes.library,
         builder: (context, state) => const LibraryScreen(),
+      ),
+
+      GoRoute(
+        path: AppRoutes.search,
+        builder: (context, state) => const SearchScreen(),
       ),
 
       // Trang đọc full-screen (nhảy từ Thư viện của tôi / ngoài shell).

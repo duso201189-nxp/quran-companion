@@ -742,6 +742,66 @@ abstract class AppLocalizations {
   /// **'Không tìm thấy Ayah nào phù hợp.'**
   String get searchNoAyahResults;
 
+  /// No description provided for @searchLabel.
+  ///
+  /// In vi, this message translates to:
+  /// **'Tìm kiếm'**
+  String get searchLabel;
+
+  /// No description provided for @searchAskLabel.
+  ///
+  /// In vi, this message translates to:
+  /// **'Hỏi AI'**
+  String get searchAskLabel;
+
+  /// No description provided for @searchQueryHint.
+  ///
+  /// In vi, this message translates to:
+  /// **'Tìm kiếm trong Qur\'an...'**
+  String get searchQueryHint;
+
+  /// No description provided for @searchClearTooltip.
+  ///
+  /// In vi, this message translates to:
+  /// **'Xoá'**
+  String get searchClearTooltip;
+
+  /// No description provided for @searchScopeMyNotes.
+  ///
+  /// In vi, this message translates to:
+  /// **'Ghi chú của tôi'**
+  String get searchScopeMyNotes;
+
+  /// No description provided for @searchEmptyTitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Tìm điều bạn cần trong Qur\'an'**
+  String get searchEmptyTitle;
+
+  /// No description provided for @searchEmptySubtitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Nhập tên Surah, số Ayah (ví dụ 2:255), hoặc một từ khoá.'**
+  String get searchEmptySubtitle;
+
+  /// No description provided for @searchEmptyRecentSectionTitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Gần đây'**
+  String get searchEmptyRecentSectionTitle;
+
+  /// No description provided for @searchEmptySuggestedSectionTitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Gợi ý'**
+  String get searchEmptySuggestedSectionTitle;
+
+  /// No description provided for @searchLoadingLabel.
+  ///
+  /// In vi, this message translates to:
+  /// **'Đang tìm kiếm...'**
+  String get searchLoadingLabel;
+
   /// No description provided for @libraryTitle.
   ///
   /// In vi, this message translates to:

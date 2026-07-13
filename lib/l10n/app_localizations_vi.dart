@@ -346,6 +346,37 @@ class AppLocalizationsVi extends AppLocalizations {
   String get searchNoAyahResults => 'Không tìm thấy Ayah nào phù hợp.';
 
   @override
+  String get searchLabel => 'Tìm kiếm';
+
+  @override
+  String get searchAskLabel => 'Hỏi AI';
+
+  @override
+  String get searchQueryHint => 'Tìm kiếm trong Qur\'an...';
+
+  @override
+  String get searchClearTooltip => 'Xoá';
+
+  @override
+  String get searchScopeMyNotes => 'Ghi chú của tôi';
+
+  @override
+  String get searchEmptyTitle => 'Tìm điều bạn cần trong Qur\'an';
+
+  @override
+  String get searchEmptySubtitle =>
+      'Nhập tên Surah, số Ayah (ví dụ 2:255), hoặc một từ khoá.';
+
+  @override
+  String get searchEmptyRecentSectionTitle => 'Gần đây';
+
+  @override
+  String get searchEmptySuggestedSectionTitle => 'Gợi ý';
+
+  @override
+  String get searchLoadingLabel => 'Đang tìm kiếm...';
+
+  @override
   String get libraryTitle => 'Thư viện của tôi';
 
   @override

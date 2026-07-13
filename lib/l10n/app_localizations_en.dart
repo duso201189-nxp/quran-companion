@@ -347,6 +347,37 @@ class AppLocalizationsEn extends AppLocalizations {
   String get searchNoAyahResults => 'No matching ayahs found.';
 
   @override
+  String get searchLabel => 'Search';
+
+  @override
+  String get searchAskLabel => 'Ask AI';
+
+  @override
+  String get searchQueryHint => 'Search the Qur\'an...';
+
+  @override
+  String get searchClearTooltip => 'Clear';
+
+  @override
+  String get searchScopeMyNotes => 'My notes';
+
+  @override
+  String get searchEmptyTitle => 'Find what you\'re looking for';
+
+  @override
+  String get searchEmptySubtitle =>
+      'Type a Surah name, an ayah reference (e.g. 2:255), or a keyword.';
+
+  @override
+  String get searchEmptyRecentSectionTitle => 'Recent';
+
+  @override
+  String get searchEmptySuggestedSectionTitle => 'Suggested';
+
+  @override
+  String get searchLoadingLabel => 'Searching...';
+
+  @override
   String get libraryTitle => 'My Library';
 
   @override
