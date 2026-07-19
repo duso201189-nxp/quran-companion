@@ -160,5 +160,60 @@
   "libraryEmptyBookmarks": "لا آيات محفوظة بعد.",
   "libraryEmptyFavorites": "لا آيات مفضلة بعد.",
   "libraryEmptyNotes": "لا ملاحظات بعد.",
-  "libraryEmptyHighlights": "لا آيات مظللة بعد."
+  "libraryEmptyHighlights": "لا آيات مظللة بعد.",
+  "statsSessionsTitle": "جلسات القراءة",
+  "statsSessionsEmpty": "لا توجد جلسات قراءة مسجلة بعد.",
+  "statsTodayTitle": "اليوم",
+  "statsTodayMinutes": "{count} دقيقة",
+  "@statsTodayMinutes": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "statsTodaySessionsCount": "{count} جلسة",
+  "@statsTodaySessionsCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "khatmSectionTitle": "ختمة نشطة",
+  "khatmEmpty": "لا توجد ختمة نشطة.",
+  "khatmStart": "ابدأ ختمة",
+  "khatmDefaultName": "ختمتي",
+  "khatmProgressLabel": "التقدم",
+  "khatmContinueReading": "متابعة القراءة",
+  "khatmAyahPosition": "الآية {current} / {total}",
+  "@khatmAyahPosition": {
+    "placeholders": {
+      "current": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "collectionsTitle": "المجموعات",
+  "collectionsEmpty": "لا توجد مجموعات بعد.",
+  "collectionsCreate": "مجموعة جديدة",
+  "collectionsRename": "إعادة تسمية",
+  "collectionsDelete": "حذف",
+  "collectionsDeleteConfirmTitle": "حذف المجموعة؟",
+  "collectionsDeleteConfirmBody": "تبقى الإشارات المرجعية، وتُحذف المجموعة فقط.",
+  "collectionNameHint": "اسم المجموعة",
+  "collectionEmojiHint": "رمز تعبيري (اختياري)",
+  "collectionItemCount": "{count} آية",
+  "@collectionItemCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "collectionAssignTitle": "إضافة إلى مجموعة",
+  "libraryOrganizeTooltip": "تنظيم ضمن مجموعة"
 }
