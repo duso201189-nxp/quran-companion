@@ -160,5 +160,60 @@
   "libraryEmptyBookmarks": "Chưa có Ayah nào được lưu.",
   "libraryEmptyFavorites": "Chưa có Ayah yêu thích nào.",
   "libraryEmptyNotes": "Chưa có ghi chú nào.",
-  "libraryEmptyHighlights": "Chưa tô màu Ayah nào."
+  "libraryEmptyHighlights": "Chưa tô màu Ayah nào.",
+  "statsSessionsTitle": "Phiên đọc",
+  "statsSessionsEmpty": "Chưa có phiên đọc nào được ghi nhận.",
+  "statsTodayTitle": "Hôm nay",
+  "statsTodayMinutes": "{count} phút",
+  "@statsTodayMinutes": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "statsTodaySessionsCount": "{count} phiên",
+  "@statsTodaySessionsCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "khatmSectionTitle": "Khatm đang đọc",
+  "khatmEmpty": "Chưa có chu kỳ Khatm nào đang đọc.",
+  "khatmStart": "Bắt đầu Khatm",
+  "khatmDefaultName": "Khatm của tôi",
+  "khatmProgressLabel": "Tiến độ",
+  "khatmContinueReading": "Tiếp tục đọc",
+  "khatmAyahPosition": "Ayah {current} / {total}",
+  "@khatmAyahPosition": {
+    "placeholders": {
+      "current": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "collectionsTitle": "Bộ sưu tập",
+  "collectionsEmpty": "Chưa có bộ sưu tập nào.",
+  "collectionsCreate": "Bộ sưu tập mới",
+  "collectionsRename": "Đổi tên",
+  "collectionsDelete": "Xóa",
+  "collectionsDeleteConfirmTitle": "Xóa bộ sưu tập?",
+  "collectionsDeleteConfirmBody": "Các Ayah đã lưu vẫn giữ nguyên, chỉ bộ sưu tập bị xóa.",
+  "collectionNameHint": "Tên bộ sưu tập",
+  "collectionEmojiHint": "Biểu tượng (tùy chọn)",
+  "collectionItemCount": "{count} Ayah",
+  "@collectionItemCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "collectionAssignTitle": "Thêm vào bộ sưu tập",
+  "libraryOrganizeTooltip": "Sắp xếp vào bộ sưu tập"
 }

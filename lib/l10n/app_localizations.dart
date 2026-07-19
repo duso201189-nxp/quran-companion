@@ -855,6 +855,150 @@ abstract class AppLocalizations {
   /// In vi, this message translates to:
   /// **'Chưa tô màu Ayah nào.'**
   String get libraryEmptyHighlights;
+
+  /// No description provided for @statsSessionsTitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Phiên đọc'**
+  String get statsSessionsTitle;
+
+  /// No description provided for @statsSessionsEmpty.
+  ///
+  /// In vi, this message translates to:
+  /// **'Chưa có phiên đọc nào được ghi nhận.'**
+  String get statsSessionsEmpty;
+
+  /// No description provided for @statsTodayTitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Hôm nay'**
+  String get statsTodayTitle;
+
+  /// No description provided for @statsTodayMinutes.
+  ///
+  /// In vi, this message translates to:
+  /// **'{count} phút'**
+  String statsTodayMinutes(int count);
+
+  /// No description provided for @statsTodaySessionsCount.
+  ///
+  /// In vi, this message translates to:
+  /// **'{count} phiên'**
+  String statsTodaySessionsCount(int count);
+
+  /// No description provided for @khatmSectionTitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Khatm đang đọc'**
+  String get khatmSectionTitle;
+
+  /// No description provided for @khatmEmpty.
+  ///
+  /// In vi, this message translates to:
+  /// **'Chưa có chu kỳ Khatm nào đang đọc.'**
+  String get khatmEmpty;
+
+  /// No description provided for @khatmStart.
+  ///
+  /// In vi, this message translates to:
+  /// **'Bắt đầu Khatm'**
+  String get khatmStart;
+
+  /// No description provided for @khatmDefaultName.
+  ///
+  /// In vi, this message translates to:
+  /// **'Khatm của tôi'**
+  String get khatmDefaultName;
+
+  /// No description provided for @khatmProgressLabel.
+  ///
+  /// In vi, this message translates to:
+  /// **'Tiến độ'**
+  String get khatmProgressLabel;
+
+  /// No description provided for @khatmContinueReading.
+  ///
+  /// In vi, this message translates to:
+  /// **'Tiếp tục đọc'**
+  String get khatmContinueReading;
+
+  /// No description provided for @khatmAyahPosition.
+  ///
+  /// In vi, this message translates to:
+  /// **'Ayah {current} / {total}'**
+  String khatmAyahPosition(int current, int total);
+
+  /// No description provided for @collectionsTitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Bộ sưu tập'**
+  String get collectionsTitle;
+
+  /// No description provided for @collectionsEmpty.
+  ///
+  /// In vi, this message translates to:
+  /// **'Chưa có bộ sưu tập nào.'**
+  String get collectionsEmpty;
+
+  /// No description provided for @collectionsCreate.
+  ///
+  /// In vi, this message translates to:
+  /// **'Bộ sưu tập mới'**
+  String get collectionsCreate;
+
+  /// No description provided for @collectionsRename.
+  ///
+  /// In vi, this message translates to:
+  /// **'Đổi tên'**
+  String get collectionsRename;
+
+  /// No description provided for @collectionsDelete.
+  ///
+  /// In vi, this message translates to:
+  /// **'Xóa'**
+  String get collectionsDelete;
+
+  /// No description provided for @collectionsDeleteConfirmTitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Xóa bộ sưu tập?'**
+  String get collectionsDeleteConfirmTitle;
+
+  /// No description provided for @collectionsDeleteConfirmBody.
+  ///
+  /// In vi, this message translates to:
+  /// **'Các Ayah đã lưu vẫn giữ nguyên, chỉ bộ sưu tập bị xóa.'**
+  String get collectionsDeleteConfirmBody;
+
+  /// No description provided for @collectionNameHint.
+  ///
+  /// In vi, this message translates to:
+  /// **'Tên bộ sưu tập'**
+  String get collectionNameHint;
+
+  /// No description provided for @collectionEmojiHint.
+  ///
+  /// In vi, this message translates to:
+  /// **'Biểu tượng (tùy chọn)'**
+  String get collectionEmojiHint;
+
+  /// No description provided for @collectionItemCount.
+  ///
+  /// In vi, this message translates to:
+  /// **'{count} Ayah'**
+  String collectionItemCount(int count);
+
+  /// No description provided for @collectionAssignTitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Thêm vào bộ sưu tập'**
+  String get collectionAssignTitle;
+
+  /// No description provided for @libraryOrganizeTooltip.
+  ///
+  /// In vi, this message translates to:
+  /// **'Sắp xếp vào bộ sưu tập'**
+  String get libraryOrganizeTooltip;
 }
 
 class _AppLocalizationsDelegate

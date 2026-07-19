@@ -402,4 +402,85 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get libraryEmptyHighlights => 'Chưa tô màu Ayah nào.';
+
+  @override
+  String get statsSessionsTitle => 'Phiên đọc';
+
+  @override
+  String get statsSessionsEmpty => 'Chưa có phiên đọc nào được ghi nhận.';
+
+  @override
+  String get statsTodayTitle => 'Hôm nay';
+
+  @override
+  String statsTodayMinutes(int count) {
+    return '$count phút';
+  }
+
+  @override
+  String statsTodaySessionsCount(int count) {
+    return '$count phiên';
+  }
+
+  @override
+  String get khatmSectionTitle => 'Khatm đang đọc';
+
+  @override
+  String get khatmEmpty => 'Chưa có chu kỳ Khatm nào đang đọc.';
+
+  @override
+  String get khatmStart => 'Bắt đầu Khatm';
+
+  @override
+  String get khatmDefaultName => 'Khatm của tôi';
+
+  @override
+  String get khatmProgressLabel => 'Tiến độ';
+
+  @override
+  String get khatmContinueReading => 'Tiếp tục đọc';
+
+  @override
+  String khatmAyahPosition(int current, int total) {
+    return 'Ayah $current / $total';
+  }
+
+  @override
+  String get collectionsTitle => 'Bộ sưu tập';
+
+  @override
+  String get collectionsEmpty => 'Chưa có bộ sưu tập nào.';
+
+  @override
+  String get collectionsCreate => 'Bộ sưu tập mới';
+
+  @override
+  String get collectionsRename => 'Đổi tên';
+
+  @override
+  String get collectionsDelete => 'Xóa';
+
+  @override
+  String get collectionsDeleteConfirmTitle => 'Xóa bộ sưu tập?';
+
+  @override
+  String get collectionsDeleteConfirmBody =>
+      'Các Ayah đã lưu vẫn giữ nguyên, chỉ bộ sưu tập bị xóa.';
+
+  @override
+  String get collectionNameHint => 'Tên bộ sưu tập';
+
+  @override
+  String get collectionEmojiHint => 'Biểu tượng (tùy chọn)';
+
+  @override
+  String collectionItemCount(int count) {
+    return '$count Ayah';
+  }
+
+  @override
+  String get collectionAssignTitle => 'Thêm vào bộ sưu tập';
+
+  @override
+  String get libraryOrganizeTooltip => 'Sắp xếp vào bộ sưu tập';
 }

@@ -4,6 +4,7 @@ import 'package:quran_companion/l10n/app_localizations.dart';
 
 import '../../domain/library_item.dart';
 import '../../domain/library_kind.dart';
+import '../collections/assign_to_collection_sheet.dart';
 import '../library_controller.dart';
 import 'library_ayah_tile.dart';
 
@@ -49,6 +50,12 @@ class LibraryTabView extends ConsumerWidget {
               itemBuilder: (context, i) => LibraryAyahTile(
                 item: items[i],
                 onTap: () => onOpen(items[i]),
+                onOrganize: kind == LibraryKind.bookmarks
+                    ? () => AssignToCollectionSheet.show(
+                          context,
+                          items[i].ayah.ayahId,
+                        )
+                    : null,
               ),
             );
           },

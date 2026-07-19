@@ -1,6 +1,9 @@
+import 'package:drift/native.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:quran_companion/app/app.dart';
+import 'package:quran_companion/core/database/user/user_database.dart';
+import 'package:quran_companion/core/database/user/user_database_providers.dart';
 import 'package:quran_companion/core/storage/prefs_provider.dart';
 import 'package:quran_companion/features/quran/data/quran_providers.dart';
 import 'package:quran_companion/features/quran/domain/entities/ayah_content.dart';
@@ -52,7 +55,17 @@ class FakeQuranRepo implements QuranRepository {
       const [];
 
   @override
-  Future<List<AyahSearchResult>> getAyahsByIds(List<int> ids) async => const [];
+  Future<List<AyahSearchResult>> getAyahsByIds(List<int> ids) async => [
+        for (final id in ids)
+          if (id == 1)
+            const AyahSearchResult(
+              ayahId: 1,
+              surahId: 1,
+              ayahNumber: 1,
+              surahNameLatin: 'Al-Fatihah',
+              arabic: 'بسم الله الرحمن الرحيم',
+            ),
+      ];
 }
 
 /// Tạo ProviderContainer với SharedPreferences giả cho unit test.
@@ -75,6 +88,12 @@ Future<Widget> makeApp({Map<String, Object> prefs = const {}}) async {
     overrides: [
       sharedPreferencesProvider.overrideWithValue(sp),
       quranRepositoryProvider.overrideWithValue(FakeQuranRepo()),
+      // Database bộ nhớ — tránh path_provider (kênh platform không có
+      // trong môi trường test) khi các màn hình (vd Thống kê) chạm
+      // tới userDatabaseProvider thật.
+      userDatabaseProvider.overrideWithValue(
+        UserDatabase(NativeDatabase.memory()),
+      ),
     ],
     child: const QuranCompanionApp(),
   );

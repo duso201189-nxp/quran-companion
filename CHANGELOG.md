@@ -5,6 +5,77 @@ Phiên bản theo [Semantic Versioning](https://semver.org/lang/vi/).
 
 ## [Unreleased]
 
+### Added — Sprint 8: Streak, Khatm %, Bookmark Collections (Bước 8 — xem "Chưa làm" bên dưới, chưa xong)
+
+Thực hiện theo `DR-2026-0003` (5 phase: Schema -> Repository ->
+Provider -> UI -> Integration & Polish).
+
+- **Kiến trúc**: Drift schema files là Source of Truth cho schema
+  hiện tại; `DATABASE.md` là Design Specification 3 tầng (Đã triển
+  khai / Đã định / Ý tưởng tương lai). Streak tính TRÊN TRUY VẤN từ
+  `study_sessions` — không có bảng `streaks` riêng (dẫn xuất-khi-đọc).
+  Bookmark Collections chỉ áp dụng cho Ayah ở tầng database (tránh
+  bảng chưa dùng đến); mô hình domain giữ mở cho tổng quát hoá sau
+  này nhưng chưa xây `CollectionItem`.
+- **Schema (Nhóm B, `UserDatabase` schemaVersion 2 -> 3)**: 3 bảng
+  mới — `study_sessions` (phiên đọc: ngày, Surah, khoảng Ayah, thời
+  lượng), `khatm_cycles` (chu kỳ đọc trọn Qur'an: tên, vị trí hiện
+  tại, ngày hoàn thành) — cùng cột mới `bookmarks.collection_id`
+  (nullable, không khai báo FK ở tầng Drift — không có tiền lệ FK
+  trong schema này, toàn vẹn do tầng repository đảm nhiệm) và bảng
+  `bookmark_collections` (tên, emoji, thứ tự hiển thị).
+- **Migration**: hoàn toàn additive — `onUpgrade` thêm 3 bảng +
+  1 cột, không đổi/xoá gì. Test cả hai đường nâng cấp thật (v1->v3
+  và v2->v3) trên dữ liệu mẫu dựng thủ công, xác nhận dữ liệu cũ
+  còn nguyên sau khi nâng cấp.
+- **Repository**: `StudySessionRepository`, `KhatmCycleRepository`,
+  `BookmarkCollectionRepository` (interface tách khỏi Drift, đúng
+  quy ước `UserContentRepository` có sẵn). `BookmarkCollectionRepositoryImpl`
+  tự kiểm tra toàn vẹn khi gán/xoá bộ sưu tập (vì database không có
+  ràng buộc FK): ném lỗi khi gán vào collection không tồn tại, gỡ
+  `collection_id` khỏi mọi bookmark liên quan trước khi xoá mềm một
+  collection (trong 1 transaction).
+- **Provider**: 3 provider repository (kiểu interface, đúng mẫu
+  `quranRepositoryProvider`/`userContentRepositoryProvider`) + 7
+  provider ứng dụng (`currentStreakProvider`, `longestStreakProvider`,
+  `todayStudySummaryProvider`, `activeKhatmCycleProvider`,
+  `khatmProgressProvider`, `bookmarkCollectionsProvider`,
+  `collectionBookmarksProvider`) — không trùng lặp logic nghiệp vụ:
+  `khatmProgressProvider` đọc thẳng `KhatmCycle.progressPercent` có
+  sẵn ở domain model, không tính lại công thức.
+- **UI**: mục "Phiên đọc" (Streak hiện tại/dài nhất, tổng kết hôm
+  nay) + thẻ "Khatm đang đọc" (tiến độ %, thanh tiến độ, Tiếp tục
+  đọc) thêm vào màn Thống kê (cộng thêm, không đụng lưới chỉ số
+  SharedPreferences hiện có). Màn hình "Bộ sưu tập" mới (tạo/đổi
+  tên/xoá), mở từ biểu tượng trên AppBar "Thư viện của tôi"; nút
+  "Sắp xếp vào bộ sưu tập" mới trên mỗi thẻ Bookmark. 24 khoá l10n
+  mới, đủ cả vi/en/ar.
+- **Tích hợp**: `ReadingScreen` giờ ghi 1 `study_session` thật khi
+  rời trang đọc (ngưỡng >=5 giây, khớp `StatsStore.addSeconds` hiện
+  có) — cùng lúc với lời gọi `StatsStore.addSeconds` cũ, không thay
+  thế. Đóng khoảng trống "chưa có nơi nào ghi vào study_sessions"
+  từng ghi nhận cuối Phase 4.
+
+### Tests
+- +61 test cho Sprint 8 (repository + provider + widget + tích hợp +
+  điều hướng qua router thật) — tổng dự án 305 test, tất cả qua
+  `dart format` / `flutter analyze --fatal-infos` / `flutter test`.
+
+### Chưa làm (Bước 8 CHƯA hoàn tất)
+- "Journey" (tổng hợp dashboard Trang chủ: tiếp tục đọc, tiến độ hôm
+  nay, streak, verse of the day) — chưa xây, xem `placeholderHome`.
+- Daily Goal thật — vẫn ở SharedPreferences (`StatsStore`), chưa có
+  UI/luồng nối vào schema Nhóm B.
+- Revision Queue chưa có màn hình riêng — vẫn dùng cơ chế đơn giản
+  có sẵn từ Bước 6 (`ayah_statuses.status='review'`), đúng quyết
+  định "Simple Revision Queue" của `DR-2026-0003`.
+- Ngưỡng "ngày đủ điều kiện tính streak" (tổng thời lượng/Ayah trong
+  ngày >=5 phút HOẶC >=5 Ayah, từng ghi ở DATABASE.md) chưa triển
+  khai — hiện chỉ cần 1 phiên >=5 giây là streak-day được tính. Xem
+  TODO.md để biết khuyến nghị.
+- `CollectionItem` — hợp đồng domain tổng quát cho bộ sưu tập ngoài
+  Ayah — cố ý chưa xây, ngoài phạm vi 5 deliverable của Phase 4.
+
 ### Added — Sprint 7.1: Nền tảng UI Tìm kiếm (Bước 7 — xem "Chưa làm" bên dưới, chưa xong)
 - Màn hình Tìm kiếm (`/search`) — route top-level push full-screen,
   cùng mẫu với "Thư viện của tôi" (không phải tab thứ 6). Điểm vào từ

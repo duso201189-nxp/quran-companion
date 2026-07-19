@@ -130,6 +130,18 @@ void main() {
       await tester.pumpAndSettle();
       expect(find.text('Giao diện'), findsOneWidget);
       expect(find.text('Ngôn ngữ'), findsOneWidget);
+
+      // Tab Thống kê mở stream Drift thật (UserDatabase bộ nhớ).
+      // Drift debounce việc đóng mỗi query stream bằng 1 Timer
+      // duration-zero, CHỈ được tạo khi ProviderScope thật sự dispose
+      // (huỷ StreamProvider) — điều này bình thường xảy ra SAU khi
+      // hàm test kết thúc (dọn cây widget tự động), quá muộn để
+      // pump() bên trong test bắt kịp. Chủ động thay cây bằng widget
+      // rỗng NGAY TRONG test rồi pump thêm 1 nhịp để timer đó được
+      // tạo VÀ chạy xong trước khi flutter_test kiểm tra
+      // "không còn Timer treo" lúc kết thúc test.
+      await tester.pumpWidget(const SizedBox.shrink());
+      await tester.pump(const Duration(milliseconds: 1));
     });
 
     testWidgets('chọn chế độ Tối đổi themeMode của MaterialApp',

@@ -160,5 +160,60 @@
   "libraryEmptyBookmarks": "No bookmarked ayahs yet.",
   "libraryEmptyFavorites": "No favorite ayahs yet.",
   "libraryEmptyNotes": "No notes yet.",
-  "libraryEmptyHighlights": "No highlighted ayahs yet."
+  "libraryEmptyHighlights": "No highlighted ayahs yet.",
+  "statsSessionsTitle": "Reading Sessions",
+  "statsSessionsEmpty": "No reading sessions logged yet.",
+  "statsTodayTitle": "Today",
+  "statsTodayMinutes": "{count} min",
+  "@statsTodayMinutes": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "statsTodaySessionsCount": "{count} sessions",
+  "@statsTodaySessionsCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "khatmSectionTitle": "Active Khatm",
+  "khatmEmpty": "No active Khatm cycle.",
+  "khatmStart": "Start Khatm",
+  "khatmDefaultName": "My Khatm",
+  "khatmProgressLabel": "Progress",
+  "khatmContinueReading": "Continue reading",
+  "khatmAyahPosition": "Ayah {current} / {total}",
+  "@khatmAyahPosition": {
+    "placeholders": {
+      "current": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "collectionsTitle": "Collections",
+  "collectionsEmpty": "No collections yet.",
+  "collectionsCreate": "New collection",
+  "collectionsRename": "Rename",
+  "collectionsDelete": "Delete",
+  "collectionsDeleteConfirmTitle": "Delete collection?",
+  "collectionsDeleteConfirmBody": "Bookmarks stay, only the collection is removed.",
+  "collectionNameHint": "Collection name",
+  "collectionEmojiHint": "Emoji (optional)",
+  "collectionItemCount": "{count} ayahs",
+  "@collectionItemCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "collectionAssignTitle": "Add to collection",
+  "libraryOrganizeTooltip": "Organize into collection"
 }

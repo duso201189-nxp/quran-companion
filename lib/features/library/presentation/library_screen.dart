@@ -26,6 +26,13 @@ class LibraryScreen extends ConsumerWidget {
       child: Scaffold(
         appBar: AppBar(
           title: Text(l10n.libraryTitle),
+          actions: [
+            IconButton(
+              icon: const Icon(Icons.folder_outlined),
+              tooltip: l10n.collectionsTitle,
+              onPressed: () => context.push(AppRoutes.collections),
+            ),
+          ],
           bottom: TabBar(
             isScrollable: true,
             tabAlignment: TabAlignment.start,

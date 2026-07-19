@@ -30,7 +30,7 @@ void main() {
   }
 
   group('schema & migration', () {
-    test('schemaVersion 2 tạo đủ 5 bảng user', () async {
+    test('schemaVersion 3 tạo đủ 8 bảng user', () async {
       final tables = await db
           .customSelect(
             "SELECT name FROM sqlite_master WHERE type='table'",
@@ -45,11 +45,14 @@ void main() {
             'notes',
             'favorites',
             'ayah_statuses',
+            'study_sessions',
+            'khatm_cycles',
+            'bookmark_collections',
           },
         ),
         isTrue,
       );
-      expect(db.schemaVersion, 2);
+      expect(db.schemaVersion, 3);
     });
 
     test(
@@ -129,8 +132,9 @@ void main() {
       );
       addTearDown(v1Migrated.close);
 
-      // Chạm vào database lần đầu -> Drift chạy onUpgrade thật (1 -> 2).
-      expect(v1Migrated.schemaVersion, 2);
+      // Chạm vào database lần đầu -> Drift chạy hết chuỗi onUpgrade
+      // thật (1 -> 2 -> 3, vì schemaVersion hiện tại là 3).
+      expect(v1Migrated.schemaVersion, 3);
       final tableNames = (await v1Migrated
               .customSelect("SELECT name FROM sqlite_master WHERE type='table'")
               .get())
@@ -138,10 +142,19 @@ void main() {
           .toSet();
       expect(
         tableNames.containsAll(
-          {'bookmarks', 'highlights', 'notes', 'favorites', 'ayah_statuses'},
+          {
+            'bookmarks',
+            'highlights',
+            'notes',
+            'favorites',
+            'ayah_statuses',
+            'study_sessions',
+            'khatm_cycles',
+            'bookmark_collections',
+          },
         ),
         isTrue,
-        reason: 'onUpgrade phải thêm favorites mà không đụng 4 bảng cũ',
+        reason: 'onUpgrade phải chạy hết 1->2->3 mà không đụng 4 bảng cũ',
       );
 
       // Dữ liệu mẫu từ "trước khi nâng cấp" phải còn nguyên vẹn.
@@ -153,6 +166,137 @@ void main() {
       // Bảng mới thêm phải dùng được ngay qua API typed bình thường.
       final favorites = await v1Migrated.select(v1Migrated.favorites).get();
       expect(favorites, isEmpty);
+    });
+
+    test(
+        'onUpgrade v2 -> v3: bảng cũ + dữ liệu mẫu còn nguyên, thêm '
+        'study_sessions/khatm_cycles/bookmark_collections + cột '
+        'collection_id trên bookmarks', () async {
+      // Dựng thủ công 1 database "v2" (5 bảng hiện có, CHƯA có 3 bảng
+      // Sprint 8 và CHƯA có cột collection_id) + 1 bookmark mẫu, set
+      // PRAGMA user_version = 2 — mô phỏng máy đã cài app trước
+      // Sprint 8. Mở qua UserDatabase thật để Drift tự chạy đúng
+      // onUpgrade thật (2 -> 3) của user_database.dart.
+      const seedAyahId = 99;
+      const seedBookmarkId = 'seed-bookmark-v2';
+      final v2Migrated = UserDatabase(
+        NativeDatabase.memory(
+          setup: (rawDb) {
+            for (final ddl in [
+              '''
+              CREATE TABLE bookmarks (
+                id TEXT NOT NULL PRIMARY KEY,
+                user_id TEXT NULL,
+                updated_at INTEGER NOT NULL,
+                deleted_at INTEGER NULL,
+                is_dirty INTEGER NOT NULL DEFAULT 1,
+                ayah_id INTEGER NOT NULL,
+                created_at INTEGER NOT NULL,
+                UNIQUE(ayah_id)
+              );
+              ''',
+              '''
+              CREATE TABLE highlights (
+                id TEXT NOT NULL PRIMARY KEY,
+                user_id TEXT NULL,
+                updated_at INTEGER NOT NULL,
+                deleted_at INTEGER NULL,
+                is_dirty INTEGER NOT NULL DEFAULT 1,
+                ayah_id INTEGER NOT NULL,
+                color TEXT NOT NULL,
+                UNIQUE(ayah_id, color)
+              );
+              ''',
+              '''
+              CREATE TABLE notes (
+                id TEXT NOT NULL PRIMARY KEY,
+                user_id TEXT NULL,
+                updated_at INTEGER NOT NULL,
+                deleted_at INTEGER NULL,
+                is_dirty INTEGER NOT NULL DEFAULT 1,
+                ayah_id INTEGER NOT NULL,
+                content TEXT NOT NULL,
+                UNIQUE(ayah_id)
+              );
+              ''',
+              '''
+              CREATE TABLE favorites (
+                id TEXT NOT NULL PRIMARY KEY,
+                user_id TEXT NULL,
+                updated_at INTEGER NOT NULL,
+                deleted_at INTEGER NULL,
+                is_dirty INTEGER NOT NULL DEFAULT 1,
+                ayah_id INTEGER NOT NULL,
+                created_at INTEGER NOT NULL,
+                UNIQUE(ayah_id)
+              );
+              ''',
+              '''
+              CREATE TABLE ayah_statuses (
+                id TEXT NOT NULL PRIMARY KEY,
+                user_id TEXT NULL,
+                updated_at INTEGER NOT NULL,
+                deleted_at INTEGER NULL,
+                is_dirty INTEGER NOT NULL DEFAULT 1,
+                ayah_id INTEGER NOT NULL,
+                status TEXT NOT NULL,
+                UNIQUE(ayah_id)
+              );
+              ''',
+            ]) {
+              rawDb.execute(ddl);
+            }
+            rawDb.execute(
+              'INSERT INTO bookmarks '
+              '(id, updated_at, ayah_id, created_at, is_dirty) '
+              "VALUES ('$seedBookmarkId', 5000, $seedAyahId, 5000, 0);",
+            );
+            rawDb.execute('PRAGMA user_version = 2;');
+          },
+        ),
+      );
+      addTearDown(v2Migrated.close);
+
+      // Chạm vào database lần đầu -> Drift chạy onUpgrade thật (2 -> 3).
+      expect(v2Migrated.schemaVersion, 3);
+      final tableNames = (await v2Migrated
+              .customSelect("SELECT name FROM sqlite_master WHERE type='table'")
+              .get())
+          .map((r) => r.data['name'])
+          .toSet();
+      expect(
+        tableNames.containsAll(
+          {
+            'bookmarks',
+            'highlights',
+            'notes',
+            'favorites',
+            'ayah_statuses',
+            'study_sessions',
+            'khatm_cycles',
+            'bookmark_collections',
+          },
+        ),
+        isTrue,
+        reason: 'onUpgrade phải thêm 3 bảng Sprint 8 mà không đụng 5 bảng cũ',
+      );
+
+      // Dữ liệu mẫu từ "trước khi nâng cấp" phải còn nguyên vẹn.
+      final bookmarks = await v2Migrated.select(v2Migrated.bookmarks).get();
+      expect(bookmarks, hasLength(1));
+      expect(bookmarks.single.id, seedBookmarkId);
+      expect(bookmarks.single.ayahId, seedAyahId);
+      // Cột mới thêm vào bảng cũ phải là NULL cho dữ liệu có từ trước
+      // (ALTER TABLE ADD COLUMN không gán giá trị hồi tố).
+      expect(bookmarks.single.collectionId, isNull);
+
+      // 3 bảng mới phải dùng được ngay qua API typed bình thường.
+      expect(await v2Migrated.select(v2Migrated.studySessions).get(), isEmpty);
+      expect(await v2Migrated.select(v2Migrated.khatmCycles).get(), isEmpty);
+      expect(
+        await v2Migrated.select(v2Migrated.bookmarkCollections).get(),
+        isEmpty,
+      );
     });
 
     test('toggleFavorite: bật -> tắt -> bật lại giữ nguyên UUID', () async {

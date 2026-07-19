@@ -3,7 +3,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:quran_companion/l10n/app_localizations.dart';
 
+import '../../khatm/presentation/active_khatm_card.dart';
 import '../data/stats_store.dart';
+import 'widgets/reading_stats_section.dart';
 
 /// Màn hình Thống kê — số liệu cục bộ (không cần backend):
 /// ngày đọc, Ayah đã đọc, phút học, % hoàn thành, chuỗi ngày,
@@ -99,6 +101,10 @@ class StatsScreen extends ConsumerWidget {
                   percent: stats.completionPercent,
                   detail: '${stats.ayahsRead} / ${StatsStore.totalAyahs}',
                 ),
+                const SizedBox(height: 20),
+                const ActiveKhatmCard(),
+                const SizedBox(height: 20),
+                const ReadingStatsSection(),
               ],
             );
           },
