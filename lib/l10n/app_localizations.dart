@@ -1029,6 +1029,84 @@ abstract class AppLocalizations {
   /// In vi, this message translates to:
   /// **'{current} / {target} phút hôm nay'**
   String dailyGoalMinutesProgress(int current, int target);
+
+  /// No description provided for @reviewGradeAgain.
+  ///
+  /// In vi, this message translates to:
+  /// **'Quên'**
+  String get reviewGradeAgain;
+
+  /// No description provided for @reviewGradeHard.
+  ///
+  /// In vi, this message translates to:
+  /// **'Khó'**
+  String get reviewGradeHard;
+
+  /// No description provided for @reviewGradeGood.
+  ///
+  /// In vi, this message translates to:
+  /// **'Tốt'**
+  String get reviewGradeGood;
+
+  /// No description provided for @reviewGradeEasy.
+  ///
+  /// In vi, this message translates to:
+  /// **'Dễ'**
+  String get reviewGradeEasy;
+
+  /// No description provided for @reviewOpenInReading.
+  ///
+  /// In vi, this message translates to:
+  /// **'Mở trong Kinh'**
+  String get reviewOpenInReading;
+
+  /// No description provided for @reviewSessionComplete.
+  ///
+  /// In vi, this message translates to:
+  /// **'Đã ôn xong!'**
+  String get reviewSessionComplete;
+
+  /// No description provided for @reviewSessionCompleteSubtitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Không còn thẻ nào đến hạn ôn tập lúc này.'**
+  String get reviewSessionCompleteSubtitle;
+
+  /// No description provided for @quizCorrect.
+  ///
+  /// In vi, this message translates to:
+  /// **'Chính xác!'**
+  String get quizCorrect;
+
+  /// No description provided for @quizIncorrect.
+  ///
+  /// In vi, this message translates to:
+  /// **'Chưa đúng.'**
+  String get quizIncorrect;
+
+  /// No description provided for @quizEmpty.
+  ///
+  /// In vi, this message translates to:
+  /// **'Không đủ nội dung để tạo câu hỏi.'**
+  String get quizEmpty;
+
+  /// No description provided for @quizQuestionProgress.
+  ///
+  /// In vi, this message translates to:
+  /// **'Câu {current}/{total}'**
+  String quizQuestionProgress(int current, int total);
+
+  /// No description provided for @quizScoreResult.
+  ///
+  /// In vi, this message translates to:
+  /// **'Bạn đạt {score}/{total} điểm'**
+  String quizScoreResult(int score, int total);
+
+  /// No description provided for @quizRetry.
+  ///
+  /// In vi, this message translates to:
+  /// **'Làm lại'**
+  String get quizRetry;
 }
 
 class _AppLocalizationsDelegate

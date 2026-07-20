@@ -230,5 +230,38 @@
         "type": "int"
       }
     }
-  }
+  },
+  "reviewGradeAgain": "إعادة",
+  "reviewGradeHard": "صعب",
+  "reviewGradeGood": "جيد",
+  "reviewGradeEasy": "سهل",
+  "reviewOpenInReading": "فتح في القراءة",
+  "reviewSessionComplete": "اكتملت الجلسة!",
+  "reviewSessionCompleteSubtitle": "لا توجد بطاقات مستحقة للمراجعة الآن.",
+  "quizCorrect": "إجابة صحيحة!",
+  "quizIncorrect": "إجابة غير صحيحة.",
+  "quizEmpty": "لا يوجد محتوى كافٍ لإنشاء اختبار.",
+  "quizQuestionProgress": "سؤال {current}/{total}",
+  "@quizQuestionProgress": {
+    "placeholders": {
+      "current": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "quizScoreResult": "نتيجتك {score}/{total}",
+  "@quizScoreResult": {
+    "placeholders": {
+      "score": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "quizRetry": "إعادة المحاولة"
 }

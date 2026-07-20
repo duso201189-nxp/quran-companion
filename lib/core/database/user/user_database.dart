@@ -17,13 +17,15 @@ part 'user_database.g.dart';
     StudySessions,
     KhatmCycles,
     BookmarkCollections,
+    SrsCards,
+    QuizResults,
   ],
 )
 class UserDatabase extends _$UserDatabase {
   UserDatabase(super.executor);
 
   @override
-  int get schemaVersion => 3;
+  int get schemaVersion => 5;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -46,6 +48,19 @@ class UserDatabase extends _$UserDatabase {
             await m.createTable(khatmCycles);
             await m.createTable(bookmarkCollections);
             await m.addColumn(bookmarks, bookmarks.collectionId);
+          }
+          // v4: Sprint 10 Phase 1 (DR-2026-0005) — srs_cards. KHÔNG
+          // backfill từ ayah_statuses.status='review' lúc migration;
+          // đồng bộ tự phục hồi khi đọc (xem
+          // SchedulerRepository.syncWithReviewQueue).
+          if (from < 4) {
+            await m.createTable(srsCards);
+          }
+          // v5: Sprint 10 Phase 4 (DR-2026-0005 mục 5) — quiz_results.
+          // Chỉ lưu kết quả, không có Question Bank (câu hỏi sinh động
+          // từ nhóm A mỗi phiên).
+          if (from < 5) {
+            await m.createTable(quizResults);
           }
         },
         beforeOpen: (details) async {
