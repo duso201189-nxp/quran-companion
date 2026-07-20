@@ -500,4 +500,48 @@ class AppLocalizationsVi extends AppLocalizations {
   String dailyGoalMinutesProgress(int current, int target) {
     return '$current / $target phút hôm nay';
   }
+
+  @override
+  String get reviewGradeAgain => 'Quên';
+
+  @override
+  String get reviewGradeHard => 'Khó';
+
+  @override
+  String get reviewGradeGood => 'Tốt';
+
+  @override
+  String get reviewGradeEasy => 'Dễ';
+
+  @override
+  String get reviewOpenInReading => 'Mở trong Kinh';
+
+  @override
+  String get reviewSessionComplete => 'Đã ôn xong!';
+
+  @override
+  String get reviewSessionCompleteSubtitle =>
+      'Không còn thẻ nào đến hạn ôn tập lúc này.';
+
+  @override
+  String get quizCorrect => 'Chính xác!';
+
+  @override
+  String get quizIncorrect => 'Chưa đúng.';
+
+  @override
+  String get quizEmpty => 'Không đủ nội dung để tạo câu hỏi.';
+
+  @override
+  String quizQuestionProgress(int current, int total) {
+    return 'Câu $current/$total';
+  }
+
+  @override
+  String quizScoreResult(int score, int total) {
+    return 'Bạn đạt $score/$total điểm';
+  }
+
+  @override
+  String get quizRetry => 'Làm lại';
 }

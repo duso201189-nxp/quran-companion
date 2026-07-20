@@ -115,14 +115,15 @@ không dấu ("long" / "rahim") vẫn khớp.
 Kể từ [DR-2026-0003](docs/adr/DR-2026-0003-sprint8-data-architecture.md)
 (Sprint 8), amend một phần bởi
 [DR-2026-0004](docs/adr/DR-2026-0004-sprint9-streak-daily-goal-revision-queue.md)
-(Sprint 9): **Drift schema files
+(Sprint 9) và [DR-2026-0005](docs/adr/DR-2026-0005.md) (Sprint 10 —
+Learning Engine/SRS/Quiz): **Drift schema files
 (`lib/core/database/user/user_tables.dart`,
 `lib/core/database/user/user_database.dart`) là Source of Truth cho
 schema HIỆN TẠI.** Mục dưới đây là Design Specification — chia 3
 tầng để không lẫn "đã có thật" với "còn là dự định":
 
 - **Đã triển khai** — khớp `UserDatabase.schemaVersion` hiện tại
-  (đang là **3**). Đây là bản ghi lại của schema thật, không phải
+  (đang là **5**). Đây là bản ghi lại của schema thật, không phải
   nơi thiết kế; đổi schema thì sửa code trước, sửa mục này sau.
 - **Đã định** — đã có tên bảng/cột dự kiến, gắn với một Bước cụ thể
   trong ROADMAP.md, nhưng CHƯA có trong code.
@@ -145,7 +146,7 @@ QUY TẮC BẤT BIẾN của nhóm B (áp dụng cho MỌI bảng — xem mixin
 5. Cột `user_id` NULL-able (null khi chưa đăng nhập) khớp
    `auth.uid()` của Supabase khi bật RLS.
 
-### Đã triển khai (schemaVersion 3)
+### Đã triển khai (schemaVersion 5)
 
 ```sql
 bookmarks (id, user_id, updated_at, deleted_at, is_dirty,
@@ -173,11 +174,18 @@ ayah_statuses(id, user_id, updated_at, deleted_at, is_dirty,
               ayah_id, status)   -- 'learning'|'learned'|'review'
               -- UNIQUE ayah_id. status='review' = Revision Queue
               -- ĐƠN GIẢN (DR-2026-0003 mục B, tái khẳng định ở
-              -- DR-2026-0004 mục 3) — chưa phải SRS thật, xem
-              -- srs_cards ở "Đã định". Sprint 9: màn hình Revision
+              -- DR-2026-0004 mục 3). Sprint 9: màn hình Revision
               -- Queue tái dùng UserContentRepository (thêm
               -- watchAllReviewAyahs()) + LibraryTabView/LibraryAyahTile
               -- có sẵn — KHÔNG có repository/bảng riêng.
+              --
+              -- Sprint 10 (DR-2026-0005 mục 1-2): srs_cards TIÊU THỤ
+              -- danh sách này làm nguồn thành viên — KHÔNG thay thế
+              -- (lệch có chủ đích so với dự định ban đầu ở
+              -- DR-2026-0003, "sẽ thay thế Revision Queue đơn giản
+              -- khi cần SM-2" — quyết định lại ở DR-2026-0005: Revision
+              -- Queue vẫn độc lập, Scheduler là lớp lịch trình thêm
+              -- vào bên trên). Xem srs_cards bên dưới.
 
 -- Nhật ký phiên đọc (Sprint 8, DR-2026-0003 mục A). Sự kiện, KHÔNG
 -- unique theo ngày — đọc nhiều lần một ngày là bình thường.
@@ -215,6 +223,52 @@ khatm_cycles(id, user_id, updated_at, deleted_at, is_dirty,
 -- domain (CollectionItem tổng quát cho loại khác) để mở, chưa xây.
 bookmark_collections(id, user_id, updated_at, deleted_at, is_dirty,
                      name, emoji, display_order)
+
+-- SRS tổng quát (Sprint 10 Phase 1, DR-2026-0005 mục 3): dùng CHUNG
+-- cho từ vựng (lemma) và Hifz/Ayah — item_type + item_id thay vì
+-- khóa cứng vào 1 loại, thêm loại thẻ mới không cần đổi schema.
+-- Hiện chỉ item_type='ayah' được ghi — Flashcard ('lemma') hoãn lại
+-- (chưa có dữ liệu từ vựng, xem mục "Đã định" > lemmas/word_instances
+-- và TODO.md). SchedulingAlgorithm hôm nay là SM-2 (ARCHITECTURE.md
+-- §10); ease_factor mặc định 2.5, sàn 1.3.
+srs_cards(id, user_id, updated_at, deleted_at, is_dirty,
+          item_type TEXT,                   -- 'ayah' (chỉ giá trị hiện có)
+          item_id INTEGER,                  -- ayah_id (sẽ là lemma_id sau)
+          ease_factor REAL DEFAULT 2.5,
+          interval_days INTEGER DEFAULT 0,
+          repetitions INTEGER DEFAULT 0,
+          due_date INTEGER,                 -- epoch ms — hạn ôn tập
+          state TEXT,                       -- new|learning|review|lapsed
+          UNIQUE(item_type, item_id))
+          -- LỆCH CÓ CHỦ ĐÍCH so với sketch gốc (từng ghi
+          -- UNIQUE(user_id, item_type, item_id)): user_id nullable
+          -- trước khi đăng nhập, và SQLite coi mỗi NULL khác biệt —
+          -- đưa user_id vào UNIQUE sẽ không có tác dụng thật trong
+          -- giai đoạn single-user hiện nay. Theo đúng tiền lệ của MỌI
+          -- bảng khác trong file này (bookmarks/highlights/notes/
+          -- favorites/ayah_statuses đều bỏ user_id khỏi uniqueKeys).
+          --
+          -- Quan hệ với ayah_statuses (DR-2026-0005 mục 1-2): thẻ
+          -- item_type='ayah' được TẠO/XOÁ MỀM đồng bộ theo Revision
+          -- Queue (ayah_statuses.status='review') — Scheduler đọc
+          -- Queue làm nguồn thành viên, không sở hữu/không thay thế.
+          -- Không backfill lúc migration (v3->v4) — tự đồng bộ khi
+          -- đọc, xem SchedulerRepository.syncWithReviewQueue.
+
+-- Kết quả Quiz (Sprint 10 Phase 4, DR-2026-0005 mục 5). CHỈ lưu điểm
+-- — KHÔNG có Question Bank, KHÔNG lưu lại câu hỏi/nội dung Ayah: câu
+-- hỏi sinh động mỗi phiên từ nhóm A (QuestionGenerator, thuần Dart,
+-- không phụ thuộc database) rồi bỏ đi, không bao giờ ghi xuống nhóm B.
+quiz_results(id, user_id, updated_at, deleted_at, is_dirty,
+             quiz_type TEXT,                 -- 'mixed' (chỉ giá trị hiện có)
+             surah_id INTEGER NULL,
+             score INTEGER, total INTEGER,
+             taken_at INTEGER)                -- epoch ms
+             -- LỆCH CÓ CHỦ ĐÍCH so với sketch gốc (surah_id từng
+             -- không nullable): quiz 'mixed' trộn nhiều loại câu hỏi
+             -- từ nhiều Surah trong 1 phiên, không gắn với đúng 1
+             -- Surah — surah_id để dành cho chế độ quiz theo phạm vi
+             -- 1 Surah (chưa xây ở Sprint 10).
 ```
 
 Supabase: mọi bảng nhóm B bật RLS `user_id = auth.uid()`.
@@ -236,30 +290,16 @@ surah_progress(user_id, surah_id, ayahs_read, ayahs_memorized,
                -- cache tính từ ayah_statuses — tối ưu hoá, chưa cần
                -- thiết tới khi có dữ liệu thật cho thấy cần cache.
 
--- SRS tổng quát: dùng CHUNG cho từ vựng (lemma) và Hifz (ayah).
--- item_type + item_id thay vì khóa cứng vào lemma -> thêm loại
--- thẻ mới (ví dụ: cụm Ayah) không cần đổi schema. Bước 9 — thay thế
--- Revision Queue đơn giản hiện tại (ayah_statuses.status='review')
--- khi thật sự cần đường cong lặp lại ngắt quãng (SM-2).
-srs_cards(id, user_id,
-          item_type TEXT,                   -- 'lemma' | 'ayah'
-          item_id INTEGER,                  -- lemma_id hoặc ayah_id
-          ease_factor, interval_days, repetitions,  -- SM-2
-          due_date, state,                  -- new|learning|review|lapsed
-          updated_at, deleted_at,
-          UNIQUE(user_id, item_type, item_id))
-
--- HIFZ (học thuộc lòng): kế hoạch theo dải Ayah. Bước 9.
--- Ôn tập từng Ayah do srs_cards(item_type='ayah') đảm nhiệm;
+-- HIFZ (học thuộc lòng): kế hoạch theo dải Ayah. Bước 9 — CHƯA xây ở
+-- Sprint 10 (không nằm trong 6 quyết định của DR-2026-0005; chỉ nêu
+-- tên như 1 nhánh tương lai của Learning Engine). Ôn tập từng Ayah do
+-- srs_cards(item_type='ayah') đảm nhiệm (đã có, xem "Đã triển khai");
 -- status='learned' trong ayah_statuses đánh dấu kết quả cuối.
 hifz_plans(id, user_id,
            surah_id, ayah_from, ayah_to,
            status,                          -- active|paused|completed
            started_at, completed_at,
            updated_at, deleted_at)
-
-quiz_results(id, user_id, quiz_type, surah_id, score, total, taken_at)
-             -- Bước 9.
 
 sync_queue(id, table_name, row_id,          -- hàng đợi offline
            operation,                       -- insert|update|delete

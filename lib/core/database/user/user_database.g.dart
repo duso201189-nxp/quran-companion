@@ -3537,6 +3537,1113 @@ class BookmarkCollectionsCompanion
   }
 }
 
+class $SrsCardsTable extends SrsCards
+    with TableInfo<$SrsCardsTable, SrsCardRow> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $SrsCardsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+      'id', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  static const VerificationMeta _userIdMeta = const VerificationMeta('userId');
+  @override
+  late final GeneratedColumn<String> userId = GeneratedColumn<String>(
+      'user_id', aliasedName, true,
+      type: DriftSqlType.string, requiredDuringInsert: false);
+  static const VerificationMeta _updatedAtMeta =
+      const VerificationMeta('updatedAt');
+  @override
+  late final GeneratedColumn<int> updatedAt = GeneratedColumn<int>(
+      'updated_at', aliasedName, false,
+      type: DriftSqlType.int, requiredDuringInsert: true);
+  static const VerificationMeta _deletedAtMeta =
+      const VerificationMeta('deletedAt');
+  @override
+  late final GeneratedColumn<int> deletedAt = GeneratedColumn<int>(
+      'deleted_at', aliasedName, true,
+      type: DriftSqlType.int, requiredDuringInsert: false);
+  static const VerificationMeta _isDirtyMeta =
+      const VerificationMeta('isDirty');
+  @override
+  late final GeneratedColumn<bool> isDirty = GeneratedColumn<bool>(
+      'is_dirty', aliasedName, false,
+      type: DriftSqlType.bool,
+      requiredDuringInsert: false,
+      defaultConstraints:
+          GeneratedColumn.constraintIsAlways('CHECK ("is_dirty" IN (0, 1))'),
+      defaultValue: const Constant(true));
+  static const VerificationMeta _itemTypeMeta =
+      const VerificationMeta('itemType');
+  @override
+  late final GeneratedColumn<String> itemType = GeneratedColumn<String>(
+      'item_type', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  static const VerificationMeta _itemIdMeta = const VerificationMeta('itemId');
+  @override
+  late final GeneratedColumn<int> itemId = GeneratedColumn<int>(
+      'item_id', aliasedName, false,
+      type: DriftSqlType.int, requiredDuringInsert: true);
+  static const VerificationMeta _easeFactorMeta =
+      const VerificationMeta('easeFactor');
+  @override
+  late final GeneratedColumn<double> easeFactor = GeneratedColumn<double>(
+      'ease_factor', aliasedName, false,
+      type: DriftSqlType.double,
+      requiredDuringInsert: false,
+      defaultValue: const Constant(2.5));
+  static const VerificationMeta _intervalDaysMeta =
+      const VerificationMeta('intervalDays');
+  @override
+  late final GeneratedColumn<int> intervalDays = GeneratedColumn<int>(
+      'interval_days', aliasedName, false,
+      type: DriftSqlType.int,
+      requiredDuringInsert: false,
+      defaultValue: const Constant(0));
+  static const VerificationMeta _repetitionsMeta =
+      const VerificationMeta('repetitions');
+  @override
+  late final GeneratedColumn<int> repetitions = GeneratedColumn<int>(
+      'repetitions', aliasedName, false,
+      type: DriftSqlType.int,
+      requiredDuringInsert: false,
+      defaultValue: const Constant(0));
+  static const VerificationMeta _dueDateMeta =
+      const VerificationMeta('dueDate');
+  @override
+  late final GeneratedColumn<int> dueDate = GeneratedColumn<int>(
+      'due_date', aliasedName, false,
+      type: DriftSqlType.int, requiredDuringInsert: true);
+  static const VerificationMeta _stateMeta = const VerificationMeta('state');
+  @override
+  late final GeneratedColumn<String> state = GeneratedColumn<String>(
+      'state', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  @override
+  List<GeneratedColumn> get $columns => [
+        id,
+        userId,
+        updatedAt,
+        deletedAt,
+        isDirty,
+        itemType,
+        itemId,
+        easeFactor,
+        intervalDays,
+        repetitions,
+        dueDate,
+        state
+      ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'srs_cards';
+  @override
+  VerificationContext validateIntegrity(Insertable<SrsCardRow> instance,
+      {bool isInserting = false}) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    } else if (isInserting) {
+      context.missing(_idMeta);
+    }
+    if (data.containsKey('user_id')) {
+      context.handle(_userIdMeta,
+          userId.isAcceptableOrUnknown(data['user_id']!, _userIdMeta));
+    }
+    if (data.containsKey('updated_at')) {
+      context.handle(_updatedAtMeta,
+          updatedAt.isAcceptableOrUnknown(data['updated_at']!, _updatedAtMeta));
+    } else if (isInserting) {
+      context.missing(_updatedAtMeta);
+    }
+    if (data.containsKey('deleted_at')) {
+      context.handle(_deletedAtMeta,
+          deletedAt.isAcceptableOrUnknown(data['deleted_at']!, _deletedAtMeta));
+    }
+    if (data.containsKey('is_dirty')) {
+      context.handle(_isDirtyMeta,
+          isDirty.isAcceptableOrUnknown(data['is_dirty']!, _isDirtyMeta));
+    }
+    if (data.containsKey('item_type')) {
+      context.handle(_itemTypeMeta,
+          itemType.isAcceptableOrUnknown(data['item_type']!, _itemTypeMeta));
+    } else if (isInserting) {
+      context.missing(_itemTypeMeta);
+    }
+    if (data.containsKey('item_id')) {
+      context.handle(_itemIdMeta,
+          itemId.isAcceptableOrUnknown(data['item_id']!, _itemIdMeta));
+    } else if (isInserting) {
+      context.missing(_itemIdMeta);
+    }
+    if (data.containsKey('ease_factor')) {
+      context.handle(
+          _easeFactorMeta,
+          easeFactor.isAcceptableOrUnknown(
+              data['ease_factor']!, _easeFactorMeta));
+    }
+    if (data.containsKey('interval_days')) {
+      context.handle(
+          _intervalDaysMeta,
+          intervalDays.isAcceptableOrUnknown(
+              data['interval_days']!, _intervalDaysMeta));
+    }
+    if (data.containsKey('repetitions')) {
+      context.handle(
+          _repetitionsMeta,
+          repetitions.isAcceptableOrUnknown(
+              data['repetitions']!, _repetitionsMeta));
+    }
+    if (data.containsKey('due_date')) {
+      context.handle(_dueDateMeta,
+          dueDate.isAcceptableOrUnknown(data['due_date']!, _dueDateMeta));
+    } else if (isInserting) {
+      context.missing(_dueDateMeta);
+    }
+    if (data.containsKey('state')) {
+      context.handle(
+          _stateMeta, state.isAcceptableOrUnknown(data['state']!, _stateMeta));
+    } else if (isInserting) {
+      context.missing(_stateMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  List<Set<GeneratedColumn>> get uniqueKeys => [
+        {itemType, itemId},
+      ];
+  @override
+  SrsCardRow map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return SrsCardRow(
+      id: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}id'])!,
+      userId: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}user_id']),
+      updatedAt: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}updated_at'])!,
+      deletedAt: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}deleted_at']),
+      isDirty: attachedDatabase.typeMapping
+          .read(DriftSqlType.bool, data['${effectivePrefix}is_dirty'])!,
+      itemType: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}item_type'])!,
+      itemId: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}item_id'])!,
+      easeFactor: attachedDatabase.typeMapping
+          .read(DriftSqlType.double, data['${effectivePrefix}ease_factor'])!,
+      intervalDays: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}interval_days'])!,
+      repetitions: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}repetitions'])!,
+      dueDate: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}due_date'])!,
+      state: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}state'])!,
+    );
+  }
+
+  @override
+  $SrsCardsTable createAlias(String alias) {
+    return $SrsCardsTable(attachedDatabase, alias);
+  }
+}
+
+class SrsCardRow extends DataClass implements Insertable<SrsCardRow> {
+  final String id;
+  final String? userId;
+  final int updatedAt;
+  final int? deletedAt;
+  final bool isDirty;
+
+  /// 'ayah' | 'lemma' (chỉ 'ayah' dùng ở Sprint 10).
+  final String itemType;
+
+  /// ayah_id hoặc lemma_id tùy [itemType].
+  final int itemId;
+  final double easeFactor;
+  final int intervalDays;
+  final int repetitions;
+
+  /// Epoch ms UTC — thời điểm đến hạn ôn tập.
+  final int dueDate;
+
+  /// 'new' | 'learning' | 'review' | 'lapsed'.
+  final String state;
+  const SrsCardRow(
+      {required this.id,
+      this.userId,
+      required this.updatedAt,
+      this.deletedAt,
+      required this.isDirty,
+      required this.itemType,
+      required this.itemId,
+      required this.easeFactor,
+      required this.intervalDays,
+      required this.repetitions,
+      required this.dueDate,
+      required this.state});
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<String>(id);
+    if (!nullToAbsent || userId != null) {
+      map['user_id'] = Variable<String>(userId);
+    }
+    map['updated_at'] = Variable<int>(updatedAt);
+    if (!nullToAbsent || deletedAt != null) {
+      map['deleted_at'] = Variable<int>(deletedAt);
+    }
+    map['is_dirty'] = Variable<bool>(isDirty);
+    map['item_type'] = Variable<String>(itemType);
+    map['item_id'] = Variable<int>(itemId);
+    map['ease_factor'] = Variable<double>(easeFactor);
+    map['interval_days'] = Variable<int>(intervalDays);
+    map['repetitions'] = Variable<int>(repetitions);
+    map['due_date'] = Variable<int>(dueDate);
+    map['state'] = Variable<String>(state);
+    return map;
+  }
+
+  SrsCardsCompanion toCompanion(bool nullToAbsent) {
+    return SrsCardsCompanion(
+      id: Value(id),
+      userId:
+          userId == null && nullToAbsent ? const Value.absent() : Value(userId),
+      updatedAt: Value(updatedAt),
+      deletedAt: deletedAt == null && nullToAbsent
+          ? const Value.absent()
+          : Value(deletedAt),
+      isDirty: Value(isDirty),
+      itemType: Value(itemType),
+      itemId: Value(itemId),
+      easeFactor: Value(easeFactor),
+      intervalDays: Value(intervalDays),
+      repetitions: Value(repetitions),
+      dueDate: Value(dueDate),
+      state: Value(state),
+    );
+  }
+
+  factory SrsCardRow.fromJson(Map<String, dynamic> json,
+      {ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return SrsCardRow(
+      id: serializer.fromJson<String>(json['id']),
+      userId: serializer.fromJson<String?>(json['userId']),
+      updatedAt: serializer.fromJson<int>(json['updatedAt']),
+      deletedAt: serializer.fromJson<int?>(json['deletedAt']),
+      isDirty: serializer.fromJson<bool>(json['isDirty']),
+      itemType: serializer.fromJson<String>(json['itemType']),
+      itemId: serializer.fromJson<int>(json['itemId']),
+      easeFactor: serializer.fromJson<double>(json['easeFactor']),
+      intervalDays: serializer.fromJson<int>(json['intervalDays']),
+      repetitions: serializer.fromJson<int>(json['repetitions']),
+      dueDate: serializer.fromJson<int>(json['dueDate']),
+      state: serializer.fromJson<String>(json['state']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<String>(id),
+      'userId': serializer.toJson<String?>(userId),
+      'updatedAt': serializer.toJson<int>(updatedAt),
+      'deletedAt': serializer.toJson<int?>(deletedAt),
+      'isDirty': serializer.toJson<bool>(isDirty),
+      'itemType': serializer.toJson<String>(itemType),
+      'itemId': serializer.toJson<int>(itemId),
+      'easeFactor': serializer.toJson<double>(easeFactor),
+      'intervalDays': serializer.toJson<int>(intervalDays),
+      'repetitions': serializer.toJson<int>(repetitions),
+      'dueDate': serializer.toJson<int>(dueDate),
+      'state': serializer.toJson<String>(state),
+    };
+  }
+
+  SrsCardRow copyWith(
+          {String? id,
+          Value<String?> userId = const Value.absent(),
+          int? updatedAt,
+          Value<int?> deletedAt = const Value.absent(),
+          bool? isDirty,
+          String? itemType,
+          int? itemId,
+          double? easeFactor,
+          int? intervalDays,
+          int? repetitions,
+          int? dueDate,
+          String? state}) =>
+      SrsCardRow(
+        id: id ?? this.id,
+        userId: userId.present ? userId.value : this.userId,
+        updatedAt: updatedAt ?? this.updatedAt,
+        deletedAt: deletedAt.present ? deletedAt.value : this.deletedAt,
+        isDirty: isDirty ?? this.isDirty,
+        itemType: itemType ?? this.itemType,
+        itemId: itemId ?? this.itemId,
+        easeFactor: easeFactor ?? this.easeFactor,
+        intervalDays: intervalDays ?? this.intervalDays,
+        repetitions: repetitions ?? this.repetitions,
+        dueDate: dueDate ?? this.dueDate,
+        state: state ?? this.state,
+      );
+  SrsCardRow copyWithCompanion(SrsCardsCompanion data) {
+    return SrsCardRow(
+      id: data.id.present ? data.id.value : this.id,
+      userId: data.userId.present ? data.userId.value : this.userId,
+      updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
+      deletedAt: data.deletedAt.present ? data.deletedAt.value : this.deletedAt,
+      isDirty: data.isDirty.present ? data.isDirty.value : this.isDirty,
+      itemType: data.itemType.present ? data.itemType.value : this.itemType,
+      itemId: data.itemId.present ? data.itemId.value : this.itemId,
+      easeFactor:
+          data.easeFactor.present ? data.easeFactor.value : this.easeFactor,
+      intervalDays: data.intervalDays.present
+          ? data.intervalDays.value
+          : this.intervalDays,
+      repetitions:
+          data.repetitions.present ? data.repetitions.value : this.repetitions,
+      dueDate: data.dueDate.present ? data.dueDate.value : this.dueDate,
+      state: data.state.present ? data.state.value : this.state,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('SrsCardRow(')
+          ..write('id: $id, ')
+          ..write('userId: $userId, ')
+          ..write('updatedAt: $updatedAt, ')
+          ..write('deletedAt: $deletedAt, ')
+          ..write('isDirty: $isDirty, ')
+          ..write('itemType: $itemType, ')
+          ..write('itemId: $itemId, ')
+          ..write('easeFactor: $easeFactor, ')
+          ..write('intervalDays: $intervalDays, ')
+          ..write('repetitions: $repetitions, ')
+          ..write('dueDate: $dueDate, ')
+          ..write('state: $state')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(id, userId, updatedAt, deletedAt, isDirty,
+      itemType, itemId, easeFactor, intervalDays, repetitions, dueDate, state);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is SrsCardRow &&
+          other.id == this.id &&
+          other.userId == this.userId &&
+          other.updatedAt == this.updatedAt &&
+          other.deletedAt == this.deletedAt &&
+          other.isDirty == this.isDirty &&
+          other.itemType == this.itemType &&
+          other.itemId == this.itemId &&
+          other.easeFactor == this.easeFactor &&
+          other.intervalDays == this.intervalDays &&
+          other.repetitions == this.repetitions &&
+          other.dueDate == this.dueDate &&
+          other.state == this.state);
+}
+
+class SrsCardsCompanion extends UpdateCompanion<SrsCardRow> {
+  final Value<String> id;
+  final Value<String?> userId;
+  final Value<int> updatedAt;
+  final Value<int?> deletedAt;
+  final Value<bool> isDirty;
+  final Value<String> itemType;
+  final Value<int> itemId;
+  final Value<double> easeFactor;
+  final Value<int> intervalDays;
+  final Value<int> repetitions;
+  final Value<int> dueDate;
+  final Value<String> state;
+  final Value<int> rowid;
+  const SrsCardsCompanion({
+    this.id = const Value.absent(),
+    this.userId = const Value.absent(),
+    this.updatedAt = const Value.absent(),
+    this.deletedAt = const Value.absent(),
+    this.isDirty = const Value.absent(),
+    this.itemType = const Value.absent(),
+    this.itemId = const Value.absent(),
+    this.easeFactor = const Value.absent(),
+    this.intervalDays = const Value.absent(),
+    this.repetitions = const Value.absent(),
+    this.dueDate = const Value.absent(),
+    this.state = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  SrsCardsCompanion.insert({
+    required String id,
+    this.userId = const Value.absent(),
+    required int updatedAt,
+    this.deletedAt = const Value.absent(),
+    this.isDirty = const Value.absent(),
+    required String itemType,
+    required int itemId,
+    this.easeFactor = const Value.absent(),
+    this.intervalDays = const Value.absent(),
+    this.repetitions = const Value.absent(),
+    required int dueDate,
+    required String state,
+    this.rowid = const Value.absent(),
+  })  : id = Value(id),
+        updatedAt = Value(updatedAt),
+        itemType = Value(itemType),
+        itemId = Value(itemId),
+        dueDate = Value(dueDate),
+        state = Value(state);
+  static Insertable<SrsCardRow> custom({
+    Expression<String>? id,
+    Expression<String>? userId,
+    Expression<int>? updatedAt,
+    Expression<int>? deletedAt,
+    Expression<bool>? isDirty,
+    Expression<String>? itemType,
+    Expression<int>? itemId,
+    Expression<double>? easeFactor,
+    Expression<int>? intervalDays,
+    Expression<int>? repetitions,
+    Expression<int>? dueDate,
+    Expression<String>? state,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (userId != null) 'user_id': userId,
+      if (updatedAt != null) 'updated_at': updatedAt,
+      if (deletedAt != null) 'deleted_at': deletedAt,
+      if (isDirty != null) 'is_dirty': isDirty,
+      if (itemType != null) 'item_type': itemType,
+      if (itemId != null) 'item_id': itemId,
+      if (easeFactor != null) 'ease_factor': easeFactor,
+      if (intervalDays != null) 'interval_days': intervalDays,
+      if (repetitions != null) 'repetitions': repetitions,
+      if (dueDate != null) 'due_date': dueDate,
+      if (state != null) 'state': state,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  SrsCardsCompanion copyWith(
+      {Value<String>? id,
+      Value<String?>? userId,
+      Value<int>? updatedAt,
+      Value<int?>? deletedAt,
+      Value<bool>? isDirty,
+      Value<String>? itemType,
+      Value<int>? itemId,
+      Value<double>? easeFactor,
+      Value<int>? intervalDays,
+      Value<int>? repetitions,
+      Value<int>? dueDate,
+      Value<String>? state,
+      Value<int>? rowid}) {
+    return SrsCardsCompanion(
+      id: id ?? this.id,
+      userId: userId ?? this.userId,
+      updatedAt: updatedAt ?? this.updatedAt,
+      deletedAt: deletedAt ?? this.deletedAt,
+      isDirty: isDirty ?? this.isDirty,
+      itemType: itemType ?? this.itemType,
+      itemId: itemId ?? this.itemId,
+      easeFactor: easeFactor ?? this.easeFactor,
+      intervalDays: intervalDays ?? this.intervalDays,
+      repetitions: repetitions ?? this.repetitions,
+      dueDate: dueDate ?? this.dueDate,
+      state: state ?? this.state,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (userId.present) {
+      map['user_id'] = Variable<String>(userId.value);
+    }
+    if (updatedAt.present) {
+      map['updated_at'] = Variable<int>(updatedAt.value);
+    }
+    if (deletedAt.present) {
+      map['deleted_at'] = Variable<int>(deletedAt.value);
+    }
+    if (isDirty.present) {
+      map['is_dirty'] = Variable<bool>(isDirty.value);
+    }
+    if (itemType.present) {
+      map['item_type'] = Variable<String>(itemType.value);
+    }
+    if (itemId.present) {
+      map['item_id'] = Variable<int>(itemId.value);
+    }
+    if (easeFactor.present) {
+      map['ease_factor'] = Variable<double>(easeFactor.value);
+    }
+    if (intervalDays.present) {
+      map['interval_days'] = Variable<int>(intervalDays.value);
+    }
+    if (repetitions.present) {
+      map['repetitions'] = Variable<int>(repetitions.value);
+    }
+    if (dueDate.present) {
+      map['due_date'] = Variable<int>(dueDate.value);
+    }
+    if (state.present) {
+      map['state'] = Variable<String>(state.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('SrsCardsCompanion(')
+          ..write('id: $id, ')
+          ..write('userId: $userId, ')
+          ..write('updatedAt: $updatedAt, ')
+          ..write('deletedAt: $deletedAt, ')
+          ..write('isDirty: $isDirty, ')
+          ..write('itemType: $itemType, ')
+          ..write('itemId: $itemId, ')
+          ..write('easeFactor: $easeFactor, ')
+          ..write('intervalDays: $intervalDays, ')
+          ..write('repetitions: $repetitions, ')
+          ..write('dueDate: $dueDate, ')
+          ..write('state: $state, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $QuizResultsTable extends QuizResults
+    with TableInfo<$QuizResultsTable, QuizResultRow> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $QuizResultsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+      'id', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  static const VerificationMeta _userIdMeta = const VerificationMeta('userId');
+  @override
+  late final GeneratedColumn<String> userId = GeneratedColumn<String>(
+      'user_id', aliasedName, true,
+      type: DriftSqlType.string, requiredDuringInsert: false);
+  static const VerificationMeta _updatedAtMeta =
+      const VerificationMeta('updatedAt');
+  @override
+  late final GeneratedColumn<int> updatedAt = GeneratedColumn<int>(
+      'updated_at', aliasedName, false,
+      type: DriftSqlType.int, requiredDuringInsert: true);
+  static const VerificationMeta _deletedAtMeta =
+      const VerificationMeta('deletedAt');
+  @override
+  late final GeneratedColumn<int> deletedAt = GeneratedColumn<int>(
+      'deleted_at', aliasedName, true,
+      type: DriftSqlType.int, requiredDuringInsert: false);
+  static const VerificationMeta _isDirtyMeta =
+      const VerificationMeta('isDirty');
+  @override
+  late final GeneratedColumn<bool> isDirty = GeneratedColumn<bool>(
+      'is_dirty', aliasedName, false,
+      type: DriftSqlType.bool,
+      requiredDuringInsert: false,
+      defaultConstraints:
+          GeneratedColumn.constraintIsAlways('CHECK ("is_dirty" IN (0, 1))'),
+      defaultValue: const Constant(true));
+  static const VerificationMeta _quizTypeMeta =
+      const VerificationMeta('quizType');
+  @override
+  late final GeneratedColumn<String> quizType = GeneratedColumn<String>(
+      'quiz_type', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  static const VerificationMeta _surahIdMeta =
+      const VerificationMeta('surahId');
+  @override
+  late final GeneratedColumn<int> surahId = GeneratedColumn<int>(
+      'surah_id', aliasedName, true,
+      type: DriftSqlType.int, requiredDuringInsert: false);
+  static const VerificationMeta _scoreMeta = const VerificationMeta('score');
+  @override
+  late final GeneratedColumn<int> score = GeneratedColumn<int>(
+      'score', aliasedName, false,
+      type: DriftSqlType.int, requiredDuringInsert: true);
+  static const VerificationMeta _totalMeta = const VerificationMeta('total');
+  @override
+  late final GeneratedColumn<int> total = GeneratedColumn<int>(
+      'total', aliasedName, false,
+      type: DriftSqlType.int, requiredDuringInsert: true);
+  static const VerificationMeta _takenAtMeta =
+      const VerificationMeta('takenAt');
+  @override
+  late final GeneratedColumn<int> takenAt = GeneratedColumn<int>(
+      'taken_at', aliasedName, false,
+      type: DriftSqlType.int, requiredDuringInsert: true);
+  @override
+  List<GeneratedColumn> get $columns => [
+        id,
+        userId,
+        updatedAt,
+        deletedAt,
+        isDirty,
+        quizType,
+        surahId,
+        score,
+        total,
+        takenAt
+      ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'quiz_results';
+  @override
+  VerificationContext validateIntegrity(Insertable<QuizResultRow> instance,
+      {bool isInserting = false}) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    } else if (isInserting) {
+      context.missing(_idMeta);
+    }
+    if (data.containsKey('user_id')) {
+      context.handle(_userIdMeta,
+          userId.isAcceptableOrUnknown(data['user_id']!, _userIdMeta));
+    }
+    if (data.containsKey('updated_at')) {
+      context.handle(_updatedAtMeta,
+          updatedAt.isAcceptableOrUnknown(data['updated_at']!, _updatedAtMeta));
+    } else if (isInserting) {
+      context.missing(_updatedAtMeta);
+    }
+    if (data.containsKey('deleted_at')) {
+      context.handle(_deletedAtMeta,
+          deletedAt.isAcceptableOrUnknown(data['deleted_at']!, _deletedAtMeta));
+    }
+    if (data.containsKey('is_dirty')) {
+      context.handle(_isDirtyMeta,
+          isDirty.isAcceptableOrUnknown(data['is_dirty']!, _isDirtyMeta));
+    }
+    if (data.containsKey('quiz_type')) {
+      context.handle(_quizTypeMeta,
+          quizType.isAcceptableOrUnknown(data['quiz_type']!, _quizTypeMeta));
+    } else if (isInserting) {
+      context.missing(_quizTypeMeta);
+    }
+    if (data.containsKey('surah_id')) {
+      context.handle(_surahIdMeta,
+          surahId.isAcceptableOrUnknown(data['surah_id']!, _surahIdMeta));
+    }
+    if (data.containsKey('score')) {
+      context.handle(
+          _scoreMeta, score.isAcceptableOrUnknown(data['score']!, _scoreMeta));
+    } else if (isInserting) {
+      context.missing(_scoreMeta);
+    }
+    if (data.containsKey('total')) {
+      context.handle(
+          _totalMeta, total.isAcceptableOrUnknown(data['total']!, _totalMeta));
+    } else if (isInserting) {
+      context.missing(_totalMeta);
+    }
+    if (data.containsKey('taken_at')) {
+      context.handle(_takenAtMeta,
+          takenAt.isAcceptableOrUnknown(data['taken_at']!, _takenAtMeta));
+    } else if (isInserting) {
+      context.missing(_takenAtMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  QuizResultRow map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return QuizResultRow(
+      id: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}id'])!,
+      userId: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}user_id']),
+      updatedAt: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}updated_at'])!,
+      deletedAt: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}deleted_at']),
+      isDirty: attachedDatabase.typeMapping
+          .read(DriftSqlType.bool, data['${effectivePrefix}is_dirty'])!,
+      quizType: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}quiz_type'])!,
+      surahId: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}surah_id']),
+      score: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}score'])!,
+      total: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}total'])!,
+      takenAt: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}taken_at'])!,
+    );
+  }
+
+  @override
+  $QuizResultsTable createAlias(String alias) {
+    return $QuizResultsTable(attachedDatabase, alias);
+  }
+}
+
+class QuizResultRow extends DataClass implements Insertable<QuizResultRow> {
+  final String id;
+  final String? userId;
+  final int updatedAt;
+  final int? deletedAt;
+  final bool isDirty;
+
+  /// 'mixed' — duy nhất loại hiện có (Sprint 10). Để dành cho các chế
+  /// độ quiz tương lai (vd. theo 1 Surah) tái dùng cùng cột.
+  final String quizType;
+  final int? surahId;
+  final int score;
+  final int total;
+  final int takenAt;
+  const QuizResultRow(
+      {required this.id,
+      this.userId,
+      required this.updatedAt,
+      this.deletedAt,
+      required this.isDirty,
+      required this.quizType,
+      this.surahId,
+      required this.score,
+      required this.total,
+      required this.takenAt});
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<String>(id);
+    if (!nullToAbsent || userId != null) {
+      map['user_id'] = Variable<String>(userId);
+    }
+    map['updated_at'] = Variable<int>(updatedAt);
+    if (!nullToAbsent || deletedAt != null) {
+      map['deleted_at'] = Variable<int>(deletedAt);
+    }
+    map['is_dirty'] = Variable<bool>(isDirty);
+    map['quiz_type'] = Variable<String>(quizType);
+    if (!nullToAbsent || surahId != null) {
+      map['surah_id'] = Variable<int>(surahId);
+    }
+    map['score'] = Variable<int>(score);
+    map['total'] = Variable<int>(total);
+    map['taken_at'] = Variable<int>(takenAt);
+    return map;
+  }
+
+  QuizResultsCompanion toCompanion(bool nullToAbsent) {
+    return QuizResultsCompanion(
+      id: Value(id),
+      userId:
+          userId == null && nullToAbsent ? const Value.absent() : Value(userId),
+      updatedAt: Value(updatedAt),
+      deletedAt: deletedAt == null && nullToAbsent
+          ? const Value.absent()
+          : Value(deletedAt),
+      isDirty: Value(isDirty),
+      quizType: Value(quizType),
+      surahId: surahId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(surahId),
+      score: Value(score),
+      total: Value(total),
+      takenAt: Value(takenAt),
+    );
+  }
+
+  factory QuizResultRow.fromJson(Map<String, dynamic> json,
+      {ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return QuizResultRow(
+      id: serializer.fromJson<String>(json['id']),
+      userId: serializer.fromJson<String?>(json['userId']),
+      updatedAt: serializer.fromJson<int>(json['updatedAt']),
+      deletedAt: serializer.fromJson<int?>(json['deletedAt']),
+      isDirty: serializer.fromJson<bool>(json['isDirty']),
+      quizType: serializer.fromJson<String>(json['quizType']),
+      surahId: serializer.fromJson<int?>(json['surahId']),
+      score: serializer.fromJson<int>(json['score']),
+      total: serializer.fromJson<int>(json['total']),
+      takenAt: serializer.fromJson<int>(json['takenAt']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<String>(id),
+      'userId': serializer.toJson<String?>(userId),
+      'updatedAt': serializer.toJson<int>(updatedAt),
+      'deletedAt': serializer.toJson<int?>(deletedAt),
+      'isDirty': serializer.toJson<bool>(isDirty),
+      'quizType': serializer.toJson<String>(quizType),
+      'surahId': serializer.toJson<int?>(surahId),
+      'score': serializer.toJson<int>(score),
+      'total': serializer.toJson<int>(total),
+      'takenAt': serializer.toJson<int>(takenAt),
+    };
+  }
+
+  QuizResultRow copyWith(
+          {String? id,
+          Value<String?> userId = const Value.absent(),
+          int? updatedAt,
+          Value<int?> deletedAt = const Value.absent(),
+          bool? isDirty,
+          String? quizType,
+          Value<int?> surahId = const Value.absent(),
+          int? score,
+          int? total,
+          int? takenAt}) =>
+      QuizResultRow(
+        id: id ?? this.id,
+        userId: userId.present ? userId.value : this.userId,
+        updatedAt: updatedAt ?? this.updatedAt,
+        deletedAt: deletedAt.present ? deletedAt.value : this.deletedAt,
+        isDirty: isDirty ?? this.isDirty,
+        quizType: quizType ?? this.quizType,
+        surahId: surahId.present ? surahId.value : this.surahId,
+        score: score ?? this.score,
+        total: total ?? this.total,
+        takenAt: takenAt ?? this.takenAt,
+      );
+  QuizResultRow copyWithCompanion(QuizResultsCompanion data) {
+    return QuizResultRow(
+      id: data.id.present ? data.id.value : this.id,
+      userId: data.userId.present ? data.userId.value : this.userId,
+      updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
+      deletedAt: data.deletedAt.present ? data.deletedAt.value : this.deletedAt,
+      isDirty: data.isDirty.present ? data.isDirty.value : this.isDirty,
+      quizType: data.quizType.present ? data.quizType.value : this.quizType,
+      surahId: data.surahId.present ? data.surahId.value : this.surahId,
+      score: data.score.present ? data.score.value : this.score,
+      total: data.total.present ? data.total.value : this.total,
+      takenAt: data.takenAt.present ? data.takenAt.value : this.takenAt,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('QuizResultRow(')
+          ..write('id: $id, ')
+          ..write('userId: $userId, ')
+          ..write('updatedAt: $updatedAt, ')
+          ..write('deletedAt: $deletedAt, ')
+          ..write('isDirty: $isDirty, ')
+          ..write('quizType: $quizType, ')
+          ..write('surahId: $surahId, ')
+          ..write('score: $score, ')
+          ..write('total: $total, ')
+          ..write('takenAt: $takenAt')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(id, userId, updatedAt, deletedAt, isDirty,
+      quizType, surahId, score, total, takenAt);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is QuizResultRow &&
+          other.id == this.id &&
+          other.userId == this.userId &&
+          other.updatedAt == this.updatedAt &&
+          other.deletedAt == this.deletedAt &&
+          other.isDirty == this.isDirty &&
+          other.quizType == this.quizType &&
+          other.surahId == this.surahId &&
+          other.score == this.score &&
+          other.total == this.total &&
+          other.takenAt == this.takenAt);
+}
+
+class QuizResultsCompanion extends UpdateCompanion<QuizResultRow> {
+  final Value<String> id;
+  final Value<String?> userId;
+  final Value<int> updatedAt;
+  final Value<int?> deletedAt;
+  final Value<bool> isDirty;
+  final Value<String> quizType;
+  final Value<int?> surahId;
+  final Value<int> score;
+  final Value<int> total;
+  final Value<int> takenAt;
+  final Value<int> rowid;
+  const QuizResultsCompanion({
+    this.id = const Value.absent(),
+    this.userId = const Value.absent(),
+    this.updatedAt = const Value.absent(),
+    this.deletedAt = const Value.absent(),
+    this.isDirty = const Value.absent(),
+    this.quizType = const Value.absent(),
+    this.surahId = const Value.absent(),
+    this.score = const Value.absent(),
+    this.total = const Value.absent(),
+    this.takenAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  QuizResultsCompanion.insert({
+    required String id,
+    this.userId = const Value.absent(),
+    required int updatedAt,
+    this.deletedAt = const Value.absent(),
+    this.isDirty = const Value.absent(),
+    required String quizType,
+    this.surahId = const Value.absent(),
+    required int score,
+    required int total,
+    required int takenAt,
+    this.rowid = const Value.absent(),
+  })  : id = Value(id),
+        updatedAt = Value(updatedAt),
+        quizType = Value(quizType),
+        score = Value(score),
+        total = Value(total),
+        takenAt = Value(takenAt);
+  static Insertable<QuizResultRow> custom({
+    Expression<String>? id,
+    Expression<String>? userId,
+    Expression<int>? updatedAt,
+    Expression<int>? deletedAt,
+    Expression<bool>? isDirty,
+    Expression<String>? quizType,
+    Expression<int>? surahId,
+    Expression<int>? score,
+    Expression<int>? total,
+    Expression<int>? takenAt,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (userId != null) 'user_id': userId,
+      if (updatedAt != null) 'updated_at': updatedAt,
+      if (deletedAt != null) 'deleted_at': deletedAt,
+      if (isDirty != null) 'is_dirty': isDirty,
+      if (quizType != null) 'quiz_type': quizType,
+      if (surahId != null) 'surah_id': surahId,
+      if (score != null) 'score': score,
+      if (total != null) 'total': total,
+      if (takenAt != null) 'taken_at': takenAt,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  QuizResultsCompanion copyWith(
+      {Value<String>? id,
+      Value<String?>? userId,
+      Value<int>? updatedAt,
+      Value<int?>? deletedAt,
+      Value<bool>? isDirty,
+      Value<String>? quizType,
+      Value<int?>? surahId,
+      Value<int>? score,
+      Value<int>? total,
+      Value<int>? takenAt,
+      Value<int>? rowid}) {
+    return QuizResultsCompanion(
+      id: id ?? this.id,
+      userId: userId ?? this.userId,
+      updatedAt: updatedAt ?? this.updatedAt,
+      deletedAt: deletedAt ?? this.deletedAt,
+      isDirty: isDirty ?? this.isDirty,
+      quizType: quizType ?? this.quizType,
+      surahId: surahId ?? this.surahId,
+      score: score ?? this.score,
+      total: total ?? this.total,
+      takenAt: takenAt ?? this.takenAt,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (userId.present) {
+      map['user_id'] = Variable<String>(userId.value);
+    }
+    if (updatedAt.present) {
+      map['updated_at'] = Variable<int>(updatedAt.value);
+    }
+    if (deletedAt.present) {
+      map['deleted_at'] = Variable<int>(deletedAt.value);
+    }
+    if (isDirty.present) {
+      map['is_dirty'] = Variable<bool>(isDirty.value);
+    }
+    if (quizType.present) {
+      map['quiz_type'] = Variable<String>(quizType.value);
+    }
+    if (surahId.present) {
+      map['surah_id'] = Variable<int>(surahId.value);
+    }
+    if (score.present) {
+      map['score'] = Variable<int>(score.value);
+    }
+    if (total.present) {
+      map['total'] = Variable<int>(total.value);
+    }
+    if (takenAt.present) {
+      map['taken_at'] = Variable<int>(takenAt.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('QuizResultsCompanion(')
+          ..write('id: $id, ')
+          ..write('userId: $userId, ')
+          ..write('updatedAt: $updatedAt, ')
+          ..write('deletedAt: $deletedAt, ')
+          ..write('isDirty: $isDirty, ')
+          ..write('quizType: $quizType, ')
+          ..write('surahId: $surahId, ')
+          ..write('score: $score, ')
+          ..write('total: $total, ')
+          ..write('takenAt: $takenAt, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
 abstract class _$UserDatabase extends GeneratedDatabase {
   _$UserDatabase(QueryExecutor e) : super(e);
   $UserDatabaseManager get managers => $UserDatabaseManager(this);
@@ -3549,6 +4656,8 @@ abstract class _$UserDatabase extends GeneratedDatabase {
   late final $KhatmCyclesTable khatmCycles = $KhatmCyclesTable(this);
   late final $BookmarkCollectionsTable bookmarkCollections =
       $BookmarkCollectionsTable(this);
+  late final $SrsCardsTable srsCards = $SrsCardsTable(this);
+  late final $QuizResultsTable quizResults = $QuizResultsTable(this);
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
@@ -3561,7 +4670,9 @@ abstract class _$UserDatabase extends GeneratedDatabase {
         ayahStatuses,
         studySessions,
         khatmCycles,
-        bookmarkCollections
+        bookmarkCollections,
+        srsCards,
+        quizResults
       ];
 }
 
@@ -5320,6 +6431,525 @@ typedef $$BookmarkCollectionsTableProcessedTableManager = ProcessedTableManager<
     ),
     BookmarkCollectionRow,
     PrefetchHooks Function()>;
+typedef $$SrsCardsTableCreateCompanionBuilder = SrsCardsCompanion Function({
+  required String id,
+  Value<String?> userId,
+  required int updatedAt,
+  Value<int?> deletedAt,
+  Value<bool> isDirty,
+  required String itemType,
+  required int itemId,
+  Value<double> easeFactor,
+  Value<int> intervalDays,
+  Value<int> repetitions,
+  required int dueDate,
+  required String state,
+  Value<int> rowid,
+});
+typedef $$SrsCardsTableUpdateCompanionBuilder = SrsCardsCompanion Function({
+  Value<String> id,
+  Value<String?> userId,
+  Value<int> updatedAt,
+  Value<int?> deletedAt,
+  Value<bool> isDirty,
+  Value<String> itemType,
+  Value<int> itemId,
+  Value<double> easeFactor,
+  Value<int> intervalDays,
+  Value<int> repetitions,
+  Value<int> dueDate,
+  Value<String> state,
+  Value<int> rowid,
+});
+
+class $$SrsCardsTableFilterComposer
+    extends Composer<_$UserDatabase, $SrsCardsTable> {
+  $$SrsCardsTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get id => $composableBuilder(
+      column: $table.id, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get userId => $composableBuilder(
+      column: $table.userId, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<int> get updatedAt => $composableBuilder(
+      column: $table.updatedAt, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<int> get deletedAt => $composableBuilder(
+      column: $table.deletedAt, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<bool> get isDirty => $composableBuilder(
+      column: $table.isDirty, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get itemType => $composableBuilder(
+      column: $table.itemType, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<int> get itemId => $composableBuilder(
+      column: $table.itemId, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<double> get easeFactor => $composableBuilder(
+      column: $table.easeFactor, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<int> get intervalDays => $composableBuilder(
+      column: $table.intervalDays, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<int> get repetitions => $composableBuilder(
+      column: $table.repetitions, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<int> get dueDate => $composableBuilder(
+      column: $table.dueDate, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get state => $composableBuilder(
+      column: $table.state, builder: (column) => ColumnFilters(column));
+}
+
+class $$SrsCardsTableOrderingComposer
+    extends Composer<_$UserDatabase, $SrsCardsTable> {
+  $$SrsCardsTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get id => $composableBuilder(
+      column: $table.id, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get userId => $composableBuilder(
+      column: $table.userId, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<int> get updatedAt => $composableBuilder(
+      column: $table.updatedAt, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<int> get deletedAt => $composableBuilder(
+      column: $table.deletedAt, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<bool> get isDirty => $composableBuilder(
+      column: $table.isDirty, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get itemType => $composableBuilder(
+      column: $table.itemType, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<int> get itemId => $composableBuilder(
+      column: $table.itemId, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<double> get easeFactor => $composableBuilder(
+      column: $table.easeFactor, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<int> get intervalDays => $composableBuilder(
+      column: $table.intervalDays,
+      builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<int> get repetitions => $composableBuilder(
+      column: $table.repetitions, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<int> get dueDate => $composableBuilder(
+      column: $table.dueDate, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get state => $composableBuilder(
+      column: $table.state, builder: (column) => ColumnOrderings(column));
+}
+
+class $$SrsCardsTableAnnotationComposer
+    extends Composer<_$UserDatabase, $SrsCardsTable> {
+  $$SrsCardsTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get userId =>
+      $composableBuilder(column: $table.userId, builder: (column) => column);
+
+  GeneratedColumn<int> get updatedAt =>
+      $composableBuilder(column: $table.updatedAt, builder: (column) => column);
+
+  GeneratedColumn<int> get deletedAt =>
+      $composableBuilder(column: $table.deletedAt, builder: (column) => column);
+
+  GeneratedColumn<bool> get isDirty =>
+      $composableBuilder(column: $table.isDirty, builder: (column) => column);
+
+  GeneratedColumn<String> get itemType =>
+      $composableBuilder(column: $table.itemType, builder: (column) => column);
+
+  GeneratedColumn<int> get itemId =>
+      $composableBuilder(column: $table.itemId, builder: (column) => column);
+
+  GeneratedColumn<double> get easeFactor => $composableBuilder(
+      column: $table.easeFactor, builder: (column) => column);
+
+  GeneratedColumn<int> get intervalDays => $composableBuilder(
+      column: $table.intervalDays, builder: (column) => column);
+
+  GeneratedColumn<int> get repetitions => $composableBuilder(
+      column: $table.repetitions, builder: (column) => column);
+
+  GeneratedColumn<int> get dueDate =>
+      $composableBuilder(column: $table.dueDate, builder: (column) => column);
+
+  GeneratedColumn<String> get state =>
+      $composableBuilder(column: $table.state, builder: (column) => column);
+}
+
+class $$SrsCardsTableTableManager extends RootTableManager<
+    _$UserDatabase,
+    $SrsCardsTable,
+    SrsCardRow,
+    $$SrsCardsTableFilterComposer,
+    $$SrsCardsTableOrderingComposer,
+    $$SrsCardsTableAnnotationComposer,
+    $$SrsCardsTableCreateCompanionBuilder,
+    $$SrsCardsTableUpdateCompanionBuilder,
+    (SrsCardRow, BaseReferences<_$UserDatabase, $SrsCardsTable, SrsCardRow>),
+    SrsCardRow,
+    PrefetchHooks Function()> {
+  $$SrsCardsTableTableManager(_$UserDatabase db, $SrsCardsTable table)
+      : super(TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$SrsCardsTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$SrsCardsTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$SrsCardsTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback: ({
+            Value<String> id = const Value.absent(),
+            Value<String?> userId = const Value.absent(),
+            Value<int> updatedAt = const Value.absent(),
+            Value<int?> deletedAt = const Value.absent(),
+            Value<bool> isDirty = const Value.absent(),
+            Value<String> itemType = const Value.absent(),
+            Value<int> itemId = const Value.absent(),
+            Value<double> easeFactor = const Value.absent(),
+            Value<int> intervalDays = const Value.absent(),
+            Value<int> repetitions = const Value.absent(),
+            Value<int> dueDate = const Value.absent(),
+            Value<String> state = const Value.absent(),
+            Value<int> rowid = const Value.absent(),
+          }) =>
+              SrsCardsCompanion(
+            id: id,
+            userId: userId,
+            updatedAt: updatedAt,
+            deletedAt: deletedAt,
+            isDirty: isDirty,
+            itemType: itemType,
+            itemId: itemId,
+            easeFactor: easeFactor,
+            intervalDays: intervalDays,
+            repetitions: repetitions,
+            dueDate: dueDate,
+            state: state,
+            rowid: rowid,
+          ),
+          createCompanionCallback: ({
+            required String id,
+            Value<String?> userId = const Value.absent(),
+            required int updatedAt,
+            Value<int?> deletedAt = const Value.absent(),
+            Value<bool> isDirty = const Value.absent(),
+            required String itemType,
+            required int itemId,
+            Value<double> easeFactor = const Value.absent(),
+            Value<int> intervalDays = const Value.absent(),
+            Value<int> repetitions = const Value.absent(),
+            required int dueDate,
+            required String state,
+            Value<int> rowid = const Value.absent(),
+          }) =>
+              SrsCardsCompanion.insert(
+            id: id,
+            userId: userId,
+            updatedAt: updatedAt,
+            deletedAt: deletedAt,
+            isDirty: isDirty,
+            itemType: itemType,
+            itemId: itemId,
+            easeFactor: easeFactor,
+            intervalDays: intervalDays,
+            repetitions: repetitions,
+            dueDate: dueDate,
+            state: state,
+            rowid: rowid,
+          ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ));
+}
+
+typedef $$SrsCardsTableProcessedTableManager = ProcessedTableManager<
+    _$UserDatabase,
+    $SrsCardsTable,
+    SrsCardRow,
+    $$SrsCardsTableFilterComposer,
+    $$SrsCardsTableOrderingComposer,
+    $$SrsCardsTableAnnotationComposer,
+    $$SrsCardsTableCreateCompanionBuilder,
+    $$SrsCardsTableUpdateCompanionBuilder,
+    (SrsCardRow, BaseReferences<_$UserDatabase, $SrsCardsTable, SrsCardRow>),
+    SrsCardRow,
+    PrefetchHooks Function()>;
+typedef $$QuizResultsTableCreateCompanionBuilder = QuizResultsCompanion
+    Function({
+  required String id,
+  Value<String?> userId,
+  required int updatedAt,
+  Value<int?> deletedAt,
+  Value<bool> isDirty,
+  required String quizType,
+  Value<int?> surahId,
+  required int score,
+  required int total,
+  required int takenAt,
+  Value<int> rowid,
+});
+typedef $$QuizResultsTableUpdateCompanionBuilder = QuizResultsCompanion
+    Function({
+  Value<String> id,
+  Value<String?> userId,
+  Value<int> updatedAt,
+  Value<int?> deletedAt,
+  Value<bool> isDirty,
+  Value<String> quizType,
+  Value<int?> surahId,
+  Value<int> score,
+  Value<int> total,
+  Value<int> takenAt,
+  Value<int> rowid,
+});
+
+class $$QuizResultsTableFilterComposer
+    extends Composer<_$UserDatabase, $QuizResultsTable> {
+  $$QuizResultsTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get id => $composableBuilder(
+      column: $table.id, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get userId => $composableBuilder(
+      column: $table.userId, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<int> get updatedAt => $composableBuilder(
+      column: $table.updatedAt, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<int> get deletedAt => $composableBuilder(
+      column: $table.deletedAt, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<bool> get isDirty => $composableBuilder(
+      column: $table.isDirty, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get quizType => $composableBuilder(
+      column: $table.quizType, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<int> get surahId => $composableBuilder(
+      column: $table.surahId, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<int> get score => $composableBuilder(
+      column: $table.score, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<int> get total => $composableBuilder(
+      column: $table.total, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<int> get takenAt => $composableBuilder(
+      column: $table.takenAt, builder: (column) => ColumnFilters(column));
+}
+
+class $$QuizResultsTableOrderingComposer
+    extends Composer<_$UserDatabase, $QuizResultsTable> {
+  $$QuizResultsTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get id => $composableBuilder(
+      column: $table.id, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get userId => $composableBuilder(
+      column: $table.userId, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<int> get updatedAt => $composableBuilder(
+      column: $table.updatedAt, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<int> get deletedAt => $composableBuilder(
+      column: $table.deletedAt, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<bool> get isDirty => $composableBuilder(
+      column: $table.isDirty, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get quizType => $composableBuilder(
+      column: $table.quizType, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<int> get surahId => $composableBuilder(
+      column: $table.surahId, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<int> get score => $composableBuilder(
+      column: $table.score, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<int> get total => $composableBuilder(
+      column: $table.total, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<int> get takenAt => $composableBuilder(
+      column: $table.takenAt, builder: (column) => ColumnOrderings(column));
+}
+
+class $$QuizResultsTableAnnotationComposer
+    extends Composer<_$UserDatabase, $QuizResultsTable> {
+  $$QuizResultsTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get userId =>
+      $composableBuilder(column: $table.userId, builder: (column) => column);
+
+  GeneratedColumn<int> get updatedAt =>
+      $composableBuilder(column: $table.updatedAt, builder: (column) => column);
+
+  GeneratedColumn<int> get deletedAt =>
+      $composableBuilder(column: $table.deletedAt, builder: (column) => column);
+
+  GeneratedColumn<bool> get isDirty =>
+      $composableBuilder(column: $table.isDirty, builder: (column) => column);
+
+  GeneratedColumn<String> get quizType =>
+      $composableBuilder(column: $table.quizType, builder: (column) => column);
+
+  GeneratedColumn<int> get surahId =>
+      $composableBuilder(column: $table.surahId, builder: (column) => column);
+
+  GeneratedColumn<int> get score =>
+      $composableBuilder(column: $table.score, builder: (column) => column);
+
+  GeneratedColumn<int> get total =>
+      $composableBuilder(column: $table.total, builder: (column) => column);
+
+  GeneratedColumn<int> get takenAt =>
+      $composableBuilder(column: $table.takenAt, builder: (column) => column);
+}
+
+class $$QuizResultsTableTableManager extends RootTableManager<
+    _$UserDatabase,
+    $QuizResultsTable,
+    QuizResultRow,
+    $$QuizResultsTableFilterComposer,
+    $$QuizResultsTableOrderingComposer,
+    $$QuizResultsTableAnnotationComposer,
+    $$QuizResultsTableCreateCompanionBuilder,
+    $$QuizResultsTableUpdateCompanionBuilder,
+    (
+      QuizResultRow,
+      BaseReferences<_$UserDatabase, $QuizResultsTable, QuizResultRow>
+    ),
+    QuizResultRow,
+    PrefetchHooks Function()> {
+  $$QuizResultsTableTableManager(_$UserDatabase db, $QuizResultsTable table)
+      : super(TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$QuizResultsTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$QuizResultsTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$QuizResultsTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback: ({
+            Value<String> id = const Value.absent(),
+            Value<String?> userId = const Value.absent(),
+            Value<int> updatedAt = const Value.absent(),
+            Value<int?> deletedAt = const Value.absent(),
+            Value<bool> isDirty = const Value.absent(),
+            Value<String> quizType = const Value.absent(),
+            Value<int?> surahId = const Value.absent(),
+            Value<int> score = const Value.absent(),
+            Value<int> total = const Value.absent(),
+            Value<int> takenAt = const Value.absent(),
+            Value<int> rowid = const Value.absent(),
+          }) =>
+              QuizResultsCompanion(
+            id: id,
+            userId: userId,
+            updatedAt: updatedAt,
+            deletedAt: deletedAt,
+            isDirty: isDirty,
+            quizType: quizType,
+            surahId: surahId,
+            score: score,
+            total: total,
+            takenAt: takenAt,
+            rowid: rowid,
+          ),
+          createCompanionCallback: ({
+            required String id,
+            Value<String?> userId = const Value.absent(),
+            required int updatedAt,
+            Value<int?> deletedAt = const Value.absent(),
+            Value<bool> isDirty = const Value.absent(),
+            required String quizType,
+            Value<int?> surahId = const Value.absent(),
+            required int score,
+            required int total,
+            required int takenAt,
+            Value<int> rowid = const Value.absent(),
+          }) =>
+              QuizResultsCompanion.insert(
+            id: id,
+            userId: userId,
+            updatedAt: updatedAt,
+            deletedAt: deletedAt,
+            isDirty: isDirty,
+            quizType: quizType,
+            surahId: surahId,
+            score: score,
+            total: total,
+            takenAt: takenAt,
+            rowid: rowid,
+          ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ));
+}
+
+typedef $$QuizResultsTableProcessedTableManager = ProcessedTableManager<
+    _$UserDatabase,
+    $QuizResultsTable,
+    QuizResultRow,
+    $$QuizResultsTableFilterComposer,
+    $$QuizResultsTableOrderingComposer,
+    $$QuizResultsTableAnnotationComposer,
+    $$QuizResultsTableCreateCompanionBuilder,
+    $$QuizResultsTableUpdateCompanionBuilder,
+    (
+      QuizResultRow,
+      BaseReferences<_$UserDatabase, $QuizResultsTable, QuizResultRow>
+    ),
+    QuizResultRow,
+    PrefetchHooks Function()>;
 
 class $UserDatabaseManager {
   final _$UserDatabase _db;
@@ -5340,4 +6970,8 @@ class $UserDatabaseManager {
       $$KhatmCyclesTableTableManager(_db, _db.khatmCycles);
   $$BookmarkCollectionsTableTableManager get bookmarkCollections =>
       $$BookmarkCollectionsTableTableManager(_db, _db.bookmarkCollections);
+  $$SrsCardsTableTableManager get srsCards =>
+      $$SrsCardsTableTableManager(_db, _db.srsCards);
+  $$QuizResultsTableTableManager get quizResults =>
+      $$QuizResultsTableTableManager(_db, _db.quizResults);
 }

@@ -5,6 +5,83 @@ Phiên bản theo [Semantic Versioning](https://semver.org/lang/vi/).
 
 ## [Unreleased]
 
+### Added — Sprint 10: Learning Engine — Scheduler SM-2 + Quiz (Bước 9 phần 1)
+
+Thực hiện theo [DR-2026-0005](docs/adr/DR-2026-0005.md) (5 phase:
+Architecture Freeze -> Scheduler Foundation -> Provider Layer ->
+Review Session UI -> Quiz System; ADR chính thức được ghi thành file
+ở bước Finalization). Amend một phần định hướng ban đầu của
+[DR-2026-0003](docs/adr/DR-2026-0003-sprint8-data-architecture.md) về
+`srs_cards` (không "thay thế" Revision Queue như dự định gốc — xem
+bên dưới).
+
+- **Kiến trúc Learning Engine**: khái niệm tổ chức (không phải 1
+  class cụ thể) gồm Revision Queue + Scheduler + Quiz, sẽ mở rộng
+  thêm Flashcard/Hifz/AI Tutor sau này — mọi thành phần phía trên chỉ
+  phụ thuộc `SchedulingAlgorithm` (giao diện trừu tượng), không phụ
+  thuộc SM-2 cụ thể.
+- **Scheduler SM-2** (`lib/features/learning/domain/`, thuần Dart —
+  không import Flutter/Riverpod/Drift): `SchedulingAlgorithm` (giao
+  diện) + `SM2SchedulingAlgorithm` (SuperMemo-2 cổ điển, 4 mức đánh
+  giá kiểu Anki: Again/Hard/Good/Easy, ease factor mặc định 2.5, sàn
+  1.3) + `SchedulerRepository`/`SchedulerRepositoryImpl` (bảng mới
+  `srs_cards`, `schemaVersion` 3->4, hoàn toàn additive).
+  **Quyết định 1-2 của DR-2026-0005**: Revision Queue
+  (`ayah_statuses.status='review'`) giữ nguyên ĐỘC LẬP, KHÔNG bị thay
+  thế — khác định hướng ban đầu ở `DR-2026-0003` ("sẽ thay thế Revision
+  Queue đơn giản khi cần SM-2"). Scheduler chỉ TIÊU THỤ Revision Queue
+  làm nguồn thành viên qua `schedulerSyncProvider` (orchestration ở
+  tầng Provider, không phải Repository) — tạo/xoá mềm thẻ tự động khi
+  Ayah vào/rời Queue, không backfill lúc migration.
+- **Màn hình "Lặp lại ngắt quãng"** (route `/review-session`, nối từ
+  tab Học): đọc `dueReviewCardsProvider` (lọc+sắp+khử trùng lặp thẻ
+  đến hạn — hàm thuần `selectDueCardsOrdered`), trình bày từng thẻ,
+  đánh giá qua `SchedulerRepository.applyReview` rồi tự chuyển thẻ kế
+  tiếp (phản ứng theo stream, không tự quản lý hàng đợi trong widget),
+  "Mở trong Kinh" dùng chung `openAyahInReadingScreen()`.
+- **Quiz** (`lib/features/quiz/`): `QuestionGenerator` (giao diện
+  trừu tượng, thuần Dart) + 4 loại câu hỏi, mỗi loại cắm được vào
+  `QuizQuestionFactory` mà không cần sửa code cũ (Surah identification,
+  Ayah continuation, Translation matching, Verse recognition). **Không có
+  Question Bank** — câu hỏi sinh động mỗi phiên từ nhóm A
+  (`QuranRepository`, qua `quizContentPoolProvider`) rồi bỏ đi, không
+  bao giờ ghi xuống nhóm B. Bảng mới `quiz_results` (`schemaVersion`
+  4->5, hoàn toàn additive) CHỈ lưu điểm/loại/thời điểm — không lưu
+  câu hỏi/nội dung Ayah. Màn hình "Trắc nghiệm" (route `/quiz-session`,
+  nối từ tab Học) dùng `AsyncNotifier` (`QuizSessionController`) tự
+  sinh 10 câu khi mở, ghi điểm, lưu kết quả khi hoàn thành, "Làm lại"
+  sinh phiên mới.
+- **2 lệch có chủ đích so với sketch SQL thô trong `DATABASE.md`**,
+  ghi rõ lý do tại chỗ (xem DATABASE.md mục Nhóm B): `srs_cards`
+  dùng `UNIQUE(item_type, item_id)` thay vì
+  `UNIQUE(user_id, item_type, item_id)` (user_id nullable khiến ràng
+  buộc gốc không có tác dụng thật, theo đúng tiền lệ mọi bảng khác
+  trong file); `quiz_results.surah_id` nullable (quiz 'mixed' trộn
+  nhiều Surah trong 1 phiên, không gắn 1 Surah).
+- **Flashcard hoãn lại có chủ đích** (Quyết định 4): không có dữ liệu
+  từ vựng (`lemmas`/`word_instances` vẫn chỉ là schema dự định, chưa
+  có importer/nguồn dữ liệu — xem TODO.md), không thiết kế giải pháp
+  tạm. Hifz và "Nhật ký" không nằm trong 6 quyết định của Sprint 10 —
+  chưa xây.
+
+### Tests
+- +70 test mới (305 -> 375), một test mỗi phase như DR-2026-0005 Quyết
+  định 6 yêu cầu (khác Sprint 9 — không có test mới phase nào):
+  SM-2 math (13), SchedulerRepository (8), scheduler provider layer —
+  đồng bộ/due/thứ tự/khử trùng lặp (11 hàm thuần + provider), Review
+  Session UI (6 widget test), 4 generator câu hỏi Quiz + factory (14),
+  QuizRepository (5), Quiz provider layer — sinh câu hỏi/điểm/lưu kết
+  quả/restart (7), Quiz Session UI (4 widget test), 2 migration test
+  mới (v3->v4, v4->v5).
+
+### Chưa làm (ngoài phạm vi DR-2026-0005)
+- Flashcard (khoá "Sắp ra mắt" trên tab Học) — chờ nguồn dữ liệu từ
+  vựng, xem TODO.md.
+- Hifz, "Nhật ký" — chưa từng được định nghĩa cụ thể trong Sprint 10,
+  chỉ nêu tên như nhánh tương lai của Learning Engine.
+- Coverage% thật chưa đo lại sau Sprint 10 (`flutter test --coverage`
+  ngoài phạm vi Phase 5) — xem TODO.md mục MIN_COVERAGE.
+
 ## [0.8.1] — Sprint 9: Daily Goal, Revision Queue, Streak canonical (Bước 8 phần còn lại)
 
 ### Added

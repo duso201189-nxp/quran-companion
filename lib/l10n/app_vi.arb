@@ -230,5 +230,38 @@
         "type": "int"
       }
     }
-  }
+  },
+  "reviewGradeAgain": "Quên",
+  "reviewGradeHard": "Khó",
+  "reviewGradeGood": "Tốt",
+  "reviewGradeEasy": "Dễ",
+  "reviewOpenInReading": "Mở trong Kinh",
+  "reviewSessionComplete": "Đã ôn xong!",
+  "reviewSessionCompleteSubtitle": "Không còn thẻ nào đến hạn ôn tập lúc này.",
+  "quizCorrect": "Chính xác!",
+  "quizIncorrect": "Chưa đúng.",
+  "quizEmpty": "Không đủ nội dung để tạo câu hỏi.",
+  "quizQuestionProgress": "Câu {current}/{total}",
+  "@quizQuestionProgress": {
+    "placeholders": {
+      "current": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "quizScoreResult": "Bạn đạt {score}/{total} điểm",
+  "@quizScoreResult": {
+    "placeholders": {
+      "score": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "quizRetry": "Làm lại"
 }

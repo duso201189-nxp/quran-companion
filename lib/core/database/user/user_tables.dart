@@ -189,3 +189,77 @@ class BookmarkCollections extends Table with SyncColumns {
   @override
   Set<Column<Object>> get primaryKey => {id};
 }
+
+/// Thẻ lịch ôn tập SRS (Sprint 10 Phase 1 — DR-2026-0005). item_type +
+/// item_id tổng quát (dùng chung cho Ayah và, về sau, từ vựng) — hiện
+/// chỉ 'ayah' được ghi (Flashcard 'lemma' hoãn lại, chưa có dữ liệu
+/// từ vựng). Bảng này KHÔNG sở hữu khái niệm "Ayah nào cần ôn" — đó
+/// vẫn là Revision Queue (ayah_statuses.status='review'). Scheduler
+/// chỉ thêm lớp lịch trình (ease/interval/due_date) lên trên các mục
+/// Queue đã có (xem SchedulerRepository, DR-2026-0005 mục 2).
+///
+/// uniqueKeys KHÔNG gồm user_id — SQLite coi mỗi NULL là khác biệt
+/// nên user_id (nullable trước khi đăng nhập) trong ràng buộc UNIQUE
+/// sẽ không có tác dụng thật; theo đúng tiền lệ của mọi bảng khác
+/// trong file này (Bookmarks/Highlights/Notes/Favorites/AyahStatuses
+/// đều bỏ user_id khỏi uniqueKeys), lệch có chủ đích so với sketch
+/// SQL thô trong DATABASE.md.
+@DataClassName('SrsCardRow')
+class SrsCards extends Table with SyncColumns {
+  @override
+  String get tableName => 'srs_cards';
+
+  /// 'ayah' | 'lemma' (chỉ 'ayah' dùng ở Sprint 10).
+  TextColumn get itemType => text().named('item_type')();
+
+  /// ayah_id hoặc lemma_id tùy [itemType].
+  IntColumn get itemId => integer().named('item_id')();
+
+  RealColumn get easeFactor =>
+      real().named('ease_factor').withDefault(const Constant(2.5))();
+  IntColumn get intervalDays =>
+      integer().named('interval_days').withDefault(const Constant(0))();
+  IntColumn get repetitions =>
+      integer().named('repetitions').withDefault(const Constant(0))();
+
+  /// Epoch ms UTC — thời điểm đến hạn ôn tập.
+  IntColumn get dueDate => integer().named('due_date')();
+
+  /// 'new' | 'learning' | 'review' | 'lapsed'.
+  TextColumn get state => text()();
+
+  @override
+  Set<Column<Object>> get primaryKey => {id};
+
+  @override
+  List<Set<Column<Object>>> get uniqueKeys => [
+        {itemType, itemId},
+      ];
+}
+
+/// Lịch sử kết quả Quiz (Sprint 10 Phase 4 — DR-2026-0005 mục 5). CHỈ
+/// lưu điểm/kết quả — KHÔNG lưu câu hỏi hay nội dung Ayah (câu hỏi
+/// sinh động từ dữ liệu nhóm A mỗi phiên, không có Question Bank).
+///
+/// surah_id nullable — lệch có chủ đích so với sketch SQL thô trong
+/// DATABASE.md (surah_id không nullable ở đó): quiz hiện tại luôn là
+/// 'mixed' (nhiều loại câu hỏi, nhiều Surah trong 1 phiên), không gắn
+/// với đúng 1 Surah — surah_id để dành cho quiz theo phạm vi 1 Surah
+/// (chưa xây ở Sprint 10).
+@DataClassName('QuizResultRow')
+class QuizResults extends Table with SyncColumns {
+  @override
+  String get tableName => 'quiz_results';
+
+  /// 'mixed' — duy nhất loại hiện có (Sprint 10). Để dành cho các chế
+  /// độ quiz tương lai (vd. theo 1 Surah) tái dùng cùng cột.
+  TextColumn get quizType => text().named('quiz_type')();
+
+  IntColumn get surahId => integer().named('surah_id').nullable()();
+  IntColumn get score => integer()();
+  IntColumn get total => integer()();
+  IntColumn get takenAt => integer().named('taken_at')();
+
+  @override
+  Set<Column<Object>> get primaryKey => {id};
+}

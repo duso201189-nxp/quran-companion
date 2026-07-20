@@ -5,9 +5,10 @@ import 'package:quran_companion/l10n/app_localizations.dart';
 import '../../../app/router.dart';
 
 /// Màn hình Học — bốn công cụ (Flashcard, Lặp lại ngắt quãng,
-/// Trắc nghiệm, Ôn tập hằng ngày). Chỉ "Ôn tập hằng ngày" đã nối
-/// thật (Sprint 9 — DR-2026-0004 mục 3); ba công cụ còn lại vẫn
-/// chờ logic học (Bước 9).
+/// Trắc nghiệm, Ôn tập hằng ngày). Chỉ Flashcard còn hoãn lại (chưa
+/// có dữ liệu từ vựng, xem DR-2026-0005 mục 5) — "Ôn tập hằng ngày"
+/// (Sprint 9), "Lặp lại ngắt quãng" (Sprint 10 Phase 3) và "Trắc
+/// nghiệm" (Sprint 10 Phase 4) đã nối thật.
 class StudyScreen extends StatelessWidget {
   const StudyScreen({super.key});
 
@@ -31,13 +32,13 @@ class StudyScreen extends StatelessWidget {
         icon: Icons.update_rounded,
         title: l10n.studySpaced,
         subtitle: l10n.studySpacedDesc,
-        onTap: null,
+        onTap: () => context.push(AppRoutes.reviewSession),
       ),
       (
         icon: Icons.quiz_rounded,
         title: l10n.studyQuiz,
         subtitle: l10n.studyQuizDesc,
-        onTap: null,
+        onTap: () => context.push(AppRoutes.quizSession),
       ),
       (
         icon: Icons.today_rounded,
