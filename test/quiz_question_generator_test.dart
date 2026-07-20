@@ -42,7 +42,11 @@ void main() {
       expect(question.promptIsArabic, isTrue);
       expect(question.optionsAreArabic, isFalse);
       expect(question.options, hasLength(4));
-      expect(question.options.toSet().length, 4, reason: 'không trùng lựa chọn');
+      expect(
+        question.options.toSet().length,
+        4,
+        reason: 'không trùng lựa chọn',
+      );
       expect(
         question.options[question.correctOptionIndex],
         startsWith('Surah-'),
@@ -116,7 +120,8 @@ void main() {
   group('VerseRecognitionGenerator', () {
     const generator = VerseRecognitionGenerator();
 
-    test('đề bài là tên Surah, lựa chọn là văn bản Ayah, đúng 1 thuộc '
+    test(
+        'đề bài là tên Surah, lựa chọn là văn bản Ayah, đúng 1 thuộc '
         'Surah đó', () {
       final question = generator.generate(_richPool(), Random(4));
       expect(question, isNotNull);
@@ -152,8 +157,7 @@ void main() {
       expect(factory.generateOne(const QuizContentPool([]), Random(1)), isNull);
     });
 
-    test('generateQuiz: sinh đúng số lượng câu hỏi yêu cầu khi đủ dữ liệu',
-        () {
+    test('generateQuiz: sinh đúng số lượng câu hỏi yêu cầu khi đủ dữ liệu', () {
       const factory = QuizQuestionFactory();
       final questions = factory.generateQuiz(_richPool(), Random(6), 10);
       expect(questions, hasLength(10));

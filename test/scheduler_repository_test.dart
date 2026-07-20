@@ -28,7 +28,8 @@ void main() {
   tearDown(() => db.close());
 
   group('syncWithReviewQueue', () {
-    test('tạo thẻ mới cho Ayah vừa vào Queue, dùng initialState của '
+    test(
+        'tạo thẻ mới cho Ayah vừa vào Queue, dùng initialState của '
         'thuật toán', () async {
       await repo.syncWithReviewQueue([10, 20]);
 
@@ -50,7 +51,8 @@ void main() {
       expect(cards, hasLength(1));
     });
 
-    test('Ayah rời Queue -> thẻ tương ứng bị xoá mềm, không còn trong '
+    test(
+        'Ayah rời Queue -> thẻ tương ứng bị xoá mềm, không còn trong '
         'watchAllCards', () async {
       await repo.syncWithReviewQueue([10, 20]);
       await repo.syncWithReviewQueue([10]); // 20 rời Queue
@@ -60,7 +62,8 @@ void main() {
       expect(cards.single.itemId, 10);
     });
 
-    test('Ayah quay lại Queue sau khi rời -> hồi sinh thẻ cũ (giữ '
+    test(
+        'Ayah quay lại Queue sau khi rời -> hồi sinh thẻ cũ (giữ '
         'nguyên id, KHÔNG insert trùng — UNIQUE(item_type, item_id) '
         'không phân biệt theo deleted_at), reset về trạng thái khởi tạo',
         () async {
@@ -82,17 +85,18 @@ void main() {
   });
 
   group('applyReview', () {
-    test('uỷ quyền tính toán cho SchedulingAlgorithm và ghi kết quả xuống '
+    test(
+        'uỷ quyền tính toán cho SchedulingAlgorithm và ghi kết quả xuống '
         'persistence', () async {
       await repo.syncWithReviewQueue([10]);
-      final before = (await repo.watchAllCards(LearningItemType.ayah).first)
-          .single;
+      final before =
+          (await repo.watchAllCards(LearningItemType.ayah).first).single;
 
       fakeNow = 2000000;
       await repo.applyReview(before.id, ReviewGrade.good);
 
-      final after = (await repo.watchAllCards(LearningItemType.ayah).first)
-          .single;
+      final after =
+          (await repo.watchAllCards(LearningItemType.ayah).first).single;
       expect(after.repetitions, 1);
       expect(after.intervalDays, 1);
       expect(after.state, SrsCardState.review);
@@ -119,8 +123,8 @@ void main() {
 
       await repo.applyReview(id, ReviewGrade.good); // rep 1, interval 1
       await repo.applyReview(id, ReviewGrade.good); // rep 2, interval 6
-      final after = (await repo.watchAllCards(LearningItemType.ayah).first)
-          .single;
+      final after =
+          (await repo.watchAllCards(LearningItemType.ayah).first).single;
       expect(after.repetitions, 2);
       expect(after.intervalDays, 6);
     });

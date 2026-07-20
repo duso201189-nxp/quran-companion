@@ -448,8 +448,7 @@ void main() {
       expect(
         tableNames.containsAll({'srs_cards', 'quiz_results'}),
         isTrue,
-        reason:
-            'onUpgrade phải thêm srs_cards + quiz_results mà không đụng '
+        reason: 'onUpgrade phải thêm srs_cards + quiz_results mà không đụng '
             '8 bảng cũ',
       );
 

@@ -66,8 +66,9 @@ void main() {
 
   test('watchHistory phát lại khi có kết quả mới (reactive)', () async {
     final stream = repo.watchHistory();
-    final future =
-        stream.firstWhere((h) => h.length == 1).timeout(const Duration(seconds: 5));
+    final future = stream
+        .firstWhere((h) => h.length == 1)
+        .timeout(const Duration(seconds: 5));
 
     await repo.saveResult(quizType: 'mixed', score: 4, total: 10);
     final emitted = await future;

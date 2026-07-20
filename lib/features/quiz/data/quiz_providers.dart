@@ -34,9 +34,8 @@ final quizContentPoolProvider =
     FutureProvider.autoDispose<QuizContentPool>((ref) async {
   final repo = ref.watch(quranRepositoryProvider);
   final allSurahs = await repo.getAllSurahs();
-  final chosen = (List.of(allSurahs)..shuffle())
-      .take(quizPoolSurahCount)
-      .toList();
+  final chosen =
+      (List.of(allSurahs)..shuffle()).take(quizPoolSurahCount).toList();
 
   final groups = <QuizSurahAyahs>[];
   for (final surah in chosen) {

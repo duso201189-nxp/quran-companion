@@ -28,9 +28,8 @@ class SchedulerRepositoryImpl implements SchedulerRepository {
 
   SrsCard _toEntity(SrsCardRow row) => SrsCard(
         id: row.id,
-        itemType:
-            LearningItemType.values.asNameMap()[row.itemType] ??
-                LearningItemType.ayah,
+        itemType: LearningItemType.values.asNameMap()[row.itemType] ??
+            LearningItemType.ayah,
         itemId: row.itemId,
         easeFactor: row.easeFactor,
         intervalDays: row.intervalDays,

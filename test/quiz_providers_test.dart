@@ -65,8 +65,7 @@ class _FakeQuranRepo implements QuranRepository {
   }) async =>
       const [];
   @override
-  Future<List<AyahSearchResult>> getAyahsByIds(List<int> ids) async =>
-      const [];
+  Future<List<AyahSearchResult>> getAyahsByIds(List<int> ids) async => const [];
 }
 
 void main() {
@@ -89,7 +88,8 @@ void main() {
   });
 
   group('quizContentPoolProvider', () {
-    test('nạp đủ 6 Surah từ QuranRepository (nhóm A), không nhân bản '
+    test(
+        'nạp đủ 6 Surah từ QuranRepository (nhóm A), không nhân bản '
         'lưu trữ', () async {
       final pool = await container.read(quizContentPoolProvider.future);
       expect(pool.surahs, hasLength(6));
@@ -101,7 +101,8 @@ void main() {
       () {
     test('build() tự sinh đủ questionCount câu hỏi khi pool đủ dữ liệu',
         () async {
-      final session = await container.read(quizSessionControllerProvider.future);
+      final session =
+          await container.read(quizSessionControllerProvider.future);
       expect(session.questions, hasLength(10));
       expect(session.currentIndex, 0);
       expect(session.score, 0);
@@ -112,7 +113,8 @@ void main() {
   group('quizSessionControllerProvider — scoring', () {
     test('answer() với đáp án đúng: score +1, chuyển câu tiếp theo ngay',
         () async {
-      final session = await container.read(quizSessionControllerProvider.future);
+      final session =
+          await container.read(quizSessionControllerProvider.future);
       final firstQuestion = session.questions.first;
 
       final correct = await container
@@ -127,7 +129,8 @@ void main() {
 
     test('answer() với đáp án sai: score không đổi, vẫn chuyển câu tiếp theo',
         () async {
-      final session = await container.read(quizSessionControllerProvider.future);
+      final session =
+          await container.read(quizSessionControllerProvider.future);
       final firstQuestion = session.questions.first;
       final wrongIndex = (firstQuestion.correctOptionIndex + 1) % 4;
 
@@ -143,7 +146,8 @@ void main() {
   });
 
   group('quizSessionControllerProvider — hoàn thành phiên + persistence', () {
-    test('trả lời hết câu hỏi -> isComplete=true và lưu đúng kết quả qua '
+    test(
+        'trả lời hết câu hỏi -> isComplete=true và lưu đúng kết quả qua '
         'QuizRepository', () async {
       var session = await container.read(quizSessionControllerProvider.future);
       final total = session.questions.length;
@@ -171,14 +175,16 @@ void main() {
       expect(history.single.surahId, isNull);
     });
 
-    test('answer() sau khi đã hoàn thành phiên -> không làm gì, không lưu '
+    test(
+        'answer() sau khi đã hoàn thành phiên -> không làm gì, không lưu '
         'thêm lần nữa', () async {
       var session = await container.read(quizSessionControllerProvider.future);
       final total = session.questions.length;
       final notifier = container.read(quizSessionControllerProvider.notifier);
 
       for (var i = 0; i < total; i++) {
-        session = container.read(quizSessionControllerProvider).value ?? session;
+        session =
+            container.read(quizSessionControllerProvider).value ?? session;
         final q = session.questions[i];
         await notifier.answer(q.correctOptionIndex);
         session = container.read(quizSessionControllerProvider).value!;
@@ -195,7 +201,8 @@ void main() {
   });
 
   group('quizSessionControllerProvider — restart', () {
-    test('restart() sinh phiên mới: currentIndex/score về 0, isComplete = '
+    test(
+        'restart() sinh phiên mới: currentIndex/score về 0, isComplete = '
         'false', () async {
       final notifier = container.read(quizSessionControllerProvider.notifier);
       await container.read(quizSessionControllerProvider.future);

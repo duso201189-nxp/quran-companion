@@ -55,8 +55,10 @@ class _FakeQuranRepo implements QuranRepository {
   };
 
   @override
-  Future<List<AyahSearchResult>> getAyahsByIds(List<int> ids) async =>
-      [for (final id in ids) if (byId[id] case final r?) r];
+  Future<List<AyahSearchResult>> getAyahsByIds(List<int> ids) async => [
+        for (final id in ids)
+          if (byId[id] case final r?) r,
+      ];
 
   @override
   Future<List<Surah>> getAllSurahs() async => const [];
@@ -102,7 +104,10 @@ class _FakeSchedulerRepository implements SchedulerRepository {
     appliedReviews.add((cardId: cardId, grade: grade));
     // Mô phỏng: thẻ vừa ôn có due_date tương lai -> rời danh sách
     // đến hạn (không cần SM2SchedulingAlgorithm thật cho test UI).
-    _cards = [for (final c in _cards) if (c.id != cardId) c];
+    _cards = [
+      for (final c in _cards)
+        if (c.id != cardId) c,
+    ];
     _controller.add(_cards);
   }
 
@@ -159,8 +164,7 @@ void main() {
     );
   }
 
-  testWidgets('không có thẻ đến hạn -> hiện màn hình hoàn tất',
-      (tester) async {
+  testWidgets('không có thẻ đến hạn -> hiện màn hình hoàn tất', (tester) async {
     fakeScheduler.emitCards(const []);
 
     await tester.pumpWidget(wrap());
@@ -170,8 +174,7 @@ void main() {
     expect(find.text('Again'), findsNothing);
   });
 
-  testWidgets(
-      'có thẻ đến hạn -> hiện văn bản Ayah + bản dịch + 4 nút đánh giá',
+  testWidgets('có thẻ đến hạn -> hiện văn bản Ayah + bản dịch + 4 nút đánh giá',
       (tester) async {
     fakeScheduler.emitCards([_card('c1', 100)]);
 
@@ -241,8 +244,7 @@ void main() {
 
   testWidgets(
       'bấm "Open in Reading" lưu đúng vị trí (surah 2, ayahIndex 4) và '
-      'điều hướng sang trang đọc qua openAyahInReadingScreen',
-      (tester) async {
+      'điều hướng sang trang đọc qua openAyahInReadingScreen', (tester) async {
     fakeScheduler.emitCards([_card('c1', 100)]);
 
     await tester.pumpWidget(wrap());
