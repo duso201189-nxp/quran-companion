@@ -543,4 +543,32 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get quizRetry => 'إعادة المحاولة';
+
+  @override
+  String get learningSessionStart => 'ابدأ جلسة التعلم';
+
+  @override
+  String get learningSummaryTitle => 'ملخص الجلسة';
+
+  @override
+  String learningSummaryReviewCount(int count) {
+    return 'تمت مراجعة $count بطاقة';
+  }
+
+  @override
+  String learningSummaryQuizScore(int score, int total) {
+    return 'الاختبار: $score/$total';
+  }
+
+  @override
+  String get learningSummaryDone => 'تم';
+
+  @override
+  String get learningSummaryStatusCompleted => 'مكتمل';
+
+  @override
+  String get learningSummaryActivitiesTitle => 'الأنشطة المكتملة';
+
+  @override
+  String get learningSummaryNotCompleted => 'لم يكتمل';
 }

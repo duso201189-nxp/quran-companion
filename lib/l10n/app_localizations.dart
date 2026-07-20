@@ -1107,6 +1107,54 @@ abstract class AppLocalizations {
   /// In vi, this message translates to:
   /// **'Làm lại'**
   String get quizRetry;
+
+  /// No description provided for @learningSessionStart.
+  ///
+  /// In vi, this message translates to:
+  /// **'Bắt đầu buổi học'**
+  String get learningSessionStart;
+
+  /// No description provided for @learningSummaryTitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Tóm tắt buổi học'**
+  String get learningSummaryTitle;
+
+  /// No description provided for @learningSummaryReviewCount.
+  ///
+  /// In vi, this message translates to:
+  /// **'Đã ôn {count} thẻ'**
+  String learningSummaryReviewCount(int count);
+
+  /// No description provided for @learningSummaryQuizScore.
+  ///
+  /// In vi, this message translates to:
+  /// **'Trắc nghiệm: {score}/{total} điểm'**
+  String learningSummaryQuizScore(int score, int total);
+
+  /// No description provided for @learningSummaryDone.
+  ///
+  /// In vi, this message translates to:
+  /// **'Xong'**
+  String get learningSummaryDone;
+
+  /// No description provided for @learningSummaryStatusCompleted.
+  ///
+  /// In vi, this message translates to:
+  /// **'Hoàn thành'**
+  String get learningSummaryStatusCompleted;
+
+  /// No description provided for @learningSummaryActivitiesTitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Hoạt động đã hoàn thành'**
+  String get learningSummaryActivitiesTitle;
+
+  /// No description provided for @learningSummaryNotCompleted.
+  ///
+  /// In vi, this message translates to:
+  /// **'Chưa hoàn thành'**
+  String get learningSummaryNotCompleted;
 }
 
 class _AppLocalizationsDelegate

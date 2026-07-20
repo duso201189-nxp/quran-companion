@@ -263,5 +263,30 @@
       }
     }
   },
-  "quizRetry": "إعادة المحاولة"
+  "quizRetry": "إعادة المحاولة",
+  "learningSessionStart": "ابدأ جلسة التعلم",
+  "learningSummaryTitle": "ملخص الجلسة",
+  "learningSummaryReviewCount": "تمت مراجعة {count} بطاقة",
+  "@learningSummaryReviewCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "learningSummaryQuizScore": "الاختبار: {score}/{total}",
+  "@learningSummaryQuizScore": {
+    "placeholders": {
+      "score": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "learningSummaryDone": "تم",
+  "learningSummaryStatusCompleted": "مكتمل",
+  "learningSummaryActivitiesTitle": "الأنشطة المكتملة",
+  "learningSummaryNotCompleted": "لم يكتمل"
 }

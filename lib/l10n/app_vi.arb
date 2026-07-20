@@ -263,5 +263,30 @@
       }
     }
   },
-  "quizRetry": "Làm lại"
+  "quizRetry": "Làm lại",
+  "learningSessionStart": "Bắt đầu buổi học",
+  "learningSummaryTitle": "Tóm tắt buổi học",
+  "learningSummaryReviewCount": "Đã ôn {count} thẻ",
+  "@learningSummaryReviewCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "learningSummaryQuizScore": "Trắc nghiệm: {score}/{total} điểm",
+  "@learningSummaryQuizScore": {
+    "placeholders": {
+      "score": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "learningSummaryDone": "Xong",
+  "learningSummaryStatusCompleted": "Hoàn thành",
+  "learningSummaryActivitiesTitle": "Hoạt động đã hoàn thành",
+  "learningSummaryNotCompleted": "Chưa hoàn thành"
 }

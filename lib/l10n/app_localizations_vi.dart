@@ -544,4 +544,32 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get quizRetry => 'Làm lại';
+
+  @override
+  String get learningSessionStart => 'Bắt đầu buổi học';
+
+  @override
+  String get learningSummaryTitle => 'Tóm tắt buổi học';
+
+  @override
+  String learningSummaryReviewCount(int count) {
+    return 'Đã ôn $count thẻ';
+  }
+
+  @override
+  String learningSummaryQuizScore(int score, int total) {
+    return 'Trắc nghiệm: $score/$total điểm';
+  }
+
+  @override
+  String get learningSummaryDone => 'Xong';
+
+  @override
+  String get learningSummaryStatusCompleted => 'Hoàn thành';
+
+  @override
+  String get learningSummaryActivitiesTitle => 'Hoạt động đã hoàn thành';
+
+  @override
+  String get learningSummaryNotCompleted => 'Chưa hoàn thành';
 }

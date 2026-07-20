@@ -263,5 +263,30 @@
       }
     }
   },
-  "quizRetry": "Retry"
+  "quizRetry": "Retry",
+  "learningSessionStart": "Start Learning Session",
+  "learningSummaryTitle": "Session Summary",
+  "learningSummaryReviewCount": "Reviewed {count} cards",
+  "@learningSummaryReviewCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "learningSummaryQuizScore": "Quiz: {score}/{total}",
+  "@learningSummaryQuizScore": {
+    "placeholders": {
+      "score": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "learningSummaryDone": "Done",
+  "learningSummaryStatusCompleted": "Completed",
+  "learningSummaryActivitiesTitle": "Activities completed",
+  "learningSummaryNotCompleted": "Not completed"
 }

@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 
 import '../features/home/presentation/home_screen.dart';
 import '../features/learning/presentation/review_session_screen.dart';
+import '../features/learning_session/presentation/learning_session_screen.dart';
 import '../features/library/presentation/collections/collections_screen.dart';
 import '../features/library/presentation/library_screen.dart';
 import '../features/profile/presentation/profile_screen.dart';
@@ -46,6 +47,13 @@ abstract final class AppRoutes {
   /// [reviewSession]. Câu hỏi sinh động mỗi phiên, không có route/màn
   /// hình "ngân hàng câu hỏi" riêng.
   static const String quizSession = '/quiz-session';
+
+  /// Learning Session (Sprint 11 Phase 3) — push full-screen từ tab
+  /// Học, MỘT route duy nhất cho toàn bộ phiên (LearningSessionScreen
+  /// tự đổi thân màn hình theo hoạt động hiện tại) — không có route
+  /// con nào cho từng hoạt động, đây là cách phiên không bao giờ đưa
+  /// người dùng quay lại StudyScreen giữa chừng.
+  static const String learningSession = '/learning-session';
 
   /// Tìm kiếm — màn hình push full-screen (không phải tab), giống
   /// [library]. Xem DR-2026-0002 mục 1.
@@ -159,6 +167,11 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: AppRoutes.quizSession,
         builder: (context, state) => const QuizSessionScreen(),
+      ),
+
+      GoRoute(
+        path: AppRoutes.learningSession,
+        builder: (context, state) => const LearningSessionScreen(),
       ),
 
       // Trang đọc full-screen (nhảy từ Thư viện của tôi / ngoài shell).
