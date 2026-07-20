@@ -29,33 +29,61 @@ Lộ trình: xem ROADMAP.md. Checklist phát hành: RELEASE_CHECKLIST.md.
       — khung UI đã có sẵn (Empty State 2 khu vực placeholder, nút
       Mode "Hỏi AI" đã khoá), chưa nối dữ liệu/logic thật.
 - [x] Bước 8 / Sprint 8: schema + repository + provider + UI cho
-      Streak, Khatm %, Bookmark Collections (`DR-2026-0003`) —
+      Streak, Khatm %, Bookmark Collections
+      ([DR-2026-0003](docs/adr/DR-2026-0003-sprint8-data-architecture.md)) —
       `study_sessions`/`khatm_cycles`/`bookmark_collections` +
       `bookmarks.collection_id`, schemaVersion 2->3 hoàn toàn
       additive, `ReadingScreen` ghi phiên đọc thật qua
       `StudySessionRepository.logSession` khi dispose. +61 test
       (270 -> 305 xuyên suốt 5 phase) — xem CHANGELOG.
-- [ ] Ngưỡng "ngày đủ điều kiện tính streak" (hiện: bất kỳ phiên nào
-      >=5 giây là đủ, khớp `StatsStore.addSeconds`) vs quy tắc gốc
-      từng ghi ở DATABASE.md ("tổng study_sessions trong ngày phải
-      >=5 phút HOẶC >=5 Ayah"). Quyết định Sprint 8: giữ >=5 giây làm
-      NGƯỠNG GHI NHẬN (lọc nhiễu, khớp StatsStore) — chưa triển khai
-      ngưỡng "ngày đủ điều kiện" gộp theo tổng thời lượng/Ayah trong
-      ngày. Đây là quyết định sản phẩm (thế nào là một buổi đọc thật
-      để tính streak) nên gắn với việc xây Daily Goal thật (hiện vẫn
-      SharedPreferences) chứ không lẫn vào phần plumbing của Sprint
-      8 — xem DATABASE.md mục Nhóm B để biết chi tiết ngưỡng gốc.
-- [ ] Bước 8 phần còn lại (chưa làm trong Sprint 8): Daily Goal
-      chuyển từ SharedPreferences sang UI/luồng thật, Revision Queue
-      có màn hình riêng (hiện vẫn dùng `ayah_statuses.status='review'`
-      có sẵn từ Bước 6, không có UI mới), "Journey" (tổng hợp dashboard
-      Trang chủ) — CollectionItem tổng quát (domain contract cho các
-      loại bộ sưu tập ngoài Ayah) cố ý chưa xây, xem DR-2026-0003.
-- [ ] `docs/adr/DR-2026-0003-sprint8-data-architecture.md` chưa tồn
-      tại trong repo — ADR này hiện chỉ có ở artifact Claude.ai, mọi
-      chỗ trong docs (kể cả file này) trỏ tới "DR-2026-0003" đang trỏ
-      vào chỗ trống trong repo. Cần lưu lại thành file thật trong
-      `docs/adr/` để khớp quy ước của CLAUDE.md.
+- [x] Quyết định nguồn CANONICAL cho streak (StatsStore vs
+      study_sessions) — ghi trong
+      [DR-2026-0004](docs/adr/DR-2026-0004-sprint9-streak-daily-goal-revision-queue.md)
+      mục 1: `study_sessions`/Drift là nguồn duy nhất, mọi màn hình.
+- [x] **Triển khai xong ở Sprint 9 Phase 5**: `HomeScreen`
+      (`_StatChipsRow`) và `StatsScreen` (lưới chỉ số) giờ đọc
+      `currentStreakProvider`/`longestStreakProvider` (Drift), không
+      còn `stats.currentStreak`/`longestStreak` (`StatsStore`) ở bất
+      kỳ đâu trong `lib/` (xác nhận bằng grep toàn project). `StatsScreen`
+      vẫn hiện streak ở 2 vị trí (lưới chỉ số + mục "Phiên đọc") —
+      KHÔNG gộp lại (ngoài phạm vi Phase 5, chỉ đổi nguồn đọc) — nhưng
+      giờ cả hai LUÔN khớp số vì cùng một nguồn. `StatsStore.currentStreak`/
+      `longestStreak` (getter) không còn nơi nào gọi tới — dead code,
+      chưa xoá (ngoài phạm vi được giao, không tự ý đổi StatsStore).
+- [ ] Ngưỡng "ngày đủ điều kiện tính streak" gộp theo tổng thời
+      lượng/Ayah trong ngày (>=5 phút HOẶC >=5 Ayah, ý tưởng gốc
+      trước Sprint 8) — VẪN CHƯA triển khai. `DR-2026-0004` chỉ quyết
+      định NGUỒN dữ liệu (Drift, xem mục trên), không đổi công thức
+      ngưỡng; ngưỡng ghi nhận mỗi phiên (>=5 giây, khớp
+      `StatsStore.addSeconds`) giữ nguyên từ Sprint 8. Công thức
+      "ngày đủ điều kiện" vẫn là quyết định sản phẩm còn treo, gắn
+      với thiết kế Daily Goal thật — xem DATABASE.md mục Nhóm B.
+- [x] Bước 8 phần còn lại — **Sprint 9 (Phase 1-5) xong** cho Daily
+      Goal, Revision Queue, và Journey/streak
+      ([DR-2026-0004](docs/adr/DR-2026-0004-sprint9-streak-daily-goal-revision-queue.md)):
+      `DailyGoalStore` (SharedPreferences, chỉ tiêu) +
+      `dailyGoalProgressProvider` (dẫn xuất từ `todayStudySummaryProvider`,
+      không có bảng `profiles` mới) + dialog đặt chỉ tiêu + thẻ trên
+      Trang chủ; `LibraryKind.review` + `UserContentRepository.watchAllReviewAyahs()`
+      + màn hình Revision Queue (tái dùng `LibraryTabView`/
+      `LibraryAyahTile`, route `/revision-queue`) + nối từ tab Học;
+      `HomeScreen`/`StatsScreen` đổi nguồn streak sang
+      `currentStreakProvider`/`longestStreakProvider` (Drift). Cả 3
+      quyết định của DR-2026-0004 đã triển khai đầy đủ. CollectionItem
+      tổng quát vẫn cố ý chưa xây (ngoài phạm vi ADR).
+- [x] 2 nơi tự lặp logic "lưu vị trí + mở trang đọc" thay vì gọi
+      [openAyahInReadingScreen](lib/features/quran/presentation/reading/reading_navigation.dart)
+      có sẵn (vi phạm hợp đồng điều hướng chung `DR-2026-0002` mục
+      9) — **đã sửa ở Sprint 9 Phase 4**: `LibraryScreen._open` và
+      `ActiveKhatmCard._continueReading` giờ gọi thẳng hàm dùng
+      chung, hành vi không đổi (xác nhận: 305/305 test cũ vẫn qua).
+- [ ] `docs/adr/DR-2026-0002-*.md` (Search, Sprint 7.1) vẫn chưa tồn
+      tại trong repo — cùng vấn đề `DR-2026-0003` từng gặp, PHÁT HIỆN
+      LẠI lúc backfill DR-2026-0003 (Sprint 9 Phase 0). 6 chỗ trong
+      `lib/` + CHANGELOG.md trỏ tới "DR-2026-0002" đang trỏ vào chỗ
+      trống. Xem `docs/adr/README.md` mục "Known gap". Ngoài phạm vi
+      Sprint 9 Phase 0 (chỉ backfill 0003 + tạo 0004) — cần một lượt
+      backfill riêng.
 - [ ] Nâng MIN_COVERAGE trong ci.yml từ 70% dần về 80% (mục tiêu
       v1.0, ARCHITECTURE.md mục 9) khi Bước 7-9 landing kèm test đầy
       đủ — hạ tạm ở Bước 6 vì coverage thật ~74%, tránh CI đỏ thường

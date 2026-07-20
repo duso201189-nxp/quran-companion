@@ -1,13 +1,9 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 import 'package:quran_companion/l10n/app_localizations.dart';
 
-import '../../../app/router.dart';
 import '../../quran/data/quran_providers.dart';
-import '../../quran/presentation/reading/reading_position_store.dart';
+import '../../quran/presentation/reading/reading_navigation.dart';
 import '../data/khatm_cycle_providers.dart';
 import '../domain/entities/khatm_cycle.dart';
 
@@ -103,19 +99,25 @@ class _ActiveKhatm extends ConsumerWidget {
   final AppLocalizations l10n;
   final KhatmCycle cycle;
 
+  /// Quy đổi currentAyahId (toàn cục) sang surahId/ayahNumber rồi mở
+  /// đúng Ayah — dùng chung [openAyahInReadingScreen] (DR-2026-0002
+  /// mục 9), cùng cơ chế với Thư viện của tôi/Tìm kiếm/Revision
+  /// Queue. Trước Sprint 9 Phase 4, đoạn lưu-vị-trí-rồi-push tự lặp
+  /// lại thay vì gọi hàm dùng chung — thay bằng lời gọi trực tiếp,
+  /// hành vi không đổi.
   Future<void> _continueReading(BuildContext context, WidgetRef ref) async {
     final results = await ref
         .read(quranRepositoryProvider)
         .getAyahsByIds([cycle.currentAyahId]);
     if (results.isEmpty) return;
+    if (!context.mounted) return;
     final target = results.first;
-    await ref.read(readingPositionStoreProvider).save(
-          surahId: target.surahId,
-          ayahIndex: target.ayahNumber - 1,
-        );
-    if (context.mounted) {
-      unawaited(context.push(AppRoutes.read(target.surahId)));
-    }
+    await openAyahInReadingScreen(
+      context,
+      ref,
+      surahId: target.surahId,
+      ayahNumber: target.ayahNumber,
+    );
   }
 
   @override

@@ -482,4 +482,21 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get libraryOrganizeTooltip => 'تنظيم ضمن مجموعة';
+
+  @override
+  String get revisionQueueEmpty => 'لا توجد آيات بحاجة للمراجعة بعد.';
+
+  @override
+  String get dailyGoalMinutesHint => 'دقائق في اليوم';
+
+  @override
+  String get dailyGoalAyahsHint => 'آيات في اليوم';
+
+  @override
+  String get dailyGoalNotSet => 'لم يتم تعيين هدف بعد — اضغط للتعيين.';
+
+  @override
+  String dailyGoalMinutesProgress(int current, int target) {
+    return '$current / $target دقيقة اليوم';
+  }
 }

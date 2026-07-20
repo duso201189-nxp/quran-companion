@@ -5,10 +5,72 @@ Phiên bản theo [Semantic Versioning](https://semver.org/lang/vi/).
 
 ## [Unreleased]
 
-### Added — Sprint 8: Streak, Khatm %, Bookmark Collections (Bước 8 — xem "Chưa làm" bên dưới, chưa xong)
+## [0.8.1] — Sprint 9: Daily Goal, Revision Queue, Streak canonical (Bước 8 phần còn lại)
 
-Thực hiện theo `DR-2026-0003` (5 phase: Schema -> Repository ->
-Provider -> UI -> Integration & Polish).
+### Added
+
+Thực hiện theo [DR-2026-0004](docs/adr/DR-2026-0004-sprint9-streak-daily-goal-revision-queue.md)
+(6 phase: Architecture Freeze -> Foundation -> Provider -> UI ->
+Integration & Polish -> hoàn tất Quyết định 1). Cả 3 quyết định của
+DR-2026-0004 đã triển khai đủ. Amend một phần
+[DR-2026-0003](docs/adr/DR-2026-0003-sprint8-data-architecture.md)
+(streak canonical, Daily Goal storage) — không thay thế, phần còn
+lại của DR-2026-0003 vẫn nguyên hiệu lực.
+
+- **Kiến trúc**: backfill `DR-2026-0003` vào `docs/adr/` (chưa từng
+  có file thật trước Sprint 9) + `DR-2026-0004` mới + `docs/adr/README.md`
+  (index ADR, lần đầu có). Không đổi schema/migration — `schemaVersion`
+  vẫn là 3 xuyên suốt cả Sprint 9.
+- **Daily Goal**: `DailyGoalStore` (SharedPreferences, cùng kiến
+  trúc `ThemeController`/`LocaleController`) lưu chỉ tiêu phút/ngày +
+  Ayah/ngày; `dailyGoalProgressProvider` ghép thuần
+  `todayStudySummaryProvider` (Sprint 8) với chỉ tiêu, không tính lại
+  gì, không có bảng `profiles` mới. Dialog đặt chỉ tiêu (2 ô số,
+  không route riêng) + thẻ gọn trên Trang chủ, chạm để mở dialog.
+- **Revision Queue**: `UserContentRepository.watchAllReviewAyahs()`
+  (đối xứng với 4 `watchAllX()` có sẵn) + `LibraryKind.review` +
+  màn hình riêng (route `/revision-queue`, push full-screen giống
+  Thư viện của tôi/Tìm kiếm/Bộ sưu tập) — tái dùng nguyên vẹn
+  `LibraryTabView`/`LibraryAyahTile`, không có list/tile/repository
+  riêng. Nối từ thẻ "Ôn tập hằng ngày" trên tab Học (3 công cụ còn
+  lại vẫn khoá, chờ Bước 9).
+- **Dọn nợ kỹ thuật điều hướng**: `LibraryScreen._open` và
+  `ActiveKhatmCard._continueReading` (Sprint 8) từng tự lặp lại 2
+  bước `openAyahInReadingScreen()` đã gói sẵn (vi phạm hợp đồng dùng
+  chung `DR-2026-0002` mục 9) — cả hai giờ gọi thẳng hàm dùng chung,
+  hành vi xác nhận không đổi (bộ test cũ 305/305 vẫn qua nguyên vẹn).
+- **Streak canonical (DR-2026-0004 mục 1) triển khai xong**:
+  `HomeScreen` (`_StatChipsRow`) và `StatsScreen` (lưới chỉ số) đọc
+  `currentStreakProvider`/`longestStreakProvider` (Drift) — không
+  còn nơi nào trong `lib/` đọc `stats.currentStreak`/`longestStreak`
+  (`StatsStore`, xác nhận bằng grep toàn project). `StatsScreen` vẫn
+  hiện streak ở 2 vị trí (lưới chỉ số cũ + mục "Phiên đọc") — không
+  gộp lại (ngoài phạm vi, chỉ đổi nguồn đọc) — nhưng cả hai giờ LUÔN
+  khớp số vì cùng một nguồn duy nhất.
+
+### Tests
+- Không có test mới trong Sprint 9 (đúng phạm vi được giao từng
+  phase) — 305 test hiện có xác nhận không hồi quy sau mỗi phase,
+  kể cả sau khi đổi nguồn streak.
+
+### Chưa làm (ngoài phạm vi DR-2026-0004)
+- "Journey" (Trang chủ tổng hợp) chưa hiện tóm tắt Khatm — vẫn chỉ ở
+  tab Thống kê. Không thuộc 3 quyết định của DR-2026-0004.
+- Ngưỡng "ngày đủ điều kiện tính streak" (>=5 phút HOẶC >=5 Ayah)
+  vẫn chưa triển khai — `DR-2026-0004` chỉ quyết định nguồn dữ liệu,
+  không đổi công thức ngưỡng.
+- `CollectionItem` tổng quát vẫn cố ý chưa xây.
+- `docs/adr/DR-2026-0002-*.md` (Search, Sprint 7.1) vẫn chưa tồn tại
+  trong repo — phát hiện lại lúc backfill DR-2026-0003, ngoài phạm vi
+  Sprint 9.
+
+## [0.8.0] — Sprint 8: Streak, Khatm %, Bookmark Collections
+
+### Added
+
+Thực hiện theo [DR-2026-0003](docs/adr/DR-2026-0003-sprint8-data-architecture.md)
+(5 phase: Schema -> Repository -> Provider -> UI -> Integration &
+Polish).
 
 - **Kiến trúc**: Drift schema files là Source of Truth cho schema
   hiện tại; `DATABASE.md` là Design Specification 3 tầng (Đã triển
@@ -64,11 +126,17 @@ Provider -> UI -> Integration & Polish).
 ### Chưa làm (Bước 8 CHƯA hoàn tất)
 - "Journey" (tổng hợp dashboard Trang chủ: tiếp tục đọc, tiến độ hôm
   nay, streak, verse of the day) — chưa xây, xem `placeholderHome`.
-- Daily Goal thật — vẫn ở SharedPreferences (`StatsStore`), chưa có
-  UI/luồng nối vào schema Nhóm B.
+- Daily Goal thật — chưa có UI/luồng. Kiến trúc lưu trữ đã đóng băng
+  cho Sprint 9 (chỉ tiêu SharedPreferences qua `DailyGoalStore` mới,
+  tiến độ dẫn xuất từ `study_sessions` — xem
+  [DR-2026-0004](docs/adr/DR-2026-0004-sprint9-streak-daily-goal-revision-queue.md)),
+  chưa triển khai.
 - Revision Queue chưa có màn hình riêng — vẫn dùng cơ chế đơn giản
   có sẵn từ Bước 6 (`ayah_statuses.status='review'`), đúng quyết
-  định "Simple Revision Queue" của `DR-2026-0003`.
+  định "Simple Revision Queue" của
+  [DR-2026-0003](docs/adr/DR-2026-0003-sprint8-data-architecture.md),
+  tái khẳng định ở
+  [DR-2026-0004](docs/adr/DR-2026-0004-sprint9-streak-daily-goal-revision-queue.md).
 - Ngưỡng "ngày đủ điều kiện tính streak" (tổng thời lượng/Ayah trong
   ngày >=5 phút HOẶC >=5 Ayah, từng ghi ở DATABASE.md) chưa triển
   khai — hiện chỉ cần 1 phiên >=5 giây là streak-day được tính. Xem
@@ -76,7 +144,9 @@ Provider -> UI -> Integration & Polish).
 - `CollectionItem` — hợp đồng domain tổng quát cho bộ sưu tập ngoài
   Ayah — cố ý chưa xây, ngoài phạm vi 5 deliverable của Phase 4.
 
-### Added — Sprint 7.1: Nền tảng UI Tìm kiếm (Bước 7 — xem "Chưa làm" bên dưới, chưa xong)
+## [0.7.1] — Sprint 7.1: Nền tảng UI Tìm kiếm
+
+### Added
 - Màn hình Tìm kiếm (`/search`) — route top-level push full-screen,
   cùng mẫu với "Thư viện của tôi" (không phải tab thứ 6). Điểm vào từ
   nút tìm kiếm trên Trang chủ và tab Qur'an.

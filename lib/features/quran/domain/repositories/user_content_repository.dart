@@ -45,4 +45,9 @@ abstract interface class UserContentRepository {
   /// savedAt = updated_at mới nhất của Ayah đó.
   Stream<List<({int ayahId, Set<String> colors, int savedAt})>>
       watchAllHighlights();
+
+  /// Mọi Ayah có trạng thái 'review' — nguồn dữ liệu cho Revision
+  /// Queue (DR-2026-0004 mục 3: tái dùng UserContentRepository,
+  /// không có repository/bảng riêng). savedAt = updated_at.
+  Stream<List<({int ayahId, int savedAt})>> watchAllReviewAyahs();
 }

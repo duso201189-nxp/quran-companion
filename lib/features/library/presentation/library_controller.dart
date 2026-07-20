@@ -87,6 +87,22 @@ final libraryItemsProvider = StreamProvider.autoDispose
               ],
             ),
           );
+    case LibraryKind.review:
+      return userRepo.watchAllReviewAyahs().asyncMap(
+            (rows) => _buildItems(
+              quranRepo,
+              headerCache,
+              [
+                for (final r in rows)
+                  (
+                    ayahId: r.ayahId,
+                    savedAt: r.savedAt,
+                    note: null,
+                    colors: const <String>{},
+                  ),
+              ],
+            ),
+          );
   }
 });
 

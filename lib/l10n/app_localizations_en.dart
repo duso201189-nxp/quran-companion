@@ -484,4 +484,21 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get libraryOrganizeTooltip => 'Organize into collection';
+
+  @override
+  String get revisionQueueEmpty => 'No ayahs need review yet.';
+
+  @override
+  String get dailyGoalMinutesHint => 'Minutes per day';
+
+  @override
+  String get dailyGoalAyahsHint => 'Ayahs per day';
+
+  @override
+  String get dailyGoalNotSet => 'No goal set yet — tap to set one.';
+
+  @override
+  String dailyGoalMinutesProgress(int current, int target) {
+    return '$current / $target min today';
+  }
 }

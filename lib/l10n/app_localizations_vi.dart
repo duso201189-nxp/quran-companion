@@ -483,4 +483,21 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get libraryOrganizeTooltip => 'Sắp xếp vào bộ sưu tập';
+
+  @override
+  String get revisionQueueEmpty => 'Chưa có Ayah nào cần ôn tập.';
+
+  @override
+  String get dailyGoalMinutesHint => 'Phút mỗi ngày';
+
+  @override
+  String get dailyGoalAyahsHint => 'Ayah mỗi ngày';
+
+  @override
+  String get dailyGoalNotSet => 'Chưa đặt mục tiêu — chạm để đặt.';
+
+  @override
+  String dailyGoalMinutesProgress(int current, int target) {
+    return '$current / $target phút hôm nay';
+  }
 }

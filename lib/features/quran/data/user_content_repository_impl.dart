@@ -141,6 +141,20 @@ class UserContentRepositoryImpl implements UserContentRepository {
     });
   }
 
+  @override
+  Stream<List<({int ayahId, int savedAt})>> watchAllReviewAyahs() {
+    final q = _db.select(_db.ayahStatuses)
+      ..where(
+        (t) => t.status.equals('review') & t.deletedAt.isNull(),
+      )
+      ..orderBy([(t) => OrderingTerm.desc(t.updatedAt)]);
+    return q.watch().map(
+          (rows) => [
+            for (final r in rows) (ayahId: r.ayahId, savedAt: r.updatedAt),
+          ],
+        );
+  }
+
   // ------------------------- write -------------------------
 
   @override

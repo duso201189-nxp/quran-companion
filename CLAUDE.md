@@ -7,7 +7,8 @@ something here ever drifts from the files it points to, those files win.
 
 A Flutter Qur'an study app — see `README.md` for setup, `ARCHITECTURE.md`
 for design, `DATABASE.md` for schema, `ROADMAP.md` for the 12-step plan,
-`TODO.md` for open items. Currently on Step 6 of 12 (v0.6.0).
+`TODO.md` for open items. Currently mid Step 8 of 12 (v0.8.1) — see
+ROADMAP.md for exactly what's done vs. outstanding within the step.
 
 ## This project runs under EIS
 

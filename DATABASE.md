@@ -112,7 +112,10 @@ không dấu ("long" / "rahim") vẫn khớp.
 
 ## Nhóm B — Dữ liệu người dùng (Drift local ↔ Supabase, cùng schema)
 
-Kể từ `DR-2026-0003` (Sprint 8): **Drift schema files
+Kể từ [DR-2026-0003](docs/adr/DR-2026-0003-sprint8-data-architecture.md)
+(Sprint 8), amend một phần bởi
+[DR-2026-0004](docs/adr/DR-2026-0004-sprint9-streak-daily-goal-revision-queue.md)
+(Sprint 9): **Drift schema files
 (`lib/core/database/user/user_tables.dart`,
 `lib/core/database/user/user_database.dart`) là Source of Truth cho
 schema HIỆN TẠI.** Mục dưới đây là Design Specification — chia 3
@@ -169,8 +172,12 @@ favorites (id, user_id, updated_at, deleted_at, is_dirty,
 ayah_statuses(id, user_id, updated_at, deleted_at, is_dirty,
               ayah_id, status)   -- 'learning'|'learned'|'review'
               -- UNIQUE ayah_id. status='review' = Revision Queue
-              -- ĐƠN GIẢN hiện tại (DR-2026-0003 mục B) — chưa phải
-              -- SRS thật, xem srs_cards ở "Đã định".
+              -- ĐƠN GIẢN (DR-2026-0003 mục B, tái khẳng định ở
+              -- DR-2026-0004 mục 3) — chưa phải SRS thật, xem
+              -- srs_cards ở "Đã định". Sprint 9: màn hình Revision
+              -- Queue tái dùng UserContentRepository (thêm
+              -- watchAllReviewAyahs()) + LibraryTabView/LibraryAyahTile
+              -- có sẵn — KHÔNG có repository/bảng riêng.
 
 -- Nhật ký phiên đọc (Sprint 8, DR-2026-0003 mục A). Sự kiện, KHÔNG
 -- unique theo ngày — đọc nhiều lần một ngày là bình thường.
@@ -180,11 +187,15 @@ study_sessions(id, user_id, updated_at, deleted_at, is_dirty,
                duration_sec, note, created_at)
 -- Streak (hiện tại/dài nhất) TÍNH TRÊN TRUY VẤN từ bảng này —
 -- KHÔNG CÓ bảng streaks riêng (dẫn xuất-khi-đọc, DR-2026-0003 mục
--- A). Ngưỡng "phiên đủ để ghi": >=5 giây (khớp StatsStore.addSeconds
+-- A). Nguồn CANONICAL cho streak trên MỌI màn hình (DR-2026-0004
+-- mục 1) — HomeScreen/StatsScreen đều đọc
+-- currentStreakProvider/longestStreakProvider (Sprint 9 Phase 5);
+-- StatsStore.currentStreak/longestStreak không còn nơi nào gọi tới.
+-- Ngưỡng "phiên đủ để ghi": >=5 giây (khớp StatsStore.addSeconds
 -- hiện có). Ngưỡng "ngày đủ điều kiện tính streak" gộp theo tổng
 -- thời lượng/Ayah trong ngày (>=5 phút HOẶC >=5 Ayah, ý tưởng gốc
--- trước Sprint 8) CHƯA triển khai — xem TODO.md để biết khuyến nghị
--- và lý do (gắn với thiết kế Daily Goal thật, chưa xây).
+-- trước Sprint 8) VẪN CHƯA triển khai — DR-2026-0004 chỉ quyết định
+-- NGUỒN dữ liệu (Drift), không đổi công thức ngưỡng — xem TODO.md.
 
 -- KHATM TRACKER (Sprint 8, DR-2026-0003 mục A): mỗi chu kỳ đọc trọn
 -- bộ Qur'an là 1 bản ghi. Nhiều chu kỳ/người dùng (đang đọc + lịch
@@ -213,8 +224,12 @@ Supabase: mọi bảng nhóm B bật RLS `user_id = auth.uid()`.
 ```sql
 profiles(user_id PK, name, avatar_url,
          daily_goal_minutes, daily_goal_ayahs, settings_json)
-         -- Bước 8 phần còn lại: Daily Goal thật. Hiện Daily Goal vẫn
-         -- ở SharedPreferences (StatsStore), CHƯA có bảng này.
+         -- Mục tiêu đọc hằng ngày (Daily Goal) CỐ Ý không dùng bảng
+         -- này — xem DR-2026-0004: chỉ tiêu lưu SharedPreferences
+         -- (DailyGoalStore, giống ThemeController/LocaleController),
+         -- tiến độ tính trên truy vấn từ study_sessions. Bảng
+         -- profiles này chờ tới khi có Auth/Sync thật (Bước 10-11)
+         -- mới cần, không xây trước cho có.
 
 surah_progress(user_id, surah_id, ayahs_read, ayahs_memorized,
                percent, last_ayah_id, updated_at)
