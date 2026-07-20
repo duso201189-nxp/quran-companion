@@ -137,9 +137,8 @@ class _QuizQuestionView extends ConsumerWidget {
     WidgetRef ref,
     int index,
   ) async {
-    final correct = await ref
-        .read(quizSessionControllerProvider.notifier)
-        .answer(index);
+    final correct =
+        await ref.read(quizSessionControllerProvider.notifier).answer(index);
     if (!context.mounted) return;
     ScaffoldMessenger.of(context)
       ..hideCurrentSnackBar()

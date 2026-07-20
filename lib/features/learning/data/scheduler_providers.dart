@@ -77,8 +77,7 @@ List<SrsCard> selectDueCardsOrdered(List<SrsCard> cards, DateTime now) {
 /// 4). Watch schedulerSyncProvider để Scheduler luôn khớp Revision
 /// Queue mới nhất trước khi tính due — một provider duy nhất cho nơi
 /// tiêu thụ (Phase 3), không cần watch cả hai provider riêng lẻ.
-final dueReviewCardsProvider =
-    StreamProvider.autoDispose<List<SrsCard>>((ref) {
+final dueReviewCardsProvider = StreamProvider.autoDispose<List<SrsCard>>((ref) {
   ref.watch(schedulerSyncProvider);
   return ref
       .watch(schedulerRepositoryProvider)

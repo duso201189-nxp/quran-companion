@@ -135,7 +135,8 @@ class _ReviewCard extends ConsumerWidget {
                     ayah.arabic,
                     textDirection: TextDirection.rtl,
                     textAlign: TextAlign.right,
-                    style: quranTextStyle(fontSize: 26, color: scheme.onSurface),
+                    style:
+                        quranTextStyle(fontSize: 26, color: scheme.onSurface),
                   ),
                   if (ayah.translation != null) ...[
                     const SizedBox(height: 16),

@@ -111,8 +111,7 @@ void main() {
     });
   });
 
-  group('provider layer (ProviderContainer + UserDatabase thật in-memory)',
-      () {
+  group('provider layer (ProviderContainer + UserDatabase thật in-memory)', () {
     late UserDatabase db;
     late ProviderContainer container;
 
@@ -128,8 +127,7 @@ void main() {
       db.close();
     });
 
-    test('schedulingAlgorithmProvider mặc định là SM2SchedulingAlgorithm',
-        () {
+    test('schedulingAlgorithmProvider mặc định là SM2SchedulingAlgorithm', () {
       expect(
         container.read(schedulingAlgorithmProvider),
         isA<SM2SchedulingAlgorithm>(),
@@ -239,7 +237,8 @@ void main() {
       await userRepo.setStatus(30, AyahStatus.review);
 
       final beforeReview = await _waitFor<List<SrsCard>>(
-        () async => container.read(dueReviewCardsProvider).valueOrNull ?? const [],
+        () async =>
+            container.read(dueReviewCardsProvider).valueOrNull ?? const [],
         (cards) => cards.any((c) => c.itemId == 30),
       );
       final card = beforeReview.firstWhere((c) => c.itemId == 30);
@@ -249,7 +248,8 @@ void main() {
           .applyReview(card.id, ReviewGrade.good);
 
       final afterReview = await _waitFor<List<SrsCard>>(
-        () async => container.read(dueReviewCardsProvider).valueOrNull ?? const [],
+        () async =>
+            container.read(dueReviewCardsProvider).valueOrNull ?? const [],
         (cards) => !cards.any((c) => c.itemId == 30),
       );
       expect(afterReview.map((c) => c.itemId), isNot(contains(30)));

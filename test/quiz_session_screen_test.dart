@@ -66,8 +66,7 @@ class _FakeQuranRepo implements QuranRepository {
   }) async =>
       const [];
   @override
-  Future<List<AyahSearchResult>> getAyahsByIds(List<int> ids) async =>
-      const [];
+  Future<List<AyahSearchResult>> getAyahsByIds(List<int> ids) async => const [];
 }
 
 void main() {
@@ -132,7 +131,8 @@ void main() {
     final correctSnack = find.text('Correct!');
     final incorrectSnack = find.text('Not quite.');
     expect(
-      correctSnack.evaluate().isNotEmpty || incorrectSnack.evaluate().isNotEmpty,
+      correctSnack.evaluate().isNotEmpty ||
+          incorrectSnack.evaluate().isNotEmpty,
       isTrue,
       reason: 'phải hiện đúng 1 trong 2 phản hồi',
     );
@@ -142,8 +142,7 @@ void main() {
     expect(find.text('Question 1/10'), findsNothing);
   });
 
-  testWidgets(
-      'trả lời hết 10 câu -> hiện màn hình kết quả (quiz completion)',
+  testWidgets('trả lời hết 10 câu -> hiện màn hình kết quả (quiz completion)',
       (tester) async {
     await tester.pumpWidget(wrap());
     await tester.pumpAndSettle();
@@ -158,7 +157,8 @@ void main() {
     expect(find.text('Question 1/10'), findsNothing);
   });
 
-  testWidgets('bấm Retry sau khi hoàn thành -> phiên mới bắt đầu lại từ '
+  testWidgets(
+      'bấm Retry sau khi hoàn thành -> phiên mới bắt đầu lại từ '
       'câu 1/10', (tester) async {
     await tester.pumpWidget(wrap());
     await tester.pumpAndSettle();

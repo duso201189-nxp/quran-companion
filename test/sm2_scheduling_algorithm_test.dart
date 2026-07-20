@@ -9,8 +9,7 @@ void main() {
   final now = DateTime.utc(2026, 7, 20);
 
   group('initialState', () {
-    test('ease factor mặc định 2.5, chưa lặp lần nào, trạng thái newCard',
-        () {
+    test('ease factor mặc định 2.5, chưa lặp lần nào, trạng thái newCard', () {
       final initial = algorithm.initialState();
       expect(initial.easeFactor, 2.5);
       expect(initial.intervalDays, 0);
