@@ -1,12 +1,10 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:quran_companion/l10n/app_localizations.dart';
 
 import '../../../app/router.dart';
-import '../../quran/presentation/reading/reading_position_store.dart';
+import '../../quran/presentation/reading/reading_navigation.dart';
 import '../domain/library_item.dart';
 import '../domain/library_kind.dart';
 import 'widgets/library_tab_view.dart';
@@ -78,20 +76,22 @@ class LibraryScreen extends ConsumerWidget {
     );
   }
 
-  /// Lưu vị trí đọc rồi mở trang đọc đúng tại Ayah — cùng cơ chế
-  /// với kết quả tìm kiếm.
+  /// Lưu vị trí đọc rồi mở trang đọc đúng tại Ayah — dùng chung
+  /// [openAyahInReadingScreen] (DR-2026-0002 mục 9), cùng cơ chế
+  /// với kết quả tìm kiếm và Revision Queue. Trước Sprint 9 Phase 4,
+  /// hàm này tự lặp lại đúng 2 bước hàm dùng chung đã gói — thay
+  /// bằng lời gọi trực tiếp, hành vi không đổi (xem DR-2026-0004
+  /// mục "Consequences").
   Future<void> _open(
     BuildContext context,
     WidgetRef ref,
     LibraryItem item,
-  ) async {
-    await ref.read(readingPositionStoreProvider).save(
-          surahId: item.ayah.surahId,
-          ayahIndex: item.ayah.ayahNumber - 1,
-        );
-    if (context.mounted) {
-      // Route đọc full-screen (ngoài vỏ tab) — tránh xung đột shell.
-      unawaited(context.push(AppRoutes.read(item.ayah.surahId)));
-    }
+  ) {
+    return openAyahInReadingScreen(
+      context,
+      ref,
+      surahId: item.ayah.surahId,
+      ayahNumber: item.ayah.ayahNumber,
+    );
   }
 }

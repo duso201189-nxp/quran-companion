@@ -215,5 +215,20 @@
     }
   },
   "collectionAssignTitle": "Thêm vào bộ sưu tập",
-  "libraryOrganizeTooltip": "Sắp xếp vào bộ sưu tập"
+  "libraryOrganizeTooltip": "Sắp xếp vào bộ sưu tập",
+  "revisionQueueEmpty": "Chưa có Ayah nào cần ôn tập.",
+  "dailyGoalMinutesHint": "Phút mỗi ngày",
+  "dailyGoalAyahsHint": "Ayah mỗi ngày",
+  "dailyGoalNotSet": "Chưa đặt mục tiêu — chạm để đặt.",
+  "dailyGoalMinutesProgress": "{current} / {target} phút hôm nay",
+  "@dailyGoalMinutesProgress": {
+    "placeholders": {
+      "current": {
+        "type": "int"
+      },
+      "target": {
+        "type": "int"
+      }
+    }
+  }
 }

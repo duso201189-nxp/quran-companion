@@ -999,6 +999,36 @@ abstract class AppLocalizations {
   /// In vi, this message translates to:
   /// **'Sắp xếp vào bộ sưu tập'**
   String get libraryOrganizeTooltip;
+
+  /// No description provided for @revisionQueueEmpty.
+  ///
+  /// In vi, this message translates to:
+  /// **'Chưa có Ayah nào cần ôn tập.'**
+  String get revisionQueueEmpty;
+
+  /// No description provided for @dailyGoalMinutesHint.
+  ///
+  /// In vi, this message translates to:
+  /// **'Phút mỗi ngày'**
+  String get dailyGoalMinutesHint;
+
+  /// No description provided for @dailyGoalAyahsHint.
+  ///
+  /// In vi, this message translates to:
+  /// **'Ayah mỗi ngày'**
+  String get dailyGoalAyahsHint;
+
+  /// No description provided for @dailyGoalNotSet.
+  ///
+  /// In vi, this message translates to:
+  /// **'Chưa đặt mục tiêu — chạm để đặt.'**
+  String get dailyGoalNotSet;
+
+  /// No description provided for @dailyGoalMinutesProgress.
+  ///
+  /// In vi, this message translates to:
+  /// **'{current} / {target} phút hôm nay'**
+  String dailyGoalMinutesProgress(int current, int target);
 }
 
 class _AppLocalizationsDelegate

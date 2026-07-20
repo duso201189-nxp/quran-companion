@@ -9,6 +9,7 @@ import '../features/quran/presentation/reading/reading_screen.dart';
 import '../features/quran/presentation/surah_list_screen.dart';
 import '../features/search/presentation/search_screen.dart';
 import '../features/stats/presentation/stats_screen.dart';
+import '../features/study/presentation/revision_queue_screen.dart';
 import '../features/study/presentation/study_screen.dart';
 import '../shared/widgets/app_scaffold.dart';
 
@@ -26,6 +27,11 @@ abstract final class AppRoutes {
   /// Bộ sưu tập Bookmark (Sprint 8 — DR-2026-0003 mục C) — push
   /// full-screen từ Thư viện của tôi, giống [library]/[search].
   static const String collections = '/collections';
+
+  /// Ôn tập hằng ngày / Revision Queue (Sprint 9 — DR-2026-0004 mục
+  /// 3) — push full-screen từ tab Học, giống [library]/[search]/
+  /// [collections]. Không phải route lồng trong shell.
+  static const String revisionQueue = '/revision-queue';
 
   /// Tìm kiếm — màn hình push full-screen (không phải tab), giống
   /// [library]. Xem DR-2026-0002 mục 1.
@@ -124,6 +130,11 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: AppRoutes.collections,
         builder: (context, state) => const CollectionsScreen(),
+      ),
+
+      GoRoute(
+        path: AppRoutes.revisionQueue,
+        builder: (context, state) => const RevisionQueueScreen(),
       ),
 
       // Trang đọc full-screen (nhảy từ Thư viện của tôi / ngoài shell).

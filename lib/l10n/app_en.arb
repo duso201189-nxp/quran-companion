@@ -215,5 +215,20 @@
     }
   },
   "collectionAssignTitle": "Add to collection",
-  "libraryOrganizeTooltip": "Organize into collection"
+  "libraryOrganizeTooltip": "Organize into collection",
+  "revisionQueueEmpty": "No ayahs need review yet.",
+  "dailyGoalMinutesHint": "Minutes per day",
+  "dailyGoalAyahsHint": "Ayahs per day",
+  "dailyGoalNotSet": "No goal set yet — tap to set one.",
+  "dailyGoalMinutesProgress": "{current} / {target} min today",
+  "@dailyGoalMinutesProgress": {
+    "placeholders": {
+      "current": {
+        "type": "int"
+      },
+      "target": {
+        "type": "int"
+      }
+    }
+  }
 }
