@@ -545,4 +545,32 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get quizRetry => 'Retry';
+
+  @override
+  String get learningSessionStart => 'Start Learning Session';
+
+  @override
+  String get learningSummaryTitle => 'Session Summary';
+
+  @override
+  String learningSummaryReviewCount(int count) {
+    return 'Reviewed $count cards';
+  }
+
+  @override
+  String learningSummaryQuizScore(int score, int total) {
+    return 'Quiz: $score/$total';
+  }
+
+  @override
+  String get learningSummaryDone => 'Done';
+
+  @override
+  String get learningSummaryStatusCompleted => 'Completed';
+
+  @override
+  String get learningSummaryActivitiesTitle => 'Activities completed';
+
+  @override
+  String get learningSummaryNotCompleted => 'Not completed';
 }
