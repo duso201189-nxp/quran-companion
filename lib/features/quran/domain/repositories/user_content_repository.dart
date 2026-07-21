@@ -27,4 +27,27 @@ abstract interface class UserContentRepository {
 
   /// Đặt trạng thái học. [AyahStatus.none] = xóa trạng thái.
   Future<void> setStatus(int ayahId, AyahStatus status);
+
+  // ---- Thư viện của tôi: xem TẤT CẢ chú thích (không theo Surah) ----
+  // Mọi stream: chỉ bản ghi còn sống (deleted_at null), mới nhất
+  // trước. Trả về kiểu Dart thuần (record) — domain không biết Drift.
+
+  /// Mọi Ayah đã bookmark. savedAt = created_at (epoch ms).
+  Stream<List<({int ayahId, int savedAt})>> watchAllBookmarks();
+
+  /// Mọi Ayah đã yêu thích. savedAt = created_at (epoch ms).
+  Stream<List<({int ayahId, int savedAt})>> watchAllFavorites();
+
+  /// Mọi Ayah có ghi chú kèm nội dung. savedAt = updated_at.
+  Stream<List<({int ayahId, String note, int savedAt})>> watchAllNotes();
+
+  /// Mọi Ayah có highlight, gộp các màu theo từng Ayah.
+  /// savedAt = updated_at mới nhất của Ayah đó.
+  Stream<List<({int ayahId, Set<String> colors, int savedAt})>>
+      watchAllHighlights();
+
+  /// Mọi Ayah có trạng thái 'review' — nguồn dữ liệu cho Revision
+  /// Queue (DR-2026-0004 mục 3: tái dùng UserContentRepository,
+  /// không có repository/bảng riêng). savedAt = updated_at.
+  Stream<List<({int ayahId, int savedAt})>> watchAllReviewAyahs();
 }

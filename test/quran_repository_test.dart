@@ -2,6 +2,7 @@ import 'package:drift/native.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'package:quran_companion/core/database/app_database.dart';
+import 'package:quran_companion/core/logging/console_logger.dart';
 import 'package:quran_companion/features/quran/data/quran_repository_impl.dart';
 import 'package:quran_companion/features/quran/domain/entities/surah.dart';
 import 'package:quran_companion/features/quran/domain/entities/translation_source.dart';
@@ -15,7 +16,7 @@ void main() {
   setUp(() async {
     db = AppDatabase(NativeDatabase.memory());
     await seedTestContent(db);
-    repo = QuranRepositoryImpl(db);
+    repo = QuranRepositoryImpl(db, const ConsoleLogger());
   });
 
   tearDown(() async {

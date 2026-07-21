@@ -11,6 +11,7 @@ import 'package:drift/native.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'package:quran_companion/core/database/app_database.dart';
+import 'package:quran_companion/core/logging/console_logger.dart';
 import 'package:quran_companion/features/quran/data/quran_repository_impl.dart';
 
 void main() {
@@ -24,7 +25,7 @@ void main() {
 
       setUpAll(() {
         db = AppDatabase(NativeDatabase(assetFile));
-        repo = QuranRepositoryImpl(db);
+        repo = QuranRepositoryImpl(db, const ConsoleLogger());
       });
 
       tearDownAll(() async => db.close());

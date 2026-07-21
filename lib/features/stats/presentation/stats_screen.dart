@@ -3,7 +3,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:quran_companion/l10n/app_localizations.dart';
 
+import '../../khatm/presentation/active_khatm_card.dart';
 import '../data/stats_store.dart';
+import '../data/study_session_providers.dart';
+import 'widgets/reading_stats_section.dart';
 
 /// Màn hình Thống kê — số liệu cục bộ (không cần backend):
 /// ngày đọc, Ayah đã đọc, phút học, % hoàn thành, chuỗi ngày,
@@ -16,6 +19,10 @@ class StatsScreen extends ConsumerWidget {
     final l10n = AppLocalizations.of(context);
     // Đọc lại mỗi lần build — dữ liệu prefs rẻ, luôn tươi khi mở tab.
     final stats = ref.watch(statsStoreProvider);
+    // Nguồn canonical cho streak — DR-2026-0004 mục 1. Không đọc
+    // stats.currentStreak/longestStreak (StatsStore) nữa.
+    final currentStreak = ref.watch(currentStreakProvider).valueOrNull ?? 0;
+    final longestStreak = ref.watch(longestStreakProvider).valueOrNull ?? 0;
 
     final hasData = stats.readingDayCount > 0;
 
@@ -42,12 +49,12 @@ class StatsScreen extends ConsumerWidget {
       ),
       (
         icon: Icons.local_fire_department_rounded,
-        value: l10n.streakDays(stats.currentStreak),
+        value: l10n.streakDays(currentStreak),
         label: l10n.statsCurrentStreak,
       ),
       (
         icon: Icons.emoji_events_rounded,
-        value: l10n.streakDays(stats.longestStreak),
+        value: l10n.streakDays(longestStreak),
         label: l10n.statsLongestStreak,
       ),
     ];
@@ -99,6 +106,10 @@ class StatsScreen extends ConsumerWidget {
                   percent: stats.completionPercent,
                   detail: '${stats.ayahsRead} / ${StatsStore.totalAyahs}',
                 ),
+                const SizedBox(height: 20),
+                const ActiveKhatmCard(),
+                const SizedBox(height: 20),
+                const ReadingStatsSection(),
               ],
             );
           },

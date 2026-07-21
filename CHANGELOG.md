@@ -5,6 +5,280 @@ Phiên bản theo [Semantic Versioning](https://semver.org/lang/vi/).
 
 ## [Unreleased]
 
+### Added — Sprint 10: Learning Engine — Scheduler SM-2 + Quiz (Bước 9 phần 1)
+
+Thực hiện theo [DR-2026-0005](docs/adr/DR-2026-0005.md) (5 phase:
+Architecture Freeze -> Scheduler Foundation -> Provider Layer ->
+Review Session UI -> Quiz System; ADR chính thức được ghi thành file
+ở bước Finalization). Amend một phần định hướng ban đầu của
+[DR-2026-0003](docs/adr/DR-2026-0003-sprint8-data-architecture.md) về
+`srs_cards` (không "thay thế" Revision Queue như dự định gốc — xem
+bên dưới).
+
+- **Kiến trúc Learning Engine**: khái niệm tổ chức (không phải 1
+  class cụ thể) gồm Revision Queue + Scheduler + Quiz, sẽ mở rộng
+  thêm Flashcard/Hifz/AI Tutor sau này — mọi thành phần phía trên chỉ
+  phụ thuộc `SchedulingAlgorithm` (giao diện trừu tượng), không phụ
+  thuộc SM-2 cụ thể.
+- **Scheduler SM-2** (`lib/features/learning/domain/`, thuần Dart —
+  không import Flutter/Riverpod/Drift): `SchedulingAlgorithm` (giao
+  diện) + `SM2SchedulingAlgorithm` (SuperMemo-2 cổ điển, 4 mức đánh
+  giá kiểu Anki: Again/Hard/Good/Easy, ease factor mặc định 2.5, sàn
+  1.3) + `SchedulerRepository`/`SchedulerRepositoryImpl` (bảng mới
+  `srs_cards`, `schemaVersion` 3->4, hoàn toàn additive).
+  **Quyết định 1-2 của DR-2026-0005**: Revision Queue
+  (`ayah_statuses.status='review'`) giữ nguyên ĐỘC LẬP, KHÔNG bị thay
+  thế — khác định hướng ban đầu ở `DR-2026-0003` ("sẽ thay thế Revision
+  Queue đơn giản khi cần SM-2"). Scheduler chỉ TIÊU THỤ Revision Queue
+  làm nguồn thành viên qua `schedulerSyncProvider` (orchestration ở
+  tầng Provider, không phải Repository) — tạo/xoá mềm thẻ tự động khi
+  Ayah vào/rời Queue, không backfill lúc migration.
+- **Màn hình "Lặp lại ngắt quãng"** (route `/review-session`, nối từ
+  tab Học): đọc `dueReviewCardsProvider` (lọc+sắp+khử trùng lặp thẻ
+  đến hạn — hàm thuần `selectDueCardsOrdered`), trình bày từng thẻ,
+  đánh giá qua `SchedulerRepository.applyReview` rồi tự chuyển thẻ kế
+  tiếp (phản ứng theo stream, không tự quản lý hàng đợi trong widget),
+  "Mở trong Kinh" dùng chung `openAyahInReadingScreen()`.
+- **Quiz** (`lib/features/quiz/`): `QuestionGenerator` (giao diện
+  trừu tượng, thuần Dart) + 4 loại câu hỏi, mỗi loại cắm được vào
+  `QuizQuestionFactory` mà không cần sửa code cũ (Surah identification,
+  Ayah continuation, Translation matching, Verse recognition). **Không có
+  Question Bank** — câu hỏi sinh động mỗi phiên từ nhóm A
+  (`QuranRepository`, qua `quizContentPoolProvider`) rồi bỏ đi, không
+  bao giờ ghi xuống nhóm B. Bảng mới `quiz_results` (`schemaVersion`
+  4->5, hoàn toàn additive) CHỈ lưu điểm/loại/thời điểm — không lưu
+  câu hỏi/nội dung Ayah. Màn hình "Trắc nghiệm" (route `/quiz-session`,
+  nối từ tab Học) dùng `AsyncNotifier` (`QuizSessionController`) tự
+  sinh 10 câu khi mở, ghi điểm, lưu kết quả khi hoàn thành, "Làm lại"
+  sinh phiên mới.
+- **2 lệch có chủ đích so với sketch SQL thô trong `DATABASE.md`**,
+  ghi rõ lý do tại chỗ (xem DATABASE.md mục Nhóm B): `srs_cards`
+  dùng `UNIQUE(item_type, item_id)` thay vì
+  `UNIQUE(user_id, item_type, item_id)` (user_id nullable khiến ràng
+  buộc gốc không có tác dụng thật, theo đúng tiền lệ mọi bảng khác
+  trong file); `quiz_results.surah_id` nullable (quiz 'mixed' trộn
+  nhiều Surah trong 1 phiên, không gắn 1 Surah).
+- **Flashcard hoãn lại có chủ đích** (Quyết định 4): không có dữ liệu
+  từ vựng (`lemmas`/`word_instances` vẫn chỉ là schema dự định, chưa
+  có importer/nguồn dữ liệu — xem TODO.md), không thiết kế giải pháp
+  tạm. Hifz và "Nhật ký" không nằm trong 6 quyết định của Sprint 10 —
+  chưa xây.
+
+### Tests
+- +70 test mới (305 -> 375), một test mỗi phase như DR-2026-0005 Quyết
+  định 6 yêu cầu (khác Sprint 9 — không có test mới phase nào):
+  SM-2 math (13), SchedulerRepository (8), scheduler provider layer —
+  đồng bộ/due/thứ tự/khử trùng lặp (11 hàm thuần + provider), Review
+  Session UI (6 widget test), 4 generator câu hỏi Quiz + factory (14),
+  QuizRepository (5), Quiz provider layer — sinh câu hỏi/điểm/lưu kết
+  quả/restart (7), Quiz Session UI (4 widget test), 2 migration test
+  mới (v3->v4, v4->v5).
+
+### Chưa làm (ngoài phạm vi DR-2026-0005)
+- Flashcard (khoá "Sắp ra mắt" trên tab Học) — chờ nguồn dữ liệu từ
+  vựng, xem TODO.md.
+- Hifz, "Nhật ký" — chưa từng được định nghĩa cụ thể trong Sprint 10,
+  chỉ nêu tên như nhánh tương lai của Learning Engine.
+- Coverage% thật chưa đo lại sau Sprint 10 (`flutter test --coverage`
+  ngoài phạm vi Phase 5) — xem TODO.md mục MIN_COVERAGE.
+
+## [0.8.1] — Sprint 9: Daily Goal, Revision Queue, Streak canonical (Bước 8 phần còn lại)
+
+### Added
+
+Thực hiện theo [DR-2026-0004](docs/adr/DR-2026-0004-sprint9-streak-daily-goal-revision-queue.md)
+(6 phase: Architecture Freeze -> Foundation -> Provider -> UI ->
+Integration & Polish -> hoàn tất Quyết định 1). Cả 3 quyết định của
+DR-2026-0004 đã triển khai đủ. Amend một phần
+[DR-2026-0003](docs/adr/DR-2026-0003-sprint8-data-architecture.md)
+(streak canonical, Daily Goal storage) — không thay thế, phần còn
+lại của DR-2026-0003 vẫn nguyên hiệu lực.
+
+- **Kiến trúc**: backfill `DR-2026-0003` vào `docs/adr/` (chưa từng
+  có file thật trước Sprint 9) + `DR-2026-0004` mới + `docs/adr/README.md`
+  (index ADR, lần đầu có). Không đổi schema/migration — `schemaVersion`
+  vẫn là 3 xuyên suốt cả Sprint 9.
+- **Daily Goal**: `DailyGoalStore` (SharedPreferences, cùng kiến
+  trúc `ThemeController`/`LocaleController`) lưu chỉ tiêu phút/ngày +
+  Ayah/ngày; `dailyGoalProgressProvider` ghép thuần
+  `todayStudySummaryProvider` (Sprint 8) với chỉ tiêu, không tính lại
+  gì, không có bảng `profiles` mới. Dialog đặt chỉ tiêu (2 ô số,
+  không route riêng) + thẻ gọn trên Trang chủ, chạm để mở dialog.
+- **Revision Queue**: `UserContentRepository.watchAllReviewAyahs()`
+  (đối xứng với 4 `watchAllX()` có sẵn) + `LibraryKind.review` +
+  màn hình riêng (route `/revision-queue`, push full-screen giống
+  Thư viện của tôi/Tìm kiếm/Bộ sưu tập) — tái dùng nguyên vẹn
+  `LibraryTabView`/`LibraryAyahTile`, không có list/tile/repository
+  riêng. Nối từ thẻ "Ôn tập hằng ngày" trên tab Học (3 công cụ còn
+  lại vẫn khoá, chờ Bước 9).
+- **Dọn nợ kỹ thuật điều hướng**: `LibraryScreen._open` và
+  `ActiveKhatmCard._continueReading` (Sprint 8) từng tự lặp lại 2
+  bước `openAyahInReadingScreen()` đã gói sẵn (vi phạm hợp đồng dùng
+  chung `DR-2026-0002` mục 9) — cả hai giờ gọi thẳng hàm dùng chung,
+  hành vi xác nhận không đổi (bộ test cũ 305/305 vẫn qua nguyên vẹn).
+- **Streak canonical (DR-2026-0004 mục 1) triển khai xong**:
+  `HomeScreen` (`_StatChipsRow`) và `StatsScreen` (lưới chỉ số) đọc
+  `currentStreakProvider`/`longestStreakProvider` (Drift) — không
+  còn nơi nào trong `lib/` đọc `stats.currentStreak`/`longestStreak`
+  (`StatsStore`, xác nhận bằng grep toàn project). `StatsScreen` vẫn
+  hiện streak ở 2 vị trí (lưới chỉ số cũ + mục "Phiên đọc") — không
+  gộp lại (ngoài phạm vi, chỉ đổi nguồn đọc) — nhưng cả hai giờ LUÔN
+  khớp số vì cùng một nguồn duy nhất.
+
+### Tests
+- Không có test mới trong Sprint 9 (đúng phạm vi được giao từng
+  phase) — 305 test hiện có xác nhận không hồi quy sau mỗi phase,
+  kể cả sau khi đổi nguồn streak.
+
+### Chưa làm (ngoài phạm vi DR-2026-0004)
+- "Journey" (Trang chủ tổng hợp) chưa hiện tóm tắt Khatm — vẫn chỉ ở
+  tab Thống kê. Không thuộc 3 quyết định của DR-2026-0004.
+- Ngưỡng "ngày đủ điều kiện tính streak" (>=5 phút HOẶC >=5 Ayah)
+  vẫn chưa triển khai — `DR-2026-0004` chỉ quyết định nguồn dữ liệu,
+  không đổi công thức ngưỡng.
+- `CollectionItem` tổng quát vẫn cố ý chưa xây.
+- `docs/adr/DR-2026-0002-*.md` (Search, Sprint 7.1) vẫn chưa tồn tại
+  trong repo — phát hiện lại lúc backfill DR-2026-0003, ngoài phạm vi
+  Sprint 9.
+
+## [0.8.0] — Sprint 8: Streak, Khatm %, Bookmark Collections
+
+### Added
+
+Thực hiện theo [DR-2026-0003](docs/adr/DR-2026-0003-sprint8-data-architecture.md)
+(5 phase: Schema -> Repository -> Provider -> UI -> Integration &
+Polish).
+
+- **Kiến trúc**: Drift schema files là Source of Truth cho schema
+  hiện tại; `DATABASE.md` là Design Specification 3 tầng (Đã triển
+  khai / Đã định / Ý tưởng tương lai). Streak tính TRÊN TRUY VẤN từ
+  `study_sessions` — không có bảng `streaks` riêng (dẫn xuất-khi-đọc).
+  Bookmark Collections chỉ áp dụng cho Ayah ở tầng database (tránh
+  bảng chưa dùng đến); mô hình domain giữ mở cho tổng quát hoá sau
+  này nhưng chưa xây `CollectionItem`.
+- **Schema (Nhóm B, `UserDatabase` schemaVersion 2 -> 3)**: 3 bảng
+  mới — `study_sessions` (phiên đọc: ngày, Surah, khoảng Ayah, thời
+  lượng), `khatm_cycles` (chu kỳ đọc trọn Qur'an: tên, vị trí hiện
+  tại, ngày hoàn thành) — cùng cột mới `bookmarks.collection_id`
+  (nullable, không khai báo FK ở tầng Drift — không có tiền lệ FK
+  trong schema này, toàn vẹn do tầng repository đảm nhiệm) và bảng
+  `bookmark_collections` (tên, emoji, thứ tự hiển thị).
+- **Migration**: hoàn toàn additive — `onUpgrade` thêm 3 bảng +
+  1 cột, không đổi/xoá gì. Test cả hai đường nâng cấp thật (v1->v3
+  và v2->v3) trên dữ liệu mẫu dựng thủ công, xác nhận dữ liệu cũ
+  còn nguyên sau khi nâng cấp.
+- **Repository**: `StudySessionRepository`, `KhatmCycleRepository`,
+  `BookmarkCollectionRepository` (interface tách khỏi Drift, đúng
+  quy ước `UserContentRepository` có sẵn). `BookmarkCollectionRepositoryImpl`
+  tự kiểm tra toàn vẹn khi gán/xoá bộ sưu tập (vì database không có
+  ràng buộc FK): ném lỗi khi gán vào collection không tồn tại, gỡ
+  `collection_id` khỏi mọi bookmark liên quan trước khi xoá mềm một
+  collection (trong 1 transaction).
+- **Provider**: 3 provider repository (kiểu interface, đúng mẫu
+  `quranRepositoryProvider`/`userContentRepositoryProvider`) + 7
+  provider ứng dụng (`currentStreakProvider`, `longestStreakProvider`,
+  `todayStudySummaryProvider`, `activeKhatmCycleProvider`,
+  `khatmProgressProvider`, `bookmarkCollectionsProvider`,
+  `collectionBookmarksProvider`) — không trùng lặp logic nghiệp vụ:
+  `khatmProgressProvider` đọc thẳng `KhatmCycle.progressPercent` có
+  sẵn ở domain model, không tính lại công thức.
+- **UI**: mục "Phiên đọc" (Streak hiện tại/dài nhất, tổng kết hôm
+  nay) + thẻ "Khatm đang đọc" (tiến độ %, thanh tiến độ, Tiếp tục
+  đọc) thêm vào màn Thống kê (cộng thêm, không đụng lưới chỉ số
+  SharedPreferences hiện có). Màn hình "Bộ sưu tập" mới (tạo/đổi
+  tên/xoá), mở từ biểu tượng trên AppBar "Thư viện của tôi"; nút
+  "Sắp xếp vào bộ sưu tập" mới trên mỗi thẻ Bookmark. 24 khoá l10n
+  mới, đủ cả vi/en/ar.
+- **Tích hợp**: `ReadingScreen` giờ ghi 1 `study_session` thật khi
+  rời trang đọc (ngưỡng >=5 giây, khớp `StatsStore.addSeconds` hiện
+  có) — cùng lúc với lời gọi `StatsStore.addSeconds` cũ, không thay
+  thế. Đóng khoảng trống "chưa có nơi nào ghi vào study_sessions"
+  từng ghi nhận cuối Phase 4.
+
+### Tests
+- +61 test cho Sprint 8 (repository + provider + widget + tích hợp +
+  điều hướng qua router thật) — tổng dự án 305 test, tất cả qua
+  `dart format` / `flutter analyze --fatal-infos` / `flutter test`.
+
+### Chưa làm (Bước 8 CHƯA hoàn tất)
+- "Journey" (tổng hợp dashboard Trang chủ: tiếp tục đọc, tiến độ hôm
+  nay, streak, verse of the day) — chưa xây, xem `placeholderHome`.
+- Daily Goal thật — chưa có UI/luồng. Kiến trúc lưu trữ đã đóng băng
+  cho Sprint 9 (chỉ tiêu SharedPreferences qua `DailyGoalStore` mới,
+  tiến độ dẫn xuất từ `study_sessions` — xem
+  [DR-2026-0004](docs/adr/DR-2026-0004-sprint9-streak-daily-goal-revision-queue.md)),
+  chưa triển khai.
+- Revision Queue chưa có màn hình riêng — vẫn dùng cơ chế đơn giản
+  có sẵn từ Bước 6 (`ayah_statuses.status='review'`), đúng quyết
+  định "Simple Revision Queue" của
+  [DR-2026-0003](docs/adr/DR-2026-0003-sprint8-data-architecture.md),
+  tái khẳng định ở
+  [DR-2026-0004](docs/adr/DR-2026-0004-sprint9-streak-daily-goal-revision-queue.md).
+- Ngưỡng "ngày đủ điều kiện tính streak" (tổng thời lượng/Ayah trong
+  ngày >=5 phút HOẶC >=5 Ayah, từng ghi ở DATABASE.md) chưa triển
+  khai — hiện chỉ cần 1 phiên >=5 giây là streak-day được tính. Xem
+  TODO.md để biết khuyến nghị.
+- `CollectionItem` — hợp đồng domain tổng quát cho bộ sưu tập ngoài
+  Ayah — cố ý chưa xây, ngoài phạm vi 5 deliverable của Phase 4.
+
+## [0.7.1] — Sprint 7.1: Nền tảng UI Tìm kiếm
+
+### Added
+- Màn hình Tìm kiếm (`/search`) — route top-level push full-screen,
+  cùng mẫu với "Thư viện của tôi" (không phải tab thứ 6). Điểm vào từ
+  nút tìm kiếm trên Trang chủ và tab Qur'an.
+- Ô nhập từ khoá thay tiêu đề AppBar (gợi ý placeholder, nút xoá khi
+  có chữ); chuyển đổi Tìm kiếm / Hỏi AI ("Hỏi AI" hiển thị khoá sẵn —
+  Sắp ra mắt); Scope Chips (Tất cả / Qur'an / Ghi chú của tôi) — Mode
+  và Scope là hai trục độc lập hoàn toàn.
+- Bốn trạng thái thân màn hình, mỗi trạng thái là một component dùng
+  chung cho MỌI domain tương lai (Qur'an hôm nay; Hadith/Ghi chú/Trả
+  lời AI sau này — xem ADR `DR-2026-0002`): `SearchEmptyState` (tiêu
+  đề + gợi ý cách gõ + 2 khu vực placeholder cho Recent/Suggestions),
+  `SearchLoadingSkeleton`, `SearchErrorState`, `ResultCard` +
+  `SearchResultSection` (factory `.fromAyah`/`.ayahs` dùng lại đúng
+  entity domain có sẵn, không bịa shape mới).
+- Chạm một kết quả lưu vị trí đọc (dùng lại `ReadingPositionStore` có
+  sẵn, không tạo cơ chế lưu trữ mới) và mở đúng Ayah trên trang đọc
+  qua route top-level `/read/:id` — hàm dùng chung mới
+  `openAyahInReadingScreen` (`reading_navigation.dart`), theo đúng
+  cơ chế `LibraryScreen` đã dùng (không phải route lồng trong shell
+  `/quran/surah/:id`, vốn gây xung đột Navigator khi push từ ngoài
+  vỏ tab — phát hiện và sửa trong sprint này).
+- Bộ chuyển trạng thái dành cho dev (biểu tượng bọ trên AppBar) để
+  xem trước cả 4 trạng thái không cần gõ hay có dữ liệu thật — CHỈ
+  tồn tại ở debug build (`kDebugMode`), xác nhận bằng build
+  `--release` thật + kiểm tra bundle không còn dấu vết.
+- ADR `DR-2026-0002` (9 quyết định kiến trúc cho Search, kèm đánh
+  đổi/phương án đã loại/mở rộng tương lai) viết trước khi code.
+
+### Đã kiểm tra toàn diện (không đổi giao diện hiện có)
+- Accessibility: header semantics cho tiêu đề khu vực, vùng chạm
+  ≥ 48dp, RTL (mirror layout + hướng chữ đúng theo nội dung), cỡ chữ
+  200% không tràn, thứ tự đọc khớp thứ tự hiển thị.
+- Dark mode: rà soát không còn màu hard-code trong tính năng Search;
+  đo tương phản chữ tô đậm (WCAG) ở cả 2 theme — đều vượt ngưỡng.
+- Responsive: 320–1300px (điện thoại hẹp đến desktop), không tràn
+  layout kể cả khi kết hợp cỡ chữ 200%.
+
+### Tests
+- +87 test cho tính năng Search (widget + unit), gộp bộ helper/
+  fixture dùng chung (`test/fixtures/search_test_harness.dart`) —
+  tổng dự án 244 test, tất cả qua `dart format` /
+  `flutter analyze --fatal-infos` / `flutter test`.
+
+### Chưa làm (Sprint 7.2 trở đi — Bước 7 CHƯA hoàn tất)
+- Search engine thật: chưa nối `QuranRepository.searchAyahs` (FTS5
+  `search_index`) vào UI đã xây — kết quả hiện chỉ xem được qua bộ
+  chuyển trạng thái dành cho dev với dữ liệu mẫu tĩnh.
+- Recent Searches, Suggestions, Filters, Ask AI thật — khung UI đã có
+  chỗ (2 khu vực placeholder trong Empty State, nút Mode "Hỏi AI" đã
+  khoá) nhưng chưa nối dữ liệu/logic.
+- Danh sách `source_code` hardcode trong
+  `quran_repository_impl.searchAyahs` chưa sửa thành đọc động từ
+  `translation_sources` (nợ kỹ thuật đã ghi nhận từ lúc review kiến
+  trúc, xem TODO.md).
+
 ## [0.6.0] — Sprint 6: Chú thích người dùng + User Database
 
 ### Added

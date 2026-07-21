@@ -2370,6 +2370,2424 @@ class MetaEntriesCompanion extends UpdateCompanion<MetaRow> {
   }
 }
 
+class $RootsTable extends Roots with TableInfo<$RootsTable, RootRow> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $RootsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<int> id = GeneratedColumn<int>(
+      'id', aliasedName, false,
+      type: DriftSqlType.int, requiredDuringInsert: false);
+  static const VerificationMeta _radicalsMeta =
+      const VerificationMeta('radicals');
+  @override
+  late final GeneratedColumn<String> radicals = GeneratedColumn<String>(
+      'radicals', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  static const VerificationMeta _meaningCoreMeta =
+      const VerificationMeta('meaningCore');
+  @override
+  late final GeneratedColumn<String> meaningCore = GeneratedColumn<String>(
+      'meaning_core', aliasedName, true,
+      type: DriftSqlType.string, requiredDuringInsert: false);
+  @override
+  List<GeneratedColumn> get $columns => [id, radicals, meaningCore];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'roots';
+  @override
+  VerificationContext validateIntegrity(Insertable<RootRow> instance,
+      {bool isInserting = false}) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    }
+    if (data.containsKey('radicals')) {
+      context.handle(_radicalsMeta,
+          radicals.isAcceptableOrUnknown(data['radicals']!, _radicalsMeta));
+    } else if (isInserting) {
+      context.missing(_radicalsMeta);
+    }
+    if (data.containsKey('meaning_core')) {
+      context.handle(
+          _meaningCoreMeta,
+          meaningCore.isAcceptableOrUnknown(
+              data['meaning_core']!, _meaningCoreMeta));
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  RootRow map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return RootRow(
+      id: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}id'])!,
+      radicals: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}radicals'])!,
+      meaningCore: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}meaning_core']),
+    );
+  }
+
+  @override
+  $RootsTable createAlias(String alias) {
+    return $RootsTable(attachedDatabase, alias);
+  }
+}
+
+class RootRow extends DataClass implements Insertable<RootRow> {
+  final int id;
+
+  /// Các phụ âm gốc, vd 'ك ت ب'.
+  final String radicals;
+  final String? meaningCore;
+  const RootRow({required this.id, required this.radicals, this.meaningCore});
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<int>(id);
+    map['radicals'] = Variable<String>(radicals);
+    if (!nullToAbsent || meaningCore != null) {
+      map['meaning_core'] = Variable<String>(meaningCore);
+    }
+    return map;
+  }
+
+  RootsCompanion toCompanion(bool nullToAbsent) {
+    return RootsCompanion(
+      id: Value(id),
+      radicals: Value(radicals),
+      meaningCore: meaningCore == null && nullToAbsent
+          ? const Value.absent()
+          : Value(meaningCore),
+    );
+  }
+
+  factory RootRow.fromJson(Map<String, dynamic> json,
+      {ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return RootRow(
+      id: serializer.fromJson<int>(json['id']),
+      radicals: serializer.fromJson<String>(json['radicals']),
+      meaningCore: serializer.fromJson<String?>(json['meaningCore']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<int>(id),
+      'radicals': serializer.toJson<String>(radicals),
+      'meaningCore': serializer.toJson<String?>(meaningCore),
+    };
+  }
+
+  RootRow copyWith(
+          {int? id,
+          String? radicals,
+          Value<String?> meaningCore = const Value.absent()}) =>
+      RootRow(
+        id: id ?? this.id,
+        radicals: radicals ?? this.radicals,
+        meaningCore: meaningCore.present ? meaningCore.value : this.meaningCore,
+      );
+  RootRow copyWithCompanion(RootsCompanion data) {
+    return RootRow(
+      id: data.id.present ? data.id.value : this.id,
+      radicals: data.radicals.present ? data.radicals.value : this.radicals,
+      meaningCore:
+          data.meaningCore.present ? data.meaningCore.value : this.meaningCore,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('RootRow(')
+          ..write('id: $id, ')
+          ..write('radicals: $radicals, ')
+          ..write('meaningCore: $meaningCore')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(id, radicals, meaningCore);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is RootRow &&
+          other.id == this.id &&
+          other.radicals == this.radicals &&
+          other.meaningCore == this.meaningCore);
+}
+
+class RootsCompanion extends UpdateCompanion<RootRow> {
+  final Value<int> id;
+  final Value<String> radicals;
+  final Value<String?> meaningCore;
+  const RootsCompanion({
+    this.id = const Value.absent(),
+    this.radicals = const Value.absent(),
+    this.meaningCore = const Value.absent(),
+  });
+  RootsCompanion.insert({
+    this.id = const Value.absent(),
+    required String radicals,
+    this.meaningCore = const Value.absent(),
+  }) : radicals = Value(radicals);
+  static Insertable<RootRow> custom({
+    Expression<int>? id,
+    Expression<String>? radicals,
+    Expression<String>? meaningCore,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (radicals != null) 'radicals': radicals,
+      if (meaningCore != null) 'meaning_core': meaningCore,
+    });
+  }
+
+  RootsCompanion copyWith(
+      {Value<int>? id, Value<String>? radicals, Value<String?>? meaningCore}) {
+    return RootsCompanion(
+      id: id ?? this.id,
+      radicals: radicals ?? this.radicals,
+      meaningCore: meaningCore ?? this.meaningCore,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<int>(id.value);
+    }
+    if (radicals.present) {
+      map['radicals'] = Variable<String>(radicals.value);
+    }
+    if (meaningCore.present) {
+      map['meaning_core'] = Variable<String>(meaningCore.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('RootsCompanion(')
+          ..write('id: $id, ')
+          ..write('radicals: $radicals, ')
+          ..write('meaningCore: $meaningCore')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $LemmasTable extends Lemmas with TableInfo<$LemmasTable, LemmaRow> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $LemmasTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<int> id = GeneratedColumn<int>(
+      'id', aliasedName, false,
+      type: DriftSqlType.int, requiredDuringInsert: false);
+  static const VerificationMeta _arabicMeta = const VerificationMeta('arabic');
+  @override
+  late final GeneratedColumn<String> arabic = GeneratedColumn<String>(
+      'arabic', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  static const VerificationMeta _transliterationMeta =
+      const VerificationMeta('transliteration');
+  @override
+  late final GeneratedColumn<String> transliteration = GeneratedColumn<String>(
+      'transliteration', aliasedName, true,
+      type: DriftSqlType.string, requiredDuringInsert: false);
+  static const VerificationMeta _posTagMeta = const VerificationMeta('posTag');
+  @override
+  late final GeneratedColumn<String> posTag = GeneratedColumn<String>(
+      'pos_tag', aliasedName, true,
+      type: DriftSqlType.string, requiredDuringInsert: false);
+  static const VerificationMeta _meaningViMeta =
+      const VerificationMeta('meaningVi');
+  @override
+  late final GeneratedColumn<String> meaningVi = GeneratedColumn<String>(
+      'meaning_vi', aliasedName, true,
+      type: DriftSqlType.string, requiredDuringInsert: false);
+  static const VerificationMeta _meaningEnMeta =
+      const VerificationMeta('meaningEn');
+  @override
+  late final GeneratedColumn<String> meaningEn = GeneratedColumn<String>(
+      'meaning_en', aliasedName, true,
+      type: DriftSqlType.string, requiredDuringInsert: false);
+  static const VerificationMeta _explanationViMeta =
+      const VerificationMeta('explanationVi');
+  @override
+  late final GeneratedColumn<String> explanationVi = GeneratedColumn<String>(
+      'explanation_vi', aliasedName, true,
+      type: DriftSqlType.string, requiredDuringInsert: false);
+  static const VerificationMeta _rootIdMeta = const VerificationMeta('rootId');
+  @override
+  late final GeneratedColumn<int> rootId = GeneratedColumn<int>(
+      'root_id', aliasedName, true,
+      type: DriftSqlType.int,
+      requiredDuringInsert: false,
+      defaultConstraints:
+          GeneratedColumn.constraintIsAlways('REFERENCES roots (id)'));
+  static const VerificationMeta _occurrenceCountMeta =
+      const VerificationMeta('occurrenceCount');
+  @override
+  late final GeneratedColumn<int> occurrenceCount = GeneratedColumn<int>(
+      'occurrence_count', aliasedName, false,
+      type: DriftSqlType.int,
+      requiredDuringInsert: false,
+      defaultValue: const Constant(0));
+  @override
+  List<GeneratedColumn> get $columns => [
+        id,
+        arabic,
+        transliteration,
+        posTag,
+        meaningVi,
+        meaningEn,
+        explanationVi,
+        rootId,
+        occurrenceCount
+      ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'lemmas';
+  @override
+  VerificationContext validateIntegrity(Insertable<LemmaRow> instance,
+      {bool isInserting = false}) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    }
+    if (data.containsKey('arabic')) {
+      context.handle(_arabicMeta,
+          arabic.isAcceptableOrUnknown(data['arabic']!, _arabicMeta));
+    } else if (isInserting) {
+      context.missing(_arabicMeta);
+    }
+    if (data.containsKey('transliteration')) {
+      context.handle(
+          _transliterationMeta,
+          transliteration.isAcceptableOrUnknown(
+              data['transliteration']!, _transliterationMeta));
+    }
+    if (data.containsKey('pos_tag')) {
+      context.handle(_posTagMeta,
+          posTag.isAcceptableOrUnknown(data['pos_tag']!, _posTagMeta));
+    }
+    if (data.containsKey('meaning_vi')) {
+      context.handle(_meaningViMeta,
+          meaningVi.isAcceptableOrUnknown(data['meaning_vi']!, _meaningViMeta));
+    }
+    if (data.containsKey('meaning_en')) {
+      context.handle(_meaningEnMeta,
+          meaningEn.isAcceptableOrUnknown(data['meaning_en']!, _meaningEnMeta));
+    }
+    if (data.containsKey('explanation_vi')) {
+      context.handle(
+          _explanationViMeta,
+          explanationVi.isAcceptableOrUnknown(
+              data['explanation_vi']!, _explanationViMeta));
+    }
+    if (data.containsKey('root_id')) {
+      context.handle(_rootIdMeta,
+          rootId.isAcceptableOrUnknown(data['root_id']!, _rootIdMeta));
+    }
+    if (data.containsKey('occurrence_count')) {
+      context.handle(
+          _occurrenceCountMeta,
+          occurrenceCount.isAcceptableOrUnknown(
+              data['occurrence_count']!, _occurrenceCountMeta));
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  LemmaRow map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return LemmaRow(
+      id: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}id'])!,
+      arabic: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}arabic'])!,
+      transliteration: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}transliteration']),
+      posTag: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}pos_tag']),
+      meaningVi: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}meaning_vi']),
+      meaningEn: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}meaning_en']),
+      explanationVi: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}explanation_vi']),
+      rootId: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}root_id']),
+      occurrenceCount: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}occurrence_count'])!,
+    );
+  }
+
+  @override
+  $LemmasTable createAlias(String alias) {
+    return $LemmasTable(attachedDatabase, alias);
+  }
+}
+
+class LemmaRow extends DataClass implements Insertable<LemmaRow> {
+  final int id;
+  final String arabic;
+  final String? transliteration;
+  final String? posTag;
+  final String? meaningVi;
+  final String? meaningEn;
+  final String? explanationVi;
+  final int? rootId;
+  final int occurrenceCount;
+  const LemmaRow(
+      {required this.id,
+      required this.arabic,
+      this.transliteration,
+      this.posTag,
+      this.meaningVi,
+      this.meaningEn,
+      this.explanationVi,
+      this.rootId,
+      required this.occurrenceCount});
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<int>(id);
+    map['arabic'] = Variable<String>(arabic);
+    if (!nullToAbsent || transliteration != null) {
+      map['transliteration'] = Variable<String>(transliteration);
+    }
+    if (!nullToAbsent || posTag != null) {
+      map['pos_tag'] = Variable<String>(posTag);
+    }
+    if (!nullToAbsent || meaningVi != null) {
+      map['meaning_vi'] = Variable<String>(meaningVi);
+    }
+    if (!nullToAbsent || meaningEn != null) {
+      map['meaning_en'] = Variable<String>(meaningEn);
+    }
+    if (!nullToAbsent || explanationVi != null) {
+      map['explanation_vi'] = Variable<String>(explanationVi);
+    }
+    if (!nullToAbsent || rootId != null) {
+      map['root_id'] = Variable<int>(rootId);
+    }
+    map['occurrence_count'] = Variable<int>(occurrenceCount);
+    return map;
+  }
+
+  LemmasCompanion toCompanion(bool nullToAbsent) {
+    return LemmasCompanion(
+      id: Value(id),
+      arabic: Value(arabic),
+      transliteration: transliteration == null && nullToAbsent
+          ? const Value.absent()
+          : Value(transliteration),
+      posTag:
+          posTag == null && nullToAbsent ? const Value.absent() : Value(posTag),
+      meaningVi: meaningVi == null && nullToAbsent
+          ? const Value.absent()
+          : Value(meaningVi),
+      meaningEn: meaningEn == null && nullToAbsent
+          ? const Value.absent()
+          : Value(meaningEn),
+      explanationVi: explanationVi == null && nullToAbsent
+          ? const Value.absent()
+          : Value(explanationVi),
+      rootId:
+          rootId == null && nullToAbsent ? const Value.absent() : Value(rootId),
+      occurrenceCount: Value(occurrenceCount),
+    );
+  }
+
+  factory LemmaRow.fromJson(Map<String, dynamic> json,
+      {ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return LemmaRow(
+      id: serializer.fromJson<int>(json['id']),
+      arabic: serializer.fromJson<String>(json['arabic']),
+      transliteration: serializer.fromJson<String?>(json['transliteration']),
+      posTag: serializer.fromJson<String?>(json['posTag']),
+      meaningVi: serializer.fromJson<String?>(json['meaningVi']),
+      meaningEn: serializer.fromJson<String?>(json['meaningEn']),
+      explanationVi: serializer.fromJson<String?>(json['explanationVi']),
+      rootId: serializer.fromJson<int?>(json['rootId']),
+      occurrenceCount: serializer.fromJson<int>(json['occurrenceCount']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<int>(id),
+      'arabic': serializer.toJson<String>(arabic),
+      'transliteration': serializer.toJson<String?>(transliteration),
+      'posTag': serializer.toJson<String?>(posTag),
+      'meaningVi': serializer.toJson<String?>(meaningVi),
+      'meaningEn': serializer.toJson<String?>(meaningEn),
+      'explanationVi': serializer.toJson<String?>(explanationVi),
+      'rootId': serializer.toJson<int?>(rootId),
+      'occurrenceCount': serializer.toJson<int>(occurrenceCount),
+    };
+  }
+
+  LemmaRow copyWith(
+          {int? id,
+          String? arabic,
+          Value<String?> transliteration = const Value.absent(),
+          Value<String?> posTag = const Value.absent(),
+          Value<String?> meaningVi = const Value.absent(),
+          Value<String?> meaningEn = const Value.absent(),
+          Value<String?> explanationVi = const Value.absent(),
+          Value<int?> rootId = const Value.absent(),
+          int? occurrenceCount}) =>
+      LemmaRow(
+        id: id ?? this.id,
+        arabic: arabic ?? this.arabic,
+        transliteration: transliteration.present
+            ? transliteration.value
+            : this.transliteration,
+        posTag: posTag.present ? posTag.value : this.posTag,
+        meaningVi: meaningVi.present ? meaningVi.value : this.meaningVi,
+        meaningEn: meaningEn.present ? meaningEn.value : this.meaningEn,
+        explanationVi:
+            explanationVi.present ? explanationVi.value : this.explanationVi,
+        rootId: rootId.present ? rootId.value : this.rootId,
+        occurrenceCount: occurrenceCount ?? this.occurrenceCount,
+      );
+  LemmaRow copyWithCompanion(LemmasCompanion data) {
+    return LemmaRow(
+      id: data.id.present ? data.id.value : this.id,
+      arabic: data.arabic.present ? data.arabic.value : this.arabic,
+      transliteration: data.transliteration.present
+          ? data.transliteration.value
+          : this.transliteration,
+      posTag: data.posTag.present ? data.posTag.value : this.posTag,
+      meaningVi: data.meaningVi.present ? data.meaningVi.value : this.meaningVi,
+      meaningEn: data.meaningEn.present ? data.meaningEn.value : this.meaningEn,
+      explanationVi: data.explanationVi.present
+          ? data.explanationVi.value
+          : this.explanationVi,
+      rootId: data.rootId.present ? data.rootId.value : this.rootId,
+      occurrenceCount: data.occurrenceCount.present
+          ? data.occurrenceCount.value
+          : this.occurrenceCount,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('LemmaRow(')
+          ..write('id: $id, ')
+          ..write('arabic: $arabic, ')
+          ..write('transliteration: $transliteration, ')
+          ..write('posTag: $posTag, ')
+          ..write('meaningVi: $meaningVi, ')
+          ..write('meaningEn: $meaningEn, ')
+          ..write('explanationVi: $explanationVi, ')
+          ..write('rootId: $rootId, ')
+          ..write('occurrenceCount: $occurrenceCount')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(id, arabic, transliteration, posTag,
+      meaningVi, meaningEn, explanationVi, rootId, occurrenceCount);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is LemmaRow &&
+          other.id == this.id &&
+          other.arabic == this.arabic &&
+          other.transliteration == this.transliteration &&
+          other.posTag == this.posTag &&
+          other.meaningVi == this.meaningVi &&
+          other.meaningEn == this.meaningEn &&
+          other.explanationVi == this.explanationVi &&
+          other.rootId == this.rootId &&
+          other.occurrenceCount == this.occurrenceCount);
+}
+
+class LemmasCompanion extends UpdateCompanion<LemmaRow> {
+  final Value<int> id;
+  final Value<String> arabic;
+  final Value<String?> transliteration;
+  final Value<String?> posTag;
+  final Value<String?> meaningVi;
+  final Value<String?> meaningEn;
+  final Value<String?> explanationVi;
+  final Value<int?> rootId;
+  final Value<int> occurrenceCount;
+  const LemmasCompanion({
+    this.id = const Value.absent(),
+    this.arabic = const Value.absent(),
+    this.transliteration = const Value.absent(),
+    this.posTag = const Value.absent(),
+    this.meaningVi = const Value.absent(),
+    this.meaningEn = const Value.absent(),
+    this.explanationVi = const Value.absent(),
+    this.rootId = const Value.absent(),
+    this.occurrenceCount = const Value.absent(),
+  });
+  LemmasCompanion.insert({
+    this.id = const Value.absent(),
+    required String arabic,
+    this.transliteration = const Value.absent(),
+    this.posTag = const Value.absent(),
+    this.meaningVi = const Value.absent(),
+    this.meaningEn = const Value.absent(),
+    this.explanationVi = const Value.absent(),
+    this.rootId = const Value.absent(),
+    this.occurrenceCount = const Value.absent(),
+  }) : arabic = Value(arabic);
+  static Insertable<LemmaRow> custom({
+    Expression<int>? id,
+    Expression<String>? arabic,
+    Expression<String>? transliteration,
+    Expression<String>? posTag,
+    Expression<String>? meaningVi,
+    Expression<String>? meaningEn,
+    Expression<String>? explanationVi,
+    Expression<int>? rootId,
+    Expression<int>? occurrenceCount,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (arabic != null) 'arabic': arabic,
+      if (transliteration != null) 'transliteration': transliteration,
+      if (posTag != null) 'pos_tag': posTag,
+      if (meaningVi != null) 'meaning_vi': meaningVi,
+      if (meaningEn != null) 'meaning_en': meaningEn,
+      if (explanationVi != null) 'explanation_vi': explanationVi,
+      if (rootId != null) 'root_id': rootId,
+      if (occurrenceCount != null) 'occurrence_count': occurrenceCount,
+    });
+  }
+
+  LemmasCompanion copyWith(
+      {Value<int>? id,
+      Value<String>? arabic,
+      Value<String?>? transliteration,
+      Value<String?>? posTag,
+      Value<String?>? meaningVi,
+      Value<String?>? meaningEn,
+      Value<String?>? explanationVi,
+      Value<int?>? rootId,
+      Value<int>? occurrenceCount}) {
+    return LemmasCompanion(
+      id: id ?? this.id,
+      arabic: arabic ?? this.arabic,
+      transliteration: transliteration ?? this.transliteration,
+      posTag: posTag ?? this.posTag,
+      meaningVi: meaningVi ?? this.meaningVi,
+      meaningEn: meaningEn ?? this.meaningEn,
+      explanationVi: explanationVi ?? this.explanationVi,
+      rootId: rootId ?? this.rootId,
+      occurrenceCount: occurrenceCount ?? this.occurrenceCount,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<int>(id.value);
+    }
+    if (arabic.present) {
+      map['arabic'] = Variable<String>(arabic.value);
+    }
+    if (transliteration.present) {
+      map['transliteration'] = Variable<String>(transliteration.value);
+    }
+    if (posTag.present) {
+      map['pos_tag'] = Variable<String>(posTag.value);
+    }
+    if (meaningVi.present) {
+      map['meaning_vi'] = Variable<String>(meaningVi.value);
+    }
+    if (meaningEn.present) {
+      map['meaning_en'] = Variable<String>(meaningEn.value);
+    }
+    if (explanationVi.present) {
+      map['explanation_vi'] = Variable<String>(explanationVi.value);
+    }
+    if (rootId.present) {
+      map['root_id'] = Variable<int>(rootId.value);
+    }
+    if (occurrenceCount.present) {
+      map['occurrence_count'] = Variable<int>(occurrenceCount.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('LemmasCompanion(')
+          ..write('id: $id, ')
+          ..write('arabic: $arabic, ')
+          ..write('transliteration: $transliteration, ')
+          ..write('posTag: $posTag, ')
+          ..write('meaningVi: $meaningVi, ')
+          ..write('meaningEn: $meaningEn, ')
+          ..write('explanationVi: $explanationVi, ')
+          ..write('rootId: $rootId, ')
+          ..write('occurrenceCount: $occurrenceCount')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $LexemesTable extends Lexemes with TableInfo<$LexemesTable, LexemeRow> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $LexemesTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<int> id = GeneratedColumn<int>(
+      'id', aliasedName, false,
+      type: DriftSqlType.int, requiredDuringInsert: false);
+  static const VerificationMeta _lemmaIdMeta =
+      const VerificationMeta('lemmaId');
+  @override
+  late final GeneratedColumn<int> lemmaId = GeneratedColumn<int>(
+      'lemma_id', aliasedName, false,
+      type: DriftSqlType.int,
+      requiredDuringInsert: true,
+      defaultConstraints:
+          GeneratedColumn.constraintIsAlways('REFERENCES lemmas (id)'));
+  static const VerificationMeta _formPatternMeta =
+      const VerificationMeta('formPattern');
+  @override
+  late final GeneratedColumn<String> formPattern = GeneratedColumn<String>(
+      'form_pattern', aliasedName, true,
+      type: DriftSqlType.string, requiredDuringInsert: false);
+  static const VerificationMeta _partOfSpeechDetailMeta =
+      const VerificationMeta('partOfSpeechDetail');
+  @override
+  late final GeneratedColumn<String> partOfSpeechDetail =
+      GeneratedColumn<String>('part_of_speech_detail', aliasedName, true,
+          type: DriftSqlType.string, requiredDuringInsert: false);
+  @override
+  List<GeneratedColumn> get $columns =>
+      [id, lemmaId, formPattern, partOfSpeechDetail];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'lexemes';
+  @override
+  VerificationContext validateIntegrity(Insertable<LexemeRow> instance,
+      {bool isInserting = false}) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    }
+    if (data.containsKey('lemma_id')) {
+      context.handle(_lemmaIdMeta,
+          lemmaId.isAcceptableOrUnknown(data['lemma_id']!, _lemmaIdMeta));
+    } else if (isInserting) {
+      context.missing(_lemmaIdMeta);
+    }
+    if (data.containsKey('form_pattern')) {
+      context.handle(
+          _formPatternMeta,
+          formPattern.isAcceptableOrUnknown(
+              data['form_pattern']!, _formPatternMeta));
+    }
+    if (data.containsKey('part_of_speech_detail')) {
+      context.handle(
+          _partOfSpeechDetailMeta,
+          partOfSpeechDetail.isAcceptableOrUnknown(
+              data['part_of_speech_detail']!, _partOfSpeechDetailMeta));
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  LexemeRow map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return LexemeRow(
+      id: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}id'])!,
+      lemmaId: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}lemma_id'])!,
+      formPattern: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}form_pattern']),
+      partOfSpeechDetail: attachedDatabase.typeMapping.read(
+          DriftSqlType.string, data['${effectivePrefix}part_of_speech_detail']),
+    );
+  }
+
+  @override
+  $LexemesTable createAlias(String alias) {
+    return $LexemesTable(attachedDatabase, alias);
+  }
+}
+
+class LexemeRow extends DataClass implements Insertable<LexemeRow> {
+  final int id;
+  final int lemmaId;
+
+  /// Khuôn/thể phái sinh, vd 'Form I'.
+  final String? formPattern;
+  final String? partOfSpeechDetail;
+  const LexemeRow(
+      {required this.id,
+      required this.lemmaId,
+      this.formPattern,
+      this.partOfSpeechDetail});
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<int>(id);
+    map['lemma_id'] = Variable<int>(lemmaId);
+    if (!nullToAbsent || formPattern != null) {
+      map['form_pattern'] = Variable<String>(formPattern);
+    }
+    if (!nullToAbsent || partOfSpeechDetail != null) {
+      map['part_of_speech_detail'] = Variable<String>(partOfSpeechDetail);
+    }
+    return map;
+  }
+
+  LexemesCompanion toCompanion(bool nullToAbsent) {
+    return LexemesCompanion(
+      id: Value(id),
+      lemmaId: Value(lemmaId),
+      formPattern: formPattern == null && nullToAbsent
+          ? const Value.absent()
+          : Value(formPattern),
+      partOfSpeechDetail: partOfSpeechDetail == null && nullToAbsent
+          ? const Value.absent()
+          : Value(partOfSpeechDetail),
+    );
+  }
+
+  factory LexemeRow.fromJson(Map<String, dynamic> json,
+      {ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return LexemeRow(
+      id: serializer.fromJson<int>(json['id']),
+      lemmaId: serializer.fromJson<int>(json['lemmaId']),
+      formPattern: serializer.fromJson<String?>(json['formPattern']),
+      partOfSpeechDetail:
+          serializer.fromJson<String?>(json['partOfSpeechDetail']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<int>(id),
+      'lemmaId': serializer.toJson<int>(lemmaId),
+      'formPattern': serializer.toJson<String?>(formPattern),
+      'partOfSpeechDetail': serializer.toJson<String?>(partOfSpeechDetail),
+    };
+  }
+
+  LexemeRow copyWith(
+          {int? id,
+          int? lemmaId,
+          Value<String?> formPattern = const Value.absent(),
+          Value<String?> partOfSpeechDetail = const Value.absent()}) =>
+      LexemeRow(
+        id: id ?? this.id,
+        lemmaId: lemmaId ?? this.lemmaId,
+        formPattern: formPattern.present ? formPattern.value : this.formPattern,
+        partOfSpeechDetail: partOfSpeechDetail.present
+            ? partOfSpeechDetail.value
+            : this.partOfSpeechDetail,
+      );
+  LexemeRow copyWithCompanion(LexemesCompanion data) {
+    return LexemeRow(
+      id: data.id.present ? data.id.value : this.id,
+      lemmaId: data.lemmaId.present ? data.lemmaId.value : this.lemmaId,
+      formPattern:
+          data.formPattern.present ? data.formPattern.value : this.formPattern,
+      partOfSpeechDetail: data.partOfSpeechDetail.present
+          ? data.partOfSpeechDetail.value
+          : this.partOfSpeechDetail,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('LexemeRow(')
+          ..write('id: $id, ')
+          ..write('lemmaId: $lemmaId, ')
+          ..write('formPattern: $formPattern, ')
+          ..write('partOfSpeechDetail: $partOfSpeechDetail')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(id, lemmaId, formPattern, partOfSpeechDetail);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is LexemeRow &&
+          other.id == this.id &&
+          other.lemmaId == this.lemmaId &&
+          other.formPattern == this.formPattern &&
+          other.partOfSpeechDetail == this.partOfSpeechDetail);
+}
+
+class LexemesCompanion extends UpdateCompanion<LexemeRow> {
+  final Value<int> id;
+  final Value<int> lemmaId;
+  final Value<String?> formPattern;
+  final Value<String?> partOfSpeechDetail;
+  const LexemesCompanion({
+    this.id = const Value.absent(),
+    this.lemmaId = const Value.absent(),
+    this.formPattern = const Value.absent(),
+    this.partOfSpeechDetail = const Value.absent(),
+  });
+  LexemesCompanion.insert({
+    this.id = const Value.absent(),
+    required int lemmaId,
+    this.formPattern = const Value.absent(),
+    this.partOfSpeechDetail = const Value.absent(),
+  }) : lemmaId = Value(lemmaId);
+  static Insertable<LexemeRow> custom({
+    Expression<int>? id,
+    Expression<int>? lemmaId,
+    Expression<String>? formPattern,
+    Expression<String>? partOfSpeechDetail,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (lemmaId != null) 'lemma_id': lemmaId,
+      if (formPattern != null) 'form_pattern': formPattern,
+      if (partOfSpeechDetail != null)
+        'part_of_speech_detail': partOfSpeechDetail,
+    });
+  }
+
+  LexemesCompanion copyWith(
+      {Value<int>? id,
+      Value<int>? lemmaId,
+      Value<String?>? formPattern,
+      Value<String?>? partOfSpeechDetail}) {
+    return LexemesCompanion(
+      id: id ?? this.id,
+      lemmaId: lemmaId ?? this.lemmaId,
+      formPattern: formPattern ?? this.formPattern,
+      partOfSpeechDetail: partOfSpeechDetail ?? this.partOfSpeechDetail,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<int>(id.value);
+    }
+    if (lemmaId.present) {
+      map['lemma_id'] = Variable<int>(lemmaId.value);
+    }
+    if (formPattern.present) {
+      map['form_pattern'] = Variable<String>(formPattern.value);
+    }
+    if (partOfSpeechDetail.present) {
+      map['part_of_speech_detail'] = Variable<String>(partOfSpeechDetail.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('LexemesCompanion(')
+          ..write('id: $id, ')
+          ..write('lemmaId: $lemmaId, ')
+          ..write('formPattern: $formPattern, ')
+          ..write('partOfSpeechDetail: $partOfSpeechDetail')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $WordInstancesTable extends WordInstances
+    with TableInfo<$WordInstancesTable, WordInstanceRow> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $WordInstancesTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<int> id = GeneratedColumn<int>(
+      'id', aliasedName, false,
+      type: DriftSqlType.int, requiredDuringInsert: false);
+  static const VerificationMeta _ayahIdMeta = const VerificationMeta('ayahId');
+  @override
+  late final GeneratedColumn<int> ayahId = GeneratedColumn<int>(
+      'ayah_id', aliasedName, false,
+      type: DriftSqlType.int,
+      requiredDuringInsert: true,
+      defaultConstraints:
+          GeneratedColumn.constraintIsAlways('REFERENCES ayahs (id)'));
+  static const VerificationMeta _lexemeIdMeta =
+      const VerificationMeta('lexemeId');
+  @override
+  late final GeneratedColumn<int> lexemeId = GeneratedColumn<int>(
+      'lexeme_id', aliasedName, false,
+      type: DriftSqlType.int,
+      requiredDuringInsert: true,
+      defaultConstraints:
+          GeneratedColumn.constraintIsAlways('REFERENCES lexemes (id)'));
+  static const VerificationMeta _positionMeta =
+      const VerificationMeta('position');
+  @override
+  late final GeneratedColumn<int> position = GeneratedColumn<int>(
+      'position', aliasedName, false,
+      type: DriftSqlType.int, requiredDuringInsert: true);
+  static const VerificationMeta _arabicFormMeta =
+      const VerificationMeta('arabicForm');
+  @override
+  late final GeneratedColumn<String> arabicForm = GeneratedColumn<String>(
+      'arabic_form', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  static const VerificationMeta _transliterationMeta =
+      const VerificationMeta('transliteration');
+  @override
+  late final GeneratedColumn<String> transliteration = GeneratedColumn<String>(
+      'transliteration', aliasedName, true,
+      type: DriftSqlType.string, requiredDuringInsert: false);
+  @override
+  List<GeneratedColumn> get $columns =>
+      [id, ayahId, lexemeId, position, arabicForm, transliteration];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'word_instances';
+  @override
+  VerificationContext validateIntegrity(Insertable<WordInstanceRow> instance,
+      {bool isInserting = false}) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    }
+    if (data.containsKey('ayah_id')) {
+      context.handle(_ayahIdMeta,
+          ayahId.isAcceptableOrUnknown(data['ayah_id']!, _ayahIdMeta));
+    } else if (isInserting) {
+      context.missing(_ayahIdMeta);
+    }
+    if (data.containsKey('lexeme_id')) {
+      context.handle(_lexemeIdMeta,
+          lexemeId.isAcceptableOrUnknown(data['lexeme_id']!, _lexemeIdMeta));
+    } else if (isInserting) {
+      context.missing(_lexemeIdMeta);
+    }
+    if (data.containsKey('position')) {
+      context.handle(_positionMeta,
+          position.isAcceptableOrUnknown(data['position']!, _positionMeta));
+    } else if (isInserting) {
+      context.missing(_positionMeta);
+    }
+    if (data.containsKey('arabic_form')) {
+      context.handle(
+          _arabicFormMeta,
+          arabicForm.isAcceptableOrUnknown(
+              data['arabic_form']!, _arabicFormMeta));
+    } else if (isInserting) {
+      context.missing(_arabicFormMeta);
+    }
+    if (data.containsKey('transliteration')) {
+      context.handle(
+          _transliterationMeta,
+          transliteration.isAcceptableOrUnknown(
+              data['transliteration']!, _transliterationMeta));
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  WordInstanceRow map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return WordInstanceRow(
+      id: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}id'])!,
+      ayahId: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}ayah_id'])!,
+      lexemeId: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}lexeme_id'])!,
+      position: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}position'])!,
+      arabicForm: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}arabic_form'])!,
+      transliteration: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}transliteration']),
+    );
+  }
+
+  @override
+  $WordInstancesTable createAlias(String alias) {
+    return $WordInstancesTable(attachedDatabase, alias);
+  }
+}
+
+class WordInstanceRow extends DataClass implements Insertable<WordInstanceRow> {
+  final int id;
+  final int ayahId;
+  final int lexemeId;
+
+  /// Vị trí từ trong Ayah (1-based).
+  final int position;
+
+  /// Dạng chữ Ả Rập thực tế xuất hiện (đã biến đổi), khác
+  /// Lemmas.arabic (dạng đầu mục từ điển).
+  final String arabicForm;
+  final String? transliteration;
+  const WordInstanceRow(
+      {required this.id,
+      required this.ayahId,
+      required this.lexemeId,
+      required this.position,
+      required this.arabicForm,
+      this.transliteration});
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<int>(id);
+    map['ayah_id'] = Variable<int>(ayahId);
+    map['lexeme_id'] = Variable<int>(lexemeId);
+    map['position'] = Variable<int>(position);
+    map['arabic_form'] = Variable<String>(arabicForm);
+    if (!nullToAbsent || transliteration != null) {
+      map['transliteration'] = Variable<String>(transliteration);
+    }
+    return map;
+  }
+
+  WordInstancesCompanion toCompanion(bool nullToAbsent) {
+    return WordInstancesCompanion(
+      id: Value(id),
+      ayahId: Value(ayahId),
+      lexemeId: Value(lexemeId),
+      position: Value(position),
+      arabicForm: Value(arabicForm),
+      transliteration: transliteration == null && nullToAbsent
+          ? const Value.absent()
+          : Value(transliteration),
+    );
+  }
+
+  factory WordInstanceRow.fromJson(Map<String, dynamic> json,
+      {ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return WordInstanceRow(
+      id: serializer.fromJson<int>(json['id']),
+      ayahId: serializer.fromJson<int>(json['ayahId']),
+      lexemeId: serializer.fromJson<int>(json['lexemeId']),
+      position: serializer.fromJson<int>(json['position']),
+      arabicForm: serializer.fromJson<String>(json['arabicForm']),
+      transliteration: serializer.fromJson<String?>(json['transliteration']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<int>(id),
+      'ayahId': serializer.toJson<int>(ayahId),
+      'lexemeId': serializer.toJson<int>(lexemeId),
+      'position': serializer.toJson<int>(position),
+      'arabicForm': serializer.toJson<String>(arabicForm),
+      'transliteration': serializer.toJson<String?>(transliteration),
+    };
+  }
+
+  WordInstanceRow copyWith(
+          {int? id,
+          int? ayahId,
+          int? lexemeId,
+          int? position,
+          String? arabicForm,
+          Value<String?> transliteration = const Value.absent()}) =>
+      WordInstanceRow(
+        id: id ?? this.id,
+        ayahId: ayahId ?? this.ayahId,
+        lexemeId: lexemeId ?? this.lexemeId,
+        position: position ?? this.position,
+        arabicForm: arabicForm ?? this.arabicForm,
+        transliteration: transliteration.present
+            ? transliteration.value
+            : this.transliteration,
+      );
+  WordInstanceRow copyWithCompanion(WordInstancesCompanion data) {
+    return WordInstanceRow(
+      id: data.id.present ? data.id.value : this.id,
+      ayahId: data.ayahId.present ? data.ayahId.value : this.ayahId,
+      lexemeId: data.lexemeId.present ? data.lexemeId.value : this.lexemeId,
+      position: data.position.present ? data.position.value : this.position,
+      arabicForm:
+          data.arabicForm.present ? data.arabicForm.value : this.arabicForm,
+      transliteration: data.transliteration.present
+          ? data.transliteration.value
+          : this.transliteration,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('WordInstanceRow(')
+          ..write('id: $id, ')
+          ..write('ayahId: $ayahId, ')
+          ..write('lexemeId: $lexemeId, ')
+          ..write('position: $position, ')
+          ..write('arabicForm: $arabicForm, ')
+          ..write('transliteration: $transliteration')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode =>
+      Object.hash(id, ayahId, lexemeId, position, arabicForm, transliteration);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is WordInstanceRow &&
+          other.id == this.id &&
+          other.ayahId == this.ayahId &&
+          other.lexemeId == this.lexemeId &&
+          other.position == this.position &&
+          other.arabicForm == this.arabicForm &&
+          other.transliteration == this.transliteration);
+}
+
+class WordInstancesCompanion extends UpdateCompanion<WordInstanceRow> {
+  final Value<int> id;
+  final Value<int> ayahId;
+  final Value<int> lexemeId;
+  final Value<int> position;
+  final Value<String> arabicForm;
+  final Value<String?> transliteration;
+  const WordInstancesCompanion({
+    this.id = const Value.absent(),
+    this.ayahId = const Value.absent(),
+    this.lexemeId = const Value.absent(),
+    this.position = const Value.absent(),
+    this.arabicForm = const Value.absent(),
+    this.transliteration = const Value.absent(),
+  });
+  WordInstancesCompanion.insert({
+    this.id = const Value.absent(),
+    required int ayahId,
+    required int lexemeId,
+    required int position,
+    required String arabicForm,
+    this.transliteration = const Value.absent(),
+  })  : ayahId = Value(ayahId),
+        lexemeId = Value(lexemeId),
+        position = Value(position),
+        arabicForm = Value(arabicForm);
+  static Insertable<WordInstanceRow> custom({
+    Expression<int>? id,
+    Expression<int>? ayahId,
+    Expression<int>? lexemeId,
+    Expression<int>? position,
+    Expression<String>? arabicForm,
+    Expression<String>? transliteration,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (ayahId != null) 'ayah_id': ayahId,
+      if (lexemeId != null) 'lexeme_id': lexemeId,
+      if (position != null) 'position': position,
+      if (arabicForm != null) 'arabic_form': arabicForm,
+      if (transliteration != null) 'transliteration': transliteration,
+    });
+  }
+
+  WordInstancesCompanion copyWith(
+      {Value<int>? id,
+      Value<int>? ayahId,
+      Value<int>? lexemeId,
+      Value<int>? position,
+      Value<String>? arabicForm,
+      Value<String?>? transliteration}) {
+    return WordInstancesCompanion(
+      id: id ?? this.id,
+      ayahId: ayahId ?? this.ayahId,
+      lexemeId: lexemeId ?? this.lexemeId,
+      position: position ?? this.position,
+      arabicForm: arabicForm ?? this.arabicForm,
+      transliteration: transliteration ?? this.transliteration,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<int>(id.value);
+    }
+    if (ayahId.present) {
+      map['ayah_id'] = Variable<int>(ayahId.value);
+    }
+    if (lexemeId.present) {
+      map['lexeme_id'] = Variable<int>(lexemeId.value);
+    }
+    if (position.present) {
+      map['position'] = Variable<int>(position.value);
+    }
+    if (arabicForm.present) {
+      map['arabic_form'] = Variable<String>(arabicForm.value);
+    }
+    if (transliteration.present) {
+      map['transliteration'] = Variable<String>(transliteration.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('WordInstancesCompanion(')
+          ..write('id: $id, ')
+          ..write('ayahId: $ayahId, ')
+          ..write('lexemeId: $lexemeId, ')
+          ..write('position: $position, ')
+          ..write('arabicForm: $arabicForm, ')
+          ..write('transliteration: $transliteration')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $GrammarFeaturesTable extends GrammarFeatures
+    with TableInfo<$GrammarFeaturesTable, GrammarFeatureRow> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $GrammarFeaturesTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<int> id = GeneratedColumn<int>(
+      'id', aliasedName, false,
+      type: DriftSqlType.int, requiredDuringInsert: false);
+  static const VerificationMeta _wordInstanceIdMeta =
+      const VerificationMeta('wordInstanceId');
+  @override
+  late final GeneratedColumn<int> wordInstanceId = GeneratedColumn<int>(
+      'word_instance_id', aliasedName, false,
+      type: DriftSqlType.int,
+      requiredDuringInsert: true,
+      defaultConstraints:
+          GeneratedColumn.constraintIsAlways('REFERENCES word_instances (id)'));
+  static const VerificationMeta _featureKeyMeta =
+      const VerificationMeta('featureKey');
+  @override
+  late final GeneratedColumn<String> featureKey = GeneratedColumn<String>(
+      'feature_key', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  static const VerificationMeta _featureValueMeta =
+      const VerificationMeta('featureValue');
+  @override
+  late final GeneratedColumn<String> featureValue = GeneratedColumn<String>(
+      'feature_value', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  @override
+  List<GeneratedColumn> get $columns =>
+      [id, wordInstanceId, featureKey, featureValue];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'grammar_features';
+  @override
+  VerificationContext validateIntegrity(Insertable<GrammarFeatureRow> instance,
+      {bool isInserting = false}) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    }
+    if (data.containsKey('word_instance_id')) {
+      context.handle(
+          _wordInstanceIdMeta,
+          wordInstanceId.isAcceptableOrUnknown(
+              data['word_instance_id']!, _wordInstanceIdMeta));
+    } else if (isInserting) {
+      context.missing(_wordInstanceIdMeta);
+    }
+    if (data.containsKey('feature_key')) {
+      context.handle(
+          _featureKeyMeta,
+          featureKey.isAcceptableOrUnknown(
+              data['feature_key']!, _featureKeyMeta));
+    } else if (isInserting) {
+      context.missing(_featureKeyMeta);
+    }
+    if (data.containsKey('feature_value')) {
+      context.handle(
+          _featureValueMeta,
+          featureValue.isAcceptableOrUnknown(
+              data['feature_value']!, _featureValueMeta));
+    } else if (isInserting) {
+      context.missing(_featureValueMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  GrammarFeatureRow map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return GrammarFeatureRow(
+      id: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}id'])!,
+      wordInstanceId: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}word_instance_id'])!,
+      featureKey: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}feature_key'])!,
+      featureValue: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}feature_value'])!,
+    );
+  }
+
+  @override
+  $GrammarFeaturesTable createAlias(String alias) {
+    return $GrammarFeaturesTable(attachedDatabase, alias);
+  }
+}
+
+class GrammarFeatureRow extends DataClass
+    implements Insertable<GrammarFeatureRow> {
+  final int id;
+  final int wordInstanceId;
+
+  /// vd 'tense', 'person', 'case', 'gender', 'number'.
+  final String featureKey;
+
+  /// vd 'past', '3rd', 'nominative', 'masculine'.
+  final String featureValue;
+  const GrammarFeatureRow(
+      {required this.id,
+      required this.wordInstanceId,
+      required this.featureKey,
+      required this.featureValue});
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<int>(id);
+    map['word_instance_id'] = Variable<int>(wordInstanceId);
+    map['feature_key'] = Variable<String>(featureKey);
+    map['feature_value'] = Variable<String>(featureValue);
+    return map;
+  }
+
+  GrammarFeaturesCompanion toCompanion(bool nullToAbsent) {
+    return GrammarFeaturesCompanion(
+      id: Value(id),
+      wordInstanceId: Value(wordInstanceId),
+      featureKey: Value(featureKey),
+      featureValue: Value(featureValue),
+    );
+  }
+
+  factory GrammarFeatureRow.fromJson(Map<String, dynamic> json,
+      {ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return GrammarFeatureRow(
+      id: serializer.fromJson<int>(json['id']),
+      wordInstanceId: serializer.fromJson<int>(json['wordInstanceId']),
+      featureKey: serializer.fromJson<String>(json['featureKey']),
+      featureValue: serializer.fromJson<String>(json['featureValue']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<int>(id),
+      'wordInstanceId': serializer.toJson<int>(wordInstanceId),
+      'featureKey': serializer.toJson<String>(featureKey),
+      'featureValue': serializer.toJson<String>(featureValue),
+    };
+  }
+
+  GrammarFeatureRow copyWith(
+          {int? id,
+          int? wordInstanceId,
+          String? featureKey,
+          String? featureValue}) =>
+      GrammarFeatureRow(
+        id: id ?? this.id,
+        wordInstanceId: wordInstanceId ?? this.wordInstanceId,
+        featureKey: featureKey ?? this.featureKey,
+        featureValue: featureValue ?? this.featureValue,
+      );
+  GrammarFeatureRow copyWithCompanion(GrammarFeaturesCompanion data) {
+    return GrammarFeatureRow(
+      id: data.id.present ? data.id.value : this.id,
+      wordInstanceId: data.wordInstanceId.present
+          ? data.wordInstanceId.value
+          : this.wordInstanceId,
+      featureKey:
+          data.featureKey.present ? data.featureKey.value : this.featureKey,
+      featureValue: data.featureValue.present
+          ? data.featureValue.value
+          : this.featureValue,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('GrammarFeatureRow(')
+          ..write('id: $id, ')
+          ..write('wordInstanceId: $wordInstanceId, ')
+          ..write('featureKey: $featureKey, ')
+          ..write('featureValue: $featureValue')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(id, wordInstanceId, featureKey, featureValue);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is GrammarFeatureRow &&
+          other.id == this.id &&
+          other.wordInstanceId == this.wordInstanceId &&
+          other.featureKey == this.featureKey &&
+          other.featureValue == this.featureValue);
+}
+
+class GrammarFeaturesCompanion extends UpdateCompanion<GrammarFeatureRow> {
+  final Value<int> id;
+  final Value<int> wordInstanceId;
+  final Value<String> featureKey;
+  final Value<String> featureValue;
+  const GrammarFeaturesCompanion({
+    this.id = const Value.absent(),
+    this.wordInstanceId = const Value.absent(),
+    this.featureKey = const Value.absent(),
+    this.featureValue = const Value.absent(),
+  });
+  GrammarFeaturesCompanion.insert({
+    this.id = const Value.absent(),
+    required int wordInstanceId,
+    required String featureKey,
+    required String featureValue,
+  })  : wordInstanceId = Value(wordInstanceId),
+        featureKey = Value(featureKey),
+        featureValue = Value(featureValue);
+  static Insertable<GrammarFeatureRow> custom({
+    Expression<int>? id,
+    Expression<int>? wordInstanceId,
+    Expression<String>? featureKey,
+    Expression<String>? featureValue,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (wordInstanceId != null) 'word_instance_id': wordInstanceId,
+      if (featureKey != null) 'feature_key': featureKey,
+      if (featureValue != null) 'feature_value': featureValue,
+    });
+  }
+
+  GrammarFeaturesCompanion copyWith(
+      {Value<int>? id,
+      Value<int>? wordInstanceId,
+      Value<String>? featureKey,
+      Value<String>? featureValue}) {
+    return GrammarFeaturesCompanion(
+      id: id ?? this.id,
+      wordInstanceId: wordInstanceId ?? this.wordInstanceId,
+      featureKey: featureKey ?? this.featureKey,
+      featureValue: featureValue ?? this.featureValue,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<int>(id.value);
+    }
+    if (wordInstanceId.present) {
+      map['word_instance_id'] = Variable<int>(wordInstanceId.value);
+    }
+    if (featureKey.present) {
+      map['feature_key'] = Variable<String>(featureKey.value);
+    }
+    if (featureValue.present) {
+      map['feature_value'] = Variable<String>(featureValue.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('GrammarFeaturesCompanion(')
+          ..write('id: $id, ')
+          ..write('wordInstanceId: $wordInstanceId, ')
+          ..write('featureKey: $featureKey, ')
+          ..write('featureValue: $featureValue')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $PhrasesTable extends Phrases with TableInfo<$PhrasesTable, PhraseRow> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $PhrasesTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<int> id = GeneratedColumn<int>(
+      'id', aliasedName, false,
+      type: DriftSqlType.int, requiredDuringInsert: false);
+  static const VerificationMeta _arabicMeta = const VerificationMeta('arabic');
+  @override
+  late final GeneratedColumn<String> arabic = GeneratedColumn<String>(
+      'arabic', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  static const VerificationMeta _transliterationMeta =
+      const VerificationMeta('transliteration');
+  @override
+  late final GeneratedColumn<String> transliteration = GeneratedColumn<String>(
+      'transliteration', aliasedName, true,
+      type: DriftSqlType.string, requiredDuringInsert: false);
+  static const VerificationMeta _meaningViMeta =
+      const VerificationMeta('meaningVi');
+  @override
+  late final GeneratedColumn<String> meaningVi = GeneratedColumn<String>(
+      'meaning_vi', aliasedName, true,
+      type: DriftSqlType.string, requiredDuringInsert: false);
+  static const VerificationMeta _meaningEnMeta =
+      const VerificationMeta('meaningEn');
+  @override
+  late final GeneratedColumn<String> meaningEn = GeneratedColumn<String>(
+      'meaning_en', aliasedName, true,
+      type: DriftSqlType.string, requiredDuringInsert: false);
+  @override
+  List<GeneratedColumn> get $columns =>
+      [id, arabic, transliteration, meaningVi, meaningEn];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'phrases';
+  @override
+  VerificationContext validateIntegrity(Insertable<PhraseRow> instance,
+      {bool isInserting = false}) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    }
+    if (data.containsKey('arabic')) {
+      context.handle(_arabicMeta,
+          arabic.isAcceptableOrUnknown(data['arabic']!, _arabicMeta));
+    } else if (isInserting) {
+      context.missing(_arabicMeta);
+    }
+    if (data.containsKey('transliteration')) {
+      context.handle(
+          _transliterationMeta,
+          transliteration.isAcceptableOrUnknown(
+              data['transliteration']!, _transliterationMeta));
+    }
+    if (data.containsKey('meaning_vi')) {
+      context.handle(_meaningViMeta,
+          meaningVi.isAcceptableOrUnknown(data['meaning_vi']!, _meaningViMeta));
+    }
+    if (data.containsKey('meaning_en')) {
+      context.handle(_meaningEnMeta,
+          meaningEn.isAcceptableOrUnknown(data['meaning_en']!, _meaningEnMeta));
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  PhraseRow map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return PhraseRow(
+      id: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}id'])!,
+      arabic: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}arabic'])!,
+      transliteration: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}transliteration']),
+      meaningVi: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}meaning_vi']),
+      meaningEn: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}meaning_en']),
+    );
+  }
+
+  @override
+  $PhrasesTable createAlias(String alias) {
+    return $PhrasesTable(attachedDatabase, alias);
+  }
+}
+
+class PhraseRow extends DataClass implements Insertable<PhraseRow> {
+  final int id;
+  final String arabic;
+  final String? transliteration;
+  final String? meaningVi;
+  final String? meaningEn;
+  const PhraseRow(
+      {required this.id,
+      required this.arabic,
+      this.transliteration,
+      this.meaningVi,
+      this.meaningEn});
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<int>(id);
+    map['arabic'] = Variable<String>(arabic);
+    if (!nullToAbsent || transliteration != null) {
+      map['transliteration'] = Variable<String>(transliteration);
+    }
+    if (!nullToAbsent || meaningVi != null) {
+      map['meaning_vi'] = Variable<String>(meaningVi);
+    }
+    if (!nullToAbsent || meaningEn != null) {
+      map['meaning_en'] = Variable<String>(meaningEn);
+    }
+    return map;
+  }
+
+  PhrasesCompanion toCompanion(bool nullToAbsent) {
+    return PhrasesCompanion(
+      id: Value(id),
+      arabic: Value(arabic),
+      transliteration: transliteration == null && nullToAbsent
+          ? const Value.absent()
+          : Value(transliteration),
+      meaningVi: meaningVi == null && nullToAbsent
+          ? const Value.absent()
+          : Value(meaningVi),
+      meaningEn: meaningEn == null && nullToAbsent
+          ? const Value.absent()
+          : Value(meaningEn),
+    );
+  }
+
+  factory PhraseRow.fromJson(Map<String, dynamic> json,
+      {ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return PhraseRow(
+      id: serializer.fromJson<int>(json['id']),
+      arabic: serializer.fromJson<String>(json['arabic']),
+      transliteration: serializer.fromJson<String?>(json['transliteration']),
+      meaningVi: serializer.fromJson<String?>(json['meaningVi']),
+      meaningEn: serializer.fromJson<String?>(json['meaningEn']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<int>(id),
+      'arabic': serializer.toJson<String>(arabic),
+      'transliteration': serializer.toJson<String?>(transliteration),
+      'meaningVi': serializer.toJson<String?>(meaningVi),
+      'meaningEn': serializer.toJson<String?>(meaningEn),
+    };
+  }
+
+  PhraseRow copyWith(
+          {int? id,
+          String? arabic,
+          Value<String?> transliteration = const Value.absent(),
+          Value<String?> meaningVi = const Value.absent(),
+          Value<String?> meaningEn = const Value.absent()}) =>
+      PhraseRow(
+        id: id ?? this.id,
+        arabic: arabic ?? this.arabic,
+        transliteration: transliteration.present
+            ? transliteration.value
+            : this.transliteration,
+        meaningVi: meaningVi.present ? meaningVi.value : this.meaningVi,
+        meaningEn: meaningEn.present ? meaningEn.value : this.meaningEn,
+      );
+  PhraseRow copyWithCompanion(PhrasesCompanion data) {
+    return PhraseRow(
+      id: data.id.present ? data.id.value : this.id,
+      arabic: data.arabic.present ? data.arabic.value : this.arabic,
+      transliteration: data.transliteration.present
+          ? data.transliteration.value
+          : this.transliteration,
+      meaningVi: data.meaningVi.present ? data.meaningVi.value : this.meaningVi,
+      meaningEn: data.meaningEn.present ? data.meaningEn.value : this.meaningEn,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('PhraseRow(')
+          ..write('id: $id, ')
+          ..write('arabic: $arabic, ')
+          ..write('transliteration: $transliteration, ')
+          ..write('meaningVi: $meaningVi, ')
+          ..write('meaningEn: $meaningEn')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode =>
+      Object.hash(id, arabic, transliteration, meaningVi, meaningEn);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is PhraseRow &&
+          other.id == this.id &&
+          other.arabic == this.arabic &&
+          other.transliteration == this.transliteration &&
+          other.meaningVi == this.meaningVi &&
+          other.meaningEn == this.meaningEn);
+}
+
+class PhrasesCompanion extends UpdateCompanion<PhraseRow> {
+  final Value<int> id;
+  final Value<String> arabic;
+  final Value<String?> transliteration;
+  final Value<String?> meaningVi;
+  final Value<String?> meaningEn;
+  const PhrasesCompanion({
+    this.id = const Value.absent(),
+    this.arabic = const Value.absent(),
+    this.transliteration = const Value.absent(),
+    this.meaningVi = const Value.absent(),
+    this.meaningEn = const Value.absent(),
+  });
+  PhrasesCompanion.insert({
+    this.id = const Value.absent(),
+    required String arabic,
+    this.transliteration = const Value.absent(),
+    this.meaningVi = const Value.absent(),
+    this.meaningEn = const Value.absent(),
+  }) : arabic = Value(arabic);
+  static Insertable<PhraseRow> custom({
+    Expression<int>? id,
+    Expression<String>? arabic,
+    Expression<String>? transliteration,
+    Expression<String>? meaningVi,
+    Expression<String>? meaningEn,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (arabic != null) 'arabic': arabic,
+      if (transliteration != null) 'transliteration': transliteration,
+      if (meaningVi != null) 'meaning_vi': meaningVi,
+      if (meaningEn != null) 'meaning_en': meaningEn,
+    });
+  }
+
+  PhrasesCompanion copyWith(
+      {Value<int>? id,
+      Value<String>? arabic,
+      Value<String?>? transliteration,
+      Value<String?>? meaningVi,
+      Value<String?>? meaningEn}) {
+    return PhrasesCompanion(
+      id: id ?? this.id,
+      arabic: arabic ?? this.arabic,
+      transliteration: transliteration ?? this.transliteration,
+      meaningVi: meaningVi ?? this.meaningVi,
+      meaningEn: meaningEn ?? this.meaningEn,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<int>(id.value);
+    }
+    if (arabic.present) {
+      map['arabic'] = Variable<String>(arabic.value);
+    }
+    if (transliteration.present) {
+      map['transliteration'] = Variable<String>(transliteration.value);
+    }
+    if (meaningVi.present) {
+      map['meaning_vi'] = Variable<String>(meaningVi.value);
+    }
+    if (meaningEn.present) {
+      map['meaning_en'] = Variable<String>(meaningEn.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('PhrasesCompanion(')
+          ..write('id: $id, ')
+          ..write('arabic: $arabic, ')
+          ..write('transliteration: $transliteration, ')
+          ..write('meaningVi: $meaningVi, ')
+          ..write('meaningEn: $meaningEn')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $PhraseWordInstancesTable extends PhraseWordInstances
+    with TableInfo<$PhraseWordInstancesTable, PhraseWordInstanceRow> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $PhraseWordInstancesTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _phraseIdMeta =
+      const VerificationMeta('phraseId');
+  @override
+  late final GeneratedColumn<int> phraseId = GeneratedColumn<int>(
+      'phrase_id', aliasedName, false,
+      type: DriftSqlType.int,
+      requiredDuringInsert: true,
+      defaultConstraints:
+          GeneratedColumn.constraintIsAlways('REFERENCES phrases (id)'));
+  static const VerificationMeta _wordInstanceIdMeta =
+      const VerificationMeta('wordInstanceId');
+  @override
+  late final GeneratedColumn<int> wordInstanceId = GeneratedColumn<int>(
+      'word_instance_id', aliasedName, false,
+      type: DriftSqlType.int,
+      requiredDuringInsert: true,
+      defaultConstraints:
+          GeneratedColumn.constraintIsAlways('REFERENCES word_instances (id)'));
+  static const VerificationMeta _positionMeta =
+      const VerificationMeta('position');
+  @override
+  late final GeneratedColumn<int> position = GeneratedColumn<int>(
+      'position', aliasedName, false,
+      type: DriftSqlType.int, requiredDuringInsert: true);
+  @override
+  List<GeneratedColumn> get $columns => [phraseId, wordInstanceId, position];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'phrase_word_instances';
+  @override
+  VerificationContext validateIntegrity(
+      Insertable<PhraseWordInstanceRow> instance,
+      {bool isInserting = false}) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('phrase_id')) {
+      context.handle(_phraseIdMeta,
+          phraseId.isAcceptableOrUnknown(data['phrase_id']!, _phraseIdMeta));
+    } else if (isInserting) {
+      context.missing(_phraseIdMeta);
+    }
+    if (data.containsKey('word_instance_id')) {
+      context.handle(
+          _wordInstanceIdMeta,
+          wordInstanceId.isAcceptableOrUnknown(
+              data['word_instance_id']!, _wordInstanceIdMeta));
+    } else if (isInserting) {
+      context.missing(_wordInstanceIdMeta);
+    }
+    if (data.containsKey('position')) {
+      context.handle(_positionMeta,
+          position.isAcceptableOrUnknown(data['position']!, _positionMeta));
+    } else if (isInserting) {
+      context.missing(_positionMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {phraseId, wordInstanceId};
+  @override
+  PhraseWordInstanceRow map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return PhraseWordInstanceRow(
+      phraseId: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}phrase_id'])!,
+      wordInstanceId: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}word_instance_id'])!,
+      position: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}position'])!,
+    );
+  }
+
+  @override
+  $PhraseWordInstancesTable createAlias(String alias) {
+    return $PhraseWordInstancesTable(attachedDatabase, alias);
+  }
+}
+
+class PhraseWordInstanceRow extends DataClass
+    implements Insertable<PhraseWordInstanceRow> {
+  final int phraseId;
+  final int wordInstanceId;
+  final int position;
+  const PhraseWordInstanceRow(
+      {required this.phraseId,
+      required this.wordInstanceId,
+      required this.position});
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['phrase_id'] = Variable<int>(phraseId);
+    map['word_instance_id'] = Variable<int>(wordInstanceId);
+    map['position'] = Variable<int>(position);
+    return map;
+  }
+
+  PhraseWordInstancesCompanion toCompanion(bool nullToAbsent) {
+    return PhraseWordInstancesCompanion(
+      phraseId: Value(phraseId),
+      wordInstanceId: Value(wordInstanceId),
+      position: Value(position),
+    );
+  }
+
+  factory PhraseWordInstanceRow.fromJson(Map<String, dynamic> json,
+      {ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return PhraseWordInstanceRow(
+      phraseId: serializer.fromJson<int>(json['phraseId']),
+      wordInstanceId: serializer.fromJson<int>(json['wordInstanceId']),
+      position: serializer.fromJson<int>(json['position']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'phraseId': serializer.toJson<int>(phraseId),
+      'wordInstanceId': serializer.toJson<int>(wordInstanceId),
+      'position': serializer.toJson<int>(position),
+    };
+  }
+
+  PhraseWordInstanceRow copyWith(
+          {int? phraseId, int? wordInstanceId, int? position}) =>
+      PhraseWordInstanceRow(
+        phraseId: phraseId ?? this.phraseId,
+        wordInstanceId: wordInstanceId ?? this.wordInstanceId,
+        position: position ?? this.position,
+      );
+  PhraseWordInstanceRow copyWithCompanion(PhraseWordInstancesCompanion data) {
+    return PhraseWordInstanceRow(
+      phraseId: data.phraseId.present ? data.phraseId.value : this.phraseId,
+      wordInstanceId: data.wordInstanceId.present
+          ? data.wordInstanceId.value
+          : this.wordInstanceId,
+      position: data.position.present ? data.position.value : this.position,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('PhraseWordInstanceRow(')
+          ..write('phraseId: $phraseId, ')
+          ..write('wordInstanceId: $wordInstanceId, ')
+          ..write('position: $position')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(phraseId, wordInstanceId, position);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is PhraseWordInstanceRow &&
+          other.phraseId == this.phraseId &&
+          other.wordInstanceId == this.wordInstanceId &&
+          other.position == this.position);
+}
+
+class PhraseWordInstancesCompanion
+    extends UpdateCompanion<PhraseWordInstanceRow> {
+  final Value<int> phraseId;
+  final Value<int> wordInstanceId;
+  final Value<int> position;
+  final Value<int> rowid;
+  const PhraseWordInstancesCompanion({
+    this.phraseId = const Value.absent(),
+    this.wordInstanceId = const Value.absent(),
+    this.position = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  PhraseWordInstancesCompanion.insert({
+    required int phraseId,
+    required int wordInstanceId,
+    required int position,
+    this.rowid = const Value.absent(),
+  })  : phraseId = Value(phraseId),
+        wordInstanceId = Value(wordInstanceId),
+        position = Value(position);
+  static Insertable<PhraseWordInstanceRow> custom({
+    Expression<int>? phraseId,
+    Expression<int>? wordInstanceId,
+    Expression<int>? position,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (phraseId != null) 'phrase_id': phraseId,
+      if (wordInstanceId != null) 'word_instance_id': wordInstanceId,
+      if (position != null) 'position': position,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  PhraseWordInstancesCompanion copyWith(
+      {Value<int>? phraseId,
+      Value<int>? wordInstanceId,
+      Value<int>? position,
+      Value<int>? rowid}) {
+    return PhraseWordInstancesCompanion(
+      phraseId: phraseId ?? this.phraseId,
+      wordInstanceId: wordInstanceId ?? this.wordInstanceId,
+      position: position ?? this.position,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (phraseId.present) {
+      map['phrase_id'] = Variable<int>(phraseId.value);
+    }
+    if (wordInstanceId.present) {
+      map['word_instance_id'] = Variable<int>(wordInstanceId.value);
+    }
+    if (position.present) {
+      map['position'] = Variable<int>(position.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('PhraseWordInstancesCompanion(')
+          ..write('phraseId: $phraseId, ')
+          ..write('wordInstanceId: $wordInstanceId, ')
+          ..write('position: $position, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $LexiconRelationsTable extends LexiconRelations
+    with TableInfo<$LexiconRelationsTable, LexiconRelationRow> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $LexiconRelationsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<int> id = GeneratedColumn<int>(
+      'id', aliasedName, false,
+      type: DriftSqlType.int, requiredDuringInsert: false);
+  static const VerificationMeta _fromLemmaIdMeta =
+      const VerificationMeta('fromLemmaId');
+  @override
+  late final GeneratedColumn<int> fromLemmaId = GeneratedColumn<int>(
+      'from_lemma_id', aliasedName, false,
+      type: DriftSqlType.int,
+      requiredDuringInsert: true,
+      defaultConstraints:
+          GeneratedColumn.constraintIsAlways('REFERENCES lemmas (id)'));
+  static const VerificationMeta _toLemmaIdMeta =
+      const VerificationMeta('toLemmaId');
+  @override
+  late final GeneratedColumn<int> toLemmaId = GeneratedColumn<int>(
+      'to_lemma_id', aliasedName, false,
+      type: DriftSqlType.int,
+      requiredDuringInsert: true,
+      defaultConstraints:
+          GeneratedColumn.constraintIsAlways('REFERENCES lemmas (id)'));
+  static const VerificationMeta _relationTypeMeta =
+      const VerificationMeta('relationType');
+  @override
+  late final GeneratedColumn<String> relationType = GeneratedColumn<String>(
+      'relation_type', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  @override
+  List<GeneratedColumn> get $columns =>
+      [id, fromLemmaId, toLemmaId, relationType];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'lexicon_relations';
+  @override
+  VerificationContext validateIntegrity(Insertable<LexiconRelationRow> instance,
+      {bool isInserting = false}) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    }
+    if (data.containsKey('from_lemma_id')) {
+      context.handle(
+          _fromLemmaIdMeta,
+          fromLemmaId.isAcceptableOrUnknown(
+              data['from_lemma_id']!, _fromLemmaIdMeta));
+    } else if (isInserting) {
+      context.missing(_fromLemmaIdMeta);
+    }
+    if (data.containsKey('to_lemma_id')) {
+      context.handle(
+          _toLemmaIdMeta,
+          toLemmaId.isAcceptableOrUnknown(
+              data['to_lemma_id']!, _toLemmaIdMeta));
+    } else if (isInserting) {
+      context.missing(_toLemmaIdMeta);
+    }
+    if (data.containsKey('relation_type')) {
+      context.handle(
+          _relationTypeMeta,
+          relationType.isAcceptableOrUnknown(
+              data['relation_type']!, _relationTypeMeta));
+    } else if (isInserting) {
+      context.missing(_relationTypeMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  LexiconRelationRow map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return LexiconRelationRow(
+      id: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}id'])!,
+      fromLemmaId: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}from_lemma_id'])!,
+      toLemmaId: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}to_lemma_id'])!,
+      relationType: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}relation_type'])!,
+    );
+  }
+
+  @override
+  $LexiconRelationsTable createAlias(String alias) {
+    return $LexiconRelationsTable(attachedDatabase, alias);
+  }
+}
+
+class LexiconRelationRow extends DataClass
+    implements Insertable<LexiconRelationRow> {
+  final int id;
+  final int fromLemmaId;
+  final int toLemmaId;
+
+  /// 'synonym' | 'antonym'.
+  final String relationType;
+  const LexiconRelationRow(
+      {required this.id,
+      required this.fromLemmaId,
+      required this.toLemmaId,
+      required this.relationType});
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<int>(id);
+    map['from_lemma_id'] = Variable<int>(fromLemmaId);
+    map['to_lemma_id'] = Variable<int>(toLemmaId);
+    map['relation_type'] = Variable<String>(relationType);
+    return map;
+  }
+
+  LexiconRelationsCompanion toCompanion(bool nullToAbsent) {
+    return LexiconRelationsCompanion(
+      id: Value(id),
+      fromLemmaId: Value(fromLemmaId),
+      toLemmaId: Value(toLemmaId),
+      relationType: Value(relationType),
+    );
+  }
+
+  factory LexiconRelationRow.fromJson(Map<String, dynamic> json,
+      {ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return LexiconRelationRow(
+      id: serializer.fromJson<int>(json['id']),
+      fromLemmaId: serializer.fromJson<int>(json['fromLemmaId']),
+      toLemmaId: serializer.fromJson<int>(json['toLemmaId']),
+      relationType: serializer.fromJson<String>(json['relationType']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<int>(id),
+      'fromLemmaId': serializer.toJson<int>(fromLemmaId),
+      'toLemmaId': serializer.toJson<int>(toLemmaId),
+      'relationType': serializer.toJson<String>(relationType),
+    };
+  }
+
+  LexiconRelationRow copyWith(
+          {int? id, int? fromLemmaId, int? toLemmaId, String? relationType}) =>
+      LexiconRelationRow(
+        id: id ?? this.id,
+        fromLemmaId: fromLemmaId ?? this.fromLemmaId,
+        toLemmaId: toLemmaId ?? this.toLemmaId,
+        relationType: relationType ?? this.relationType,
+      );
+  LexiconRelationRow copyWithCompanion(LexiconRelationsCompanion data) {
+    return LexiconRelationRow(
+      id: data.id.present ? data.id.value : this.id,
+      fromLemmaId:
+          data.fromLemmaId.present ? data.fromLemmaId.value : this.fromLemmaId,
+      toLemmaId: data.toLemmaId.present ? data.toLemmaId.value : this.toLemmaId,
+      relationType: data.relationType.present
+          ? data.relationType.value
+          : this.relationType,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('LexiconRelationRow(')
+          ..write('id: $id, ')
+          ..write('fromLemmaId: $fromLemmaId, ')
+          ..write('toLemmaId: $toLemmaId, ')
+          ..write('relationType: $relationType')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(id, fromLemmaId, toLemmaId, relationType);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is LexiconRelationRow &&
+          other.id == this.id &&
+          other.fromLemmaId == this.fromLemmaId &&
+          other.toLemmaId == this.toLemmaId &&
+          other.relationType == this.relationType);
+}
+
+class LexiconRelationsCompanion extends UpdateCompanion<LexiconRelationRow> {
+  final Value<int> id;
+  final Value<int> fromLemmaId;
+  final Value<int> toLemmaId;
+  final Value<String> relationType;
+  const LexiconRelationsCompanion({
+    this.id = const Value.absent(),
+    this.fromLemmaId = const Value.absent(),
+    this.toLemmaId = const Value.absent(),
+    this.relationType = const Value.absent(),
+  });
+  LexiconRelationsCompanion.insert({
+    this.id = const Value.absent(),
+    required int fromLemmaId,
+    required int toLemmaId,
+    required String relationType,
+  })  : fromLemmaId = Value(fromLemmaId),
+        toLemmaId = Value(toLemmaId),
+        relationType = Value(relationType);
+  static Insertable<LexiconRelationRow> custom({
+    Expression<int>? id,
+    Expression<int>? fromLemmaId,
+    Expression<int>? toLemmaId,
+    Expression<String>? relationType,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (fromLemmaId != null) 'from_lemma_id': fromLemmaId,
+      if (toLemmaId != null) 'to_lemma_id': toLemmaId,
+      if (relationType != null) 'relation_type': relationType,
+    });
+  }
+
+  LexiconRelationsCompanion copyWith(
+      {Value<int>? id,
+      Value<int>? fromLemmaId,
+      Value<int>? toLemmaId,
+      Value<String>? relationType}) {
+    return LexiconRelationsCompanion(
+      id: id ?? this.id,
+      fromLemmaId: fromLemmaId ?? this.fromLemmaId,
+      toLemmaId: toLemmaId ?? this.toLemmaId,
+      relationType: relationType ?? this.relationType,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<int>(id.value);
+    }
+    if (fromLemmaId.present) {
+      map['from_lemma_id'] = Variable<int>(fromLemmaId.value);
+    }
+    if (toLemmaId.present) {
+      map['to_lemma_id'] = Variable<int>(toLemmaId.value);
+    }
+    if (relationType.present) {
+      map['relation_type'] = Variable<String>(relationType.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('LexiconRelationsCompanion(')
+          ..write('id: $id, ')
+          ..write('fromLemmaId: $fromLemmaId, ')
+          ..write('toLemmaId: $toLemmaId, ')
+          ..write('relationType: $relationType')
+          ..write(')'))
+        .toString();
+  }
+}
+
 abstract class _$AppDatabase extends GeneratedDatabase {
   _$AppDatabase(QueryExecutor e) : super(e);
   $AppDatabaseManager get managers => $AppDatabaseManager(this);
@@ -2380,12 +4798,37 @@ abstract class _$AppDatabase extends GeneratedDatabase {
   late final $TranslationsTable translations = $TranslationsTable(this);
   late final $RecitersTable reciters = $RecitersTable(this);
   late final $MetaEntriesTable metaEntries = $MetaEntriesTable(this);
+  late final $RootsTable roots = $RootsTable(this);
+  late final $LemmasTable lemmas = $LemmasTable(this);
+  late final $LexemesTable lexemes = $LexemesTable(this);
+  late final $WordInstancesTable wordInstances = $WordInstancesTable(this);
+  late final $GrammarFeaturesTable grammarFeatures =
+      $GrammarFeaturesTable(this);
+  late final $PhrasesTable phrases = $PhrasesTable(this);
+  late final $PhraseWordInstancesTable phraseWordInstances =
+      $PhraseWordInstancesTable(this);
+  late final $LexiconRelationsTable lexiconRelations =
+      $LexiconRelationsTable(this);
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
   @override
-  List<DatabaseSchemaEntity> get allSchemaEntities =>
-      [surahs, ayahs, translationSources, translations, reciters, metaEntries];
+  List<DatabaseSchemaEntity> get allSchemaEntities => [
+        surahs,
+        ayahs,
+        translationSources,
+        translations,
+        reciters,
+        metaEntries,
+        roots,
+        lemmas,
+        lexemes,
+        wordInstances,
+        grammarFeatures,
+        phrases,
+        phraseWordInstances,
+        lexiconRelations
+      ];
 }
 
 typedef $$SurahsTableCreateCompanionBuilder = SurahsCompanion Function({
@@ -2730,6 +5173,20 @@ final class $$AyahsTableReferences
     return ProcessedTableManager(
         manager.$state.copyWith(prefetchedData: cache));
   }
+
+  static MultiTypedResultKey<$WordInstancesTable, List<WordInstanceRow>>
+      _wordInstancesRefsTable(_$AppDatabase db) =>
+          MultiTypedResultKey.fromTable(db.wordInstances,
+              aliasName: 'ayahs__id__word_instances__ayah_id');
+
+  $$WordInstancesTableProcessedTableManager get wordInstancesRefs {
+    final manager = $$WordInstancesTableTableManager($_db, $_db.wordInstances)
+        .filter((f) => f.ayahId.id.sqlEquals($_itemColumn<int>('id')!));
+
+    final cache = $_typedResult.readTableOrNull(_wordInstancesRefsTable($_db));
+    return ProcessedTableManager(
+        manager.$state.copyWith(prefetchedData: cache));
+  }
 }
 
 class $$AyahsTableFilterComposer extends Composer<_$AppDatabase, $AyahsTable> {
@@ -2794,6 +5251,27 @@ class $$AyahsTableFilterComposer extends Composer<_$AppDatabase, $AyahsTable> {
             $$TranslationsTableFilterComposer(
               $db: $db,
               $table: $db.translations,
+              $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+              joinBuilder: joinBuilder,
+              $removeJoinBuilderFromRootComposer:
+                  $removeJoinBuilderFromRootComposer,
+            ));
+    return f(composer);
+  }
+
+  Expression<bool> wordInstancesRefs(
+      Expression<bool> Function($$WordInstancesTableFilterComposer f) f) {
+    final $$WordInstancesTableFilterComposer composer = $composerBuilder(
+        composer: this,
+        getCurrentColumn: (t) => t.id,
+        referencedTable: $db.wordInstances,
+        getReferencedColumn: (t) => t.ayahId,
+        builder: (joinBuilder,
+                {$addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer}) =>
+            $$WordInstancesTableFilterComposer(
+              $db: $db,
+              $table: $db.wordInstances,
               $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
               joinBuilder: joinBuilder,
               $removeJoinBuilderFromRootComposer:
@@ -2924,6 +5402,27 @@ class $$AyahsTableAnnotationComposer
             ));
     return f(composer);
   }
+
+  Expression<T> wordInstancesRefs<T extends Object>(
+      Expression<T> Function($$WordInstancesTableAnnotationComposer a) f) {
+    final $$WordInstancesTableAnnotationComposer composer = $composerBuilder(
+        composer: this,
+        getCurrentColumn: (t) => t.id,
+        referencedTable: $db.wordInstances,
+        getReferencedColumn: (t) => t.ayahId,
+        builder: (joinBuilder,
+                {$addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer}) =>
+            $$WordInstancesTableAnnotationComposer(
+              $db: $db,
+              $table: $db.wordInstances,
+              $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+              joinBuilder: joinBuilder,
+              $removeJoinBuilderFromRootComposer:
+                  $removeJoinBuilderFromRootComposer,
+            ));
+    return f(composer);
+  }
 }
 
 class $$AyahsTableTableManager extends RootTableManager<
@@ -2937,7 +5436,8 @@ class $$AyahsTableTableManager extends RootTableManager<
     $$AyahsTableUpdateCompanionBuilder,
     (AyahRow, $$AyahsTableReferences),
     AyahRow,
-    PrefetchHooks Function({bool surahId, bool translationsRefs})> {
+    PrefetchHooks Function(
+        {bool surahId, bool translationsRefs, bool wordInstancesRefs})> {
   $$AyahsTableTableManager(_$AppDatabase db, $AyahsTable table)
       : super(TableManagerState(
           db: db,
@@ -2992,10 +5492,16 @@ class $$AyahsTableTableManager extends RootTableManager<
               .map((e) =>
                   (e.readTable(table), $$AyahsTableReferences(db, table, e)))
               .toList(),
-          prefetchHooksCallback: ({surahId = false, translationsRefs = false}) {
+          prefetchHooksCallback: (
+              {surahId = false,
+              translationsRefs = false,
+              wordInstancesRefs = false}) {
             return PrefetchHooks(
               db: db,
-              explicitlyWatchedTables: [if (translationsRefs) db.translations],
+              explicitlyWatchedTables: [
+                if (translationsRefs) db.translations,
+                if (wordInstancesRefs) db.wordInstances
+              ],
               addJoins: <
                   T extends TableManagerState<
                       dynamic,
@@ -3035,6 +5541,19 @@ class $$AyahsTableTableManager extends RootTableManager<
                         referencedItemsForCurrentItem: (item,
                                 referencedItems) =>
                             referencedItems.where((e) => e.ayahId == item.id),
+                        typedResults: items),
+                  if (wordInstancesRefs)
+                    await $_getPrefetchedData<AyahRow, $AyahsTable,
+                            WordInstanceRow>(
+                        currentTable: table,
+                        referencedTable:
+                            $$AyahsTableReferences._wordInstancesRefsTable(db),
+                        managerFromTypedResult: (p0) =>
+                            $$AyahsTableReferences(db, table, p0)
+                                .wordInstancesRefs,
+                        referencedItemsForCurrentItem: (item,
+                                referencedItems) =>
+                            referencedItems.where((e) => e.ayahId == item.id),
                         typedResults: items)
                 ];
               },
@@ -3054,7 +5573,8 @@ typedef $$AyahsTableProcessedTableManager = ProcessedTableManager<
     $$AyahsTableUpdateCompanionBuilder,
     (AyahRow, $$AyahsTableReferences),
     AyahRow,
-    PrefetchHooks Function({bool surahId, bool translationsRefs})>;
+    PrefetchHooks Function(
+        {bool surahId, bool translationsRefs, bool wordInstancesRefs})>;
 typedef $$TranslationSourcesTableCreateCompanionBuilder
     = TranslationSourcesCompanion Function({
   Value<int> id,
@@ -4093,6 +6613,2787 @@ typedef $$MetaEntriesTableProcessedTableManager = ProcessedTableManager<
     (MetaRow, BaseReferences<_$AppDatabase, $MetaEntriesTable, MetaRow>),
     MetaRow,
     PrefetchHooks Function()>;
+typedef $$RootsTableCreateCompanionBuilder = RootsCompanion Function({
+  Value<int> id,
+  required String radicals,
+  Value<String?> meaningCore,
+});
+typedef $$RootsTableUpdateCompanionBuilder = RootsCompanion Function({
+  Value<int> id,
+  Value<String> radicals,
+  Value<String?> meaningCore,
+});
+
+final class $$RootsTableReferences
+    extends BaseReferences<_$AppDatabase, $RootsTable, RootRow> {
+  $$RootsTableReferences(super.$_db, super.$_table, super.$_typedResult);
+
+  static MultiTypedResultKey<$LemmasTable, List<LemmaRow>> _lemmasRefsTable(
+          _$AppDatabase db) =>
+      MultiTypedResultKey.fromTable(db.lemmas,
+          aliasName: 'roots__id__lemmas__root_id');
+
+  $$LemmasTableProcessedTableManager get lemmasRefs {
+    final manager = $$LemmasTableTableManager($_db, $_db.lemmas)
+        .filter((f) => f.rootId.id.sqlEquals($_itemColumn<int>('id')!));
+
+    final cache = $_typedResult.readTableOrNull(_lemmasRefsTable($_db));
+    return ProcessedTableManager(
+        manager.$state.copyWith(prefetchedData: cache));
+  }
+}
+
+class $$RootsTableFilterComposer extends Composer<_$AppDatabase, $RootsTable> {
+  $$RootsTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<int> get id => $composableBuilder(
+      column: $table.id, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get radicals => $composableBuilder(
+      column: $table.radicals, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get meaningCore => $composableBuilder(
+      column: $table.meaningCore, builder: (column) => ColumnFilters(column));
+
+  Expression<bool> lemmasRefs(
+      Expression<bool> Function($$LemmasTableFilterComposer f) f) {
+    final $$LemmasTableFilterComposer composer = $composerBuilder(
+        composer: this,
+        getCurrentColumn: (t) => t.id,
+        referencedTable: $db.lemmas,
+        getReferencedColumn: (t) => t.rootId,
+        builder: (joinBuilder,
+                {$addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer}) =>
+            $$LemmasTableFilterComposer(
+              $db: $db,
+              $table: $db.lemmas,
+              $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+              joinBuilder: joinBuilder,
+              $removeJoinBuilderFromRootComposer:
+                  $removeJoinBuilderFromRootComposer,
+            ));
+    return f(composer);
+  }
+}
+
+class $$RootsTableOrderingComposer
+    extends Composer<_$AppDatabase, $RootsTable> {
+  $$RootsTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<int> get id => $composableBuilder(
+      column: $table.id, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get radicals => $composableBuilder(
+      column: $table.radicals, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get meaningCore => $composableBuilder(
+      column: $table.meaningCore, builder: (column) => ColumnOrderings(column));
+}
+
+class $$RootsTableAnnotationComposer
+    extends Composer<_$AppDatabase, $RootsTable> {
+  $$RootsTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<int> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get radicals =>
+      $composableBuilder(column: $table.radicals, builder: (column) => column);
+
+  GeneratedColumn<String> get meaningCore => $composableBuilder(
+      column: $table.meaningCore, builder: (column) => column);
+
+  Expression<T> lemmasRefs<T extends Object>(
+      Expression<T> Function($$LemmasTableAnnotationComposer a) f) {
+    final $$LemmasTableAnnotationComposer composer = $composerBuilder(
+        composer: this,
+        getCurrentColumn: (t) => t.id,
+        referencedTable: $db.lemmas,
+        getReferencedColumn: (t) => t.rootId,
+        builder: (joinBuilder,
+                {$addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer}) =>
+            $$LemmasTableAnnotationComposer(
+              $db: $db,
+              $table: $db.lemmas,
+              $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+              joinBuilder: joinBuilder,
+              $removeJoinBuilderFromRootComposer:
+                  $removeJoinBuilderFromRootComposer,
+            ));
+    return f(composer);
+  }
+}
+
+class $$RootsTableTableManager extends RootTableManager<
+    _$AppDatabase,
+    $RootsTable,
+    RootRow,
+    $$RootsTableFilterComposer,
+    $$RootsTableOrderingComposer,
+    $$RootsTableAnnotationComposer,
+    $$RootsTableCreateCompanionBuilder,
+    $$RootsTableUpdateCompanionBuilder,
+    (RootRow, $$RootsTableReferences),
+    RootRow,
+    PrefetchHooks Function({bool lemmasRefs})> {
+  $$RootsTableTableManager(_$AppDatabase db, $RootsTable table)
+      : super(TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$RootsTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$RootsTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$RootsTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback: ({
+            Value<int> id = const Value.absent(),
+            Value<String> radicals = const Value.absent(),
+            Value<String?> meaningCore = const Value.absent(),
+          }) =>
+              RootsCompanion(
+            id: id,
+            radicals: radicals,
+            meaningCore: meaningCore,
+          ),
+          createCompanionCallback: ({
+            Value<int> id = const Value.absent(),
+            required String radicals,
+            Value<String?> meaningCore = const Value.absent(),
+          }) =>
+              RootsCompanion.insert(
+            id: id,
+            radicals: radicals,
+            meaningCore: meaningCore,
+          ),
+          withReferenceMapper: (p0) => p0
+              .map((e) =>
+                  (e.readTable(table), $$RootsTableReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: ({lemmasRefs = false}) {
+            return PrefetchHooks(
+              db: db,
+              explicitlyWatchedTables: [if (lemmasRefs) db.lemmas],
+              addJoins: null,
+              getPrefetchedDataCallback: (items) async {
+                return [
+                  if (lemmasRefs)
+                    await $_getPrefetchedData<RootRow, $RootsTable, LemmaRow>(
+                        currentTable: table,
+                        referencedTable:
+                            $$RootsTableReferences._lemmasRefsTable(db),
+                        managerFromTypedResult: (p0) =>
+                            $$RootsTableReferences(db, table, p0).lemmasRefs,
+                        referencedItemsForCurrentItem: (item,
+                                referencedItems) =>
+                            referencedItems.where((e) => e.rootId == item.id),
+                        typedResults: items)
+                ];
+              },
+            );
+          },
+        ));
+}
+
+typedef $$RootsTableProcessedTableManager = ProcessedTableManager<
+    _$AppDatabase,
+    $RootsTable,
+    RootRow,
+    $$RootsTableFilterComposer,
+    $$RootsTableOrderingComposer,
+    $$RootsTableAnnotationComposer,
+    $$RootsTableCreateCompanionBuilder,
+    $$RootsTableUpdateCompanionBuilder,
+    (RootRow, $$RootsTableReferences),
+    RootRow,
+    PrefetchHooks Function({bool lemmasRefs})>;
+typedef $$LemmasTableCreateCompanionBuilder = LemmasCompanion Function({
+  Value<int> id,
+  required String arabic,
+  Value<String?> transliteration,
+  Value<String?> posTag,
+  Value<String?> meaningVi,
+  Value<String?> meaningEn,
+  Value<String?> explanationVi,
+  Value<int?> rootId,
+  Value<int> occurrenceCount,
+});
+typedef $$LemmasTableUpdateCompanionBuilder = LemmasCompanion Function({
+  Value<int> id,
+  Value<String> arabic,
+  Value<String?> transliteration,
+  Value<String?> posTag,
+  Value<String?> meaningVi,
+  Value<String?> meaningEn,
+  Value<String?> explanationVi,
+  Value<int?> rootId,
+  Value<int> occurrenceCount,
+});
+
+final class $$LemmasTableReferences
+    extends BaseReferences<_$AppDatabase, $LemmasTable, LemmaRow> {
+  $$LemmasTableReferences(super.$_db, super.$_table, super.$_typedResult);
+
+  static $RootsTable _rootIdTable(_$AppDatabase db) =>
+      db.roots.createAlias('lemmas__root_id__roots__id');
+
+  $$RootsTableProcessedTableManager? get rootId {
+    final $_column = $_itemColumn<int>('root_id');
+    if ($_column == null) return null;
+    final manager = $$RootsTableTableManager($_db, $_db.roots)
+        .filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_rootIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+        manager.$state.copyWith(prefetchedData: [item]));
+  }
+
+  static MultiTypedResultKey<$LexemesTable, List<LexemeRow>> _lexemesRefsTable(
+          _$AppDatabase db) =>
+      MultiTypedResultKey.fromTable(db.lexemes,
+          aliasName: 'lemmas__id__lexemes__lemma_id');
+
+  $$LexemesTableProcessedTableManager get lexemesRefs {
+    final manager = $$LexemesTableTableManager($_db, $_db.lexemes)
+        .filter((f) => f.lemmaId.id.sqlEquals($_itemColumn<int>('id')!));
+
+    final cache = $_typedResult.readTableOrNull(_lexemesRefsTable($_db));
+    return ProcessedTableManager(
+        manager.$state.copyWith(prefetchedData: cache));
+  }
+
+  static MultiTypedResultKey<$LexiconRelationsTable, List<LexiconRelationRow>>
+      _relationsAsSourceTable(_$AppDatabase db) =>
+          MultiTypedResultKey.fromTable(db.lexiconRelations,
+              aliasName: 'lemmas__id__lexicon_relations__from_lemma_id');
+
+  $$LexiconRelationsTableProcessedTableManager get relationsAsSource {
+    final manager = $$LexiconRelationsTableTableManager(
+            $_db, $_db.lexiconRelations)
+        .filter((f) => f.fromLemmaId.id.sqlEquals($_itemColumn<int>('id')!));
+
+    final cache = $_typedResult.readTableOrNull(_relationsAsSourceTable($_db));
+    return ProcessedTableManager(
+        manager.$state.copyWith(prefetchedData: cache));
+  }
+
+  static MultiTypedResultKey<$LexiconRelationsTable, List<LexiconRelationRow>>
+      _relationsAsTargetTable(_$AppDatabase db) =>
+          MultiTypedResultKey.fromTable(db.lexiconRelations,
+              aliasName: 'lemmas__id__lexicon_relations__to_lemma_id');
+
+  $$LexiconRelationsTableProcessedTableManager get relationsAsTarget {
+    final manager =
+        $$LexiconRelationsTableTableManager($_db, $_db.lexiconRelations)
+            .filter((f) => f.toLemmaId.id.sqlEquals($_itemColumn<int>('id')!));
+
+    final cache = $_typedResult.readTableOrNull(_relationsAsTargetTable($_db));
+    return ProcessedTableManager(
+        manager.$state.copyWith(prefetchedData: cache));
+  }
+}
+
+class $$LemmasTableFilterComposer
+    extends Composer<_$AppDatabase, $LemmasTable> {
+  $$LemmasTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<int> get id => $composableBuilder(
+      column: $table.id, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get arabic => $composableBuilder(
+      column: $table.arabic, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get transliteration => $composableBuilder(
+      column: $table.transliteration,
+      builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get posTag => $composableBuilder(
+      column: $table.posTag, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get meaningVi => $composableBuilder(
+      column: $table.meaningVi, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get meaningEn => $composableBuilder(
+      column: $table.meaningEn, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get explanationVi => $composableBuilder(
+      column: $table.explanationVi, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<int> get occurrenceCount => $composableBuilder(
+      column: $table.occurrenceCount,
+      builder: (column) => ColumnFilters(column));
+
+  $$RootsTableFilterComposer get rootId {
+    final $$RootsTableFilterComposer composer = $composerBuilder(
+        composer: this,
+        getCurrentColumn: (t) => t.rootId,
+        referencedTable: $db.roots,
+        getReferencedColumn: (t) => t.id,
+        builder: (joinBuilder,
+                {$addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer}) =>
+            $$RootsTableFilterComposer(
+              $db: $db,
+              $table: $db.roots,
+              $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+              joinBuilder: joinBuilder,
+              $removeJoinBuilderFromRootComposer:
+                  $removeJoinBuilderFromRootComposer,
+            ));
+    return composer;
+  }
+
+  Expression<bool> lexemesRefs(
+      Expression<bool> Function($$LexemesTableFilterComposer f) f) {
+    final $$LexemesTableFilterComposer composer = $composerBuilder(
+        composer: this,
+        getCurrentColumn: (t) => t.id,
+        referencedTable: $db.lexemes,
+        getReferencedColumn: (t) => t.lemmaId,
+        builder: (joinBuilder,
+                {$addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer}) =>
+            $$LexemesTableFilterComposer(
+              $db: $db,
+              $table: $db.lexemes,
+              $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+              joinBuilder: joinBuilder,
+              $removeJoinBuilderFromRootComposer:
+                  $removeJoinBuilderFromRootComposer,
+            ));
+    return f(composer);
+  }
+
+  Expression<bool> relationsAsSource(
+      Expression<bool> Function($$LexiconRelationsTableFilterComposer f) f) {
+    final $$LexiconRelationsTableFilterComposer composer = $composerBuilder(
+        composer: this,
+        getCurrentColumn: (t) => t.id,
+        referencedTable: $db.lexiconRelations,
+        getReferencedColumn: (t) => t.fromLemmaId,
+        builder: (joinBuilder,
+                {$addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer}) =>
+            $$LexiconRelationsTableFilterComposer(
+              $db: $db,
+              $table: $db.lexiconRelations,
+              $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+              joinBuilder: joinBuilder,
+              $removeJoinBuilderFromRootComposer:
+                  $removeJoinBuilderFromRootComposer,
+            ));
+    return f(composer);
+  }
+
+  Expression<bool> relationsAsTarget(
+      Expression<bool> Function($$LexiconRelationsTableFilterComposer f) f) {
+    final $$LexiconRelationsTableFilterComposer composer = $composerBuilder(
+        composer: this,
+        getCurrentColumn: (t) => t.id,
+        referencedTable: $db.lexiconRelations,
+        getReferencedColumn: (t) => t.toLemmaId,
+        builder: (joinBuilder,
+                {$addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer}) =>
+            $$LexiconRelationsTableFilterComposer(
+              $db: $db,
+              $table: $db.lexiconRelations,
+              $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+              joinBuilder: joinBuilder,
+              $removeJoinBuilderFromRootComposer:
+                  $removeJoinBuilderFromRootComposer,
+            ));
+    return f(composer);
+  }
+}
+
+class $$LemmasTableOrderingComposer
+    extends Composer<_$AppDatabase, $LemmasTable> {
+  $$LemmasTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<int> get id => $composableBuilder(
+      column: $table.id, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get arabic => $composableBuilder(
+      column: $table.arabic, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get transliteration => $composableBuilder(
+      column: $table.transliteration,
+      builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get posTag => $composableBuilder(
+      column: $table.posTag, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get meaningVi => $composableBuilder(
+      column: $table.meaningVi, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get meaningEn => $composableBuilder(
+      column: $table.meaningEn, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get explanationVi => $composableBuilder(
+      column: $table.explanationVi,
+      builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<int> get occurrenceCount => $composableBuilder(
+      column: $table.occurrenceCount,
+      builder: (column) => ColumnOrderings(column));
+
+  $$RootsTableOrderingComposer get rootId {
+    final $$RootsTableOrderingComposer composer = $composerBuilder(
+        composer: this,
+        getCurrentColumn: (t) => t.rootId,
+        referencedTable: $db.roots,
+        getReferencedColumn: (t) => t.id,
+        builder: (joinBuilder,
+                {$addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer}) =>
+            $$RootsTableOrderingComposer(
+              $db: $db,
+              $table: $db.roots,
+              $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+              joinBuilder: joinBuilder,
+              $removeJoinBuilderFromRootComposer:
+                  $removeJoinBuilderFromRootComposer,
+            ));
+    return composer;
+  }
+}
+
+class $$LemmasTableAnnotationComposer
+    extends Composer<_$AppDatabase, $LemmasTable> {
+  $$LemmasTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<int> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get arabic =>
+      $composableBuilder(column: $table.arabic, builder: (column) => column);
+
+  GeneratedColumn<String> get transliteration => $composableBuilder(
+      column: $table.transliteration, builder: (column) => column);
+
+  GeneratedColumn<String> get posTag =>
+      $composableBuilder(column: $table.posTag, builder: (column) => column);
+
+  GeneratedColumn<String> get meaningVi =>
+      $composableBuilder(column: $table.meaningVi, builder: (column) => column);
+
+  GeneratedColumn<String> get meaningEn =>
+      $composableBuilder(column: $table.meaningEn, builder: (column) => column);
+
+  GeneratedColumn<String> get explanationVi => $composableBuilder(
+      column: $table.explanationVi, builder: (column) => column);
+
+  GeneratedColumn<int> get occurrenceCount => $composableBuilder(
+      column: $table.occurrenceCount, builder: (column) => column);
+
+  $$RootsTableAnnotationComposer get rootId {
+    final $$RootsTableAnnotationComposer composer = $composerBuilder(
+        composer: this,
+        getCurrentColumn: (t) => t.rootId,
+        referencedTable: $db.roots,
+        getReferencedColumn: (t) => t.id,
+        builder: (joinBuilder,
+                {$addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer}) =>
+            $$RootsTableAnnotationComposer(
+              $db: $db,
+              $table: $db.roots,
+              $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+              joinBuilder: joinBuilder,
+              $removeJoinBuilderFromRootComposer:
+                  $removeJoinBuilderFromRootComposer,
+            ));
+    return composer;
+  }
+
+  Expression<T> lexemesRefs<T extends Object>(
+      Expression<T> Function($$LexemesTableAnnotationComposer a) f) {
+    final $$LexemesTableAnnotationComposer composer = $composerBuilder(
+        composer: this,
+        getCurrentColumn: (t) => t.id,
+        referencedTable: $db.lexemes,
+        getReferencedColumn: (t) => t.lemmaId,
+        builder: (joinBuilder,
+                {$addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer}) =>
+            $$LexemesTableAnnotationComposer(
+              $db: $db,
+              $table: $db.lexemes,
+              $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+              joinBuilder: joinBuilder,
+              $removeJoinBuilderFromRootComposer:
+                  $removeJoinBuilderFromRootComposer,
+            ));
+    return f(composer);
+  }
+
+  Expression<T> relationsAsSource<T extends Object>(
+      Expression<T> Function($$LexiconRelationsTableAnnotationComposer a) f) {
+    final $$LexiconRelationsTableAnnotationComposer composer = $composerBuilder(
+        composer: this,
+        getCurrentColumn: (t) => t.id,
+        referencedTable: $db.lexiconRelations,
+        getReferencedColumn: (t) => t.fromLemmaId,
+        builder: (joinBuilder,
+                {$addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer}) =>
+            $$LexiconRelationsTableAnnotationComposer(
+              $db: $db,
+              $table: $db.lexiconRelations,
+              $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+              joinBuilder: joinBuilder,
+              $removeJoinBuilderFromRootComposer:
+                  $removeJoinBuilderFromRootComposer,
+            ));
+    return f(composer);
+  }
+
+  Expression<T> relationsAsTarget<T extends Object>(
+      Expression<T> Function($$LexiconRelationsTableAnnotationComposer a) f) {
+    final $$LexiconRelationsTableAnnotationComposer composer = $composerBuilder(
+        composer: this,
+        getCurrentColumn: (t) => t.id,
+        referencedTable: $db.lexiconRelations,
+        getReferencedColumn: (t) => t.toLemmaId,
+        builder: (joinBuilder,
+                {$addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer}) =>
+            $$LexiconRelationsTableAnnotationComposer(
+              $db: $db,
+              $table: $db.lexiconRelations,
+              $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+              joinBuilder: joinBuilder,
+              $removeJoinBuilderFromRootComposer:
+                  $removeJoinBuilderFromRootComposer,
+            ));
+    return f(composer);
+  }
+}
+
+class $$LemmasTableTableManager extends RootTableManager<
+    _$AppDatabase,
+    $LemmasTable,
+    LemmaRow,
+    $$LemmasTableFilterComposer,
+    $$LemmasTableOrderingComposer,
+    $$LemmasTableAnnotationComposer,
+    $$LemmasTableCreateCompanionBuilder,
+    $$LemmasTableUpdateCompanionBuilder,
+    (LemmaRow, $$LemmasTableReferences),
+    LemmaRow,
+    PrefetchHooks Function(
+        {bool rootId,
+        bool lexemesRefs,
+        bool relationsAsSource,
+        bool relationsAsTarget})> {
+  $$LemmasTableTableManager(_$AppDatabase db, $LemmasTable table)
+      : super(TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$LemmasTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$LemmasTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$LemmasTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback: ({
+            Value<int> id = const Value.absent(),
+            Value<String> arabic = const Value.absent(),
+            Value<String?> transliteration = const Value.absent(),
+            Value<String?> posTag = const Value.absent(),
+            Value<String?> meaningVi = const Value.absent(),
+            Value<String?> meaningEn = const Value.absent(),
+            Value<String?> explanationVi = const Value.absent(),
+            Value<int?> rootId = const Value.absent(),
+            Value<int> occurrenceCount = const Value.absent(),
+          }) =>
+              LemmasCompanion(
+            id: id,
+            arabic: arabic,
+            transliteration: transliteration,
+            posTag: posTag,
+            meaningVi: meaningVi,
+            meaningEn: meaningEn,
+            explanationVi: explanationVi,
+            rootId: rootId,
+            occurrenceCount: occurrenceCount,
+          ),
+          createCompanionCallback: ({
+            Value<int> id = const Value.absent(),
+            required String arabic,
+            Value<String?> transliteration = const Value.absent(),
+            Value<String?> posTag = const Value.absent(),
+            Value<String?> meaningVi = const Value.absent(),
+            Value<String?> meaningEn = const Value.absent(),
+            Value<String?> explanationVi = const Value.absent(),
+            Value<int?> rootId = const Value.absent(),
+            Value<int> occurrenceCount = const Value.absent(),
+          }) =>
+              LemmasCompanion.insert(
+            id: id,
+            arabic: arabic,
+            transliteration: transliteration,
+            posTag: posTag,
+            meaningVi: meaningVi,
+            meaningEn: meaningEn,
+            explanationVi: explanationVi,
+            rootId: rootId,
+            occurrenceCount: occurrenceCount,
+          ),
+          withReferenceMapper: (p0) => p0
+              .map((e) =>
+                  (e.readTable(table), $$LemmasTableReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: (
+              {rootId = false,
+              lexemesRefs = false,
+              relationsAsSource = false,
+              relationsAsTarget = false}) {
+            return PrefetchHooks(
+              db: db,
+              explicitlyWatchedTables: [
+                if (lexemesRefs) db.lexemes,
+                if (relationsAsSource) db.lexiconRelations,
+                if (relationsAsTarget) db.lexiconRelations
+              ],
+              addJoins: <
+                  T extends TableManagerState<
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic>>(state) {
+                if (rootId) {
+                  state = state.withJoin(
+                    currentTable: table,
+                    currentColumn: table.rootId,
+                    referencedTable: $$LemmasTableReferences._rootIdTable(db),
+                    referencedColumn:
+                        $$LemmasTableReferences._rootIdTable(db).id,
+                  ) as T;
+                }
+
+                return state;
+              },
+              getPrefetchedDataCallback: (items) async {
+                return [
+                  if (lexemesRefs)
+                    await $_getPrefetchedData<LemmaRow, $LemmasTable,
+                            LexemeRow>(
+                        currentTable: table,
+                        referencedTable:
+                            $$LemmasTableReferences._lexemesRefsTable(db),
+                        managerFromTypedResult: (p0) =>
+                            $$LemmasTableReferences(db, table, p0).lexemesRefs,
+                        referencedItemsForCurrentItem: (item,
+                                referencedItems) =>
+                            referencedItems.where((e) => e.lemmaId == item.id),
+                        typedResults: items),
+                  if (relationsAsSource)
+                    await $_getPrefetchedData<LemmaRow, $LemmasTable,
+                            LexiconRelationRow>(
+                        currentTable: table,
+                        referencedTable:
+                            $$LemmasTableReferences._relationsAsSourceTable(db),
+                        managerFromTypedResult: (p0) =>
+                            $$LemmasTableReferences(db, table, p0)
+                                .relationsAsSource,
+                        referencedItemsForCurrentItem:
+                            (item, referencedItems) => referencedItems
+                                .where((e) => e.fromLemmaId == item.id),
+                        typedResults: items),
+                  if (relationsAsTarget)
+                    await $_getPrefetchedData<LemmaRow, $LemmasTable,
+                            LexiconRelationRow>(
+                        currentTable: table,
+                        referencedTable:
+                            $$LemmasTableReferences._relationsAsTargetTable(db),
+                        managerFromTypedResult: (p0) =>
+                            $$LemmasTableReferences(db, table, p0)
+                                .relationsAsTarget,
+                        referencedItemsForCurrentItem:
+                            (item, referencedItems) => referencedItems
+                                .where((e) => e.toLemmaId == item.id),
+                        typedResults: items)
+                ];
+              },
+            );
+          },
+        ));
+}
+
+typedef $$LemmasTableProcessedTableManager = ProcessedTableManager<
+    _$AppDatabase,
+    $LemmasTable,
+    LemmaRow,
+    $$LemmasTableFilterComposer,
+    $$LemmasTableOrderingComposer,
+    $$LemmasTableAnnotationComposer,
+    $$LemmasTableCreateCompanionBuilder,
+    $$LemmasTableUpdateCompanionBuilder,
+    (LemmaRow, $$LemmasTableReferences),
+    LemmaRow,
+    PrefetchHooks Function(
+        {bool rootId,
+        bool lexemesRefs,
+        bool relationsAsSource,
+        bool relationsAsTarget})>;
+typedef $$LexemesTableCreateCompanionBuilder = LexemesCompanion Function({
+  Value<int> id,
+  required int lemmaId,
+  Value<String?> formPattern,
+  Value<String?> partOfSpeechDetail,
+});
+typedef $$LexemesTableUpdateCompanionBuilder = LexemesCompanion Function({
+  Value<int> id,
+  Value<int> lemmaId,
+  Value<String?> formPattern,
+  Value<String?> partOfSpeechDetail,
+});
+
+final class $$LexemesTableReferences
+    extends BaseReferences<_$AppDatabase, $LexemesTable, LexemeRow> {
+  $$LexemesTableReferences(super.$_db, super.$_table, super.$_typedResult);
+
+  static $LemmasTable _lemmaIdTable(_$AppDatabase db) =>
+      db.lemmas.createAlias('lexemes__lemma_id__lemmas__id');
+
+  $$LemmasTableProcessedTableManager get lemmaId {
+    final $_column = $_itemColumn<int>('lemma_id')!;
+
+    final manager = $$LemmasTableTableManager($_db, $_db.lemmas)
+        .filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_lemmaIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+        manager.$state.copyWith(prefetchedData: [item]));
+  }
+
+  static MultiTypedResultKey<$WordInstancesTable, List<WordInstanceRow>>
+      _wordInstancesRefsTable(_$AppDatabase db) =>
+          MultiTypedResultKey.fromTable(db.wordInstances,
+              aliasName: 'lexemes__id__word_instances__lexeme_id');
+
+  $$WordInstancesTableProcessedTableManager get wordInstancesRefs {
+    final manager = $$WordInstancesTableTableManager($_db, $_db.wordInstances)
+        .filter((f) => f.lexemeId.id.sqlEquals($_itemColumn<int>('id')!));
+
+    final cache = $_typedResult.readTableOrNull(_wordInstancesRefsTable($_db));
+    return ProcessedTableManager(
+        manager.$state.copyWith(prefetchedData: cache));
+  }
+}
+
+class $$LexemesTableFilterComposer
+    extends Composer<_$AppDatabase, $LexemesTable> {
+  $$LexemesTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<int> get id => $composableBuilder(
+      column: $table.id, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get formPattern => $composableBuilder(
+      column: $table.formPattern, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get partOfSpeechDetail => $composableBuilder(
+      column: $table.partOfSpeechDetail,
+      builder: (column) => ColumnFilters(column));
+
+  $$LemmasTableFilterComposer get lemmaId {
+    final $$LemmasTableFilterComposer composer = $composerBuilder(
+        composer: this,
+        getCurrentColumn: (t) => t.lemmaId,
+        referencedTable: $db.lemmas,
+        getReferencedColumn: (t) => t.id,
+        builder: (joinBuilder,
+                {$addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer}) =>
+            $$LemmasTableFilterComposer(
+              $db: $db,
+              $table: $db.lemmas,
+              $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+              joinBuilder: joinBuilder,
+              $removeJoinBuilderFromRootComposer:
+                  $removeJoinBuilderFromRootComposer,
+            ));
+    return composer;
+  }
+
+  Expression<bool> wordInstancesRefs(
+      Expression<bool> Function($$WordInstancesTableFilterComposer f) f) {
+    final $$WordInstancesTableFilterComposer composer = $composerBuilder(
+        composer: this,
+        getCurrentColumn: (t) => t.id,
+        referencedTable: $db.wordInstances,
+        getReferencedColumn: (t) => t.lexemeId,
+        builder: (joinBuilder,
+                {$addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer}) =>
+            $$WordInstancesTableFilterComposer(
+              $db: $db,
+              $table: $db.wordInstances,
+              $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+              joinBuilder: joinBuilder,
+              $removeJoinBuilderFromRootComposer:
+                  $removeJoinBuilderFromRootComposer,
+            ));
+    return f(composer);
+  }
+}
+
+class $$LexemesTableOrderingComposer
+    extends Composer<_$AppDatabase, $LexemesTable> {
+  $$LexemesTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<int> get id => $composableBuilder(
+      column: $table.id, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get formPattern => $composableBuilder(
+      column: $table.formPattern, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get partOfSpeechDetail => $composableBuilder(
+      column: $table.partOfSpeechDetail,
+      builder: (column) => ColumnOrderings(column));
+
+  $$LemmasTableOrderingComposer get lemmaId {
+    final $$LemmasTableOrderingComposer composer = $composerBuilder(
+        composer: this,
+        getCurrentColumn: (t) => t.lemmaId,
+        referencedTable: $db.lemmas,
+        getReferencedColumn: (t) => t.id,
+        builder: (joinBuilder,
+                {$addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer}) =>
+            $$LemmasTableOrderingComposer(
+              $db: $db,
+              $table: $db.lemmas,
+              $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+              joinBuilder: joinBuilder,
+              $removeJoinBuilderFromRootComposer:
+                  $removeJoinBuilderFromRootComposer,
+            ));
+    return composer;
+  }
+}
+
+class $$LexemesTableAnnotationComposer
+    extends Composer<_$AppDatabase, $LexemesTable> {
+  $$LexemesTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<int> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get formPattern => $composableBuilder(
+      column: $table.formPattern, builder: (column) => column);
+
+  GeneratedColumn<String> get partOfSpeechDetail => $composableBuilder(
+      column: $table.partOfSpeechDetail, builder: (column) => column);
+
+  $$LemmasTableAnnotationComposer get lemmaId {
+    final $$LemmasTableAnnotationComposer composer = $composerBuilder(
+        composer: this,
+        getCurrentColumn: (t) => t.lemmaId,
+        referencedTable: $db.lemmas,
+        getReferencedColumn: (t) => t.id,
+        builder: (joinBuilder,
+                {$addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer}) =>
+            $$LemmasTableAnnotationComposer(
+              $db: $db,
+              $table: $db.lemmas,
+              $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+              joinBuilder: joinBuilder,
+              $removeJoinBuilderFromRootComposer:
+                  $removeJoinBuilderFromRootComposer,
+            ));
+    return composer;
+  }
+
+  Expression<T> wordInstancesRefs<T extends Object>(
+      Expression<T> Function($$WordInstancesTableAnnotationComposer a) f) {
+    final $$WordInstancesTableAnnotationComposer composer = $composerBuilder(
+        composer: this,
+        getCurrentColumn: (t) => t.id,
+        referencedTable: $db.wordInstances,
+        getReferencedColumn: (t) => t.lexemeId,
+        builder: (joinBuilder,
+                {$addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer}) =>
+            $$WordInstancesTableAnnotationComposer(
+              $db: $db,
+              $table: $db.wordInstances,
+              $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+              joinBuilder: joinBuilder,
+              $removeJoinBuilderFromRootComposer:
+                  $removeJoinBuilderFromRootComposer,
+            ));
+    return f(composer);
+  }
+}
+
+class $$LexemesTableTableManager extends RootTableManager<
+    _$AppDatabase,
+    $LexemesTable,
+    LexemeRow,
+    $$LexemesTableFilterComposer,
+    $$LexemesTableOrderingComposer,
+    $$LexemesTableAnnotationComposer,
+    $$LexemesTableCreateCompanionBuilder,
+    $$LexemesTableUpdateCompanionBuilder,
+    (LexemeRow, $$LexemesTableReferences),
+    LexemeRow,
+    PrefetchHooks Function({bool lemmaId, bool wordInstancesRefs})> {
+  $$LexemesTableTableManager(_$AppDatabase db, $LexemesTable table)
+      : super(TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$LexemesTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$LexemesTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$LexemesTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback: ({
+            Value<int> id = const Value.absent(),
+            Value<int> lemmaId = const Value.absent(),
+            Value<String?> formPattern = const Value.absent(),
+            Value<String?> partOfSpeechDetail = const Value.absent(),
+          }) =>
+              LexemesCompanion(
+            id: id,
+            lemmaId: lemmaId,
+            formPattern: formPattern,
+            partOfSpeechDetail: partOfSpeechDetail,
+          ),
+          createCompanionCallback: ({
+            Value<int> id = const Value.absent(),
+            required int lemmaId,
+            Value<String?> formPattern = const Value.absent(),
+            Value<String?> partOfSpeechDetail = const Value.absent(),
+          }) =>
+              LexemesCompanion.insert(
+            id: id,
+            lemmaId: lemmaId,
+            formPattern: formPattern,
+            partOfSpeechDetail: partOfSpeechDetail,
+          ),
+          withReferenceMapper: (p0) => p0
+              .map((e) =>
+                  (e.readTable(table), $$LexemesTableReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: (
+              {lemmaId = false, wordInstancesRefs = false}) {
+            return PrefetchHooks(
+              db: db,
+              explicitlyWatchedTables: [
+                if (wordInstancesRefs) db.wordInstances
+              ],
+              addJoins: <
+                  T extends TableManagerState<
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic>>(state) {
+                if (lemmaId) {
+                  state = state.withJoin(
+                    currentTable: table,
+                    currentColumn: table.lemmaId,
+                    referencedTable: $$LexemesTableReferences._lemmaIdTable(db),
+                    referencedColumn:
+                        $$LexemesTableReferences._lemmaIdTable(db).id,
+                  ) as T;
+                }
+
+                return state;
+              },
+              getPrefetchedDataCallback: (items) async {
+                return [
+                  if (wordInstancesRefs)
+                    await $_getPrefetchedData<LexemeRow, $LexemesTable,
+                            WordInstanceRow>(
+                        currentTable: table,
+                        referencedTable: $$LexemesTableReferences
+                            ._wordInstancesRefsTable(db),
+                        managerFromTypedResult: (p0) =>
+                            $$LexemesTableReferences(db, table, p0)
+                                .wordInstancesRefs,
+                        referencedItemsForCurrentItem: (item,
+                                referencedItems) =>
+                            referencedItems.where((e) => e.lexemeId == item.id),
+                        typedResults: items)
+                ];
+              },
+            );
+          },
+        ));
+}
+
+typedef $$LexemesTableProcessedTableManager = ProcessedTableManager<
+    _$AppDatabase,
+    $LexemesTable,
+    LexemeRow,
+    $$LexemesTableFilterComposer,
+    $$LexemesTableOrderingComposer,
+    $$LexemesTableAnnotationComposer,
+    $$LexemesTableCreateCompanionBuilder,
+    $$LexemesTableUpdateCompanionBuilder,
+    (LexemeRow, $$LexemesTableReferences),
+    LexemeRow,
+    PrefetchHooks Function({bool lemmaId, bool wordInstancesRefs})>;
+typedef $$WordInstancesTableCreateCompanionBuilder = WordInstancesCompanion
+    Function({
+  Value<int> id,
+  required int ayahId,
+  required int lexemeId,
+  required int position,
+  required String arabicForm,
+  Value<String?> transliteration,
+});
+typedef $$WordInstancesTableUpdateCompanionBuilder = WordInstancesCompanion
+    Function({
+  Value<int> id,
+  Value<int> ayahId,
+  Value<int> lexemeId,
+  Value<int> position,
+  Value<String> arabicForm,
+  Value<String?> transliteration,
+});
+
+final class $$WordInstancesTableReferences extends BaseReferences<_$AppDatabase,
+    $WordInstancesTable, WordInstanceRow> {
+  $$WordInstancesTableReferences(
+      super.$_db, super.$_table, super.$_typedResult);
+
+  static $AyahsTable _ayahIdTable(_$AppDatabase db) =>
+      db.ayahs.createAlias('word_instances__ayah_id__ayahs__id');
+
+  $$AyahsTableProcessedTableManager get ayahId {
+    final $_column = $_itemColumn<int>('ayah_id')!;
+
+    final manager = $$AyahsTableTableManager($_db, $_db.ayahs)
+        .filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_ayahIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+        manager.$state.copyWith(prefetchedData: [item]));
+  }
+
+  static $LexemesTable _lexemeIdTable(_$AppDatabase db) =>
+      db.lexemes.createAlias('word_instances__lexeme_id__lexemes__id');
+
+  $$LexemesTableProcessedTableManager get lexemeId {
+    final $_column = $_itemColumn<int>('lexeme_id')!;
+
+    final manager = $$LexemesTableTableManager($_db, $_db.lexemes)
+        .filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_lexemeIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+        manager.$state.copyWith(prefetchedData: [item]));
+  }
+
+  static MultiTypedResultKey<$GrammarFeaturesTable, List<GrammarFeatureRow>>
+      _grammarFeaturesRefsTable(_$AppDatabase db) =>
+          MultiTypedResultKey.fromTable(db.grammarFeatures,
+              aliasName:
+                  'word_instances__id__grammar_features__word_instance_id');
+
+  $$GrammarFeaturesTableProcessedTableManager get grammarFeaturesRefs {
+    final manager = $$GrammarFeaturesTableTableManager(
+            $_db, $_db.grammarFeatures)
+        .filter((f) => f.wordInstanceId.id.sqlEquals($_itemColumn<int>('id')!));
+
+    final cache =
+        $_typedResult.readTableOrNull(_grammarFeaturesRefsTable($_db));
+    return ProcessedTableManager(
+        manager.$state.copyWith(prefetchedData: cache));
+  }
+
+  static MultiTypedResultKey<$PhraseWordInstancesTable,
+      List<PhraseWordInstanceRow>> _phraseWordInstancesRefsTable(
+          _$AppDatabase db) =>
+      MultiTypedResultKey.fromTable(db.phraseWordInstances,
+          aliasName:
+              'word_instances__id__phrase_word_instances__word_instance_id');
+
+  $$PhraseWordInstancesTableProcessedTableManager get phraseWordInstancesRefs {
+    final manager = $$PhraseWordInstancesTableTableManager(
+            $_db, $_db.phraseWordInstances)
+        .filter((f) => f.wordInstanceId.id.sqlEquals($_itemColumn<int>('id')!));
+
+    final cache =
+        $_typedResult.readTableOrNull(_phraseWordInstancesRefsTable($_db));
+    return ProcessedTableManager(
+        manager.$state.copyWith(prefetchedData: cache));
+  }
+}
+
+class $$WordInstancesTableFilterComposer
+    extends Composer<_$AppDatabase, $WordInstancesTable> {
+  $$WordInstancesTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<int> get id => $composableBuilder(
+      column: $table.id, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<int> get position => $composableBuilder(
+      column: $table.position, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get arabicForm => $composableBuilder(
+      column: $table.arabicForm, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get transliteration => $composableBuilder(
+      column: $table.transliteration,
+      builder: (column) => ColumnFilters(column));
+
+  $$AyahsTableFilterComposer get ayahId {
+    final $$AyahsTableFilterComposer composer = $composerBuilder(
+        composer: this,
+        getCurrentColumn: (t) => t.ayahId,
+        referencedTable: $db.ayahs,
+        getReferencedColumn: (t) => t.id,
+        builder: (joinBuilder,
+                {$addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer}) =>
+            $$AyahsTableFilterComposer(
+              $db: $db,
+              $table: $db.ayahs,
+              $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+              joinBuilder: joinBuilder,
+              $removeJoinBuilderFromRootComposer:
+                  $removeJoinBuilderFromRootComposer,
+            ));
+    return composer;
+  }
+
+  $$LexemesTableFilterComposer get lexemeId {
+    final $$LexemesTableFilterComposer composer = $composerBuilder(
+        composer: this,
+        getCurrentColumn: (t) => t.lexemeId,
+        referencedTable: $db.lexemes,
+        getReferencedColumn: (t) => t.id,
+        builder: (joinBuilder,
+                {$addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer}) =>
+            $$LexemesTableFilterComposer(
+              $db: $db,
+              $table: $db.lexemes,
+              $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+              joinBuilder: joinBuilder,
+              $removeJoinBuilderFromRootComposer:
+                  $removeJoinBuilderFromRootComposer,
+            ));
+    return composer;
+  }
+
+  Expression<bool> grammarFeaturesRefs(
+      Expression<bool> Function($$GrammarFeaturesTableFilterComposer f) f) {
+    final $$GrammarFeaturesTableFilterComposer composer = $composerBuilder(
+        composer: this,
+        getCurrentColumn: (t) => t.id,
+        referencedTable: $db.grammarFeatures,
+        getReferencedColumn: (t) => t.wordInstanceId,
+        builder: (joinBuilder,
+                {$addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer}) =>
+            $$GrammarFeaturesTableFilterComposer(
+              $db: $db,
+              $table: $db.grammarFeatures,
+              $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+              joinBuilder: joinBuilder,
+              $removeJoinBuilderFromRootComposer:
+                  $removeJoinBuilderFromRootComposer,
+            ));
+    return f(composer);
+  }
+
+  Expression<bool> phraseWordInstancesRefs(
+      Expression<bool> Function($$PhraseWordInstancesTableFilterComposer f) f) {
+    final $$PhraseWordInstancesTableFilterComposer composer = $composerBuilder(
+        composer: this,
+        getCurrentColumn: (t) => t.id,
+        referencedTable: $db.phraseWordInstances,
+        getReferencedColumn: (t) => t.wordInstanceId,
+        builder: (joinBuilder,
+                {$addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer}) =>
+            $$PhraseWordInstancesTableFilterComposer(
+              $db: $db,
+              $table: $db.phraseWordInstances,
+              $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+              joinBuilder: joinBuilder,
+              $removeJoinBuilderFromRootComposer:
+                  $removeJoinBuilderFromRootComposer,
+            ));
+    return f(composer);
+  }
+}
+
+class $$WordInstancesTableOrderingComposer
+    extends Composer<_$AppDatabase, $WordInstancesTable> {
+  $$WordInstancesTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<int> get id => $composableBuilder(
+      column: $table.id, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<int> get position => $composableBuilder(
+      column: $table.position, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get arabicForm => $composableBuilder(
+      column: $table.arabicForm, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get transliteration => $composableBuilder(
+      column: $table.transliteration,
+      builder: (column) => ColumnOrderings(column));
+
+  $$AyahsTableOrderingComposer get ayahId {
+    final $$AyahsTableOrderingComposer composer = $composerBuilder(
+        composer: this,
+        getCurrentColumn: (t) => t.ayahId,
+        referencedTable: $db.ayahs,
+        getReferencedColumn: (t) => t.id,
+        builder: (joinBuilder,
+                {$addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer}) =>
+            $$AyahsTableOrderingComposer(
+              $db: $db,
+              $table: $db.ayahs,
+              $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+              joinBuilder: joinBuilder,
+              $removeJoinBuilderFromRootComposer:
+                  $removeJoinBuilderFromRootComposer,
+            ));
+    return composer;
+  }
+
+  $$LexemesTableOrderingComposer get lexemeId {
+    final $$LexemesTableOrderingComposer composer = $composerBuilder(
+        composer: this,
+        getCurrentColumn: (t) => t.lexemeId,
+        referencedTable: $db.lexemes,
+        getReferencedColumn: (t) => t.id,
+        builder: (joinBuilder,
+                {$addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer}) =>
+            $$LexemesTableOrderingComposer(
+              $db: $db,
+              $table: $db.lexemes,
+              $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+              joinBuilder: joinBuilder,
+              $removeJoinBuilderFromRootComposer:
+                  $removeJoinBuilderFromRootComposer,
+            ));
+    return composer;
+  }
+}
+
+class $$WordInstancesTableAnnotationComposer
+    extends Composer<_$AppDatabase, $WordInstancesTable> {
+  $$WordInstancesTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<int> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<int> get position =>
+      $composableBuilder(column: $table.position, builder: (column) => column);
+
+  GeneratedColumn<String> get arabicForm => $composableBuilder(
+      column: $table.arabicForm, builder: (column) => column);
+
+  GeneratedColumn<String> get transliteration => $composableBuilder(
+      column: $table.transliteration, builder: (column) => column);
+
+  $$AyahsTableAnnotationComposer get ayahId {
+    final $$AyahsTableAnnotationComposer composer = $composerBuilder(
+        composer: this,
+        getCurrentColumn: (t) => t.ayahId,
+        referencedTable: $db.ayahs,
+        getReferencedColumn: (t) => t.id,
+        builder: (joinBuilder,
+                {$addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer}) =>
+            $$AyahsTableAnnotationComposer(
+              $db: $db,
+              $table: $db.ayahs,
+              $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+              joinBuilder: joinBuilder,
+              $removeJoinBuilderFromRootComposer:
+                  $removeJoinBuilderFromRootComposer,
+            ));
+    return composer;
+  }
+
+  $$LexemesTableAnnotationComposer get lexemeId {
+    final $$LexemesTableAnnotationComposer composer = $composerBuilder(
+        composer: this,
+        getCurrentColumn: (t) => t.lexemeId,
+        referencedTable: $db.lexemes,
+        getReferencedColumn: (t) => t.id,
+        builder: (joinBuilder,
+                {$addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer}) =>
+            $$LexemesTableAnnotationComposer(
+              $db: $db,
+              $table: $db.lexemes,
+              $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+              joinBuilder: joinBuilder,
+              $removeJoinBuilderFromRootComposer:
+                  $removeJoinBuilderFromRootComposer,
+            ));
+    return composer;
+  }
+
+  Expression<T> grammarFeaturesRefs<T extends Object>(
+      Expression<T> Function($$GrammarFeaturesTableAnnotationComposer a) f) {
+    final $$GrammarFeaturesTableAnnotationComposer composer = $composerBuilder(
+        composer: this,
+        getCurrentColumn: (t) => t.id,
+        referencedTable: $db.grammarFeatures,
+        getReferencedColumn: (t) => t.wordInstanceId,
+        builder: (joinBuilder,
+                {$addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer}) =>
+            $$GrammarFeaturesTableAnnotationComposer(
+              $db: $db,
+              $table: $db.grammarFeatures,
+              $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+              joinBuilder: joinBuilder,
+              $removeJoinBuilderFromRootComposer:
+                  $removeJoinBuilderFromRootComposer,
+            ));
+    return f(composer);
+  }
+
+  Expression<T> phraseWordInstancesRefs<T extends Object>(
+      Expression<T> Function($$PhraseWordInstancesTableAnnotationComposer a)
+          f) {
+    final $$PhraseWordInstancesTableAnnotationComposer composer =
+        $composerBuilder(
+            composer: this,
+            getCurrentColumn: (t) => t.id,
+            referencedTable: $db.phraseWordInstances,
+            getReferencedColumn: (t) => t.wordInstanceId,
+            builder: (joinBuilder,
+                    {$addJoinBuilderToRootComposer,
+                    $removeJoinBuilderFromRootComposer}) =>
+                $$PhraseWordInstancesTableAnnotationComposer(
+                  $db: $db,
+                  $table: $db.phraseWordInstances,
+                  $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+                  joinBuilder: joinBuilder,
+                  $removeJoinBuilderFromRootComposer:
+                      $removeJoinBuilderFromRootComposer,
+                ));
+    return f(composer);
+  }
+}
+
+class $$WordInstancesTableTableManager extends RootTableManager<
+    _$AppDatabase,
+    $WordInstancesTable,
+    WordInstanceRow,
+    $$WordInstancesTableFilterComposer,
+    $$WordInstancesTableOrderingComposer,
+    $$WordInstancesTableAnnotationComposer,
+    $$WordInstancesTableCreateCompanionBuilder,
+    $$WordInstancesTableUpdateCompanionBuilder,
+    (WordInstanceRow, $$WordInstancesTableReferences),
+    WordInstanceRow,
+    PrefetchHooks Function(
+        {bool ayahId,
+        bool lexemeId,
+        bool grammarFeaturesRefs,
+        bool phraseWordInstancesRefs})> {
+  $$WordInstancesTableTableManager(_$AppDatabase db, $WordInstancesTable table)
+      : super(TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$WordInstancesTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$WordInstancesTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$WordInstancesTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback: ({
+            Value<int> id = const Value.absent(),
+            Value<int> ayahId = const Value.absent(),
+            Value<int> lexemeId = const Value.absent(),
+            Value<int> position = const Value.absent(),
+            Value<String> arabicForm = const Value.absent(),
+            Value<String?> transliteration = const Value.absent(),
+          }) =>
+              WordInstancesCompanion(
+            id: id,
+            ayahId: ayahId,
+            lexemeId: lexemeId,
+            position: position,
+            arabicForm: arabicForm,
+            transliteration: transliteration,
+          ),
+          createCompanionCallback: ({
+            Value<int> id = const Value.absent(),
+            required int ayahId,
+            required int lexemeId,
+            required int position,
+            required String arabicForm,
+            Value<String?> transliteration = const Value.absent(),
+          }) =>
+              WordInstancesCompanion.insert(
+            id: id,
+            ayahId: ayahId,
+            lexemeId: lexemeId,
+            position: position,
+            arabicForm: arabicForm,
+            transliteration: transliteration,
+          ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (
+                    e.readTable(table),
+                    $$WordInstancesTableReferences(db, table, e)
+                  ))
+              .toList(),
+          prefetchHooksCallback: (
+              {ayahId = false,
+              lexemeId = false,
+              grammarFeaturesRefs = false,
+              phraseWordInstancesRefs = false}) {
+            return PrefetchHooks(
+              db: db,
+              explicitlyWatchedTables: [
+                if (grammarFeaturesRefs) db.grammarFeatures,
+                if (phraseWordInstancesRefs) db.phraseWordInstances
+              ],
+              addJoins: <
+                  T extends TableManagerState<
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic>>(state) {
+                if (ayahId) {
+                  state = state.withJoin(
+                    currentTable: table,
+                    currentColumn: table.ayahId,
+                    referencedTable:
+                        $$WordInstancesTableReferences._ayahIdTable(db),
+                    referencedColumn:
+                        $$WordInstancesTableReferences._ayahIdTable(db).id,
+                  ) as T;
+                }
+                if (lexemeId) {
+                  state = state.withJoin(
+                    currentTable: table,
+                    currentColumn: table.lexemeId,
+                    referencedTable:
+                        $$WordInstancesTableReferences._lexemeIdTable(db),
+                    referencedColumn:
+                        $$WordInstancesTableReferences._lexemeIdTable(db).id,
+                  ) as T;
+                }
+
+                return state;
+              },
+              getPrefetchedDataCallback: (items) async {
+                return [
+                  if (grammarFeaturesRefs)
+                    await $_getPrefetchedData<WordInstanceRow,
+                            $WordInstancesTable, GrammarFeatureRow>(
+                        currentTable: table,
+                        referencedTable: $$WordInstancesTableReferences
+                            ._grammarFeaturesRefsTable(db),
+                        managerFromTypedResult: (p0) =>
+                            $$WordInstancesTableReferences(db, table, p0)
+                                .grammarFeaturesRefs,
+                        referencedItemsForCurrentItem:
+                            (item, referencedItems) => referencedItems
+                                .where((e) => e.wordInstanceId == item.id),
+                        typedResults: items),
+                  if (phraseWordInstancesRefs)
+                    await $_getPrefetchedData<WordInstanceRow,
+                            $WordInstancesTable, PhraseWordInstanceRow>(
+                        currentTable: table,
+                        referencedTable: $$WordInstancesTableReferences
+                            ._phraseWordInstancesRefsTable(db),
+                        managerFromTypedResult: (p0) =>
+                            $$WordInstancesTableReferences(db, table, p0)
+                                .phraseWordInstancesRefs,
+                        referencedItemsForCurrentItem:
+                            (item, referencedItems) => referencedItems
+                                .where((e) => e.wordInstanceId == item.id),
+                        typedResults: items)
+                ];
+              },
+            );
+          },
+        ));
+}
+
+typedef $$WordInstancesTableProcessedTableManager = ProcessedTableManager<
+    _$AppDatabase,
+    $WordInstancesTable,
+    WordInstanceRow,
+    $$WordInstancesTableFilterComposer,
+    $$WordInstancesTableOrderingComposer,
+    $$WordInstancesTableAnnotationComposer,
+    $$WordInstancesTableCreateCompanionBuilder,
+    $$WordInstancesTableUpdateCompanionBuilder,
+    (WordInstanceRow, $$WordInstancesTableReferences),
+    WordInstanceRow,
+    PrefetchHooks Function(
+        {bool ayahId,
+        bool lexemeId,
+        bool grammarFeaturesRefs,
+        bool phraseWordInstancesRefs})>;
+typedef $$GrammarFeaturesTableCreateCompanionBuilder = GrammarFeaturesCompanion
+    Function({
+  Value<int> id,
+  required int wordInstanceId,
+  required String featureKey,
+  required String featureValue,
+});
+typedef $$GrammarFeaturesTableUpdateCompanionBuilder = GrammarFeaturesCompanion
+    Function({
+  Value<int> id,
+  Value<int> wordInstanceId,
+  Value<String> featureKey,
+  Value<String> featureValue,
+});
+
+final class $$GrammarFeaturesTableReferences extends BaseReferences<
+    _$AppDatabase, $GrammarFeaturesTable, GrammarFeatureRow> {
+  $$GrammarFeaturesTableReferences(
+      super.$_db, super.$_table, super.$_typedResult);
+
+  static $WordInstancesTable _wordInstanceIdTable(_$AppDatabase db) => db
+      .wordInstances
+      .createAlias('grammar_features__word_instance_id__word_instances__id');
+
+  $$WordInstancesTableProcessedTableManager get wordInstanceId {
+    final $_column = $_itemColumn<int>('word_instance_id')!;
+
+    final manager = $$WordInstancesTableTableManager($_db, $_db.wordInstances)
+        .filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_wordInstanceIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+        manager.$state.copyWith(prefetchedData: [item]));
+  }
+}
+
+class $$GrammarFeaturesTableFilterComposer
+    extends Composer<_$AppDatabase, $GrammarFeaturesTable> {
+  $$GrammarFeaturesTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<int> get id => $composableBuilder(
+      column: $table.id, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get featureKey => $composableBuilder(
+      column: $table.featureKey, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get featureValue => $composableBuilder(
+      column: $table.featureValue, builder: (column) => ColumnFilters(column));
+
+  $$WordInstancesTableFilterComposer get wordInstanceId {
+    final $$WordInstancesTableFilterComposer composer = $composerBuilder(
+        composer: this,
+        getCurrentColumn: (t) => t.wordInstanceId,
+        referencedTable: $db.wordInstances,
+        getReferencedColumn: (t) => t.id,
+        builder: (joinBuilder,
+                {$addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer}) =>
+            $$WordInstancesTableFilterComposer(
+              $db: $db,
+              $table: $db.wordInstances,
+              $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+              joinBuilder: joinBuilder,
+              $removeJoinBuilderFromRootComposer:
+                  $removeJoinBuilderFromRootComposer,
+            ));
+    return composer;
+  }
+}
+
+class $$GrammarFeaturesTableOrderingComposer
+    extends Composer<_$AppDatabase, $GrammarFeaturesTable> {
+  $$GrammarFeaturesTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<int> get id => $composableBuilder(
+      column: $table.id, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get featureKey => $composableBuilder(
+      column: $table.featureKey, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get featureValue => $composableBuilder(
+      column: $table.featureValue,
+      builder: (column) => ColumnOrderings(column));
+
+  $$WordInstancesTableOrderingComposer get wordInstanceId {
+    final $$WordInstancesTableOrderingComposer composer = $composerBuilder(
+        composer: this,
+        getCurrentColumn: (t) => t.wordInstanceId,
+        referencedTable: $db.wordInstances,
+        getReferencedColumn: (t) => t.id,
+        builder: (joinBuilder,
+                {$addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer}) =>
+            $$WordInstancesTableOrderingComposer(
+              $db: $db,
+              $table: $db.wordInstances,
+              $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+              joinBuilder: joinBuilder,
+              $removeJoinBuilderFromRootComposer:
+                  $removeJoinBuilderFromRootComposer,
+            ));
+    return composer;
+  }
+}
+
+class $$GrammarFeaturesTableAnnotationComposer
+    extends Composer<_$AppDatabase, $GrammarFeaturesTable> {
+  $$GrammarFeaturesTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<int> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get featureKey => $composableBuilder(
+      column: $table.featureKey, builder: (column) => column);
+
+  GeneratedColumn<String> get featureValue => $composableBuilder(
+      column: $table.featureValue, builder: (column) => column);
+
+  $$WordInstancesTableAnnotationComposer get wordInstanceId {
+    final $$WordInstancesTableAnnotationComposer composer = $composerBuilder(
+        composer: this,
+        getCurrentColumn: (t) => t.wordInstanceId,
+        referencedTable: $db.wordInstances,
+        getReferencedColumn: (t) => t.id,
+        builder: (joinBuilder,
+                {$addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer}) =>
+            $$WordInstancesTableAnnotationComposer(
+              $db: $db,
+              $table: $db.wordInstances,
+              $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+              joinBuilder: joinBuilder,
+              $removeJoinBuilderFromRootComposer:
+                  $removeJoinBuilderFromRootComposer,
+            ));
+    return composer;
+  }
+}
+
+class $$GrammarFeaturesTableTableManager extends RootTableManager<
+    _$AppDatabase,
+    $GrammarFeaturesTable,
+    GrammarFeatureRow,
+    $$GrammarFeaturesTableFilterComposer,
+    $$GrammarFeaturesTableOrderingComposer,
+    $$GrammarFeaturesTableAnnotationComposer,
+    $$GrammarFeaturesTableCreateCompanionBuilder,
+    $$GrammarFeaturesTableUpdateCompanionBuilder,
+    (GrammarFeatureRow, $$GrammarFeaturesTableReferences),
+    GrammarFeatureRow,
+    PrefetchHooks Function({bool wordInstanceId})> {
+  $$GrammarFeaturesTableTableManager(
+      _$AppDatabase db, $GrammarFeaturesTable table)
+      : super(TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$GrammarFeaturesTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$GrammarFeaturesTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$GrammarFeaturesTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback: ({
+            Value<int> id = const Value.absent(),
+            Value<int> wordInstanceId = const Value.absent(),
+            Value<String> featureKey = const Value.absent(),
+            Value<String> featureValue = const Value.absent(),
+          }) =>
+              GrammarFeaturesCompanion(
+            id: id,
+            wordInstanceId: wordInstanceId,
+            featureKey: featureKey,
+            featureValue: featureValue,
+          ),
+          createCompanionCallback: ({
+            Value<int> id = const Value.absent(),
+            required int wordInstanceId,
+            required String featureKey,
+            required String featureValue,
+          }) =>
+              GrammarFeaturesCompanion.insert(
+            id: id,
+            wordInstanceId: wordInstanceId,
+            featureKey: featureKey,
+            featureValue: featureValue,
+          ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (
+                    e.readTable(table),
+                    $$GrammarFeaturesTableReferences(db, table, e)
+                  ))
+              .toList(),
+          prefetchHooksCallback: ({wordInstanceId = false}) {
+            return PrefetchHooks(
+              db: db,
+              explicitlyWatchedTables: [],
+              addJoins: <
+                  T extends TableManagerState<
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic>>(state) {
+                if (wordInstanceId) {
+                  state = state.withJoin(
+                    currentTable: table,
+                    currentColumn: table.wordInstanceId,
+                    referencedTable: $$GrammarFeaturesTableReferences
+                        ._wordInstanceIdTable(db),
+                    referencedColumn: $$GrammarFeaturesTableReferences
+                        ._wordInstanceIdTable(db)
+                        .id,
+                  ) as T;
+                }
+
+                return state;
+              },
+              getPrefetchedDataCallback: (items) async {
+                return [];
+              },
+            );
+          },
+        ));
+}
+
+typedef $$GrammarFeaturesTableProcessedTableManager = ProcessedTableManager<
+    _$AppDatabase,
+    $GrammarFeaturesTable,
+    GrammarFeatureRow,
+    $$GrammarFeaturesTableFilterComposer,
+    $$GrammarFeaturesTableOrderingComposer,
+    $$GrammarFeaturesTableAnnotationComposer,
+    $$GrammarFeaturesTableCreateCompanionBuilder,
+    $$GrammarFeaturesTableUpdateCompanionBuilder,
+    (GrammarFeatureRow, $$GrammarFeaturesTableReferences),
+    GrammarFeatureRow,
+    PrefetchHooks Function({bool wordInstanceId})>;
+typedef $$PhrasesTableCreateCompanionBuilder = PhrasesCompanion Function({
+  Value<int> id,
+  required String arabic,
+  Value<String?> transliteration,
+  Value<String?> meaningVi,
+  Value<String?> meaningEn,
+});
+typedef $$PhrasesTableUpdateCompanionBuilder = PhrasesCompanion Function({
+  Value<int> id,
+  Value<String> arabic,
+  Value<String?> transliteration,
+  Value<String?> meaningVi,
+  Value<String?> meaningEn,
+});
+
+final class $$PhrasesTableReferences
+    extends BaseReferences<_$AppDatabase, $PhrasesTable, PhraseRow> {
+  $$PhrasesTableReferences(super.$_db, super.$_table, super.$_typedResult);
+
+  static MultiTypedResultKey<$PhraseWordInstancesTable,
+      List<PhraseWordInstanceRow>> _phraseWordInstancesRefsTable(
+          _$AppDatabase db) =>
+      MultiTypedResultKey.fromTable(db.phraseWordInstances,
+          aliasName: 'phrases__id__phrase_word_instances__phrase_id');
+
+  $$PhraseWordInstancesTableProcessedTableManager get phraseWordInstancesRefs {
+    final manager =
+        $$PhraseWordInstancesTableTableManager($_db, $_db.phraseWordInstances)
+            .filter((f) => f.phraseId.id.sqlEquals($_itemColumn<int>('id')!));
+
+    final cache =
+        $_typedResult.readTableOrNull(_phraseWordInstancesRefsTable($_db));
+    return ProcessedTableManager(
+        manager.$state.copyWith(prefetchedData: cache));
+  }
+}
+
+class $$PhrasesTableFilterComposer
+    extends Composer<_$AppDatabase, $PhrasesTable> {
+  $$PhrasesTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<int> get id => $composableBuilder(
+      column: $table.id, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get arabic => $composableBuilder(
+      column: $table.arabic, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get transliteration => $composableBuilder(
+      column: $table.transliteration,
+      builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get meaningVi => $composableBuilder(
+      column: $table.meaningVi, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get meaningEn => $composableBuilder(
+      column: $table.meaningEn, builder: (column) => ColumnFilters(column));
+
+  Expression<bool> phraseWordInstancesRefs(
+      Expression<bool> Function($$PhraseWordInstancesTableFilterComposer f) f) {
+    final $$PhraseWordInstancesTableFilterComposer composer = $composerBuilder(
+        composer: this,
+        getCurrentColumn: (t) => t.id,
+        referencedTable: $db.phraseWordInstances,
+        getReferencedColumn: (t) => t.phraseId,
+        builder: (joinBuilder,
+                {$addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer}) =>
+            $$PhraseWordInstancesTableFilterComposer(
+              $db: $db,
+              $table: $db.phraseWordInstances,
+              $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+              joinBuilder: joinBuilder,
+              $removeJoinBuilderFromRootComposer:
+                  $removeJoinBuilderFromRootComposer,
+            ));
+    return f(composer);
+  }
+}
+
+class $$PhrasesTableOrderingComposer
+    extends Composer<_$AppDatabase, $PhrasesTable> {
+  $$PhrasesTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<int> get id => $composableBuilder(
+      column: $table.id, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get arabic => $composableBuilder(
+      column: $table.arabic, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get transliteration => $composableBuilder(
+      column: $table.transliteration,
+      builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get meaningVi => $composableBuilder(
+      column: $table.meaningVi, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get meaningEn => $composableBuilder(
+      column: $table.meaningEn, builder: (column) => ColumnOrderings(column));
+}
+
+class $$PhrasesTableAnnotationComposer
+    extends Composer<_$AppDatabase, $PhrasesTable> {
+  $$PhrasesTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<int> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get arabic =>
+      $composableBuilder(column: $table.arabic, builder: (column) => column);
+
+  GeneratedColumn<String> get transliteration => $composableBuilder(
+      column: $table.transliteration, builder: (column) => column);
+
+  GeneratedColumn<String> get meaningVi =>
+      $composableBuilder(column: $table.meaningVi, builder: (column) => column);
+
+  GeneratedColumn<String> get meaningEn =>
+      $composableBuilder(column: $table.meaningEn, builder: (column) => column);
+
+  Expression<T> phraseWordInstancesRefs<T extends Object>(
+      Expression<T> Function($$PhraseWordInstancesTableAnnotationComposer a)
+          f) {
+    final $$PhraseWordInstancesTableAnnotationComposer composer =
+        $composerBuilder(
+            composer: this,
+            getCurrentColumn: (t) => t.id,
+            referencedTable: $db.phraseWordInstances,
+            getReferencedColumn: (t) => t.phraseId,
+            builder: (joinBuilder,
+                    {$addJoinBuilderToRootComposer,
+                    $removeJoinBuilderFromRootComposer}) =>
+                $$PhraseWordInstancesTableAnnotationComposer(
+                  $db: $db,
+                  $table: $db.phraseWordInstances,
+                  $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+                  joinBuilder: joinBuilder,
+                  $removeJoinBuilderFromRootComposer:
+                      $removeJoinBuilderFromRootComposer,
+                ));
+    return f(composer);
+  }
+}
+
+class $$PhrasesTableTableManager extends RootTableManager<
+    _$AppDatabase,
+    $PhrasesTable,
+    PhraseRow,
+    $$PhrasesTableFilterComposer,
+    $$PhrasesTableOrderingComposer,
+    $$PhrasesTableAnnotationComposer,
+    $$PhrasesTableCreateCompanionBuilder,
+    $$PhrasesTableUpdateCompanionBuilder,
+    (PhraseRow, $$PhrasesTableReferences),
+    PhraseRow,
+    PrefetchHooks Function({bool phraseWordInstancesRefs})> {
+  $$PhrasesTableTableManager(_$AppDatabase db, $PhrasesTable table)
+      : super(TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$PhrasesTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$PhrasesTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$PhrasesTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback: ({
+            Value<int> id = const Value.absent(),
+            Value<String> arabic = const Value.absent(),
+            Value<String?> transliteration = const Value.absent(),
+            Value<String?> meaningVi = const Value.absent(),
+            Value<String?> meaningEn = const Value.absent(),
+          }) =>
+              PhrasesCompanion(
+            id: id,
+            arabic: arabic,
+            transliteration: transliteration,
+            meaningVi: meaningVi,
+            meaningEn: meaningEn,
+          ),
+          createCompanionCallback: ({
+            Value<int> id = const Value.absent(),
+            required String arabic,
+            Value<String?> transliteration = const Value.absent(),
+            Value<String?> meaningVi = const Value.absent(),
+            Value<String?> meaningEn = const Value.absent(),
+          }) =>
+              PhrasesCompanion.insert(
+            id: id,
+            arabic: arabic,
+            transliteration: transliteration,
+            meaningVi: meaningVi,
+            meaningEn: meaningEn,
+          ),
+          withReferenceMapper: (p0) => p0
+              .map((e) =>
+                  (e.readTable(table), $$PhrasesTableReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: ({phraseWordInstancesRefs = false}) {
+            return PrefetchHooks(
+              db: db,
+              explicitlyWatchedTables: [
+                if (phraseWordInstancesRefs) db.phraseWordInstances
+              ],
+              addJoins: null,
+              getPrefetchedDataCallback: (items) async {
+                return [
+                  if (phraseWordInstancesRefs)
+                    await $_getPrefetchedData<PhraseRow, $PhrasesTable,
+                            PhraseWordInstanceRow>(
+                        currentTable: table,
+                        referencedTable: $$PhrasesTableReferences
+                            ._phraseWordInstancesRefsTable(db),
+                        managerFromTypedResult: (p0) =>
+                            $$PhrasesTableReferences(db, table, p0)
+                                .phraseWordInstancesRefs,
+                        referencedItemsForCurrentItem: (item,
+                                referencedItems) =>
+                            referencedItems.where((e) => e.phraseId == item.id),
+                        typedResults: items)
+                ];
+              },
+            );
+          },
+        ));
+}
+
+typedef $$PhrasesTableProcessedTableManager = ProcessedTableManager<
+    _$AppDatabase,
+    $PhrasesTable,
+    PhraseRow,
+    $$PhrasesTableFilterComposer,
+    $$PhrasesTableOrderingComposer,
+    $$PhrasesTableAnnotationComposer,
+    $$PhrasesTableCreateCompanionBuilder,
+    $$PhrasesTableUpdateCompanionBuilder,
+    (PhraseRow, $$PhrasesTableReferences),
+    PhraseRow,
+    PrefetchHooks Function({bool phraseWordInstancesRefs})>;
+typedef $$PhraseWordInstancesTableCreateCompanionBuilder
+    = PhraseWordInstancesCompanion Function({
+  required int phraseId,
+  required int wordInstanceId,
+  required int position,
+  Value<int> rowid,
+});
+typedef $$PhraseWordInstancesTableUpdateCompanionBuilder
+    = PhraseWordInstancesCompanion Function({
+  Value<int> phraseId,
+  Value<int> wordInstanceId,
+  Value<int> position,
+  Value<int> rowid,
+});
+
+final class $$PhraseWordInstancesTableReferences extends BaseReferences<
+    _$AppDatabase, $PhraseWordInstancesTable, PhraseWordInstanceRow> {
+  $$PhraseWordInstancesTableReferences(
+      super.$_db, super.$_table, super.$_typedResult);
+
+  static $PhrasesTable _phraseIdTable(_$AppDatabase db) =>
+      db.phrases.createAlias('phrase_word_instances__phrase_id__phrases__id');
+
+  $$PhrasesTableProcessedTableManager get phraseId {
+    final $_column = $_itemColumn<int>('phrase_id')!;
+
+    final manager = $$PhrasesTableTableManager($_db, $_db.phrases)
+        .filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_phraseIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+        manager.$state.copyWith(prefetchedData: [item]));
+  }
+
+  static $WordInstancesTable _wordInstanceIdTable(_$AppDatabase db) =>
+      db.wordInstances.createAlias(
+          'phrase_word_instances__word_instance_id__word_instances__id');
+
+  $$WordInstancesTableProcessedTableManager get wordInstanceId {
+    final $_column = $_itemColumn<int>('word_instance_id')!;
+
+    final manager = $$WordInstancesTableTableManager($_db, $_db.wordInstances)
+        .filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_wordInstanceIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+        manager.$state.copyWith(prefetchedData: [item]));
+  }
+}
+
+class $$PhraseWordInstancesTableFilterComposer
+    extends Composer<_$AppDatabase, $PhraseWordInstancesTable> {
+  $$PhraseWordInstancesTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<int> get position => $composableBuilder(
+      column: $table.position, builder: (column) => ColumnFilters(column));
+
+  $$PhrasesTableFilterComposer get phraseId {
+    final $$PhrasesTableFilterComposer composer = $composerBuilder(
+        composer: this,
+        getCurrentColumn: (t) => t.phraseId,
+        referencedTable: $db.phrases,
+        getReferencedColumn: (t) => t.id,
+        builder: (joinBuilder,
+                {$addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer}) =>
+            $$PhrasesTableFilterComposer(
+              $db: $db,
+              $table: $db.phrases,
+              $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+              joinBuilder: joinBuilder,
+              $removeJoinBuilderFromRootComposer:
+                  $removeJoinBuilderFromRootComposer,
+            ));
+    return composer;
+  }
+
+  $$WordInstancesTableFilterComposer get wordInstanceId {
+    final $$WordInstancesTableFilterComposer composer = $composerBuilder(
+        composer: this,
+        getCurrentColumn: (t) => t.wordInstanceId,
+        referencedTable: $db.wordInstances,
+        getReferencedColumn: (t) => t.id,
+        builder: (joinBuilder,
+                {$addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer}) =>
+            $$WordInstancesTableFilterComposer(
+              $db: $db,
+              $table: $db.wordInstances,
+              $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+              joinBuilder: joinBuilder,
+              $removeJoinBuilderFromRootComposer:
+                  $removeJoinBuilderFromRootComposer,
+            ));
+    return composer;
+  }
+}
+
+class $$PhraseWordInstancesTableOrderingComposer
+    extends Composer<_$AppDatabase, $PhraseWordInstancesTable> {
+  $$PhraseWordInstancesTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<int> get position => $composableBuilder(
+      column: $table.position, builder: (column) => ColumnOrderings(column));
+
+  $$PhrasesTableOrderingComposer get phraseId {
+    final $$PhrasesTableOrderingComposer composer = $composerBuilder(
+        composer: this,
+        getCurrentColumn: (t) => t.phraseId,
+        referencedTable: $db.phrases,
+        getReferencedColumn: (t) => t.id,
+        builder: (joinBuilder,
+                {$addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer}) =>
+            $$PhrasesTableOrderingComposer(
+              $db: $db,
+              $table: $db.phrases,
+              $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+              joinBuilder: joinBuilder,
+              $removeJoinBuilderFromRootComposer:
+                  $removeJoinBuilderFromRootComposer,
+            ));
+    return composer;
+  }
+
+  $$WordInstancesTableOrderingComposer get wordInstanceId {
+    final $$WordInstancesTableOrderingComposer composer = $composerBuilder(
+        composer: this,
+        getCurrentColumn: (t) => t.wordInstanceId,
+        referencedTable: $db.wordInstances,
+        getReferencedColumn: (t) => t.id,
+        builder: (joinBuilder,
+                {$addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer}) =>
+            $$WordInstancesTableOrderingComposer(
+              $db: $db,
+              $table: $db.wordInstances,
+              $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+              joinBuilder: joinBuilder,
+              $removeJoinBuilderFromRootComposer:
+                  $removeJoinBuilderFromRootComposer,
+            ));
+    return composer;
+  }
+}
+
+class $$PhraseWordInstancesTableAnnotationComposer
+    extends Composer<_$AppDatabase, $PhraseWordInstancesTable> {
+  $$PhraseWordInstancesTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<int> get position =>
+      $composableBuilder(column: $table.position, builder: (column) => column);
+
+  $$PhrasesTableAnnotationComposer get phraseId {
+    final $$PhrasesTableAnnotationComposer composer = $composerBuilder(
+        composer: this,
+        getCurrentColumn: (t) => t.phraseId,
+        referencedTable: $db.phrases,
+        getReferencedColumn: (t) => t.id,
+        builder: (joinBuilder,
+                {$addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer}) =>
+            $$PhrasesTableAnnotationComposer(
+              $db: $db,
+              $table: $db.phrases,
+              $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+              joinBuilder: joinBuilder,
+              $removeJoinBuilderFromRootComposer:
+                  $removeJoinBuilderFromRootComposer,
+            ));
+    return composer;
+  }
+
+  $$WordInstancesTableAnnotationComposer get wordInstanceId {
+    final $$WordInstancesTableAnnotationComposer composer = $composerBuilder(
+        composer: this,
+        getCurrentColumn: (t) => t.wordInstanceId,
+        referencedTable: $db.wordInstances,
+        getReferencedColumn: (t) => t.id,
+        builder: (joinBuilder,
+                {$addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer}) =>
+            $$WordInstancesTableAnnotationComposer(
+              $db: $db,
+              $table: $db.wordInstances,
+              $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+              joinBuilder: joinBuilder,
+              $removeJoinBuilderFromRootComposer:
+                  $removeJoinBuilderFromRootComposer,
+            ));
+    return composer;
+  }
+}
+
+class $$PhraseWordInstancesTableTableManager extends RootTableManager<
+    _$AppDatabase,
+    $PhraseWordInstancesTable,
+    PhraseWordInstanceRow,
+    $$PhraseWordInstancesTableFilterComposer,
+    $$PhraseWordInstancesTableOrderingComposer,
+    $$PhraseWordInstancesTableAnnotationComposer,
+    $$PhraseWordInstancesTableCreateCompanionBuilder,
+    $$PhraseWordInstancesTableUpdateCompanionBuilder,
+    (PhraseWordInstanceRow, $$PhraseWordInstancesTableReferences),
+    PhraseWordInstanceRow,
+    PrefetchHooks Function({bool phraseId, bool wordInstanceId})> {
+  $$PhraseWordInstancesTableTableManager(
+      _$AppDatabase db, $PhraseWordInstancesTable table)
+      : super(TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$PhraseWordInstancesTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$PhraseWordInstancesTableOrderingComposer(
+                  $db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$PhraseWordInstancesTableAnnotationComposer(
+                  $db: db, $table: table),
+          updateCompanionCallback: ({
+            Value<int> phraseId = const Value.absent(),
+            Value<int> wordInstanceId = const Value.absent(),
+            Value<int> position = const Value.absent(),
+            Value<int> rowid = const Value.absent(),
+          }) =>
+              PhraseWordInstancesCompanion(
+            phraseId: phraseId,
+            wordInstanceId: wordInstanceId,
+            position: position,
+            rowid: rowid,
+          ),
+          createCompanionCallback: ({
+            required int phraseId,
+            required int wordInstanceId,
+            required int position,
+            Value<int> rowid = const Value.absent(),
+          }) =>
+              PhraseWordInstancesCompanion.insert(
+            phraseId: phraseId,
+            wordInstanceId: wordInstanceId,
+            position: position,
+            rowid: rowid,
+          ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (
+                    e.readTable(table),
+                    $$PhraseWordInstancesTableReferences(db, table, e)
+                  ))
+              .toList(),
+          prefetchHooksCallback: ({phraseId = false, wordInstanceId = false}) {
+            return PrefetchHooks(
+              db: db,
+              explicitlyWatchedTables: [],
+              addJoins: <
+                  T extends TableManagerState<
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic>>(state) {
+                if (phraseId) {
+                  state = state.withJoin(
+                    currentTable: table,
+                    currentColumn: table.phraseId,
+                    referencedTable:
+                        $$PhraseWordInstancesTableReferences._phraseIdTable(db),
+                    referencedColumn: $$PhraseWordInstancesTableReferences
+                        ._phraseIdTable(db)
+                        .id,
+                  ) as T;
+                }
+                if (wordInstanceId) {
+                  state = state.withJoin(
+                    currentTable: table,
+                    currentColumn: table.wordInstanceId,
+                    referencedTable: $$PhraseWordInstancesTableReferences
+                        ._wordInstanceIdTable(db),
+                    referencedColumn: $$PhraseWordInstancesTableReferences
+                        ._wordInstanceIdTable(db)
+                        .id,
+                  ) as T;
+                }
+
+                return state;
+              },
+              getPrefetchedDataCallback: (items) async {
+                return [];
+              },
+            );
+          },
+        ));
+}
+
+typedef $$PhraseWordInstancesTableProcessedTableManager = ProcessedTableManager<
+    _$AppDatabase,
+    $PhraseWordInstancesTable,
+    PhraseWordInstanceRow,
+    $$PhraseWordInstancesTableFilterComposer,
+    $$PhraseWordInstancesTableOrderingComposer,
+    $$PhraseWordInstancesTableAnnotationComposer,
+    $$PhraseWordInstancesTableCreateCompanionBuilder,
+    $$PhraseWordInstancesTableUpdateCompanionBuilder,
+    (PhraseWordInstanceRow, $$PhraseWordInstancesTableReferences),
+    PhraseWordInstanceRow,
+    PrefetchHooks Function({bool phraseId, bool wordInstanceId})>;
+typedef $$LexiconRelationsTableCreateCompanionBuilder
+    = LexiconRelationsCompanion Function({
+  Value<int> id,
+  required int fromLemmaId,
+  required int toLemmaId,
+  required String relationType,
+});
+typedef $$LexiconRelationsTableUpdateCompanionBuilder
+    = LexiconRelationsCompanion Function({
+  Value<int> id,
+  Value<int> fromLemmaId,
+  Value<int> toLemmaId,
+  Value<String> relationType,
+});
+
+final class $$LexiconRelationsTableReferences extends BaseReferences<
+    _$AppDatabase, $LexiconRelationsTable, LexiconRelationRow> {
+  $$LexiconRelationsTableReferences(
+      super.$_db, super.$_table, super.$_typedResult);
+
+  static $LemmasTable _fromLemmaIdTable(_$AppDatabase db) =>
+      db.lemmas.createAlias('lexicon_relations__from_lemma_id__lemmas__id');
+
+  $$LemmasTableProcessedTableManager get fromLemmaId {
+    final $_column = $_itemColumn<int>('from_lemma_id')!;
+
+    final manager = $$LemmasTableTableManager($_db, $_db.lemmas)
+        .filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_fromLemmaIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+        manager.$state.copyWith(prefetchedData: [item]));
+  }
+
+  static $LemmasTable _toLemmaIdTable(_$AppDatabase db) =>
+      db.lemmas.createAlias('lexicon_relations__to_lemma_id__lemmas__id');
+
+  $$LemmasTableProcessedTableManager get toLemmaId {
+    final $_column = $_itemColumn<int>('to_lemma_id')!;
+
+    final manager = $$LemmasTableTableManager($_db, $_db.lemmas)
+        .filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_toLemmaIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+        manager.$state.copyWith(prefetchedData: [item]));
+  }
+}
+
+class $$LexiconRelationsTableFilterComposer
+    extends Composer<_$AppDatabase, $LexiconRelationsTable> {
+  $$LexiconRelationsTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<int> get id => $composableBuilder(
+      column: $table.id, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get relationType => $composableBuilder(
+      column: $table.relationType, builder: (column) => ColumnFilters(column));
+
+  $$LemmasTableFilterComposer get fromLemmaId {
+    final $$LemmasTableFilterComposer composer = $composerBuilder(
+        composer: this,
+        getCurrentColumn: (t) => t.fromLemmaId,
+        referencedTable: $db.lemmas,
+        getReferencedColumn: (t) => t.id,
+        builder: (joinBuilder,
+                {$addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer}) =>
+            $$LemmasTableFilterComposer(
+              $db: $db,
+              $table: $db.lemmas,
+              $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+              joinBuilder: joinBuilder,
+              $removeJoinBuilderFromRootComposer:
+                  $removeJoinBuilderFromRootComposer,
+            ));
+    return composer;
+  }
+
+  $$LemmasTableFilterComposer get toLemmaId {
+    final $$LemmasTableFilterComposer composer = $composerBuilder(
+        composer: this,
+        getCurrentColumn: (t) => t.toLemmaId,
+        referencedTable: $db.lemmas,
+        getReferencedColumn: (t) => t.id,
+        builder: (joinBuilder,
+                {$addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer}) =>
+            $$LemmasTableFilterComposer(
+              $db: $db,
+              $table: $db.lemmas,
+              $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+              joinBuilder: joinBuilder,
+              $removeJoinBuilderFromRootComposer:
+                  $removeJoinBuilderFromRootComposer,
+            ));
+    return composer;
+  }
+}
+
+class $$LexiconRelationsTableOrderingComposer
+    extends Composer<_$AppDatabase, $LexiconRelationsTable> {
+  $$LexiconRelationsTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<int> get id => $composableBuilder(
+      column: $table.id, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get relationType => $composableBuilder(
+      column: $table.relationType,
+      builder: (column) => ColumnOrderings(column));
+
+  $$LemmasTableOrderingComposer get fromLemmaId {
+    final $$LemmasTableOrderingComposer composer = $composerBuilder(
+        composer: this,
+        getCurrentColumn: (t) => t.fromLemmaId,
+        referencedTable: $db.lemmas,
+        getReferencedColumn: (t) => t.id,
+        builder: (joinBuilder,
+                {$addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer}) =>
+            $$LemmasTableOrderingComposer(
+              $db: $db,
+              $table: $db.lemmas,
+              $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+              joinBuilder: joinBuilder,
+              $removeJoinBuilderFromRootComposer:
+                  $removeJoinBuilderFromRootComposer,
+            ));
+    return composer;
+  }
+
+  $$LemmasTableOrderingComposer get toLemmaId {
+    final $$LemmasTableOrderingComposer composer = $composerBuilder(
+        composer: this,
+        getCurrentColumn: (t) => t.toLemmaId,
+        referencedTable: $db.lemmas,
+        getReferencedColumn: (t) => t.id,
+        builder: (joinBuilder,
+                {$addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer}) =>
+            $$LemmasTableOrderingComposer(
+              $db: $db,
+              $table: $db.lemmas,
+              $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+              joinBuilder: joinBuilder,
+              $removeJoinBuilderFromRootComposer:
+                  $removeJoinBuilderFromRootComposer,
+            ));
+    return composer;
+  }
+}
+
+class $$LexiconRelationsTableAnnotationComposer
+    extends Composer<_$AppDatabase, $LexiconRelationsTable> {
+  $$LexiconRelationsTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<int> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get relationType => $composableBuilder(
+      column: $table.relationType, builder: (column) => column);
+
+  $$LemmasTableAnnotationComposer get fromLemmaId {
+    final $$LemmasTableAnnotationComposer composer = $composerBuilder(
+        composer: this,
+        getCurrentColumn: (t) => t.fromLemmaId,
+        referencedTable: $db.lemmas,
+        getReferencedColumn: (t) => t.id,
+        builder: (joinBuilder,
+                {$addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer}) =>
+            $$LemmasTableAnnotationComposer(
+              $db: $db,
+              $table: $db.lemmas,
+              $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+              joinBuilder: joinBuilder,
+              $removeJoinBuilderFromRootComposer:
+                  $removeJoinBuilderFromRootComposer,
+            ));
+    return composer;
+  }
+
+  $$LemmasTableAnnotationComposer get toLemmaId {
+    final $$LemmasTableAnnotationComposer composer = $composerBuilder(
+        composer: this,
+        getCurrentColumn: (t) => t.toLemmaId,
+        referencedTable: $db.lemmas,
+        getReferencedColumn: (t) => t.id,
+        builder: (joinBuilder,
+                {$addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer}) =>
+            $$LemmasTableAnnotationComposer(
+              $db: $db,
+              $table: $db.lemmas,
+              $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+              joinBuilder: joinBuilder,
+              $removeJoinBuilderFromRootComposer:
+                  $removeJoinBuilderFromRootComposer,
+            ));
+    return composer;
+  }
+}
+
+class $$LexiconRelationsTableTableManager extends RootTableManager<
+    _$AppDatabase,
+    $LexiconRelationsTable,
+    LexiconRelationRow,
+    $$LexiconRelationsTableFilterComposer,
+    $$LexiconRelationsTableOrderingComposer,
+    $$LexiconRelationsTableAnnotationComposer,
+    $$LexiconRelationsTableCreateCompanionBuilder,
+    $$LexiconRelationsTableUpdateCompanionBuilder,
+    (LexiconRelationRow, $$LexiconRelationsTableReferences),
+    LexiconRelationRow,
+    PrefetchHooks Function({bool fromLemmaId, bool toLemmaId})> {
+  $$LexiconRelationsTableTableManager(
+      _$AppDatabase db, $LexiconRelationsTable table)
+      : super(TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$LexiconRelationsTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$LexiconRelationsTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$LexiconRelationsTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback: ({
+            Value<int> id = const Value.absent(),
+            Value<int> fromLemmaId = const Value.absent(),
+            Value<int> toLemmaId = const Value.absent(),
+            Value<String> relationType = const Value.absent(),
+          }) =>
+              LexiconRelationsCompanion(
+            id: id,
+            fromLemmaId: fromLemmaId,
+            toLemmaId: toLemmaId,
+            relationType: relationType,
+          ),
+          createCompanionCallback: ({
+            Value<int> id = const Value.absent(),
+            required int fromLemmaId,
+            required int toLemmaId,
+            required String relationType,
+          }) =>
+              LexiconRelationsCompanion.insert(
+            id: id,
+            fromLemmaId: fromLemmaId,
+            toLemmaId: toLemmaId,
+            relationType: relationType,
+          ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (
+                    e.readTable(table),
+                    $$LexiconRelationsTableReferences(db, table, e)
+                  ))
+              .toList(),
+          prefetchHooksCallback: ({fromLemmaId = false, toLemmaId = false}) {
+            return PrefetchHooks(
+              db: db,
+              explicitlyWatchedTables: [],
+              addJoins: <
+                  T extends TableManagerState<
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic>>(state) {
+                if (fromLemmaId) {
+                  state = state.withJoin(
+                    currentTable: table,
+                    currentColumn: table.fromLemmaId,
+                    referencedTable:
+                        $$LexiconRelationsTableReferences._fromLemmaIdTable(db),
+                    referencedColumn: $$LexiconRelationsTableReferences
+                        ._fromLemmaIdTable(db)
+                        .id,
+                  ) as T;
+                }
+                if (toLemmaId) {
+                  state = state.withJoin(
+                    currentTable: table,
+                    currentColumn: table.toLemmaId,
+                    referencedTable:
+                        $$LexiconRelationsTableReferences._toLemmaIdTable(db),
+                    referencedColumn: $$LexiconRelationsTableReferences
+                        ._toLemmaIdTable(db)
+                        .id,
+                  ) as T;
+                }
+
+                return state;
+              },
+              getPrefetchedDataCallback: (items) async {
+                return [];
+              },
+            );
+          },
+        ));
+}
+
+typedef $$LexiconRelationsTableProcessedTableManager = ProcessedTableManager<
+    _$AppDatabase,
+    $LexiconRelationsTable,
+    LexiconRelationRow,
+    $$LexiconRelationsTableFilterComposer,
+    $$LexiconRelationsTableOrderingComposer,
+    $$LexiconRelationsTableAnnotationComposer,
+    $$LexiconRelationsTableCreateCompanionBuilder,
+    $$LexiconRelationsTableUpdateCompanionBuilder,
+    (LexiconRelationRow, $$LexiconRelationsTableReferences),
+    LexiconRelationRow,
+    PrefetchHooks Function({bool fromLemmaId, bool toLemmaId})>;
 
 class $AppDatabaseManager {
   final _$AppDatabase _db;
@@ -4109,4 +9410,20 @@ class $AppDatabaseManager {
       $$RecitersTableTableManager(_db, _db.reciters);
   $$MetaEntriesTableTableManager get metaEntries =>
       $$MetaEntriesTableTableManager(_db, _db.metaEntries);
+  $$RootsTableTableManager get roots =>
+      $$RootsTableTableManager(_db, _db.roots);
+  $$LemmasTableTableManager get lemmas =>
+      $$LemmasTableTableManager(_db, _db.lemmas);
+  $$LexemesTableTableManager get lexemes =>
+      $$LexemesTableTableManager(_db, _db.lexemes);
+  $$WordInstancesTableTableManager get wordInstances =>
+      $$WordInstancesTableTableManager(_db, _db.wordInstances);
+  $$GrammarFeaturesTableTableManager get grammarFeatures =>
+      $$GrammarFeaturesTableTableManager(_db, _db.grammarFeatures);
+  $$PhrasesTableTableManager get phrases =>
+      $$PhrasesTableTableManager(_db, _db.phrases);
+  $$PhraseWordInstancesTableTableManager get phraseWordInstances =>
+      $$PhraseWordInstancesTableTableManager(_db, _db.phraseWordInstances);
+  $$LexiconRelationsTableTableManager get lexiconRelations =>
+      $$LexiconRelationsTableTableManager(_db, _db.lexiconRelations);
 }

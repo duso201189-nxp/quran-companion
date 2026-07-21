@@ -48,6 +48,9 @@ class _FakeQuranRepository implements QuranRepository {
     int limit = 40,
   }) async =>
       const [];
+
+  @override
+  Future<List<AyahSearchResult>> getAyahsByIds(List<int> ids) async => const [];
 }
 
 final _testSurahs = [
@@ -154,6 +157,16 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text('Al-Fatihah'), findsOneWidget);
+  });
+
+  testWidgets('có nút tìm kiếm trên AppBar (Task 7.1.4)', (tester) async {
+    await tester.pumpWidget(_app(_FakeQuranRepository(_testSurahs)));
+    await tester.pumpAndSettle();
+
+    expect(
+      find.widgetWithIcon(IconButton, Icons.search),
+      findsOneWidget,
+    );
   });
 
   testWidgets('layout không vỡ ở text scale 200% (accessibility)',

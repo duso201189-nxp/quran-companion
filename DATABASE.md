@@ -112,7 +112,27 @@ không dấu ("long" / "rahim") vẫn khớp.
 
 ## Nhóm B — Dữ liệu người dùng (Drift local ↔ Supabase, cùng schema)
 
-QUY TẮC BẤT BIẾN của nhóm B (áp dụng cho MỌI bảng bên dưới):
+Kể từ [DR-2026-0003](docs/adr/DR-2026-0003-sprint8-data-architecture.md)
+(Sprint 8), amend một phần bởi
+[DR-2026-0004](docs/adr/DR-2026-0004-sprint9-streak-daily-goal-revision-queue.md)
+(Sprint 9) và [DR-2026-0005](docs/adr/DR-2026-0005.md) (Sprint 10 —
+Learning Engine/SRS/Quiz): **Drift schema files
+(`lib/core/database/user/user_tables.dart`,
+`lib/core/database/user/user_database.dart`) là Source of Truth cho
+schema HIỆN TẠI.** Mục dưới đây là Design Specification — chia 3
+tầng để không lẫn "đã có thật" với "còn là dự định":
+
+- **Đã triển khai** — khớp `UserDatabase.schemaVersion` hiện tại
+  (đang là **5**). Đây là bản ghi lại của schema thật, không phải
+  nơi thiết kế; đổi schema thì sửa code trước, sửa mục này sau.
+- **Đã định** — đã có tên bảng/cột dự kiến, gắn với một Bước cụ thể
+  trong ROADMAP.md, nhưng CHƯA có trong code.
+- **Ý tưởng tương lai** — hướng mở rộng chưa gắn Bước cụ thể, có thể
+  đổi hình dạng nhiều lần trước khi thành "Đã định". (Hiện chưa có
+  mục nào ở tầng này — sẽ thêm khi có ý tưởng thật cần ghi lại.)
+
+QUY TẮC BẤT BIẾN của nhóm B (áp dụng cho MỌI bảng — xem mixin
+`SyncColumns` trong `user_tables.dart`):
 
 1. **Khóa chính = UUID v4 sinh phía client** (kiểu TEXT trong SQLite,
    uuid trong Postgres). KHÔNG dùng INTEGER tự tăng — hai thiết bị
@@ -121,88 +141,176 @@ QUY TẮC BẤT BIẾN của nhóm B (áp dụng cho MỌI bảng bên dưới):
 2. `updated_at` (epoch ms, UTC) — giải quyết xung đột last-write-wins.
 3. `deleted_at` NULL-able — soft delete, để thao tác xóa cũng đồng
    bộ được sang thiết bị khác.
-4. Cột `user_id` khớp `auth.uid()` của Supabase (RLS).
+4. `is_dirty` (mặc định `true`) — bản ghi thay đổi cục bộ chưa đẩy
+   lên cloud; SyncEngine (Bước 11) đọc cờ này.
+5. Cột `user_id` NULL-able (null khi chưa đăng nhập) khớp
+   `auth.uid()` của Supabase khi bật RLS.
+
+### Đã triển khai (schemaVersion 5)
+
+```sql
+bookmarks (id, user_id, updated_at, deleted_at, is_dirty,
+           ayah_id, created_at,
+           collection_id NULL REFERENCES bookmark_collections)
+           -- 1 bookmark / Ayah (UNIQUE ayah_id). collection_id NULL
+           -- = chưa phân loại — trạng thái hợp lệ vĩnh viễn. KHÔNG
+           -- khai báo FK ở tầng Drift (không có tiền lệ FK trong
+           -- schema này) — toàn vẹn do BookmarkCollectionRepository
+           -- tự đảm nhiệm (Sprint 8).
+highlights(id, user_id, updated_at, deleted_at, is_dirty,
+           ayah_id, color)
+           -- color: 6 màu mặc định. UNIQUE(ayah_id, color) — một
+           -- Ayah nhiều màu được.
+notes     (id, user_id, updated_at, deleted_at, is_dirty,
+           ayah_id, content)
+           -- Markdown cơ bản (**đậm**, *nghiêng*). UNIQUE ayah_id.
+favorites (id, user_id, updated_at, deleted_at, is_dirty,
+           ayah_id, created_at)
+           -- 1 favorite / Ayah (UNIQUE ayah_id), Sprint 2.
+
+-- Trạng thái học ĐƠN (không phải hệ cờ nhiều-giá-trị) — một Ayah
+-- có tối đa 1 trạng thái tại một thời điểm; không có dòng = chưa đọc.
+ayah_statuses(id, user_id, updated_at, deleted_at, is_dirty,
+              ayah_id, status)   -- 'learning'|'learned'|'review'
+              -- UNIQUE ayah_id. status='review' = Revision Queue
+              -- ĐƠN GIẢN (DR-2026-0003 mục B, tái khẳng định ở
+              -- DR-2026-0004 mục 3). Sprint 9: màn hình Revision
+              -- Queue tái dùng UserContentRepository (thêm
+              -- watchAllReviewAyahs()) + LibraryTabView/LibraryAyahTile
+              -- có sẵn — KHÔNG có repository/bảng riêng.
+              --
+              -- Sprint 10 (DR-2026-0005 mục 1-2): srs_cards TIÊU THỤ
+              -- danh sách này làm nguồn thành viên — KHÔNG thay thế
+              -- (lệch có chủ đích so với dự định ban đầu ở
+              -- DR-2026-0003, "sẽ thay thế Revision Queue đơn giản
+              -- khi cần SM-2" — quyết định lại ở DR-2026-0005: Revision
+              -- Queue vẫn độc lập, Scheduler là lớp lịch trình thêm
+              -- vào bên trên). Xem srs_cards bên dưới.
+
+-- Nhật ký phiên đọc (Sprint 8, DR-2026-0003 mục A). Sự kiện, KHÔNG
+-- unique theo ngày — đọc nhiều lần một ngày là bình thường.
+study_sessions(id, user_id, updated_at, deleted_at, is_dirty,
+               date,               -- 'yyyy-MM-dd'
+               surah_id, ayah_from, ayah_to,   -- Ayah 0-based
+               duration_sec, note, created_at)
+-- Streak (hiện tại/dài nhất) TÍNH TRÊN TRUY VẤN từ bảng này —
+-- KHÔNG CÓ bảng streaks riêng (dẫn xuất-khi-đọc, DR-2026-0003 mục
+-- A). Nguồn CANONICAL cho streak trên MỌI màn hình (DR-2026-0004
+-- mục 1) — HomeScreen/StatsScreen đều đọc
+-- currentStreakProvider/longestStreakProvider (Sprint 9 Phase 5);
+-- StatsStore.currentStreak/longestStreak không còn nơi nào gọi tới.
+-- Ngưỡng "phiên đủ để ghi": >=5 giây (khớp StatsStore.addSeconds
+-- hiện có). Ngưỡng "ngày đủ điều kiện tính streak" gộp theo tổng
+-- thời lượng/Ayah trong ngày (>=5 phút HOẶC >=5 Ayah, ý tưởng gốc
+-- trước Sprint 8) VẪN CHƯA triển khai — DR-2026-0004 chỉ quyết định
+-- NGUỒN dữ liệu (Drift), không đổi công thức ngưỡng — xem TODO.md.
+
+-- KHATM TRACKER (Sprint 8, DR-2026-0003 mục A): mỗi chu kỳ đọc trọn
+-- bộ Qur'an là 1 bản ghi. Nhiều chu kỳ/người dùng (đang đọc + lịch
+-- sử) được.
+khatm_cycles(id, user_id, updated_at, deleted_at, is_dirty,
+             name,                          -- 'Khatm Ramadan 1448'...
+             started_at, target_date,
+             completed_at,                  -- NULL = đang đọc
+             current_ayah_id)               -- vị trí đọc 1..6236,
+                                             -- mặc định 1
+-- Tiến độ % = current_ayah_id / 6236; tách khỏi ayah_statuses vì
+-- khatm là VỊ TRÍ tuần tự theo chu kỳ, còn ayah_statuses là trạng
+-- thái học vĩnh viễn.
+
+-- Bộ sưu tập Bookmark (Sprint 8, DR-2026-0003 mục C). CHỈ áp dụng
+-- cho Ayah ở tầng database (tránh bảng chưa dùng đến) — mô hình
+-- domain (CollectionItem tổng quát cho loại khác) để mở, chưa xây.
+bookmark_collections(id, user_id, updated_at, deleted_at, is_dirty,
+                     name, emoji, display_order)
+
+-- SRS tổng quát (Sprint 10 Phase 1, DR-2026-0005 mục 3): dùng CHUNG
+-- cho từ vựng (lemma) và Hifz/Ayah — item_type + item_id thay vì
+-- khóa cứng vào 1 loại, thêm loại thẻ mới không cần đổi schema.
+-- Hiện chỉ item_type='ayah' được ghi — Flashcard ('lemma') hoãn lại
+-- (chưa có dữ liệu từ vựng, xem mục "Đã định" > lemmas/word_instances
+-- và TODO.md). SchedulingAlgorithm hôm nay là SM-2 (ARCHITECTURE.md
+-- §10); ease_factor mặc định 2.5, sàn 1.3.
+srs_cards(id, user_id, updated_at, deleted_at, is_dirty,
+          item_type TEXT,                   -- 'ayah' (chỉ giá trị hiện có)
+          item_id INTEGER,                  -- ayah_id (sẽ là lemma_id sau)
+          ease_factor REAL DEFAULT 2.5,
+          interval_days INTEGER DEFAULT 0,
+          repetitions INTEGER DEFAULT 0,
+          due_date INTEGER,                 -- epoch ms — hạn ôn tập
+          state TEXT,                       -- new|learning|review|lapsed
+          UNIQUE(item_type, item_id))
+          -- LỆCH CÓ CHỦ ĐÍCH so với sketch gốc (từng ghi
+          -- UNIQUE(user_id, item_type, item_id)): user_id nullable
+          -- trước khi đăng nhập, và SQLite coi mỗi NULL khác biệt —
+          -- đưa user_id vào UNIQUE sẽ không có tác dụng thật trong
+          -- giai đoạn single-user hiện nay. Theo đúng tiền lệ của MỌI
+          -- bảng khác trong file này (bookmarks/highlights/notes/
+          -- favorites/ayah_statuses đều bỏ user_id khỏi uniqueKeys).
+          --
+          -- Quan hệ với ayah_statuses (DR-2026-0005 mục 1-2): thẻ
+          -- item_type='ayah' được TẠO/XOÁ MỀM đồng bộ theo Revision
+          -- Queue (ayah_statuses.status='review') — Scheduler đọc
+          -- Queue làm nguồn thành viên, không sở hữu/không thay thế.
+          -- Không backfill lúc migration (v3->v4) — tự đồng bộ khi
+          -- đọc, xem SchedulerRepository.syncWithReviewQueue.
+
+-- Kết quả Quiz (Sprint 10 Phase 4, DR-2026-0005 mục 5). CHỈ lưu điểm
+-- — KHÔNG có Question Bank, KHÔNG lưu lại câu hỏi/nội dung Ayah: câu
+-- hỏi sinh động mỗi phiên từ nhóm A (QuestionGenerator, thuần Dart,
+-- không phụ thuộc database) rồi bỏ đi, không bao giờ ghi xuống nhóm B.
+quiz_results(id, user_id, updated_at, deleted_at, is_dirty,
+             quiz_type TEXT,                 -- 'mixed' (chỉ giá trị hiện có)
+             surah_id INTEGER NULL,
+             score INTEGER, total INTEGER,
+             taken_at INTEGER)                -- epoch ms
+             -- LỆCH CÓ CHỦ ĐÍCH so với sketch gốc (surah_id từng
+             -- không nullable): quiz 'mixed' trộn nhiều loại câu hỏi
+             -- từ nhiều Surah trong 1 phiên, không gắn với đúng 1
+             -- Surah — surah_id để dành cho chế độ quiz theo phạm vi
+             -- 1 Surah (chưa xây ở Sprint 10).
+```
+
+Supabase: mọi bảng nhóm B bật RLS `user_id = auth.uid()`.
+
+### Đã định (gắn Bước cụ thể, chưa có trong code)
 
 ```sql
 profiles(user_id PK, name, avatar_url,
          daily_goal_minutes, daily_goal_ayahs, settings_json)
-
--- Hệ CỜ trạng thái: 1 Ayah bật được NHIỀU cờ cùng lúc.
--- 'Chưa đọc' = không có cờ nào.
-ayah_flags(
-  id PK, user_id, ayah_id,
-  flag TEXT,   -- read|understood|favorite|noted|listened|
-               -- review|memorized|applying
-  created_at, updated_at, deleted_at,
-  UNIQUE(user_id, ayah_id, flag)
-)
--- Cờ tự động: read (tùy chọn bật trong Cài đặt), noted, listened.
--- Cờ thủ công: understood, favorite, review, memorized, applying.
+         -- Mục tiêu đọc hằng ngày (Daily Goal) CỐ Ý không dùng bảng
+         -- này — xem DR-2026-0004: chỉ tiêu lưu SharedPreferences
+         -- (DailyGoalStore, giống ThemeController/LocaleController),
+         -- tiến độ tính trên truy vấn từ study_sessions. Bảng
+         -- profiles này chờ tới khi có Auth/Sync thật (Bước 10-11)
+         -- mới cần, không xây trước cho có.
 
 surah_progress(user_id, surah_id, ayahs_read, ayahs_memorized,
                percent, last_ayah_id, updated_at)
-               -- cache tính từ ayah_flags
+               -- cache tính từ ayah_statuses — tối ưu hoá, chưa cần
+               -- thiết tới khi có dữ liệu thật cho thấy cần cache.
 
--- Gom bookmark thành bộ sưu tập theo chủ đề (Favorite Collections)
-bookmark_collections(id, user_id, name, emoji, display_order,
-                     updated_at, deleted_at)
-
-bookmarks (id, user_id, ayah_id,
-           collection_id NULL REFERENCES bookmark_collections,
-           created_at, deleted_at)
-           -- collection_id NULL = bookmark chưa phân loại
-highlights(id, user_id, ayah_id, color, updated_at, deleted_at)
-          -- color: 6 màu mặc định + mã hex tùy chỉnh
-notes     (id, user_id, ayah_id, content, updated_at, deleted_at)
-
-study_sessions(id, user_id, date, surah_id,
-               ayah_from, ayah_to, duration_sec, note, created_at)
-
-streaks(user_id, current, longest, last_study_date)
--- QUY TẮC streak: một ngày chỉ được tính khi tổng study_sessions
--- của ngày đó đạt >= 5 phút HOẶC >= 5 Ayah được đánh dấu đã đọc.
--- Mở app vài giây KHÔNG tính. Ngưỡng đặt trong cấu hình, không
--- hard-code rải rác.
-
--- SRS tổng quát: dùng CHUNG cho từ vựng (lemma) và Hifz (ayah).
--- item_type + item_id thay vì khóa cứng vào lemma -> thêm loại
--- thẻ mới (ví dụ: cụm Ayah) không cần đổi schema.
-srs_cards(id, user_id,
-          item_type TEXT,                   -- 'lemma' | 'ayah'
-          item_id INTEGER,                  -- lemma_id hoặc ayah_id
-          ease_factor, interval_days, repetitions,  -- SM-2
-          due_date, state,                  -- new|learning|review|lapsed
-          updated_at, deleted_at,
-          UNIQUE(user_id, item_type, item_id))
-
--- KHATM TRACKER: mỗi chu kỳ đọc trọn bộ Qur'an là 1 bản ghi.
--- Người dùng có thể có nhiều chu kỳ (đang đọc + lịch sử).
-khatm_cycles(id, user_id,
-             name,                          -- 'Khatm Ramadan 1448'...
-             started_at, target_date,
-             completed_at,                  -- NULL = đang đọc
-             current_ayah_id,               -- vị trí đọc 1..6236
-             updated_at, deleted_at)
--- Tiến độ % = current_ayah_id / 6236; tách khỏi ayah_flags vì
--- khatm là VỊ TRÍ tuần tự theo chu kỳ, cờ là trạng thái học vĩnh viễn.
-
--- HIFZ (học thuộc lòng): kế hoạch theo dải Ayah.
--- Ôn tập từng Ayah do srs_cards(item_type='ayah') đảm nhiệm;
--- cờ 'memorized' trong ayah_flags đánh dấu kết quả cuối.
+-- HIFZ (học thuộc lòng): kế hoạch theo dải Ayah. Bước 9 — CHƯA xây ở
+-- Sprint 10 (không nằm trong 6 quyết định của DR-2026-0005; chỉ nêu
+-- tên như 1 nhánh tương lai của Learning Engine). Ôn tập từng Ayah do
+-- srs_cards(item_type='ayah') đảm nhiệm (đã có, xem "Đã triển khai");
+-- status='learned' trong ayah_statuses đánh dấu kết quả cuối.
 hifz_plans(id, user_id,
            surah_id, ayah_from, ayah_to,
            status,                          -- active|paused|completed
            started_at, completed_at,
            updated_at, deleted_at)
 
-quiz_results(id, user_id, quiz_type, surah_id, score, total, taken_at)
-
 sync_queue(id, table_name, row_id,          -- hàng đợi offline
            operation,                       -- insert|update|delete
            created_at)
+           -- Bước 11 — Cloud Sync.
 ```
 
-Supabase: mọi bảng nhóm B bật RLS `user_id = auth.uid()`.
+### Ý tưởng tương lai
+
+Chưa có mục nào — sẽ thêm khi có hướng mở rộng thật cần ghi lại,
+không tạo trước cho có.
 
 ## Nhóm C — AI / RAG (v2.0, chỉ Supabase + pgvector)
 
