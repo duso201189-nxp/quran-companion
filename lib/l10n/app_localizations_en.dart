@@ -232,6 +232,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get todaysVerse => 'Today\'s verse';
 
   @override
+  String get homeLoading => 'Loading your home screen…';
+
+  @override
+  String get homeTodaysVerseLoading => 'Loading today\'s verse…';
+
+  @override
   String get dailyProgress => 'Daily progress';
 
   @override
@@ -264,7 +270,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get studyFlashcards => 'Flashcards';
 
   @override
-  String get studyFlashcardsDesc => 'Memorize ayahs with two-sided cards';
+  String get studyFlashcardsDesc =>
+      'Memorize Qur\'an vocabulary with two-sided cards';
 
   @override
   String get studySpaced => 'Spaced repetition';
@@ -284,6 +291,12 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get studyDailyReviewDesc => 'Ayahs due for review today';
+
+  @override
+  String get studyProgress => 'Progress';
+
+  @override
+  String get studyProgressDesc => 'Stats, history, and improvement tips';
 
   @override
   String get comingSoon => 'Coming soon';
@@ -525,6 +538,483 @@ class AppLocalizationsEn extends AppLocalizations {
       'No cards are due for review right now.';
 
   @override
+  String get flashcardReviewTitle => 'Flashcards';
+
+  @override
+  String get flashcardReviewComplete => 'Flashcards complete!';
+
+  @override
+  String get flashcardReviewCompleteSubtitle =>
+      'No vocabulary is due for review right now.';
+
+  @override
+  String get flashcardsTitle => 'Flashcards';
+
+  @override
+  String get flashcardSearchHint =>
+      'Search Arabic, transliteration, or meaning';
+
+  @override
+  String get flashcardAdd => 'Add';
+
+  @override
+  String get flashcardContentUnavailable => 'Content unavailable';
+
+  @override
+  String get flashcardMoveToDeck => 'Move to deck';
+
+  @override
+  String get flashcardRemove => 'Remove flashcard';
+
+  @override
+  String get flashcardNoDeck => 'No deck';
+
+  @override
+  String get flashcardEmptyDeck => 'This deck has no flashcards yet.';
+
+  @override
+  String get flashcardNoResults => 'No matching flashcards.';
+
+  @override
+  String get flashcardFilterAllDecks => 'All decks';
+
+  @override
+  String get flashcardFilterAllTypes => 'All types';
+
+  @override
+  String get flashcardFilterAllStatus => 'All statuses';
+
+  @override
+  String get flashcardFilterDue => 'Due';
+
+  @override
+  String get flashcardFilterNew => 'New';
+
+  @override
+  String get flashcardFilterLearning => 'Learning';
+
+  @override
+  String get flashcardFilterReview => 'Review';
+
+  @override
+  String get flashcardFilterLapsed => 'Lapsed';
+
+  @override
+  String get flashcardOnboardingTitle => 'No flashcards yet';
+
+  @override
+  String get flashcardOnboardingBody =>
+      'Add your first vocabulary flashcard to start learning with spaced repetition.';
+
+  @override
+  String get flashcardOnboardingCta => 'Add your first flashcard';
+
+  @override
+  String get flashcardOnboardingReviewNudge =>
+      'First flashcard added! Try reviewing it now?';
+
+  @override
+  String get flashcardOnboardingReviewCta => 'Review now';
+
+  @override
+  String get flashcardDecksTitle => 'Flashcard decks';
+
+  @override
+  String get flashcardDecksEmpty => 'No decks yet.';
+
+  @override
+  String get flashcardDecksCreate => 'Create deck';
+
+  @override
+  String get flashcardDecksRename => 'Rename';
+
+  @override
+  String get flashcardDecksDelete => 'Delete';
+
+  @override
+  String get flashcardDecksDeleteConfirmTitle => 'Delete deck?';
+
+  @override
+  String get flashcardDecksDeleteConfirmBody =>
+      'Flashcards in this deck will move to \"No deck\" — they won\'t be deleted.';
+
+  @override
+  String get flashcardDeckNameHint => 'Deck name';
+
+  @override
+  String flashcardDeckItemCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count cards',
+      one: '1 card',
+      zero: 'No cards yet',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get addFlashcardTitle => 'Add flashcard';
+
+  @override
+  String get addFlashcardSourceLemma => 'Lemma';
+
+  @override
+  String get addFlashcardSourceRoot => 'Root';
+
+  @override
+  String get addFlashcardSourcePhrase => 'Phrase';
+
+  @override
+  String get addFlashcardSourceNotAvailable =>
+      'No browsable data for this type yet.';
+
+  @override
+  String get addFlashcardSearchHint => 'Search...';
+
+  @override
+  String get addFlashcardNoResults => 'No results found.';
+
+  @override
+  String get addFlashcardAdd => 'Add to flashcards';
+
+  @override
+  String get smartDeckTodaysReview => 'Today\'s Review';
+
+  @override
+  String get smartDeckMostDifficult => 'Most Difficult';
+
+  @override
+  String get smartDeckRecentlyLearned => 'Recently Learned';
+
+  @override
+  String get smartDeckWeakRoots => 'Weak Roots';
+
+  @override
+  String get smartDeckVerbForms => 'Verb Forms';
+
+  @override
+  String get smartDeckEmpty => 'No flashcards in this Smart Deck yet.';
+
+  @override
+  String smartDeckVerbFormLabel(String form) {
+    return 'Form $form';
+  }
+
+  @override
+  String get progressDashboardTitle => 'Progress';
+
+  @override
+  String get progressDashboardEmpty =>
+      'No flashcards studied yet — stats will show up once you start learning.';
+
+  @override
+  String get progressDashboardHistory => 'Activity history';
+
+  @override
+  String get progressDashboardHistoryEmpty =>
+      'No reading activity in this period yet.';
+
+  @override
+  String get progressDashboardInsights => 'Improvement tips';
+
+  @override
+  String get progressDashboardOverview => 'Overview';
+
+  @override
+  String get progressDashboardLoading => 'Loading progress data…';
+
+  @override
+  String get statCardsStudied => 'Cards studied';
+
+  @override
+  String get statReviewsToday => 'Reviews today';
+
+  @override
+  String get statAccuracy => 'Accuracy';
+
+  @override
+  String get statAverageEase => 'Average ease';
+
+  @override
+  String get statAverageInterval => 'Average interval (days)';
+
+  @override
+  String get historyDaily => 'Day';
+
+  @override
+  String get historyWeekly => 'Week';
+
+  @override
+  String get historyMonthly => 'Month';
+
+  @override
+  String get insightsWeakRoots => 'Weak roots';
+
+  @override
+  String get insightsDifficultLemmas => 'Most difficult';
+
+  @override
+  String get insightsFrequentlyForgotten => 'Frequently forgotten';
+
+  @override
+  String get insightsFastestImproving => 'Fastest improving';
+
+  @override
+  String get insightsEmpty => 'No data for this yet.';
+
+  @override
+  String get progressDashboardGoals => 'Goals';
+
+  @override
+  String get progressDashboardAchievements => 'Achievements';
+
+  @override
+  String get goalDailyStudyLabel => 'Daily study';
+
+  @override
+  String get goalDailyReviewsLabel => 'Daily reviews';
+
+  @override
+  String get goalWeeklyStudyLabel => 'Weekly study';
+
+  @override
+  String goalReviewsProgress(int current, int target) {
+    return '$current / $target reviews today';
+  }
+
+  @override
+  String goalWeeklyMinutesProgress(int current, int target) {
+    return '$current / $target min this week';
+  }
+
+  @override
+  String get goalAchieved => 'Achieved';
+
+  @override
+  String get achievementFirstStudyTitle => 'First study';
+
+  @override
+  String get achievementTenCardsTitle => '10 cards studied';
+
+  @override
+  String get achievementHundredCardsTitle => '100 cards studied';
+
+  @override
+  String get achievementSevenDayStreakTitle => '7-day streak';
+
+  @override
+  String get achievementThirtyDayStreakTitle => '30-day streak';
+
+  @override
+  String get achievementSharpMemoryTitle => 'Sharp memory';
+
+  @override
+  String achievementProgressCards(int current, int target) {
+    return '$current / $target cards';
+  }
+
+  @override
+  String achievementProgressDays(int current, int target) {
+    return '$current / $target days';
+  }
+
+  @override
+  String achievementProgressPercent(int current, int target) {
+    return '$current% / $target% accuracy';
+  }
+
+  @override
+  String get achievementUnlocked => 'Unlocked';
+
+  @override
+  String get achievementLocked => 'Locked';
+
+  @override
+  String get aiTutorTitle => 'AI Tutor';
+
+  @override
+  String get studyAiTutor => 'AI Tutor';
+
+  @override
+  String get studyAiTutorDesc =>
+      'Personalized suggestions based on your progress';
+
+  @override
+  String get aiTutorSummaryTitle => 'Your overview';
+
+  @override
+  String get aiTutorSuggestionsTitle => 'Suggestions';
+
+  @override
+  String get aiTutorInsightsTitle => 'Insights';
+
+  @override
+  String get aiTutorSuggestionsEmpty =>
+      'You\'re all caught up — nothing needs your attention right now.';
+
+  @override
+  String get aiTutorLoading => 'Loading your tutor…';
+
+  @override
+  String get aiTutorPriorityHigh => 'High priority';
+
+  @override
+  String get aiTutorPriorityMedium => 'Medium priority';
+
+  @override
+  String get aiTutorPriorityLow => 'Low priority';
+
+  @override
+  String get aiTutorSuggestionReviewDueTitle => 'Review your due cards';
+
+  @override
+  String aiTutorSuggestionReviewDueDetail(int count) {
+    return '$count cards waiting';
+  }
+
+  @override
+  String get aiTutorSuggestionDailyStudyTitle => 'Reach your daily study goal';
+
+  @override
+  String aiTutorSuggestionDailyStudyDetail(int count) {
+    return '$count min left today';
+  }
+
+  @override
+  String get aiTutorSuggestionDailyReviewTitle =>
+      'Reach your daily review goal';
+
+  @override
+  String aiTutorSuggestionDailyReviewDetail(int count) {
+    return '$count reviews left today';
+  }
+
+  @override
+  String get aiTutorSuggestionWeakRootsTitle => 'Strengthen your weak roots';
+
+  @override
+  String aiTutorSuggestionWeakRootsDetail(int count) {
+    return '$count roots to review';
+  }
+
+  @override
+  String get aiTutorSuggestionForgottenTitle =>
+      'Review frequently forgotten cards';
+
+  @override
+  String aiTutorSuggestionForgottenDetail(int count) {
+    return '$count cards to revisit';
+  }
+
+  @override
+  String get aiTutorSuggestionStreakTitle => 'Keep your streak alive';
+
+  @override
+  String aiTutorSuggestionStreakDetail(int count) {
+    return '$count-day streak';
+  }
+
+  @override
+  String get aiTutorInsightAchievementsUnlockedLabel => 'Achievements unlocked';
+
+  @override
+  String get aiTutorActionReviewNow => 'Review now';
+
+  @override
+  String get aiTutorActionContinueLearning => 'Continue learning';
+
+  @override
+  String get aiTutorActionOpenWeakCards => 'Open weak cards';
+
+  @override
+  String get aiTutorActionOpenFlashcards => 'Open flashcards';
+
+  @override
+  String get aiTutorJourneyEntryTitle => 'View your Learning Journey';
+
+  @override
+  String get aiTutorJourneyEntryDesc =>
+      'See today\'s plan, ordered step by step';
+
+  @override
+  String get learningJourneyTitle => 'Learning Journey';
+
+  @override
+  String get journeyHeaderTitle => 'Today\'s plan';
+
+  @override
+  String journeyStepCountLabel(int count) {
+    return '$count steps planned';
+  }
+
+  @override
+  String get journeyProgressTitle => 'Your progress';
+
+  @override
+  String get journeyStepsTitle => 'Steps';
+
+  @override
+  String get learningJourneyEmpty =>
+      'Nothing planned for today — you\'re all caught up!';
+
+  @override
+  String get learningJourneyLoading => 'Loading your learning journey…';
+
+  @override
+  String journeyStepNumber(int number) {
+    return 'Step $number';
+  }
+
+  @override
+  String get journeyEntrySmartLearningTitle => 'Get your Smart Session';
+
+  @override
+  String get journeyEntrySmartLearningDesc =>
+      'A personalized recommendation for right now';
+
+  @override
+  String get smartLearningTitle => 'Smart Learning';
+
+  @override
+  String get smartLearningHeaderTitle => 'Your smart session';
+
+  @override
+  String smartLearningRecommendationCountLabel(int count) {
+    return '$count recommendations today';
+  }
+
+  @override
+  String get smartLearningRecommendedTitle => 'Recommended session';
+
+  @override
+  String get smartLearningOtherRecommendationsTitle => 'Other recommendations';
+
+  @override
+  String smartLearningRelatedStepsLabel(int count) {
+    return '$count related steps';
+  }
+
+  @override
+  String get smartLearningEmpty =>
+      'No smart session needed right now — you\'re all caught up!';
+
+  @override
+  String get smartLearningLoading => 'Loading your smart session…';
+
+  @override
+  String get smartLearningStrategyShortReview => 'Short review';
+
+  @override
+  String get smartLearningStrategyDeepStudy => 'Deep study';
+
+  @override
+  String get smartLearningStrategyMemorization => 'Memorization';
+
+  @override
+  String get smartLearningStrategyRecovery => 'Recovery';
+
+  @override
   String get quizCorrect => 'Correct!';
 
   @override
@@ -555,6 +1045,11 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String learningSummaryReviewCount(int count) {
     return 'Reviewed $count cards';
+  }
+
+  @override
+  String learningSummaryFlashcardCount(int count) {
+    return 'Reviewed $count words';
   }
 
   @override

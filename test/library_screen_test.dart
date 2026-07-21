@@ -6,6 +6,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 import 'package:quran_companion/core/database/user/user_database.dart';
 import 'package:quran_companion/core/database/user/user_database_providers.dart';
+import 'package:quran_companion/core/logging/console_logger.dart';
 import 'package:quran_companion/core/storage/prefs_provider.dart';
 import 'package:quran_companion/features/library/presentation/library_screen.dart';
 import 'package:quran_companion/features/quran/data/quran_providers.dart';
@@ -125,7 +126,8 @@ void main() {
   _test('bookmark hiển thị và chạm để nhảy tới Ayah', (tester) async {
     final (db, sp) = await _fresh();
     // Ghi 1 bookmark cho ayah id 1 vào DB người dùng.
-    await UserContentRepositoryImpl(db).toggleBookmark(1);
+    await UserContentRepositoryImpl(db, const ConsoleLogger())
+        .toggleBookmark(1);
 
     await tester.pumpWidget(await _app(db, sp));
     await tester.pumpAndSettle();
@@ -141,7 +143,8 @@ void main() {
 
   _test('notes tab hiển thị ghi chú', (tester) async {
     final (db, sp) = await _fresh();
-    await UserContentRepositoryImpl(db).saveNote(1, 'ghi chú của tôi');
+    await UserContentRepositoryImpl(db, const ConsoleLogger())
+        .saveNote(1, 'ghi chú của tôi');
 
     await tester.pumpWidget(await _app(db, sp));
     await tester.pumpAndSettle();

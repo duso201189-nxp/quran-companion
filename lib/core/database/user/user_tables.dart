@@ -190,13 +190,15 @@ class BookmarkCollections extends Table with SyncColumns {
   Set<Column<Object>> get primaryKey => {id};
 }
 
-/// Thẻ lịch ôn tập SRS (Sprint 10 Phase 1 — DR-2026-0005). item_type +
-/// item_id tổng quát (dùng chung cho Ayah và, về sau, từ vựng) — hiện
-/// chỉ 'ayah' được ghi (Flashcard 'lemma' hoãn lại, chưa có dữ liệu
-/// từ vựng). Bảng này KHÔNG sở hữu khái niệm "Ayah nào cần ôn" — đó
-/// vẫn là Revision Queue (ayah_statuses.status='review'). Scheduler
-/// chỉ thêm lớp lịch trình (ease/interval/due_date) lên trên các mục
-/// Queue đã có (xem SchedulerRepository, DR-2026-0005 mục 2).
+/// Thẻ lịch ôn tập SRS (Sprint 10 Phase 1 — DR-2026-0005; item_type
+/// 'lemma' hiện thực ở Sprint 13 Phase 2). item_type + item_id tổng
+/// quát dùng chung cho Ayah và từ vựng — 'ayah' KHÔNG sở hữu khái
+/// niệm "Ayah nào cần ôn" (đó vẫn là Revision Queue,
+/// ayah_statuses.status='review'); 'lemma' KHÔNG sở hữu khái niệm
+/// "lemma nào đang học" (đó là Flashcard, xem user_tables.dart).
+/// Scheduler chỉ thêm lớp lịch trình (ease/interval/due_date) lên
+/// trên thành viên do nơi khác xác định (xem
+/// SchedulerRepository.syncWithReviewQueue/syncItemsForType).
 ///
 /// uniqueKeys KHÔNG gồm user_id — SQLite coi mỗi NULL là khác biệt
 /// nên user_id (nullable trước khi đăng nhập) trong ràng buộc UNIQUE
@@ -209,7 +211,7 @@ class SrsCards extends Table with SyncColumns {
   @override
   String get tableName => 'srs_cards';
 
-  /// 'ayah' | 'lemma' (chỉ 'ayah' dùng ở Sprint 10).
+  /// 'ayah' | 'lemma'.
   TextColumn get itemType => text().named('item_type')();
 
   /// ayah_id hoặc lemma_id tùy [itemType].
@@ -234,6 +236,56 @@ class SrsCards extends Table with SyncColumns {
   @override
   List<Set<Column<Object>>> get uniqueKeys => [
         {itemType, itemId},
+      ];
+}
+
+/// Bộ sưu tập Flashcard (Sprint 13 Phase 2). Nhóm B, độc lập hoàn
+/// toàn với Flashcards (không có FK Drift-level tới đây — cùng tiền
+/// lệ BookmarkCollections/Bookmarks.collection_id trong file này,
+/// toàn vẹn do tầng repository đảm nhiệm).
+@DataClassName('FlashcardDeckRow')
+class FlashcardDecks extends Table with SyncColumns {
+  @override
+  String get tableName => 'flashcard_decks';
+
+  TextColumn get name => text()();
+  IntColumn get createdAt => integer().named('created_at')();
+
+  @override
+  Set<Column<Object>> get primaryKey => {id};
+}
+
+/// Thẻ ghi nhớ (Sprint 13 Phase 2 — kiến trúc đóng băng ở Phase 1).
+/// CON TRỎ vào 1 LexiconEntry (lexiconEntryType/lexiconEntryId, cùng
+/// cơ chế đa hình LexiconRepository.getEntry() dùng) — KHÔNG sao chép
+/// arabic/meaning_vi/... của Lexicon (nhóm A, đọc thẳng lúc hiển thị).
+/// deck_id KHÔNG có FK Drift-level tới FlashcardDecks — cùng tiền lệ
+/// Bookmarks.collection_id, toàn vẹn do tầng repository đảm nhiệm.
+@DataClassName('FlashcardRow')
+class Flashcards extends Table with SyncColumns {
+  @override
+  String get tableName => 'flashcards';
+
+  /// 'lemma' | 'root' | 'phrase' | 'grammar' | 'note' | 'custom' — chỉ
+  /// 'lemma' có dữ liệu thật ở Sprint 13.
+  TextColumn get type => text()();
+
+  /// LexiconEntryType.name.
+  TextColumn get lexiconEntryType => text().named('lexicon_entry_type')();
+  IntColumn get lexiconEntryId => integer().named('lexicon_entry_id')();
+
+  TextColumn get deckId => text().named('deck_id').nullable()();
+  TextColumn get note => text().nullable()();
+  IntColumn get createdAt => integer().named('created_at')();
+
+  @override
+  Set<Column<Object>> get primaryKey => {id};
+
+  /// 1 Flashcard / mục Lexicon cụ thể — thêm lần 2 hồi sinh/trả về
+  /// bản ghi đã có thay vì tạo trùng (xem FlashcardRepositoryImpl).
+  @override
+  List<Set<Column<Object>>> get uniqueKeys => [
+        {lexiconEntryType, lexiconEntryId},
       ];
 }
 

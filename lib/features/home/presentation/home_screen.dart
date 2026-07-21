@@ -5,11 +5,13 @@ import 'package:quran_companion/l10n/app_localizations.dart';
 
 import '../../../app/router.dart';
 import '../../../app/theme/app_theme.dart';
+import '../../../shared/widgets/loading_state.dart';
 import '../../quran/data/quran_providers.dart';
 import '../../quran/domain/entities/ayah_content.dart';
 import '../../quran/domain/entities/surah.dart';
 import '../../quran/presentation/reading/reading_position_store.dart';
 import '../../quran/presentation/surah_list_controller.dart';
+import '../../search/presentation/widgets/search_error_state.dart';
 import '../../stats/data/daily_goal_providers.dart';
 import '../../stats/data/stats_store.dart';
 import '../../stats/data/study_session_providers.dart';
@@ -63,10 +65,6 @@ class HomeScreen extends ConsumerWidget {
     // stats.currentStreak (StatsStore) nữa.
     final currentStreak = ref.watch(currentStreakProvider).valueOrNull ?? 0;
 
-    final surahById = <int, Surah>{
-      for (final s in surahsAsync.valueOrNull ?? const <Surah>[]) s.id: s,
-    };
-
     return Scaffold(
       appBar: AppBar(
         title: Text(l10n.tabHome),
@@ -79,81 +77,105 @@ class HomeScreen extends ConsumerWidget {
         ],
       ),
       body: SafeArea(
-        child: LayoutBuilder(
-          builder: (context, constraints) {
-            final horizontal = constraints.maxWidth > 760
-                ? (constraints.maxWidth - 720) / 2
-                : 16.0;
-            return ListView(
-              padding: EdgeInsets.fromLTRB(horizontal, 8, horizontal, 24),
-              children: [
-                _ContinueReadingCard(
-                  l10n: l10n,
-                  lastSurah: surahById[positions.lastSurahId] ?? surahById[1],
-                  lastAyahIndex: positions.lastSurahId == null
-                      ? null
-                      : positions.positionFor(positions.lastSurahId!),
-                ),
-                const SizedBox(height: 16),
-                _StatChipsRow(
-                  l10n: l10n,
-                  stats: stats,
-                  currentStreak: currentStreak,
-                ),
-                const SizedBox(height: 16),
-                _DailyGoalCard(l10n: l10n),
-                const SizedBox(height: 16),
-                _TodaysVerseCard(l10n: l10n),
-                const SizedBox(height: 20),
-                _SectionTitle(l10n.quickAccess),
-                const SizedBox(height: 8),
-                Wrap(
-                  spacing: 8,
-                  runSpacing: 8,
+        // Sprint 20 Phase 2, Task 5 — TRƯỚC đây surahsAsync chỉ đọc qua
+        // `.valueOrNull ?? []`, KHÔNG có nhánh loading/error nào: khi
+        // tải chậm hoặc lỗi, Quick Access/Recent Surahs/Continue Reading
+        // đều lặng lẽ coi như "chưa có Surah nào" — không spinner,
+        // không thông báo lỗi (xem accessibility_audit.md mục 3.1).
+        // Đưa Home về ĐÚNG mẫu `.when()` mà MỌI màn hình khác trong app
+        // đã dùng (Analytics/AI Tutor/Learning Journey/Smart Learning/
+        // Search/Flashcards) — tái sử dụng LoadingState/SearchErrorState
+        // có sẵn, KHÔNG đổi bố cục/nội dung của nhánh data (giữ nguyên
+        // giao diện khi tải thành công, đúng "Do not redesign Home").
+        child: surahsAsync.when(
+          loading: () => LoadingState(semanticsLabel: l10n.homeLoading),
+          error: (_, __) => SearchErrorState(
+            onRetry: () => ref.invalidate(surahListProvider),
+          ),
+          data: (surahs) {
+            final surahById = <int, Surah>{
+              for (final s in surahs) s.id: s,
+            };
+            return LayoutBuilder(
+              builder: (context, constraints) {
+                final horizontal = constraints.maxWidth > 760
+                    ? (constraints.maxWidth - 720) / 2
+                    : 16.0;
+                return ListView(
+                  padding: EdgeInsets.fromLTRB(horizontal, 8, horizontal, 24),
                   children: [
-                    for (final id in _quickSurahIds)
-                      if (surahById[id] != null)
-                        ActionChip(
-                          avatar: CircleAvatar(
-                            backgroundColor:
-                                Theme.of(context).colorScheme.primaryContainer,
-                            child: Text(
-                              '$id',
-                              style: const TextStyle(fontSize: 11),
-                            ),
-                          ),
-                          label: Text(surahById[id]!.nameLatin),
-                          onPressed: () =>
-                              context.push(AppRoutes.surahReading(id)),
-                        ),
-                  ],
-                ),
-                if (positions.recentSurahIds.isNotEmpty) ...[
-                  const SizedBox(height: 20),
-                  _SectionTitle(l10n.recentSurahs),
-                  const SizedBox(height: 8),
-                  SizedBox(
-                    height: 96,
-                    child: ListView.separated(
-                      scrollDirection: Axis.horizontal,
-                      itemCount: positions.recentSurahIds.length,
-                      separatorBuilder: (_, __) => const SizedBox(width: 10),
-                      itemBuilder: (context, i) {
-                        final id = positions.recentSurahIds[i];
-                        final surah = surahById[id];
-                        if (surah == null) {
-                          return const SizedBox.shrink();
-                        }
-                        return _RecentSurahCard(
-                          surah: surah,
-                          ayahIndex: positions.positionFor(id) ?? 0,
-                          l10n: l10n,
-                        );
-                      },
+                    _ContinueReadingCard(
+                      l10n: l10n,
+                      lastSurah:
+                          surahById[positions.lastSurahId] ?? surahById[1],
+                      lastAyahIndex: positions.lastSurahId == null
+                          ? null
+                          : positions.positionFor(positions.lastSurahId!),
                     ),
-                  ),
-                ],
-              ],
+                    const SizedBox(height: 16),
+                    _StatChipsRow(
+                      l10n: l10n,
+                      stats: stats,
+                      currentStreak: currentStreak,
+                    ),
+                    const SizedBox(height: 16),
+                    _DailyGoalCard(l10n: l10n),
+                    const SizedBox(height: 16),
+                    _TodaysVerseCard(l10n: l10n),
+                    const SizedBox(height: 20),
+                    _SectionTitle(l10n.quickAccess),
+                    const SizedBox(height: 8),
+                    Wrap(
+                      spacing: 8,
+                      runSpacing: 8,
+                      children: [
+                        for (final id in _quickSurahIds)
+                          if (surahById[id] != null)
+                            ActionChip(
+                              avatar: CircleAvatar(
+                                backgroundColor: Theme.of(context)
+                                    .colorScheme
+                                    .primaryContainer,
+                                child: Text(
+                                  '$id',
+                                  style: const TextStyle(fontSize: 11),
+                                ),
+                              ),
+                              label: Text(surahById[id]!.nameLatin),
+                              onPressed: () =>
+                                  context.push(AppRoutes.surahReading(id)),
+                            ),
+                      ],
+                    ),
+                    if (positions.recentSurahIds.isNotEmpty) ...[
+                      const SizedBox(height: 20),
+                      _SectionTitle(l10n.recentSurahs),
+                      const SizedBox(height: 8),
+                      SizedBox(
+                        height: 96,
+                        child: ListView.separated(
+                          scrollDirection: Axis.horizontal,
+                          itemCount: positions.recentSurahIds.length,
+                          separatorBuilder: (_, __) =>
+                              const SizedBox(width: 10),
+                          itemBuilder: (context, i) {
+                            final id = positions.recentSurahIds[i];
+                            final surah = surahById[id];
+                            if (surah == null) {
+                              return const SizedBox.shrink();
+                            }
+                            return _RecentSurahCard(
+                              surah: surah,
+                              ayahIndex: positions.positionFor(id) ?? 0,
+                              l10n: l10n,
+                            );
+                          },
+                        ),
+                      ),
+                    ],
+                  ],
+                );
+              },
             );
           },
         ),
@@ -162,6 +184,13 @@ class HomeScreen extends ConsumerWidget {
   }
 }
 
+/// KHÔNG gộp vào `SectionHeader` dùng chung (`lib/shared/widgets/`) —
+/// dùng `titleMedium` (không phải `titleSmall`), khác về mặt hình ảnh
+/// so với 6 nơi đã gộp (xem `SectionHeader`'s doc comment và
+/// accessibility_audit.md mục "SectionHeader") — Home là trang chủ,
+/// cố ý có hệ thống phân cấp thị giác nổi bật hơn các màn hình khác.
+/// Tự thêm `Semantics(header: true)` (Sprint 20 Phase 2, Task 4) để
+/// vẫn đạt cùng chuẩn heading semantics mà không đổi giao diện.
 class _SectionTitle extends StatelessWidget {
   const _SectionTitle(this.text);
 
@@ -169,12 +198,15 @@ class _SectionTitle extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Text(
-      text,
-      style: Theme.of(context)
-          .textTheme
-          .titleMedium
-          ?.copyWith(fontWeight: FontWeight.w700),
+    return Semantics(
+      header: true,
+      child: Text(
+        text,
+        style: Theme.of(context)
+            .textTheme
+            .titleMedium
+            ?.copyWith(fontWeight: FontWeight.w700),
+      ),
     );
   }
 }
@@ -441,6 +473,14 @@ class _DailyGoalCard extends ConsumerWidget {
 }
 
 /// Thẻ "Câu Qur'an hôm nay".
+///
+/// Sprint 20 Phase 2, Task 5 — TRƯỚC đây dùng `maybeWhen(orElse: () =>
+/// SizedBox.shrink())`: loading VÀ lỗi đều render ra KHÔNG GÌ CẢ,
+/// người dùng không phân biệt được "đang tải" với "lỗi" với "hôm nay
+/// không có câu nào" (xem accessibility_audit.md mục 3.1). `data ==
+/// null` (không tìm thấy Surah/Ayah — trường hợp dữ liệu hợp lệ,
+/// không phải lỗi) VẪN ẩn thẻ như cũ; chỉ thêm 2 nhánh loading/error
+/// còn thiếu, tái sử dụng LoadingState/SearchErrorState.
 class _TodaysVerseCard extends ConsumerWidget {
   const _TodaysVerseCard({required this.l10n});
 
@@ -452,7 +492,11 @@ class _TodaysVerseCard extends ConsumerWidget {
     final textTheme = Theme.of(context).textTheme;
     final verse = ref.watch(todaysVerseProvider);
 
-    return verse.maybeWhen(
+    return verse.when(
+      loading: () => LoadingState(semanticsLabel: l10n.homeTodaysVerseLoading),
+      error: (_, __) => SearchErrorState(
+        onRetry: () => ref.invalidate(todaysVerseProvider),
+      ),
       data: (data) {
         if (data == null) return const SizedBox.shrink();
         final locale = Localizations.localeOf(context).languageCode;
@@ -525,7 +569,6 @@ class _TodaysVerseCard extends ConsumerWidget {
           ),
         );
       },
-      orElse: () => const SizedBox.shrink(),
     );
   }
 }

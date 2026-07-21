@@ -24,6 +24,17 @@ abstract interface class SchedulerRepository {
   /// Strategy).
   Future<void> syncWithReviewQueue(List<int> currentReviewAyahIds);
 
+  /// Tổng quát hoá [syncWithReviewQueue] cho [itemType] bất kỳ (Sprint
+  /// 13 Phase 2 — Flashcard dùng LearningItemType.lemma). Cùng hành vi
+  /// hệt nhau: tạo/hồi sinh thẻ cho id có mặt trong [currentItemIds],
+  /// xoá mềm thẻ của id vắng mặt. [syncWithReviewQueue] KHÔNG đổi (vẫn
+  /// là điểm vào ổn định cho 'ayah'/Revision Queue) — đây là đường
+  /// dùng chung bên dưới cả hai.
+  Future<void> syncItemsForType(
+    LearningItemType itemType,
+    List<int> currentItemIds,
+  );
+
   /// Mọi thẻ SRS còn sống cho loại mục [itemType], sắp theo hạn ôn
   /// gần nhất trước.
   Stream<List<SrsCard>> watchAllCards(LearningItemType itemType);

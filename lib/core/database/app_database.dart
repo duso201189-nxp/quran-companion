@@ -13,6 +13,13 @@ part 'app_database.g.dart';
 ///
 /// Database NGƯỜI DÙNG (nhóm B) sẽ là một database Drift RIÊNG
 /// (Bước 6) — tách file để cập nhật nội dung không đụng dữ liệu học.
+///
+/// Bảng Lexicon (Roots/Lemmas/Lexemes/WordInstances/GrammarFeatures/
+/// Phrases/PhraseWordInstances/LexiconRelations — Sprint 12 Phase 2)
+/// khai báo TRƯỚC khi có dữ liệu thật, cùng cách lemmas/word_instances
+/// đã được ghi trong DATABASE.md từ trước — xem chú thích tại
+/// tables/content_tables.dart. `assets/database/quran.sqlite` hiện
+/// CHƯA chứa các bảng này.
 @DriftDatabase(
   tables: [
     Surahs,
@@ -21,6 +28,14 @@ part 'app_database.g.dart';
     Translations,
     Reciters,
     MetaEntries,
+    Roots,
+    Lemmas,
+    Lexemes,
+    WordInstances,
+    GrammarFeatures,
+    Phrases,
+    PhraseWordInstances,
+    LexiconRelations,
   ],
 )
 class AppDatabase extends _$AppDatabase {

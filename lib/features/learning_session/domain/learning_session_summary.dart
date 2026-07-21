@@ -21,7 +21,8 @@ class LearningSessionSummary {
   final int? quizScore;
   final int? quizTotal;
 
-  /// Sprint 11: Flashcard chưa xây, luôn giữ nguyên 0.
+  /// Số Flashcard đã ôn trong phiên (Sprint 13 Phase 2) — cùng cách
+  /// suy ra chênh lệch trước/sau [reviewCardsCompleted] dùng.
   final int flashcardsCompleted;
 
   LearningSessionSummary copyWith({

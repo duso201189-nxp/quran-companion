@@ -148,3 +148,175 @@ class MetaEntries extends Table {
   @override
   Set<Column<Object>> get primaryKey => {key};
 }
+
+// ============================================================
+// Lexicon (Sprint 12 — Phase 0.1/1/2). Phân cấp
+// Root -> Lemma -> Lexeme -> WordInstance, GrammarFeature/Phrase là
+// mục ngang hàng (không phải hậu duệ), LexiconRelation là quan hệ
+// giữa 2 Lemma (không phải bảng nội dung).
+//
+// LƯU Ý QUAN TRỌNG: các bảng dưới đây khai báo TRƯỚC khi
+// tool/build_quran_db.py sinh dữ liệu thật cho chúng — cùng tình
+// trạng lemmas/word_instances đã ghi trong DATABASE.md từ Sprint 9.
+// Test dùng NativeDatabase.memory() (onCreate chạy thật, xem doc
+// AppDatabase ở trên) nên PASS bình thường; bản đóng gói thật
+// (assets/database/quran.sqlite) CHƯA có các bảng này — mọi truy vấn
+// qua LexiconRepositoryImpl sẽ lỗi "no such table" cho tới khi một
+// giai đoạn data-pipeline riêng (chưa lên kế hoạch) build dữ liệu
+// thật. Xem TODO.md.
+// ============================================================
+
+@DataClassName('RootRow')
+class Roots extends Table {
+  @override
+  String get tableName => 'roots';
+
+  IntColumn get id => integer()();
+
+  /// Các phụ âm gốc, vd 'ك ت ب'.
+  TextColumn get radicals => text()();
+  TextColumn get meaningCore => text().named('meaning_core').nullable()();
+
+  @override
+  Set<Column<Object>> get primaryKey => {id};
+}
+
+@DataClassName('LemmaRow')
+class Lemmas extends Table {
+  @override
+  String get tableName => 'lemmas';
+
+  IntColumn get id => integer()();
+  TextColumn get arabic => text()();
+  TextColumn get transliteration => text().nullable()();
+  TextColumn get posTag => text().named('pos_tag').nullable()();
+  TextColumn get meaningVi => text().named('meaning_vi').nullable()();
+  TextColumn get meaningEn => text().named('meaning_en').nullable()();
+  TextColumn get explanationVi => text().named('explanation_vi').nullable()();
+  IntColumn get rootId =>
+      integer().named('root_id').nullable().references(Roots, #id)();
+  IntColumn get occurrenceCount =>
+      integer().named('occurrence_count').withDefault(const Constant(0))();
+
+  @override
+  Set<Column<Object>> get primaryKey => {id};
+}
+
+@DataClassName('LexemeRow')
+class Lexemes extends Table {
+  @override
+  String get tableName => 'lexemes';
+
+  IntColumn get id => integer()();
+  IntColumn get lemmaId =>
+      integer().named('lemma_id').references(Lemmas, #id)();
+
+  /// Khuôn/thể phái sinh, vd 'Form I'.
+  TextColumn get formPattern => text().named('form_pattern').nullable()();
+  TextColumn get partOfSpeechDetail =>
+      text().named('part_of_speech_detail').nullable()();
+
+  @override
+  Set<Column<Object>> get primaryKey => {id};
+}
+
+@DataClassName('WordInstanceRow')
+class WordInstances extends Table {
+  @override
+  String get tableName => 'word_instances';
+
+  IntColumn get id => integer()();
+  IntColumn get ayahId => integer().named('ayah_id').references(Ayahs, #id)();
+  IntColumn get lexemeId =>
+      integer().named('lexeme_id').references(Lexemes, #id)();
+
+  /// Vị trí từ trong Ayah (1-based).
+  IntColumn get position => integer()();
+
+  /// Dạng chữ Ả Rập thực tế xuất hiện (đã biến đổi), khác
+  /// Lemmas.arabic (dạng đầu mục từ điển).
+  TextColumn get arabicForm => text().named('arabic_form')();
+  TextColumn get transliteration => text().nullable()();
+
+  @override
+  Set<Column<Object>> get primaryKey => {id};
+}
+
+@DataClassName('GrammarFeatureRow')
+class GrammarFeatures extends Table {
+  @override
+  String get tableName => 'grammar_features';
+
+  IntColumn get id => integer()();
+  IntColumn get wordInstanceId =>
+      integer().named('word_instance_id').references(WordInstances, #id)();
+
+  /// vd 'tense', 'person', 'case', 'gender', 'number'.
+  TextColumn get featureKey => text().named('feature_key')();
+
+  /// vd 'past', '3rd', 'nominative', 'masculine'.
+  TextColumn get featureValue => text().named('feature_value')();
+
+  @override
+  Set<Column<Object>> get primaryKey => {id};
+}
+
+@DataClassName('PhraseRow')
+class Phrases extends Table {
+  @override
+  String get tableName => 'phrases';
+
+  IntColumn get id => integer()();
+  TextColumn get arabic => text()();
+  TextColumn get transliteration => text().nullable()();
+  TextColumn get meaningVi => text().named('meaning_vi').nullable()();
+  TextColumn get meaningEn => text().named('meaning_en').nullable()();
+
+  @override
+  Set<Column<Object>> get primaryKey => {id};
+}
+
+/// Bảng nối Phrase <-> WordInstance, có thứ tự — Phrase.wordInstanceIds
+/// (domain) tái dựng từ đây, sắp theo [position]. Dùng bảng nối quan
+/// hệ thay vì cột danh sách tuần tự hoá (JSON) — đúng tiền lệ đã có
+/// trong file này (Highlights lưu mỗi màu 1 dòng, không tuần tự hoá
+/// mảng màu).
+@DataClassName('PhraseWordInstanceRow')
+class PhraseWordInstances extends Table {
+  @override
+  String get tableName => 'phrase_word_instances';
+
+  IntColumn get phraseId =>
+      integer().named('phrase_id').references(Phrases, #id)();
+  IntColumn get wordInstanceId =>
+      integer().named('word_instance_id').references(WordInstances, #id)();
+  IntColumn get position => integer()();
+
+  @override
+  Set<Column<Object>> get primaryKey => {phraseId, wordInstanceId};
+}
+
+/// Quan hệ NGỮ NGHĨA giữa 2 Lemma (đồng nghĩa/trái nghĩa) — không
+/// phải bảng nội dung độc lập, xem domain LexiconRelation.
+@DataClassName('LexiconRelationRow')
+class LexiconRelations extends Table {
+  @override
+  String get tableName => 'lexicon_relations';
+
+  IntColumn get id => integer()();
+
+  // 2 FK cùng trỏ tới Lemmas — @ReferenceName phân biệt 2 quan hệ
+  // ngược riêng (Drift không tự đoán được nếu để trùng tên).
+  @ReferenceName('relationsAsSource')
+  IntColumn get fromLemmaId =>
+      integer().named('from_lemma_id').references(Lemmas, #id)();
+  @ReferenceName('relationsAsTarget')
+  IntColumn get toLemmaId =>
+      integer().named('to_lemma_id').references(Lemmas, #id)();
+
+  /// 'synonym' | 'antonym'.
+  TextColumn get relationType => text().named('relation_type')();
+
+  @override
+  Set<Column<Object>> get primaryKey => {id};
+}

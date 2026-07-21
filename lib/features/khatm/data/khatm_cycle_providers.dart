@@ -1,12 +1,16 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/database/user/user_database_providers.dart';
+import '../../../core/logging/logging_providers.dart';
 import '../domain/entities/khatm_cycle.dart';
 import '../domain/repositories/khatm_cycle_repository.dart';
 import 'khatm_cycle_repository_impl.dart';
 
 final khatmCycleRepositoryProvider = Provider<KhatmCycleRepository>(
-  (ref) => KhatmCycleRepositoryImpl(ref.watch(userDatabaseProvider)),
+  (ref) => KhatmCycleRepositoryImpl(
+    ref.watch(userDatabaseProvider),
+    ref.watch(loggerProvider),
+  ),
 );
 
 /// Chu kỳ Khatm đang đọc dở (completedAt == null) mới nhất; null nếu

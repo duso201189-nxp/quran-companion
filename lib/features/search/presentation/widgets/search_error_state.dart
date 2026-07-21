@@ -19,6 +19,18 @@ import 'package:quran_companion/l10n/app_localizations.dart';
 /// Cùng ngôn ngữ hình ảnh với `_ErrorState` sẵn có trong
 /// `SurahListScreen` (icon `cloud_off_outlined`, màu `scheme.error`,
 /// cùng khoảng cách 24/12/16) — không phát minh giao diện lỗi mới.
+///
+/// Sprint 20 Phase 2 — rà soát lại theo accessibility_audit.md: widget
+/// này đã đạt chuẩn `Semantics(liveRegion: true, label:) +
+/// ExcludeSemantics` + nút "Thử lại" nằm NGOÀI vùng live-region (giữ
+/// đúng ngữ nghĩa nút bấm độc lập) từ trước, không cần sửa gì. Tên
+/// gọi "Search" không còn khớp phạm vi sử dụng thực tế (widget này
+/// hiện được Analytics/AI Tutor/Learning Journey/Smart Learning dùng
+/// lại nhiều hơn chính Search) — đổi tên/di chuyển sang
+/// `lib/shared/widgets/` là refactor CÓ CHỦ Ý chưa làm ở phase này
+/// (đổi tên 1 class được import ở 6+ nơi là thay đổi diện rộng, ngoài
+/// phạm vi "cải thiện accessibility" của Sprint 20 Phase 2 — xem
+/// accessibility_audit.md mục backlog).
 class SearchErrorState extends StatelessWidget {
   const SearchErrorState({
     super.key,

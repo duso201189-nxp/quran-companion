@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../flashcards/data/flashcard_providers.dart';
+import '../../flashcards/presentation/flashcard_review_screen.dart';
 import '../../learning/data/scheduler_providers.dart';
 import '../../learning/presentation/review_session_screen.dart';
 import '../../quiz/data/quiz_providers.dart';
@@ -37,6 +39,7 @@ class _LearningSessionScreenState extends ConsumerState<LearningSessionScreen> {
   /// — không đổi LearningSessionController (Phase 2 giữ nguyên).
   bool _reviewCompletionHandled = false;
   bool _quizCompletionHandled = false;
+  bool _flashcardCompletionHandled = false;
 
   @override
   void initState() {
@@ -81,17 +84,29 @@ class _LearningSessionScreenState extends ConsumerState<LearningSessionScreen> {
       _quizCompletionHandled = false;
     }
 
+    // Cùng cơ chế lắng nghe hoàn thành ở trên, cho Flashcard (Sprint
+    // 13 Phase 2) — dueFlashcardCardsProvider rỗng = đã ôn hết.
+    if (session.currentActivity == LearningActivityType.flashcard) {
+      ref.listen(dueFlashcardCardsProvider, (previous, next) {
+        final due = next.valueOrNull;
+        if (due != null && due.isEmpty && !_flashcardCompletionHandled) {
+          _flashcardCompletionHandled = true;
+          ref
+              .read(learningSessionControllerProvider.notifier)
+              .completeCurrentActivity();
+        }
+      });
+    } else if (_flashcardCompletionHandled) {
+      _flashcardCompletionHandled = false;
+    }
+
     return switch (session.status) {
       LearningSessionStatus.notStarted => const _LearningSessionLoading(),
       LearningSessionStatus.completed => LearningSummaryScreen(state: session),
       LearningSessionStatus.inProgress => switch (session.currentActivity!) {
           LearningActivityType.review => const ReviewSessionScreen(),
           LearningActivityType.quiz => const QuizSessionScreen(),
-          // Không thể xảy ra ở Sprint 11: dueFlashcardCount luôn null
-          // trong LearningSessionController._buildContext ->
-          // LearningPlanner luôn bỏ qua Flashcard (xem Phase 1/2).
-          // Nhánh này chỉ để switch tường minh, không throw.
-          LearningActivityType.flashcard => const _LearningSessionLoading(),
+          LearningActivityType.flashcard => const FlashcardReviewScreen(),
         },
     };
   }

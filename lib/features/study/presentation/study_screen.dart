@@ -9,8 +9,10 @@ import '../../../app/router.dart';
 /// (Flashcard, Lặp lại ngắt quãng, Trắc nghiệm, Ôn tập hằng ngày) giữ
 /// nguyên bên dưới làm lối tắt — Phase 0 Revision cố ý để cả hai cùng
 /// tồn tại thay vì bỏ 4 thẻ cũ (câu hỏi sản phẩm còn mở, xem kiến
-/// trúc). Chỉ Flashcard còn hoãn lại (chưa có dữ liệu từ vựng, xem
-/// DR-2026-0005 mục 5).
+/// trúc). Flashcard nối vào FlashcardBrowseScreen từ Sprint 13 Phase
+/// 3 — LƯU Ý: Lexicon (nhóm A) hiện CHƯA có dữ liệu Lemma thật (xem
+/// Sprint 12 Phase 3 §5), nên màn hình Duyệt/Thêm sẽ trống cho tới khi
+/// dữ liệu thật được nạp; đây là hạn chế dữ liệu, không phải lỗi UI.
 class StudyScreen extends StatelessWidget {
   const StudyScreen({super.key});
 
@@ -28,7 +30,7 @@ class StudyScreen extends StatelessWidget {
         icon: Icons.style_rounded,
         title: l10n.studyFlashcards,
         subtitle: l10n.studyFlashcardsDesc,
-        onTap: null,
+        onTap: () => context.push(AppRoutes.flashcards),
       ),
       (
         icon: Icons.update_rounded,
@@ -47,6 +49,18 @@ class StudyScreen extends StatelessWidget {
         title: l10n.studyDailyReview,
         subtitle: l10n.studyDailyReviewDesc,
         onTap: () => context.push(AppRoutes.revisionQueue),
+      ),
+      (
+        icon: Icons.insights_rounded,
+        title: l10n.studyProgress,
+        subtitle: l10n.studyProgressDesc,
+        onTap: () => context.push(AppRoutes.progressDashboard),
+      ),
+      (
+        icon: Icons.auto_awesome_rounded,
+        title: l10n.studyAiTutor,
+        subtitle: l10n.studyAiTutorDesc,
+        onTap: () => context.push(AppRoutes.aiTutor),
       ),
     ];
 

@@ -98,6 +98,8 @@
   "continueReading": "متابعة القراءة",
   "startReading": "ابدأ القراءة",
   "todaysVerse": "آية اليوم",
+  "homeLoading": "جارٍ تحميل الشاشة الرئيسية…",
+  "homeTodaysVerseLoading": "جارٍ تحميل آية اليوم…",
   "dailyProgress": "تقدم اليوم",
   "lastRead": "آخر قراءة",
   "quickAccess": "وصول سريع",
@@ -115,13 +117,15 @@
   "minutesLabel": "دقائق",
   "myBookmarks": "علاماتي المرجعية",
   "studyFlashcards": "بطاقات تعليمية",
-  "studyFlashcardsDesc": "احفظ الآيات ببطاقات ذات وجهين",
+  "studyFlashcardsDesc": "احفظ مفردات القرآن ببطاقات ذات وجهين",
   "studySpaced": "تكرار متباعد",
   "studySpacedDesc": "راجع قبل النسيان — تذكر أطول",
   "studyQuiz": "اختبار",
   "studyQuizDesc": "اختبارات سريعة لكل سورة",
   "studyDailyReview": "مراجعة يومية",
   "studyDailyReviewDesc": "آيات مستحقة للمراجعة اليوم",
+  "studyProgress": "التقدم",
+  "studyProgressDesc": "إحصاءات وسجل ونصائح للتحسين",
   "comingSoon": "قريباً",
   "statsReadingDays": "أيام القراءة",
   "statsAyahsRead": "الآيات المقروءة",
@@ -238,6 +242,280 @@
   "reviewOpenInReading": "فتح في القراءة",
   "reviewSessionComplete": "اكتملت الجلسة!",
   "reviewSessionCompleteSubtitle": "لا توجد بطاقات مستحقة للمراجعة الآن.",
+  "flashcardReviewTitle": "البطاقات التعليمية",
+  "flashcardReviewComplete": "اكتملت مراجعة البطاقات!",
+  "flashcardReviewCompleteSubtitle": "لا توجد مفردات مستحقة للمراجعة الآن.",
+  "flashcardsTitle": "البطاقات التعليمية",
+  "flashcardSearchHint": "ابحث بالعربية أو النطق أو المعنى",
+  "flashcardAdd": "إضافة",
+  "flashcardContentUnavailable": "المحتوى غير متاح",
+  "flashcardMoveToDeck": "نقل إلى مجموعة",
+  "flashcardRemove": "إزالة البطاقة",
+  "flashcardNoDeck": "بدون مجموعة",
+  "flashcardEmptyDeck": "لا توجد بطاقات في هذه المجموعة بعد.",
+  "flashcardNoResults": "لا توجد بطاقات مطابقة.",
+  "flashcardFilterAllDecks": "كل المجموعات",
+  "flashcardFilterAllTypes": "كل الأنواع",
+  "flashcardFilterAllStatus": "كل الحالات",
+  "flashcardFilterDue": "مستحق",
+  "flashcardFilterNew": "جديد",
+  "flashcardFilterLearning": "قيد التعلم",
+  "flashcardFilterReview": "قيد المراجعة",
+  "flashcardFilterLapsed": "منسي",
+  "flashcardOnboardingTitle": "لا توجد بطاقات بعد",
+  "flashcardOnboardingBody": "أضف أول بطاقة مفردات لبدء الحفظ بالتكرار المتباعد.",
+  "flashcardOnboardingCta": "أضف أول بطاقة",
+  "flashcardOnboardingReviewNudge": "تمت إضافة أول بطاقة! هل تريد مراجعتها الآن؟",
+  "flashcardOnboardingReviewCta": "راجع الآن",
+  "flashcardDecksTitle": "مجموعات البطاقات",
+  "flashcardDecksEmpty": "لا توجد مجموعات بعد.",
+  "flashcardDecksCreate": "إنشاء مجموعة",
+  "flashcardDecksRename": "إعادة تسمية",
+  "flashcardDecksDelete": "حذف",
+  "flashcardDecksDeleteConfirmTitle": "حذف المجموعة؟",
+  "flashcardDecksDeleteConfirmBody": "ستنتقل بطاقات هذه المجموعة إلى \"بدون مجموعة\" ولن يتم حذفها.",
+  "flashcardDeckNameHint": "اسم المجموعة",
+  "flashcardDeckItemCount": "{count, plural, =0{لا توجد بطاقات بعد} =1{بطاقة واحدة} other{{count} بطاقة}}",
+  "@flashcardDeckItemCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "addFlashcardTitle": "إضافة بطاقة",
+  "addFlashcardSourceLemma": "مدخل معجمي",
+  "addFlashcardSourceRoot": "جذر",
+  "addFlashcardSourcePhrase": "عبارة",
+  "addFlashcardSourceNotAvailable": "لا توجد بيانات قابلة للتصفح لهذا النوع بعد.",
+  "addFlashcardSearchHint": "ابحث...",
+  "addFlashcardNoResults": "لا توجد نتائج.",
+  "addFlashcardAdd": "إضافة إلى البطاقات",
+  "smartDeckTodaysReview": "مراجعة اليوم",
+  "smartDeckMostDifficult": "الأصعب",
+  "smartDeckRecentlyLearned": "تم تعلمها مؤخرًا",
+  "smartDeckWeakRoots": "الجذور الضعيفة",
+  "smartDeckVerbForms": "أوزان الفعل",
+  "smartDeckEmpty": "لا توجد بطاقات في هذه المجموعة الذكية بعد.",
+  "smartDeckVerbFormLabel": "الوزن {form}",
+  "@smartDeckVerbFormLabel": {
+    "placeholders": {
+      "form": {
+        "type": "String"
+      }
+    }
+  },
+  "progressDashboardTitle": "التقدم",
+  "progressDashboardEmpty": "لم تتم مراجعة أي بطاقة بعد — ستظهر الإحصاءات عند بدء التعلم.",
+  "progressDashboardHistory": "سجل النشاط",
+  "progressDashboardHistoryEmpty": "لا يوجد نشاط قراءة في هذه الفترة بعد.",
+  "progressDashboardInsights": "نصائح للتحسين",
+  "progressDashboardOverview": "نظرة عامة",
+  "progressDashboardLoading": "جارٍ تحميل بيانات التقدم…",
+  "statCardsStudied": "بطاقات تمت دراستها",
+  "statReviewsToday": "مراجعات اليوم",
+  "statAccuracy": "الدقة",
+  "statAverageEase": "متوسط السهولة",
+  "statAverageInterval": "متوسط الفاصل (أيام)",
+  "historyDaily": "يوم",
+  "historyWeekly": "أسبوع",
+  "historyMonthly": "شهر",
+  "insightsWeakRoots": "الجذور الضعيفة",
+  "insightsDifficultLemmas": "الأصعب",
+  "insightsFrequentlyForgotten": "يُنسى كثيرًا",
+  "insightsFastestImproving": "الأسرع تحسنًا",
+  "insightsEmpty": "لا توجد بيانات لهذا القسم بعد.",
+  "progressDashboardGoals": "الأهداف",
+  "progressDashboardAchievements": "الإنجازات",
+  "goalDailyStudyLabel": "الدراسة اليومية",
+  "goalDailyReviewsLabel": "المراجعة اليومية",
+  "goalWeeklyStudyLabel": "الدراسة الأسبوعية",
+  "goalReviewsProgress": "{current} / {target} مراجعات اليوم",
+  "@goalReviewsProgress": {
+    "placeholders": {
+      "current": {
+        "type": "int"
+      },
+      "target": {
+        "type": "int"
+      }
+    }
+  },
+  "goalWeeklyMinutesProgress": "{current} / {target} دقيقة هذا الأسبوع",
+  "@goalWeeklyMinutesProgress": {
+    "placeholders": {
+      "current": {
+        "type": "int"
+      },
+      "target": {
+        "type": "int"
+      }
+    }
+  },
+  "goalAchieved": "تم تحقيقه",
+  "achievementFirstStudyTitle": "أول جلسة دراسة",
+  "achievementTenCardsTitle": "10 بطاقات تمت دراستها",
+  "achievementHundredCardsTitle": "100 بطاقة تمت دراستها",
+  "achievementSevenDayStreakTitle": "سلسلة 7 أيام",
+  "achievementThirtyDayStreakTitle": "سلسلة 30 يومًا",
+  "achievementSharpMemoryTitle": "ذاكرة حادة",
+  "achievementProgressCards": "{current} / {target} بطاقات",
+  "@achievementProgressCards": {
+    "placeholders": {
+      "current": {
+        "type": "int"
+      },
+      "target": {
+        "type": "int"
+      }
+    }
+  },
+  "achievementProgressDays": "{current} / {target} أيام",
+  "@achievementProgressDays": {
+    "placeholders": {
+      "current": {
+        "type": "int"
+      },
+      "target": {
+        "type": "int"
+      }
+    }
+  },
+  "achievementProgressPercent": "الدقة {current}% / {target}%",
+  "@achievementProgressPercent": {
+    "placeholders": {
+      "current": {
+        "type": "int"
+      },
+      "target": {
+        "type": "int"
+      }
+    }
+  },
+  "achievementUnlocked": "مفتوح",
+  "achievementLocked": "مقفل",
+  "aiTutorTitle": "المعلم الذكي",
+  "studyAiTutor": "المعلم الذكي",
+  "studyAiTutorDesc": "اقتراحات مخصّصة بناءً على تقدّمك",
+  "aiTutorSummaryTitle": "نظرتك العامة",
+  "aiTutorSuggestionsTitle": "اقتراحات",
+  "aiTutorInsightsTitle": "ملاحظات",
+  "aiTutorSuggestionsEmpty": "أنت متابع لكل شيء — لا يوجد ما يستدعي انتباهك الآن.",
+  "aiTutorLoading": "جارٍ تحميل معلمك…",
+  "aiTutorPriorityHigh": "أولوية عالية",
+  "aiTutorPriorityMedium": "أولوية متوسطة",
+  "aiTutorPriorityLow": "أولوية منخفضة",
+  "aiTutorSuggestionReviewDueTitle": "راجع بطاقاتك المستحقة",
+  "aiTutorSuggestionReviewDueDetail": "{count} بطاقة بانتظارك",
+  "@aiTutorSuggestionReviewDueDetail": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "aiTutorSuggestionDailyStudyTitle": "أكمل هدف الدراسة اليومي",
+  "aiTutorSuggestionDailyStudyDetail": "تبقّى {count} دقيقة اليوم",
+  "@aiTutorSuggestionDailyStudyDetail": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "aiTutorSuggestionDailyReviewTitle": "أكمل هدف المراجعة اليومي",
+  "aiTutorSuggestionDailyReviewDetail": "تبقّى {count} مراجعة اليوم",
+  "@aiTutorSuggestionDailyReviewDetail": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "aiTutorSuggestionWeakRootsTitle": "قوِّ جذورك الضعيفة",
+  "aiTutorSuggestionWeakRootsDetail": "{count} جذر للمراجعة",
+  "@aiTutorSuggestionWeakRootsDetail": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "aiTutorSuggestionForgottenTitle": "راجع البطاقات التي تُنسى كثيرًا",
+  "aiTutorSuggestionForgottenDetail": "{count} بطاقة للمراجعة",
+  "@aiTutorSuggestionForgottenDetail": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "aiTutorSuggestionStreakTitle": "حافظ على سلسلتك",
+  "aiTutorSuggestionStreakDetail": "سلسلة {count} يوم",
+  "@aiTutorSuggestionStreakDetail": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "aiTutorInsightAchievementsUnlockedLabel": "الإنجازات المفتوحة",
+  "aiTutorActionReviewNow": "راجع الآن",
+  "aiTutorActionContinueLearning": "متابعة التعلّم",
+  "aiTutorActionOpenWeakCards": "فتح البطاقات الضعيفة",
+  "aiTutorActionOpenFlashcards": "فتح البطاقات التعليمية",
+  "aiTutorJourneyEntryTitle": "عرض رحلة التعلم الخاصة بك",
+  "aiTutorJourneyEntryDesc": "اطّلع على خطة اليوم، خطوة بخطوة",
+  "learningJourneyTitle": "رحلة التعلم",
+  "journeyHeaderTitle": "خطة اليوم",
+  "journeyStepCountLabel": "{count} خطوة مخطَّطة",
+  "@journeyStepCountLabel": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "journeyProgressTitle": "تقدّمك",
+  "journeyStepsTitle": "الخطوات",
+  "learningJourneyEmpty": "لا يوجد شيء مخطَّط لليوم — أنت متابع لكل شيء!",
+  "learningJourneyLoading": "جارٍ تحميل رحلة التعلم الخاصة بك…",
+  "journeyStepNumber": "الخطوة {number}",
+  "@journeyStepNumber": {
+    "placeholders": {
+      "number": {
+        "type": "int"
+      }
+    }
+  },
+  "journeyEntrySmartLearningTitle": "احصل على جلستك الذكية",
+  "journeyEntrySmartLearningDesc": "توصية مخصّصة للحظة الحالية",
+  "smartLearningTitle": "التعلّم الذكي",
+  "smartLearningHeaderTitle": "جلستك الذكية",
+  "smartLearningRecommendationCountLabel": "{count} توصية اليوم",
+  "@smartLearningRecommendationCountLabel": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "smartLearningRecommendedTitle": "الجلسة الموصى بها",
+  "smartLearningOtherRecommendationsTitle": "توصيات أخرى",
+  "smartLearningRelatedStepsLabel": "{count} خطوة ذات صلة",
+  "@smartLearningRelatedStepsLabel": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "smartLearningEmpty": "لا حاجة إلى جلسة ذكية الآن — أنت متابع لكل شيء!",
+  "smartLearningLoading": "جارٍ تحميل جلستك الذكية…",
+  "smartLearningStrategyShortReview": "مراجعة سريعة",
+  "smartLearningStrategyDeepStudy": "دراسة معمّقة",
+  "smartLearningStrategyMemorization": "حفظ",
+  "smartLearningStrategyRecovery": "تعافٍ",
   "quizCorrect": "إجابة صحيحة!",
   "quizIncorrect": "إجابة غير صحيحة.",
   "quizEmpty": "لا يوجد محتوى كافٍ لإنشاء اختبار.",
@@ -268,6 +546,14 @@
   "learningSummaryTitle": "ملخص الجلسة",
   "learningSummaryReviewCount": "تمت مراجعة {count} بطاقة",
   "@learningSummaryReviewCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "learningSummaryFlashcardCount": "تمت مراجعة {count} كلمة",
+  "@learningSummaryFlashcardCount": {
     "placeholders": {
       "count": {
         "type": "int"

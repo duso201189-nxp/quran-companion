@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import 'package:quran_companion/features/flashcards/data/flashcard_providers.dart';
 import 'package:quran_companion/features/learning/data/scheduler_providers.dart';
 import 'package:quran_companion/features/learning/domain/entities/srs_card.dart';
 import 'package:quran_companion/features/learning_session/data/learning_planner_providers.dart';
@@ -13,15 +14,20 @@ import 'package:quran_companion/features/learning_session/presentation/learning_
 import 'package:quran_companion/features/quiz/data/quiz_providers.dart';
 import 'package:quran_companion/features/quiz/domain/entities/quiz_question.dart';
 
-SrsCard _dummyCard(int i) => SrsCard(
-      id: 'card-$i',
-      itemType: LearningItemType.ayah,
+SrsCard _dummyCard(
+  int i, {
+  LearningItemType itemType = LearningItemType.ayah,
+}) =>
+    SrsCard(
+      id: '$itemType-card-$i',
+      itemType: itemType,
       itemId: i,
       easeFactor: 2.5,
       intervalDays: 1,
       repetitions: 0,
       dueDate: 0,
       state: SrsCardState.review,
+      updatedAtMs: 0,
     );
 
 QuizQuestion _dummyQuestion() => const QuizQuestion(
@@ -49,6 +55,32 @@ class _FakeReviewQueue {
   Stream<List<SrsCard>> watch() async* {
     yield List.generate(_current, _dummyCard);
     yield* _controller.stream.map((n) => List.generate(n, _dummyCard));
+  }
+}
+
+/// Cùng vai trò [_FakeReviewQueue] nhưng cho dueFlashcardCardsProvider
+/// (Sprint 13 Phase 2) — thẻ loại LearningItemType.lemma.
+class _FakeFlashcardQueue {
+  int _current;
+  _FakeFlashcardQueue(this._current);
+  final _controller = StreamController<int>.broadcast();
+
+  void emit(int count) {
+    _current = count;
+    _controller.add(count);
+  }
+
+  Stream<List<SrsCard>> watch() async* {
+    yield List.generate(
+      _current,
+      (i) => _dummyCard(i, itemType: LearningItemType.lemma),
+    );
+    yield* _controller.stream.map(
+      (n) => List.generate(
+        n,
+        (i) => _dummyCard(i, itemType: LearningItemType.lemma),
+      ),
+    );
   }
 }
 
@@ -84,16 +116,20 @@ class _CountingPlanner implements LearningPlanner {
 
 void main() {
   late _FakeReviewQueue reviewQueue;
+  late _FakeFlashcardQueue flashcardQueue;
 
   ProviderContainer makeContainer({
     required int initialDueReview,
+    int initialDueFlashcards = 0,
     QuizSessionState? quizState,
     LearningPlanner? planner,
   }) {
     reviewQueue = _FakeReviewQueue(initialDueReview);
+    flashcardQueue = _FakeFlashcardQueue(initialDueFlashcards);
     final container = ProviderContainer(
       overrides: [
         dueReviewCardsProvider.overrideWith((ref) => reviewQueue.watch()),
+        dueFlashcardCardsProvider.overrideWith((ref) => flashcardQueue.watch()),
         quizSessionControllerProvider.overrideWith(
           () => _FakeQuizSessionController(
             quizState ??
@@ -191,6 +227,67 @@ void main() {
     });
   });
 
+  group('flashcard completed (Sprint 13 Phase 2)', () {
+    test(
+        'Review không có, Flashcard có -> start() chọn flashcard '
+        '(thứ tự Review -> Quiz -> Flashcard)', () async {
+      final container = makeContainer(
+        initialDueReview: 0,
+        initialDueFlashcards: 2,
+      );
+      addTearDown(container.dispose);
+
+      await container.read(learningSessionControllerProvider.notifier).start();
+
+      // Quiz luôn "sẵn có" (quizAvailable: true) nên đứng trước
+      // Flashcard trong thứ tự mặc định — đúng SequentialLearningPlanner.
+      expect(
+        container.read(learningSessionControllerProvider).currentActivity,
+        LearningActivityType.quiz,
+      );
+    });
+
+    test(
+        'hoàn thành Flashcard -> đưa vào completedActivities, tích luỹ '
+        'đúng số đã ôn (chênh lệch due trước/sau), phiên kết thúc', () async {
+      final container = makeContainer(
+        initialDueReview: 0,
+        initialDueFlashcards: 2,
+        planner: const SequentialLearningPlanner(
+          order: [
+            LearningActivityType.flashcard,
+            LearningActivityType.review,
+            LearningActivityType.quiz,
+          ],
+        ),
+      );
+      addTearDown(container.dispose);
+      final notifier =
+          container.read(learningSessionControllerProvider.notifier);
+
+      await notifier.start();
+      expect(
+        container.read(learningSessionControllerProvider).currentActivity,
+        LearningActivityType.flashcard,
+      );
+
+      // Mô phỏng người dùng đã ôn hết 2 Flashcard (FlashcardReviewScreen
+      // thật làm việc này qua SchedulerRepository.applyReview — không mô
+      // phỏng lại logic đó ở đây, chỉ thay đổi số liệu due).
+      flashcardQueue.emit(0);
+      await Future<void>.delayed(Duration.zero);
+
+      await notifier.completeCurrentActivity();
+
+      final state = container.read(learningSessionControllerProvider);
+      expect(
+        state.completedActivities,
+        contains(LearningActivityType.flashcard),
+      );
+      expect(state.summary.flashcardsCompleted, 2);
+    });
+  });
+
   group('planner called again', () {
     test('LearningPlanner.next() được gọi đúng 1 lần mỗi bước chuyển',
         () async {
@@ -218,8 +315,8 @@ void main() {
 
   group('flashcard skipped', () {
     test(
-        'Flashcard luôn không sẵn có (chưa cài) -> không bao giờ được '
-        'chọn, phiên kết thúc sau khi Review + Quiz xong', () async {
+        'dueFlashcardCount = 0 -> Flashcard không sẵn có, không bao giờ '
+        'được chọn, phiên kết thúc sau khi Review + Quiz xong', () async {
       final container = makeContainer(initialDueReview: 1);
       addTearDown(container.dispose);
       final notifier =

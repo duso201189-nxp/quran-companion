@@ -1,6 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/database/user/user_database_providers.dart';
+import '../../../core/logging/logging_providers.dart';
 import '../../quran/data/user_content_providers.dart';
 import '../domain/entities/srs_card.dart';
 import '../domain/repositories/scheduler_repository.dart';
@@ -19,6 +20,7 @@ final schedulerRepositoryProvider = Provider<SchedulerRepository>(
   (ref) => SchedulerRepositoryImpl(
     ref.watch(userDatabaseProvider),
     ref.watch(schedulingAlgorithmProvider),
+    ref.watch(loggerProvider),
   ),
 );
 
