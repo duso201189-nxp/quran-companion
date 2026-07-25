@@ -25,10 +25,6 @@
       }
     }
   },
-  "placeholderHome": "Bước 8 sẽ xây dựng Dashboard học tập: tiếp tục đọc, tiến độ hôm nay, chuỗi ngày học, câu Qur'an trong ngày.",
-  "placeholderQuran": "Bước 3 sẽ hiển thị danh sách 114 Surah với tìm kiếm và bộ lọc Mecca / Madinah.",
-  "placeholderStudy": "Bước 9 sẽ xây dựng Flashcard (Spaced Repetition) và Quiz.",
-  "placeholderStats": "Bước 9 sẽ hiển thị biểu đồ: chuỗi ngày học, tổng Ayah, thời gian học, nhật ký học.",
   "searchSurahHint": "Tìm Surah theo tên hoặc số...",
   "filterAll": "Tất cả",
   "revelationMecca": "Mecca",
@@ -44,11 +40,52 @@
   "errorLoadData": "Không tải được dữ liệu. Vui lòng thử lại.",
   "retry": "Thử lại",
   "emptySearchResults": "Không tìm thấy Surah nào phù hợp.",
+  "surahListLoading": "Đang tải danh sách Surah…",
   "displaySettings": "Hiển thị",
   "readingFontSize": "Cỡ chữ Ả Rập",
+  "readingModeLabel": "Chế độ đọc",
+  "readingLayersLabel": "Lớp hỗ trợ đọc",
   "showTransliteration": "Phiên âm Latin",
   "showVietnamese": "Bản dịch tiếng Việt",
   "showEnglish": "Bản dịch tiếng Anh",
+  "jumpToAyahTitle": "Chuyển tới Ayah",
+  "jumpToAyahSurahLabel": "Surah",
+  "jumpToAyahNumberLabel": "Số câu",
+  "jumpToAyahRange": "1–{max}",
+  "@jumpToAyahRange": {
+    "placeholders": {
+      "max": {
+        "type": "int"
+      }
+    }
+  },
+  "jumpToAyahAction": "Chuyển tới",
+  "jumpToAyahListModeOnly": "Chuyển tới Ayah hiện chỉ dùng được ở chế độ Danh sách.",
+  "readingProgressPosition": "Ayah {current} / {total}",
+  "@readingProgressPosition": {
+    "placeholders": {
+      "current": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "readingProgressSemantics": "Ayah {current} trên {total}, {percent}%",
+  "@readingProgressSemantics": {
+    "placeholders": {
+      "current": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      },
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
   "surahNotFound": "Không tìm thấy Surah này.",
   "surahNoContent": "Surah chưa có nội dung. Hãy build lại dữ liệu (docs/DATA_PIPELINE.md).",
   "ayahSemanticLabel": "Ayah {number}",
@@ -79,6 +116,8 @@
   "stopAudio": "Dừng nghe",
   "selectReciter": "Chọn Qari",
   "playFromHere": "Nghe từ Ayah này",
+  "nowPlaying": "Đang phát",
+  "openReadingScreen": "Mở trang đọc",
   "bookmarkLabel": "Bookmark",
   "statusLabel": "Trạng thái học",
   "statusNone": "Chưa đọc",
@@ -101,7 +140,6 @@
   "homeLoading": "Đang tải trang chủ…",
   "homeTodaysVerseLoading": "Đang tải câu Qur'an hôm nay…",
   "dailyProgress": "Tiến độ hôm nay",
-  "lastRead": "Đọc gần đây",
   "quickAccess": "Truy cập nhanh",
   "learningStreak": "Chuỗi ngày học",
   "streakDays": "{count} ngày",
@@ -114,8 +152,6 @@
   },
   "recentSurahs": "Surah gần đây",
   "ayahsReadLabel": "Ayah đã đọc",
-  "minutesLabel": "Phút học",
-  "myBookmarks": "Bookmark của tôi",
   "studyFlashcards": "Flashcard",
   "studyFlashcardsDesc": "Ghi nhớ từ vựng Qur'an bằng thẻ hai mặt",
   "studySpaced": "Lặp lại ngắt quãng",
@@ -144,7 +180,10 @@
   "favoriteLabel": "Yêu thích",
   "copyArabic": "Sao chép chữ Ả Rập",
   "copyTranslation": "Sao chép bản dịch",
+  "ayahHighlightLabel": "Tô màu",
   "searchResultsAyahs": "Kết quả trong nội dung",
+  "searchResultsSurahs": "Surah",
+  "searchNoResults": "Không tìm thấy kết quả nào.",
   "searchNoAyahResults": "Không tìm thấy Ayah nào phù hợp.",
   "searchLabel": "Tìm kiếm",
   "searchAskLabel": "Hỏi AI",
@@ -157,6 +196,7 @@
   "searchEmptySuggestedSectionTitle": "Gợi ý",
   "searchLoadingLabel": "Đang tìm kiếm...",
   "libraryTitle": "Thư viện của tôi",
+  "libraryLoading": "Đang tải thư viện…",
   "libraryBookmarks": "Đã lưu",
   "libraryFavorites": "Yêu thích",
   "libraryNotes": "Ghi chú",
@@ -202,6 +242,7 @@
     }
   },
   "collectionsTitle": "Bộ sưu tập",
+  "collectionsLoading": "Đang tải bộ sưu tập…",
   "collectionsEmpty": "Chưa có bộ sưu tập nào.",
   "collectionsCreate": "Bộ sưu tập mới",
   "collectionsRename": "Đổi tên",
@@ -240,16 +281,20 @@
   "reviewGradeGood": "Tốt",
   "reviewGradeEasy": "Dễ",
   "reviewOpenInReading": "Mở trong Kinh",
+  "reviewSessionLoading": "Đang tải phiên ôn tập…",
   "reviewSessionComplete": "Đã ôn xong!",
   "reviewSessionCompleteSubtitle": "Không còn thẻ nào đến hạn ôn tập lúc này.",
   "flashcardReviewTitle": "Flashcard",
   "flashcardReviewComplete": "Đã ôn xong Flashcard!",
   "flashcardReviewCompleteSubtitle": "Không còn từ vựng nào đến hạn ôn tập lúc này.",
+  "flashcardReviewLoading": "Đang tải Flashcard…",
   "flashcardsTitle": "Flashcard",
+  "flashcardsLoading": "Đang tải Flashcard…",
   "flashcardSearchHint": "Tìm theo chữ Ả Rập, phiên âm hoặc nghĩa",
   "flashcardAdd": "Thêm",
   "flashcardContentUnavailable": "Không có nội dung",
   "flashcardMoveToDeck": "Chuyển sang deck",
+  "flashcardMoveToDeckLoading": "Đang tải danh sách deck…",
   "flashcardRemove": "Gỡ Flashcard",
   "flashcardNoDeck": "Không deck",
   "flashcardEmptyDeck": "Deck này chưa có Flashcard nào.",
@@ -268,6 +313,7 @@
   "flashcardOnboardingReviewNudge": "Đã thêm Flashcard đầu tiên! Ôn thử ngay?",
   "flashcardOnboardingReviewCta": "Ôn ngay",
   "flashcardDecksTitle": "Deck Flashcard",
+  "flashcardDecksLoading": "Đang tải deck…",
   "flashcardDecksEmpty": "Chưa có deck nào.",
   "flashcardDecksCreate": "Tạo deck",
   "flashcardDecksRename": "Đổi tên",
@@ -284,6 +330,7 @@
     }
   },
   "addFlashcardTitle": "Thêm Flashcard",
+  "addFlashcardLoading": "Đang tìm kiếm...",
   "addFlashcardSourceLemma": "Từ điển",
   "addFlashcardSourceRoot": "Gốc từ",
   "addFlashcardSourcePhrase": "Cụm từ",
@@ -297,6 +344,7 @@
   "smartDeckWeakRoots": "Gốc từ yếu",
   "smartDeckVerbForms": "Theo thể động từ",
   "smartDeckEmpty": "Chưa có Flashcard nào trong Smart Deck này.",
+  "smartDeckLoading": "Đang tải Smart Deck…",
   "smartDeckVerbFormLabel": "Thể {form}",
   "@smartDeckVerbFormLabel": {
     "placeholders": {
@@ -518,6 +566,7 @@
   "smartLearningStrategyRecovery": "Phục hồi",
   "quizCorrect": "Chính xác!",
   "quizIncorrect": "Chưa đúng.",
+  "quizSessionLoading": "Đang tải câu hỏi…",
   "quizEmpty": "Không đủ nội dung để tạo câu hỏi.",
   "quizQuestionProgress": "Câu {current}/{total}",
   "@quizQuestionProgress": {
@@ -543,6 +592,7 @@
   },
   "quizRetry": "Làm lại",
   "learningSessionStart": "Bắt đầu buổi học",
+  "learningSessionLoading": "Đang chuẩn bị buổi học…",
   "learningSummaryTitle": "Tóm tắt buổi học",
   "learningSummaryReviewCount": "Đã ôn {count} thẻ",
   "@learningSummaryReviewCount": {

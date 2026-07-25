@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:quran_companion/l10n/app_localizations.dart';
 
+import '../../../shared/widgets/loading_state.dart';
 import '../../lexicon/data/lexicon_providers.dart';
 import '../../lexicon/domain/entities/lemma.dart';
 import '../../lexicon/domain/entities/lexicon_entry.dart';
@@ -79,6 +80,7 @@ class _AddFlashcardScreenState extends ConsumerState<AddFlashcardScreen> {
                       ? null
                       : IconButton(
                           icon: const Icon(Icons.clear_rounded),
+                          tooltip: l10n.searchClearTooltip,
                           onPressed: () {
                             _searchController.clear();
                             setState(() => _query = '');
@@ -119,7 +121,7 @@ class _LemmaResults extends ConsumerWidget {
     };
 
     return resultsAsync.when(
-      loading: () => const Center(child: CircularProgressIndicator()),
+      loading: () => LoadingState(semanticsLabel: l10n.addFlashcardLoading),
       error: (_, __) => Center(child: Text(l10n.errorLoadData)),
       data: (lemmas) {
         if (lemmas.isEmpty) {

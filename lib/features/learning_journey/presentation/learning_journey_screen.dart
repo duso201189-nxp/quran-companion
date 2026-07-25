@@ -5,6 +5,7 @@ import 'package:intl/intl.dart';
 import 'package:quran_companion/l10n/app_localizations.dart';
 
 import '../../../app/router.dart';
+import '../../../shared/widgets/cross_feature_entry_card.dart';
 import '../../../shared/widgets/empty_state_banner.dart';
 import '../../../shared/widgets/loading_state.dart';
 import '../../../shared/widgets/section_header.dart';
@@ -150,6 +151,12 @@ class _JourneyContent extends StatelessWidget {
 /// tĩnh, KHÔNG đọc provider nào, chỉ push route — cùng mẫu
 /// TutorHomeScreen._JourneyEntryCard (Sprint 16 Phase 2), không phát
 /// minh kiểu điều hướng mới.
+///
+/// Sprint 21.4 Phase A, mục A2 — khung NGOÀI (Material+InkWell+Padding)
+/// chuyển sang dùng chung `CrossFeatureEntryCard`, xác nhận
+/// byte-identical với `_JourneyEntryCard` qua
+/// design_system_consolidation_plan.md mục A2. Nội dung BÊN TRONG
+/// không đổi.
 class _SmartLearningEntryCard extends StatelessWidget {
   const _SmartLearningEntryCard();
 
@@ -159,45 +166,37 @@ class _SmartLearningEntryCard extends StatelessWidget {
     final scheme = Theme.of(context).colorScheme;
     final textTheme = Theme.of(context).textTheme;
 
-    return Material(
-      color: scheme.secondaryContainer.withValues(alpha: 0.6),
-      borderRadius: BorderRadius.circular(16),
-      child: InkWell(
-        borderRadius: BorderRadius.circular(16),
-        onTap: () => context.push(AppRoutes.smartLearning),
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: Row(
-            children: [
-              Icon(Icons.bolt_rounded, color: scheme.onSecondaryContainer),
-              const SizedBox(width: 14),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      l10n.journeyEntrySmartLearningTitle,
-                      style: textTheme.titleMedium?.copyWith(
-                        fontWeight: FontWeight.w700,
-                        color: scheme.onSecondaryContainer,
-                      ),
-                    ),
-                    const SizedBox(height: 2),
-                    Text(
-                      l10n.journeyEntrySmartLearningDesc,
-                      style: textTheme.bodySmall
-                          ?.copyWith(color: scheme.onSecondaryContainer),
-                    ),
-                  ],
+    return CrossFeatureEntryCard(
+      onTap: () => context.push(AppRoutes.smartLearning),
+      child: Row(
+        children: [
+          Icon(Icons.bolt_rounded, color: scheme.onSecondaryContainer),
+          const SizedBox(width: 14),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  l10n.journeyEntrySmartLearningTitle,
+                  style: textTheme.titleMedium?.copyWith(
+                    fontWeight: FontWeight.w700,
+                    color: scheme.onSecondaryContainer,
+                  ),
                 ),
-              ),
-              Icon(
-                Icons.chevron_right_rounded,
-                color: scheme.onSecondaryContainer,
-              ),
-            ],
+                const SizedBox(height: 2),
+                Text(
+                  l10n.journeyEntrySmartLearningDesc,
+                  style: textTheme.bodySmall
+                      ?.copyWith(color: scheme.onSecondaryContainer),
+                ),
+              ],
+            ),
           ),
-        ),
+          Icon(
+            Icons.chevron_right_rounded,
+            color: scheme.onSecondaryContainer,
+          ),
+        ],
       ),
     );
   }

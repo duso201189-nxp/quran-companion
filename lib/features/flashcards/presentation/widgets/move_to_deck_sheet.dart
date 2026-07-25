@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:quran_companion/l10n/app_localizations.dart';
 
+import '../../../../shared/widgets/loading_state.dart';
 import '../../data/flashcard_providers.dart';
 import '../deck_edit_dialog.dart';
 
@@ -52,9 +53,12 @@ class MoveToDeckSheet extends ConsumerWidget {
               onTap: () => _move(ref, null),
             ),
             decksAsync.when(
-              loading: () => const Padding(
-                padding: EdgeInsets.symmetric(vertical: 16),
-                child: Center(child: CircularProgressIndicator()),
+              loading: () => Padding(
+                padding: const EdgeInsets.symmetric(vertical: 16),
+                child: LoadingState(
+                  semanticsLabel: l10n.flashcardMoveToDeckLoading,
+                  height: 48,
+                ),
               ),
               error: (_, __) => Padding(
                 padding: const EdgeInsets.symmetric(vertical: 16),

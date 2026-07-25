@@ -109,7 +109,10 @@ class AnalyticsRepositoryImpl implements AnalyticsRepository {
   @override
   Future<LearningStatistics> getLearningStatistics() async {
     final cards = await _loadAllCards();
-    final currentStreak = await _studySessions.currentStreak();
+    // today: _now() — nếu bỏ, currentStreak() tự rơi về DateTime.now()
+    // thật (bỏ qua _now đã tiêm ở dòng "now: _now()" bên dưới), khiến
+    // kết quả không xác định trong test (Sprint 21.5).
+    final currentStreak = await _studySessions.currentStreak(today: _now());
     final longestStreak = await _studySessions.longestStreak();
     return computeLearningStatistics(
       cards,

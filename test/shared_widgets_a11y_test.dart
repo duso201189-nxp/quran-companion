@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:quran_companion/shared/widgets/cross_feature_entry_card.dart';
 import 'package:quran_companion/shared/widgets/empty_state_banner.dart';
+import 'package:quran_companion/shared/widgets/feature_hero_card.dart';
+import 'package:quran_companion/shared/widgets/grade_button.dart';
 import 'package:quran_companion/shared/widgets/section_header.dart';
 import 'package:quran_companion/shared/widgets/stat_card.dart';
 
@@ -9,6 +12,9 @@ import 'fixtures/search_test_harness.dart';
 /// Sprint 20 Phase 2 — kiểm chứng accessibility của các widget dùng
 /// chung MỚI/ĐƯỢC SỬA (xem accessibility_audit.md mục 8): SectionHeader
 /// (Task 2+4), StatCard (Task 3), EmptyStateBanner (Task 1).
+///
+/// Sprint 21.4 Phase A, mục A1 — thêm FeatureHeroCard (khung "thẻ
+/// hero" dùng chung, xem design_system_consolidation_plan.md mục A1).
 void main() {
   group('SectionHeader (Sprint 20 Phase 2, Task 2+4)', () {
     testWidgets('hiển thị đúng văn bản', (tester) async {
@@ -88,6 +94,71 @@ void main() {
       );
 
       expect(find.byType(StatCard), findsNWidgets(2));
+    });
+  });
+
+  group('FeatureHeroCard (Sprint 21.4 Phase A, mục A1)', () {
+    testWidgets('render đúng child, giữ nguyên decoration', (tester) async {
+      await tester.pumpWidget(
+        localizedTestApp(
+          const FeatureHeroCard(child: Text('Hero content')),
+        ),
+      );
+
+      expect(find.text('Hero content'), findsOneWidget);
+
+      final container = tester.widget<Container>(
+        find.ancestor(
+          of: find.text('Hero content'),
+          matching: find.byType(Container),
+        ),
+      );
+      final decoration = container.decoration as BoxDecoration;
+      expect(container.padding, const EdgeInsets.all(20));
+      expect(decoration.borderRadius, BorderRadius.circular(16));
+    });
+  });
+
+  group('CrossFeatureEntryCard (Sprint 21.4 Phase A, mục A2)', () {
+    testWidgets('render đúng child và gọi onTap khi bấm', (tester) async {
+      var tapped = false;
+      await tester.pumpWidget(
+        localizedTestApp(
+          CrossFeatureEntryCard(
+            onTap: () => tapped = true,
+            child: const Text('Go to Journey'),
+          ),
+        ),
+      );
+
+      expect(find.text('Go to Journey'), findsOneWidget);
+
+      await tester.tap(find.text('Go to Journey'));
+      await tester.pump();
+      expect(tapped, isTrue);
+    });
+  });
+
+  group('GradeButton (Sprint 21.4 Phase A, mục A4)', () {
+    testWidgets('hiển thị đúng nhãn và gọi onPressed khi bấm', (tester) async {
+      var pressed = false;
+      await tester.pumpWidget(
+        localizedTestApp(
+          Material(
+            child: GradeButton(
+              label: 'Good',
+              color: Colors.blue,
+              onPressed: () => pressed = true,
+            ),
+          ),
+        ),
+      );
+
+      expect(find.text('Good'), findsOneWidget);
+
+      await tester.tap(find.text('Good'));
+      await tester.pump();
+      expect(pressed, isTrue);
     });
   });
 

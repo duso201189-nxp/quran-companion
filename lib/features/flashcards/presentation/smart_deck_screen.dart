@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:quran_companion/l10n/app_localizations.dart';
 
+import '../../../shared/widgets/loading_state.dart';
 import '../../../shared/widgets/section_header.dart';
 import '../../learning/domain/entities/srs_card.dart';
 import '../data/flashcard_providers.dart';
@@ -70,7 +71,7 @@ class _FlatBody extends ConsumerWidget {
     final idsAsync = ref.watch(smartDeckFlashcardsProvider(type));
 
     return idsAsync.when(
-      loading: () => const Center(child: CircularProgressIndicator()),
+      loading: () => LoadingState(semanticsLabel: l10n.smartDeckLoading),
       error: (_, __) => Center(child: Text(l10n.errorLoadData)),
       data: (deckFlashcards) {
         if (deckFlashcards.isEmpty) {
@@ -120,7 +121,7 @@ class _VerbFormsBody extends ConsumerWidget {
     final groupsAsync = ref.watch(verbFormGroupsProvider);
 
     return groupsAsync.when(
-      loading: () => const Center(child: CircularProgressIndicator()),
+      loading: () => LoadingState(semanticsLabel: l10n.smartDeckLoading),
       error: (_, __) => Center(child: Text(l10n.errorLoadData)),
       data: (groups) {
         if (groups.isEmpty) {

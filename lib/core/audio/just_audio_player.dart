@@ -58,13 +58,18 @@ class JustAudioAyahPlayer implements AyahAudioPlayer {
   Stream<String> get errorStream => _errors.stream;
 
   @override
-  Future<void> setPlaylist(List<Uri> sources, {int initialIndex = 0}) async {
+  Future<void> setPlaylist(
+    List<Uri> sources, {
+    int initialIndex = 0,
+    Duration initialPosition = Duration.zero,
+  }) async {
     try {
       await _player.setAudioSource(
         ConcatenatingAudioSource(
           children: [for (final uri in sources) AudioSource.uri(uri)],
         ),
         initialIndex: initialIndex,
+        initialPosition: initialPosition,
       );
     } catch (e) {
       _errors.add(_describe(e));

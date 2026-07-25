@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:quran_companion/l10n/app_localizations.dart';
 
+import '../features/quran/presentation/audio/audio_mini_player.dart';
 import 'locale/locale_controller.dart';
 import 'router.dart';
 import 'theme/app_theme.dart';
@@ -9,7 +10,7 @@ import 'theme/theme_controller.dart';
 
 /// Widget gốc của ứng dụng.
 ///
-/// Chỉ lắp ráp: theme + ngôn ngữ + router.
+/// Chỉ lắp ráp: theme + ngôn ngữ + router + thanh phát thu gọn.
 /// Không chứa logic nghiệp vụ.
 class QuranCompanionApp extends ConsumerWidget {
   const QuranCompanionApp({super.key});
@@ -31,6 +32,12 @@ class QuranCompanionApp extends ConsumerWidget {
       supportedLocales: AppLocalizations.supportedLocales,
       localizationsDelegates: AppLocalizations.localizationsDelegates,
       routerConfig: router,
+      // Thanh phát thu gọn bám đáy MỌI màn hình khi đang nghe. Đặt ở
+      // `builder` (trên Navigator) vì vỏ 5 tab không phủ được các
+      // route push top-level — xem doc của [AudioMiniPlayerHost].
+      // Không phát -> host trả về đúng child, cây widget không đổi.
+      builder: (context, child) =>
+          AudioMiniPlayerHost(child: child ?? const SizedBox.shrink()),
     );
   }
 }

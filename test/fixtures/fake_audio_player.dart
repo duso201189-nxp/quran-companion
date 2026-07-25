@@ -15,6 +15,15 @@ class FakeAyahAudioPlayer implements AyahAudioPlayer {
 
   List<Uri> playlist = const [];
   int initialIndex = 0;
+
+  /// Vị trí trong Ayah mà playlist được nạp lại (Sprint 28.1) — dùng
+  /// để kiểm chứng đổi Qari giữa chừng không nhảy về đầu Ayah.
+  Duration initialPosition = Duration.zero;
+
+  /// Số lần playlist được nạp — phân biệt "nạp lại thật" với "chỉ đổi
+  /// nhãn Qari".
+  int setPlaylistCount = 0;
+
   bool playing = false;
   double speed = 1.0;
   RepeatMode repeatMode = RepeatMode.off;
@@ -41,9 +50,15 @@ class FakeAyahAudioPlayer implements AyahAudioPlayer {
   Stream<String> get errorStream => errorController.stream;
 
   @override
-  Future<void> setPlaylist(List<Uri> sources, {int initialIndex = 0}) async {
+  Future<void> setPlaylist(
+    List<Uri> sources, {
+    int initialIndex = 0,
+    Duration initialPosition = Duration.zero,
+  }) async {
     playlist = sources;
     this.initialIndex = initialIndex;
+    this.initialPosition = initialPosition;
+    setPlaylistCount++;
     processingController.add(AyahPlayerProcessing.loading);
   }
 

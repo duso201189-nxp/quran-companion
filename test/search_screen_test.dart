@@ -5,6 +5,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 import 'package:quran_companion/app/router.dart';
+import 'package:quran_companion/features/quran/data/quran_providers.dart';
+import 'package:quran_companion/features/quran/domain/entities/ayah_search_result.dart';
 import 'package:quran_companion/features/quran/presentation/reading/reading_position_store.dart';
 import 'package:quran_companion/features/quran/presentation/reading/reading_screen.dart';
 import 'package:quran_companion/features/quran/presentation/surah_list_screen.dart';
@@ -15,6 +17,26 @@ import 'package:quran_companion/features/search/presentation/widgets/search_resu
 
 import 'fixtures/app_harness.dart';
 import 'fixtures/search_test_harness.dart';
+
+/// Repo giả CÓ kết quả tìm kiếm — chỉ khác [FakeQuranRepo] ở đúng
+/// `searchAyahs`, để kiểm đường đi kết quả thật của Sprint 26.1.
+class _SearchingRepo extends FakeQuranRepo {
+  @override
+  Future<List<AyahSearchResult>> searchAyahs(
+    String query, {
+    int limit = 40,
+  }) async =>
+      const [
+        AyahSearchResult(
+          ayahId: 1,
+          surahId: 1,
+          ayahNumber: 1,
+          surahNameLatin: 'Al-Fatihah',
+          arabic: 'بسم الله الرحمن الرحيم',
+          translation: 'In the name of Allah, the Most Merciful',
+        ),
+      ];
+}
 
 void main() {
   group('Task 7.1.1 — route + khung màn hình', () {
@@ -116,16 +138,152 @@ void main() {
       expect(clearButton(), findsNothing);
     });
 
-    testWidgets('gõ chữ chưa gọi truy vấn hay hiển thị kết quả nào',
-        (tester) async {
+    testWidgets(
+        'Sprint 26.1 — gõ chữ CÓ truy vấn thật; repo không có kết quả -> '
+        'báo không tìm thấy', (tester) async {
       await openSearchScreen(tester);
 
       await tester.enterText(searchField(), 'الرحمن');
+      // Khung hình đầu dựng _AyahSearchResults -> ĐÂY mới là lúc
+      // debounce 250ms bắt đầu chạy; đẩy đồng hồ trước khi nó tồn tại
+      // thì không tính. (pumpAndSettle một mình cũng không đẩy đồng hồ
+      // vì màn hình này không có animation nào đang chạy.)
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 300));
       await tester.pumpAndSettle();
 
-      expect(find.byType(CircularProgressIndicator), findsNothing);
-      expect(find.byType(ListView), findsNothing);
+      // FakeQuranRepo.searchAyahs trả [] và không Surah nào khớp
+      // 'الرحمن' -> báo không có kết quả (thông báo CHUNG cho cả hai
+      // khu vực từ Sprint 26.2), KHÔNG còn im lặng như trước 26.1.
+      expect(find.text('Không tìm thấy kết quả nào.'), findsOneWidget);
+      expect(find.byType(SearchEmptyState), findsNothing);
       expect(tester.takeException(), isNull);
+    });
+
+    testWidgets('dưới 2 ký tự -> giữ Empty State, chưa truy vấn',
+        (tester) async {
+      await openSearchScreen(tester);
+
+      await tester.enterText(searchField(), 'a');
+      await tester.pumpAndSettle();
+
+      expect(find.byType(SearchEmptyState), findsOneWidget);
+      expect(find.text('Không tìm thấy kết quả nào.'), findsNothing);
+    });
+
+    testWidgets(
+        'Sprint 26.1 — có kết quả -> khung chờ rồi tới khu vực kết quả; '
+        'chạm thẻ mở trang đọc', (tester) async {
+      await openSearchScreen(
+        tester,
+        extraOverrides: [
+          quranRepositoryProvider.overrideWithValue(_SearchingRepo()),
+        ],
+      );
+
+      await tester.enterText(searchField(), 'rahman');
+      await tester.pump(); // sau khung hình đầu: đang chờ debounce
+
+      // Khung xương chờ tải (Task 7.1.9) — trước Sprint 26.1 chỉ xem
+      // được qua menu dev, nay là trạng thái thật.
+      expect(find.byType(SearchLoadingSkeleton), findsOneWidget);
+
+      await tester.pump(const Duration(milliseconds: 300)); // qua debounce
+      await tester.pumpAndSettle();
+
+      expect(find.byType(SearchResultSection), findsOneWidget);
+      expect(find.byType(ResultCard), findsOneWidget);
+      expect(find.byType(SearchLoadingSkeleton), findsNothing);
+      expect(find.byType(SearchEmptyState), findsNothing);
+
+      await tester.tap(find.byType(ResultCard));
+      await tester.pumpAndSettle();
+
+      // Dùng LẠI openAyahInReadingScreen — không có đường điều hướng
+      // riêng cho Tìm kiếm.
+      expect(find.byType(ReadingScreen), findsOneWidget);
+    });
+  });
+
+  group('Sprint 26.2 — tìm kiếm hợp nhất (Surah + Ayah)', () {
+    Finder searchField() => find.descendant(
+          of: find.byType(SearchScreen),
+          matching: find.byType(TextField),
+        );
+
+    /// Gõ [text] rồi xả debounce 250ms của ayahSearchProvider.
+    Future<void> search(WidgetTester tester, String text) async {
+      await tester.enterText(searchField(), text);
+      await tester.pump(); // khung hình đầu: provider khởi động
+      await tester.pump(const Duration(milliseconds: 300));
+      await tester.pumpAndSettle();
+    }
+
+    testWidgets('khớp tên Surah -> hiện khu vực Surah, ẩn khu vực Ayah',
+        (tester) async {
+      // FakeQuranRepo có đúng Surah "Al-Fatihah" và searchAyahs -> [].
+      await openSearchScreen(tester);
+      await search(tester, 'Fatihah');
+
+      expect(find.textContaining('Surah · 1'), findsOneWidget);
+      expect(find.text('Al-Fatihah'), findsWidgets);
+      // Không có kết quả Ayah -> khu vực đó ẩn hẳn, không đầu đề rỗng.
+      expect(find.textContaining('Kết quả trong nội dung'), findsNothing);
+      expect(find.text('Không tìm thấy kết quả nào.'), findsNothing);
+    });
+
+    testWidgets('khớp số Surah -> dùng đúng bộ lọc của danh sách Surah',
+        (tester) async {
+      await openSearchScreen(tester);
+      await search(tester, '1');
+
+      // '1' chỉ có 1 ký tự -> chưa đủ ngưỡng tìm kiếm.
+      expect(find.byType(SearchEmptyState), findsOneWidget);
+
+      // Ngưỡng 2 ký tự áp dụng cho CẢ hai khu vực, không riêng Ayah.
+      await search(tester, 'al-');
+      expect(find.textContaining('Surah · 1'), findsOneWidget);
+    });
+
+    testWidgets('chạm thẻ Surah -> mở trang đọc Surah đó', (tester) async {
+      await openSearchScreen(tester);
+      await search(tester, 'Fatihah');
+
+      await tester.tap(find.byType(ResultCard).first);
+      await tester.pumpAndSettle();
+
+      expect(find.byType(ReadingScreen), findsOneWidget);
+    });
+
+    testWidgets('có cả Surah lẫn Ayah -> Surah đứng TRƯỚC Ayah',
+        (tester) async {
+      await openSearchScreen(
+        tester,
+        extraOverrides: [
+          quranRepositoryProvider.overrideWithValue(_SearchingRepo()),
+        ],
+      );
+      await search(tester, 'Fatihah');
+
+      final sections = find.byType(SearchResultSection);
+      expect(sections, findsNWidgets(2));
+
+      // Thứ tự trong cây widget = thứ tự hiển thị trên màn hình.
+      final titles = tester
+          .widgetList<SearchResultSection>(sections)
+          .map((s) => s.title)
+          .toList();
+      expect(titles.first, startsWith('Surah'));
+      expect(titles.last, startsWith('Kết quả trong nội dung'));
+    });
+
+    testWidgets('không khớp gì cả -> MỘT thông báo chung, không 2 khu rỗng',
+        (tester) async {
+      await openSearchScreen(tester);
+      await search(tester, 'zzzz');
+
+      expect(find.text('Không tìm thấy kết quả nào.'), findsOneWidget);
+      expect(find.byType(SearchResultSection), findsNothing);
     });
   });
 

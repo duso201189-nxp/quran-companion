@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:quran_companion/l10n/app_localizations.dart';
 
+import '../../../shared/widgets/loading_state.dart';
 import '../../flashcards/data/flashcard_providers.dart';
 import '../../flashcards/presentation/flashcard_review_screen.dart';
 import '../../learning/data/scheduler_providers.dart';
@@ -117,8 +119,9 @@ class _LearningSessionLoading extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(
-      body: Center(child: CircularProgressIndicator()),
+    final l10n = AppLocalizations.of(context);
+    return Scaffold(
+      body: LoadingState(semanticsLabel: l10n.learningSessionLoading),
     );
   }
 }

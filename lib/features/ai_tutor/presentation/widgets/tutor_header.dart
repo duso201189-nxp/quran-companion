@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../../../../shared/widgets/feature_hero_card.dart';
+
 /// Khối tổng quan mở đầu màn hình AI Tutor (Sprint 15 Phase 2 mục 3)
 /// — thuần trình bày, KHÔNG đọc provider (nhận sẵn [title] + [stats]
 /// từ nơi gọi, cùng nguyên tắc với GoalCard/AchievementCard — Sprint
@@ -17,6 +19,13 @@ import 'package:flutter/material.dart';
 /// phạm "Preserve existing UI" — xem accessibility_audit.md mục
 /// "StatCard" để biết lý do đầy đủ + so sánh với `TutorInsightCard`
 /// (TRÙNG hoàn toàn với `StatCard`, đã gộp).
+///
+/// Sprint 21.4 Phase A, mục A1 — khung NGOÀI (Container padding(20) +
+/// primaryContainer + radius(16)) chuyển sang dùng chung
+/// `FeatureHeroCard`, xác nhận byte-identical với JourneyHeader/
+/// SmartLearningHeader/SessionSummaryCard qua
+/// design_system_consolidation_plan.md mục A1. Nội dung BÊN TRONG
+/// không đổi.
 class TutorHeader extends StatelessWidget {
   const TutorHeader({
     super.key,
@@ -32,12 +41,7 @@ class TutorHeader extends StatelessWidget {
     final scheme = Theme.of(context).colorScheme;
     final textTheme = Theme.of(context).textTheme;
 
-    return Container(
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: scheme.primaryContainer,
-        borderRadius: BorderRadius.circular(16),
-      ),
+    return FeatureHeroCard(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [

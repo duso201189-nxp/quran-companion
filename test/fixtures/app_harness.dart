@@ -80,8 +80,13 @@ Future<ProviderContainer> makeContainer({
   return container;
 }
 
-/// Dựng app hoàn chỉnh cho widget test.
-Future<Widget> makeApp({Map<String, Object> prefs = const {}}) async {
+/// Dựng app hoàn chỉnh cho widget test. [extraOverrides] ghi đè SAU
+/// các override mặc định — dùng khi một test cần repository giả riêng
+/// (vd trả về kết quả tìm kiếm thật, Sprint 26.1).
+Future<Widget> makeApp({
+  Map<String, Object> prefs = const {},
+  List<Override> extraOverrides = const [],
+}) async {
   SharedPreferences.setMockInitialValues(prefs);
   final sp = await SharedPreferences.getInstance();
   return ProviderScope(
@@ -94,6 +99,7 @@ Future<Widget> makeApp({Map<String, Object> prefs = const {}}) async {
       userDatabaseProvider.overrideWithValue(
         UserDatabase(NativeDatabase.memory()),
       ),
+      ...extraOverrides,
     ],
     child: const QuranCompanionApp(),
   );

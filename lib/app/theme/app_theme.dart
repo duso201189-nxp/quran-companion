@@ -164,6 +164,30 @@ TextStyle quranTextStyle({
   );
 }
 
+/// Cỡ chữ Ả Rập trong thẻ XEM TRƯỚC (kết quả tìm kiếm, Thư viện của
+/// tôi) — nhỏ hơn trang đọc vì chỉ trích 2 dòng, không phải để đọc.
+const double kPreviewArabicFontSize = 22;
+
+/// Kiểu chữ nhãn nguồn/tham chiếu ở đầu thẻ nội dung — vd
+/// "Ar-Rahman · 55:1" (Sprint 27.1).
+///
+/// Dùng chung bởi `ResultCard`, `LibraryAyahTile` và `_AyahResultTile`.
+/// CHỈ áp cho nhãn nguồn của thẻ: các chỗ khác trong app tình cờ dùng
+/// cùng `labelMedium` + `primary` (nhãn từ loại ở Flashcards, tiến độ
+/// câu hỏi ở Quiz) mang ý nghĩa khác — trùng ngẫu nhiên, KHÔNG gom.
+TextStyle? cardSourceLabelStyle(TextTheme textTheme, ColorScheme scheme) {
+  return textTheme.labelMedium?.copyWith(color: scheme.primary);
+}
+
+/// Kiểu chữ dòng phụ trong thẻ nội dung — bản dịch dưới câu Ả Rập
+/// (Sprint 27.1). Dùng chung bởi đúng ba thẻ nói trên.
+TextStyle? cardSecondaryTextStyle(TextTheme textTheme, ColorScheme scheme) {
+  return textTheme.bodyMedium?.copyWith(
+    height: 1.5,
+    color: scheme.onSurfaceVariant,
+  );
+}
+
 /// Style tiêu đề Ả Rập (tên Surah) — Naskh trang trọng.
 TextStyle arabicTitleStyle({
   required double fontSize,

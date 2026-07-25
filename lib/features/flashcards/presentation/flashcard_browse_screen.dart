@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:quran_companion/l10n/app_localizations.dart';
 
 import '../../../app/router.dart';
+import '../../../shared/widgets/loading_state.dart';
 import '../../learning/domain/entities/srs_card.dart';
 import '../data/flashcard_providers.dart';
 import '../domain/entities/flashcard_deck.dart';
@@ -60,7 +61,7 @@ class _FlashcardBrowseScreenState extends ConsumerState<FlashcardBrowseScreen> {
       ),
       body: SafeArea(
         child: resolvedAsync.when(
-          loading: () => const Center(child: CircularProgressIndicator()),
+          loading: () => LoadingState(semanticsLabel: l10n.flashcardsLoading),
           error: (_, __) => Center(child: Text(l10n.errorLoadData)),
           data: (resolved) {
             if (resolved.isEmpty) {
@@ -99,6 +100,7 @@ class _FlashcardBrowseScreenState extends ConsumerState<FlashcardBrowseScreen> {
                           ? null
                           : IconButton(
                               icon: const Icon(Icons.clear_rounded),
+                              tooltip: l10n.searchClearTooltip,
                               onPressed: () {
                                 _searchController.clear();
                                 setState(() => _query = '');

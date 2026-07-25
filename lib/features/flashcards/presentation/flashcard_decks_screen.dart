@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:quran_companion/l10n/app_localizations.dart';
 
+import '../../../shared/widgets/loading_state.dart';
 import '../data/flashcard_providers.dart';
 import '../domain/entities/flashcard_deck.dart';
 import 'deck_edit_dialog.dart';
@@ -26,7 +27,8 @@ class FlashcardDecksScreen extends ConsumerWidget {
       appBar: AppBar(title: Text(l10n.flashcardDecksTitle)),
       body: SafeArea(
         child: decksAsync.when(
-          loading: () => const Center(child: CircularProgressIndicator()),
+          loading: () =>
+              LoadingState(semanticsLabel: l10n.flashcardDecksLoading),
           error: (_, __) => Center(child: Text(l10n.errorLoadData)),
           data: (decks) {
             if (decks.isEmpty) {

@@ -119,6 +119,16 @@ abstract final class AppRoutes {
   /// tôi): /read/2. Không dùng nhánh shell nên tránh xung đột khi
   /// push chồng route top-level.
   static String read(int surahId) => '/read/$surahId';
+
+  /// [location] có phải một trang đọc không — tức nơi ĐÃ có `AudioBar`
+  /// đầy đủ trên màn hình (Sprint 29.0).
+  ///
+  /// Đặt ở đây, cạnh chính hai hàm dựng đường dẫn tương ứng, để chỉ có
+  /// MỘT nơi biết hình dạng đường dẫn trang đọc: thêm lối vào trang
+  /// đọc mới thì sửa đúng chỗ này, `AudioMiniPlayerHost` không cần
+  /// biết gì về route.
+  static bool isReadingLocation(String location) =>
+      location.startsWith('/read/') || location.contains('/quran/surah/');
 }
 
 /// Parse surahId an toàn từ path ('abc'/'0' -> 0 -> SurahNotFound).

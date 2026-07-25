@@ -3,6 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:quran_companion/l10n/app_localizations.dart';
 
 import '../../../app/theme/app_theme.dart';
+import '../../../shared/widgets/grade_button.dart';
+import '../../../shared/widgets/loading_state.dart';
 import '../../learning/data/scheduler_providers.dart';
 import '../../learning/domain/scheduling_algorithm.dart';
 import 'flashcard_review_providers.dart';
@@ -29,7 +31,8 @@ class FlashcardReviewScreen extends ConsumerWidget {
           data: (item) => item == null
               ? _FlashcardReviewComplete(l10n: l10n)
               : _FlashcardView(l10n: l10n, item: item),
-          loading: () => const Center(child: CircularProgressIndicator()),
+          loading: () =>
+              LoadingState(semanticsLabel: l10n.flashcardReviewLoading),
           error: (_, __) => Center(
             child: Text(
               l10n.errorLoadData,
@@ -159,7 +162,7 @@ class _FlashcardView extends ConsumerWidget {
           Row(
             children: [
               Expanded(
-                child: _GradeButton(
+                child: GradeButton(
                   label: l10n.reviewGradeAgain,
                   color: scheme.error,
                   onPressed: () => _grade(ref, ReviewGrade.again),
@@ -167,7 +170,7 @@ class _FlashcardView extends ConsumerWidget {
               ),
               const SizedBox(width: 8),
               Expanded(
-                child: _GradeButton(
+                child: GradeButton(
                   label: l10n.reviewGradeHard,
                   color: scheme.tertiary,
                   onPressed: () => _grade(ref, ReviewGrade.hard),
@@ -175,7 +178,7 @@ class _FlashcardView extends ConsumerWidget {
               ),
               const SizedBox(width: 8),
               Expanded(
-                child: _GradeButton(
+                child: GradeButton(
                   label: l10n.reviewGradeGood,
                   color: scheme.primary,
                   onPressed: () => _grade(ref, ReviewGrade.good),
@@ -183,7 +186,7 @@ class _FlashcardView extends ConsumerWidget {
               ),
               const SizedBox(width: 8),
               Expanded(
-                child: _GradeButton(
+                child: GradeButton(
                   label: l10n.reviewGradeEasy,
                   color: scheme.secondary,
                   onPressed: () => _grade(ref, ReviewGrade.easy),
@@ -192,36 +195,6 @@ class _FlashcardView extends ConsumerWidget {
             ],
           ),
         ],
-      ),
-    );
-  }
-}
-
-class _GradeButton extends StatelessWidget {
-  const _GradeButton({
-    required this.label,
-    required this.color,
-    required this.onPressed,
-  });
-
-  final String label;
-  final Color color;
-  final VoidCallback onPressed;
-
-  @override
-  Widget build(BuildContext context) {
-    return FilledButton.tonal(
-      style: FilledButton.styleFrom(
-        backgroundColor: color.withValues(alpha: 0.15),
-        foregroundColor: color,
-        padding: const EdgeInsets.symmetric(vertical: 14),
-      ),
-      onPressed: onPressed,
-      child: Text(
-        label,
-        textAlign: TextAlign.center,
-        maxLines: 1,
-        overflow: TextOverflow.ellipsis,
       ),
     );
   }

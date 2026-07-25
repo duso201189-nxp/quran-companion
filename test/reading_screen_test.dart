@@ -15,7 +15,13 @@ import 'package:quran_companion/features/quran/domain/entities/reciter.dart';
 import 'package:quran_companion/features/quran/domain/entities/surah.dart';
 import 'package:quran_companion/features/quran/domain/entities/translation_source.dart';
 import 'package:quran_companion/features/quran/domain/repositories/quran_repository.dart';
+import 'package:quran_companion/features/quran/presentation/annotations/ayah_actions_sheet.dart';
+import 'package:quran_companion/features/quran/presentation/reading/jump_to_ayah_sheet.dart';
+import 'package:quran_companion/features/quran/presentation/reading/mushaf_builder.dart';
+import 'package:quran_companion/features/quran/presentation/reading/reading_progress_indicator.dart';
 import 'package:quran_companion/features/quran/presentation/reading/reading_screen.dart';
+import 'package:quran_companion/features/quran/presentation/reading/reading_settings.dart';
+import 'package:quran_companion/features/quran/presentation/reading/reading_settings_sheet.dart';
 import 'package:quran_companion/features/stats/data/study_session_providers.dart';
 import 'package:quran_companion/features/stats/domain/entities/study_session.dart';
 import 'package:quran_companion/features/stats/domain/repositories/study_session_repository.dart';
@@ -70,57 +76,62 @@ class _SpyStudySessionRepository implements StudySessionRepository {
   Future<int> longestStreak() => throw UnimplementedError();
 }
 
-const _surah = Surah(
-  id: 1,
-  nameArabic: 'الفاتحة',
-  nameLatin: 'Al-Fatihah',
-  nameVi: 'Khai Đề',
-  nameEn: 'The Opening',
-  ayahCount: 2,
-  revelationPlace: RevelationPlace.mecca,
-  orderRevealed: 5,
-);
+Surah _surahWith(int ayahCount) => Surah(
+      id: 1,
+      nameArabic: 'الفاتحة',
+      nameLatin: 'Al-Fatihah',
+      nameVi: 'Khai Đề',
+      nameEn: 'The Opening',
+      ayahCount: ayahCount,
+      revelationPlace: RevelationPlace.mecca,
+      orderRevealed: 5,
+    );
 
-List<AyahContent> _ayahs() => [
-      const AyahContent(
-        ayah: Ayah(
-          id: 1,
-          surahId: 1,
-          ayahNumber: 1,
-          textUthmani: 'نص عربي ١',
-          juz: 1,
+/// Ayah 1 & 2 giữ NGUYÊN nội dung cũ — nhiều test hiện có khẳng định
+/// đúng các chuỗi này. Từ Ayah 3 trở đi sinh thêm, chỉ dùng cho test
+/// cần danh sách đủ dài để cuộn thật (Sprint 25.1 — Chuyển tới Ayah).
+List<AyahContent> _ayahs(int count) => [
+      for (var i = 1; i <= count; i++)
+        AyahContent(
+          ayah: Ayah(
+            id: i,
+            surahId: 1,
+            ayahNumber: i,
+            textUthmani: 'نص عربي ${toArabicDigits(i)}',
+            juz: 1,
+            sajdah: i == 2,
+          ),
+          texts: switch (i) {
+            1 => const {
+                'translit_latin': 'translit mot',
+                'vi_main': 'bản việt một',
+                'en_sahih': 'english one',
+              },
+            2 => const {'vi_main': 'bản việt hai'},
+            _ => {'vi_main': 'bản việt câu $i'},
+          },
         ),
-        texts: {
-          'translit_latin': 'translit mot',
-          'vi_main': 'bản việt một',
-          'en_sahih': 'english one',
-        },
-      ),
-      const AyahContent(
-        ayah: Ayah(
-          id: 2,
-          surahId: 1,
-          ayahNumber: 2,
-          textUthmani: 'نص عربي ٢',
-          juz: 1,
-          sajdah: true,
-        ),
-        texts: {'vi_main': 'bản việt hai'},
-      ),
     ];
 
 class _FakeRepo implements QuranRepository {
-  _FakeRepo({this.surahExists = true, this.empty = false});
+  _FakeRepo({
+    this.surahExists = true,
+    this.empty = false,
+    this.ayahCount = 2,
+  });
 
   final bool surahExists;
   final bool empty;
+  final int ayahCount;
+
+  Surah get _surah => _surahWith(ayahCount);
 
   @override
   Future<Surah?> getSurahById(int id) async => surahExists ? _surah : null;
 
   @override
   Future<List<AyahContent>> getAyahsOfSurah(int surahId) async =>
-      empty ? const [] : _ayahs();
+      empty ? const [] : _ayahs(ayahCount);
 
   @override
   Future<List<Surah>> getAllSurahs() async => [_surah];
@@ -491,7 +502,18 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(tester.takeException(), isNull);
+
+    // Ở cỡ chữ 200% trên khung 400x800, RIÊNG header Surah đã chiếm
+    // trọn khung hình nên chưa có AyahCard nào được dựng — cuộn xuống
+    // để tới Ayah đầu tiên. (Trước Sprint 25.2, Ayah 1 lọt vừa vặn
+    // trong cacheExtent nên tìm được mà không cần cuộn; dải tiến độ
+    // lấy thêm ~34px ở đáy đã đẩy nó ra ngoài. Đây là bố cục đúng, nên
+    // test cuộn tới nội dung thay vì giả định nó luôn dựng sẵn.)
+    await tester.dragFrom(const Offset(200, 400), const Offset(0, -1200));
+    await tester.pumpAndSettle();
+
     expect(find.text('نص عربي ١'), findsOneWidget);
+    expect(tester.takeException(), isNull);
   });
 
   group('Sprint 8 Phase 5 — tích hợp study_sessions', () {
@@ -546,6 +568,339 @@ void main() {
       expect(session.date, isNotEmpty);
       expect(session.durationSec, greaterThanOrEqualTo(5));
       expect(session.ayahFrom, 0);
+    });
+  });
+
+  group('Sprint 25.1 — Chuyển tới Ayah', () {
+    _testReading('nhập số câu -> cuộn tới đúng Ayah + lưu vị trí đọc',
+        (tester) async {
+      // Khung hình hẹp: chỉ vài thẻ Ayah nằm trong tầm nhìn, nên việc
+      // cuộn tới Ayah 10 là cuộn THẬT (Ayah 1 bị hủy dựng).
+      tester.view.physicalSize = const Size(400, 800);
+      tester.view.devicePixelRatio = 1.0;
+      addTearDown(tester.view.resetPhysicalSize);
+      addTearDown(tester.view.resetDevicePixelRatio);
+
+      await tester.pumpWidget(await _app(_FakeRepo(ayahCount: 12)));
+      await tester.pumpAndSettle();
+
+      expect(find.text('bản việt một'), findsOneWidget);
+      expect(find.text('bản việt câu 10'), findsNothing);
+
+      await tester.tap(find.byIcon(Icons.numbers));
+      await tester.pumpAndSettle();
+      expect(find.byType(JumpToAyahSheet), findsOneWidget);
+
+      await tester.enterText(find.widgetWithText(TextField, 'Số câu'), '10');
+      await tester.pumpAndSettle();
+      await tester.tap(find.widgetWithText(FilledButton, 'Chuyển tới'));
+      await tester.pumpAndSettle();
+
+      // Sheet đóng lại, danh sách đã ở Ayah 10.
+      expect(find.byType(JumpToAyahSheet), findsNothing);
+      expect(find.text('bản việt câu 10'), findsOneWidget);
+      expect(find.text('bản việt một'), findsNothing);
+
+      // Vị trí đọc đã tiến khỏi đầu Surah. KHÔNG khẳng định đúng một
+      // con số: sau khi cuộn xong, _onPositionsChanged còn ghi đè bằng
+      // chỉ số Ayah đầu tiên NHÌN THẤY (alignment 0.15 chừa một phần
+      // Ayah trước đó ở mép trên) — cả hai đều là hành vi đúng.
+      final prefs = await SharedPreferences.getInstance();
+      expect(prefs.getInt('reading.pos.1'), greaterThan(0));
+    });
+
+    _testReading('chế độ Mushaf -> KHÔNG mở sheet, báo chỉ dùng ở Danh sách',
+        (tester) async {
+      await tester.pumpWidget(await _app(_FakeRepo()));
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.byIcon(Icons.auto_stories_outlined));
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.byIcon(Icons.numbers));
+      await tester.pumpAndSettle();
+
+      expect(find.byType(JumpToAyahSheet), findsNothing);
+      expect(
+        find.text('Chuyển tới Ayah hiện chỉ dùng được ở chế độ Danh sách.'),
+        findsOneWidget,
+      );
+      // KHÔNG tự đổi chế độ sau lưng người dùng.
+      expect(find.byType(PageView), findsOneWidget);
+    });
+
+    _testReading('số câu ngoài phạm vi -> nút Chuyển tới bị vô hiệu',
+        (tester) async {
+      await tester.pumpWidget(await _app(_FakeRepo(ayahCount: 12)));
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.byIcon(Icons.numbers));
+      await tester.pumpAndSettle();
+
+      final button = find.widgetWithText(FilledButton, 'Chuyển tới');
+      final field = find.widgetWithText(TextField, 'Số câu');
+
+      // Phạm vi hợp lệ hiện sẵn, chưa nhập gì -> chưa bấm được.
+      expect(find.text('1–12'), findsOneWidget);
+      expect(tester.widget<FilledButton>(button).onPressed, isNull);
+
+      await tester.enterText(field, '99');
+      await tester.pumpAndSettle();
+      expect(tester.widget<FilledButton>(button).onPressed, isNull);
+
+      await tester.enterText(field, '5');
+      await tester.pumpAndSettle();
+      expect(tester.widget<FilledButton>(button).onPressed, isNotNull);
+    });
+  });
+
+  group('Sprint 25.2 — Dải tiến độ đọc', () {
+    _testReading('hiện vị trí hiện tại ở đáy màn hình; Focus Mode ẩn đi',
+        (tester) async {
+      await tester.pumpWidget(await _app(_FakeRepo()));
+      await tester.pumpAndSettle();
+
+      expect(find.byType(ReadingProgressIndicator), findsOneWidget);
+      expect(find.text('Ayah 1 / 2'), findsOneWidget);
+      expect(find.text('50%'), findsOneWidget);
+
+      await tester.tap(find.byIcon(Icons.center_focus_strong));
+      await tester.pumpAndSettle();
+
+      // Focus Mode = chỉ còn kinh văn, dải tiến độ biến mất cùng AppBar.
+      expect(find.byType(ReadingProgressIndicator), findsNothing);
+    });
+
+    _testReading('cuộn tới Ayah khác -> dải tiến độ cập nhật theo',
+        (tester) async {
+      tester.view.physicalSize = const Size(400, 800);
+      tester.view.devicePixelRatio = 1.0;
+      addTearDown(tester.view.resetPhysicalSize);
+      addTearDown(tester.view.resetDevicePixelRatio);
+
+      await tester.pumpWidget(await _app(_FakeRepo(ayahCount: 12)));
+      await tester.pumpAndSettle();
+
+      expect(find.text('Ayah 1 / 12'), findsOneWidget);
+
+      // Dùng chính "Chuyển tới Ayah" (Sprint 25.1) để di chuyển thật.
+      await tester.tap(find.byIcon(Icons.numbers));
+      await tester.pumpAndSettle();
+      await tester.enterText(find.widgetWithText(TextField, 'Số câu'), '10');
+      await tester.pumpAndSettle();
+      await tester.tap(find.widgetWithText(FilledButton, 'Chuyển tới'));
+      await tester.pumpAndSettle();
+
+      // Đã rời khỏi đầu Surah — KHÔNG khẳng định đúng một con số vì
+      // Ayah đầu tiên NHÌN THẤY sau khi cuộn phụ thuộc alignment.
+      expect(find.text('Ayah 1 / 12'), findsNothing);
+      expect(find.byType(ReadingProgressIndicator), findsOneWidget);
+    });
+
+    _testReading('Surah rỗng nội dung -> không hiện dải tiến độ',
+        (tester) async {
+      await tester.pumpWidget(await _app(_FakeRepo(empty: true)));
+      await tester.pumpAndSettle();
+
+      expect(find.byType(ReadingProgressIndicator), findsNothing);
+    });
+
+    _testReading('mở lại Surah -> phản ánh NGAY vị trí đã lưu, không cần cuộn',
+        (tester) async {
+      tester.view.physicalSize = const Size(400, 800);
+      tester.view.devicePixelRatio = 1.0;
+      addTearDown(tester.view.resetPhysicalSize);
+      addTearDown(tester.view.resetDevicePixelRatio);
+
+      // Đang đọc dở tại Ayah thứ 6 (index 5) của một Surah 12 câu.
+      SharedPreferences.setMockInitialValues({
+        'reading.last_surah_id': 1,
+        'reading.pos.1': 5,
+      });
+      final sp = await SharedPreferences.getInstance();
+      await tester.pumpWidget(
+        ProviderScope(
+          overrides: [
+            quranRepositoryProvider.overrideWithValue(_FakeRepo(ayahCount: 12)),
+            sharedPreferencesProvider.overrideWithValue(sp),
+          ],
+          child: const MaterialApp(
+            locale: Locale('vi'),
+            localizationsDelegates: AppLocalizations.localizationsDelegates,
+            supportedLocales: AppLocalizations.supportedLocales,
+            home: ReadingScreen(surahId: 1),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      // Không thao tác cuộn nào: con số đến thẳng từ ReadingPositionStore.
+      expect(find.text('Ayah 6 / 12'), findsOneWidget);
+      expect(find.text('50%'), findsOneWidget);
+    });
+  });
+
+  group('Sprint 25.3 — Focus Mode', () {
+    _testReading('dùng khoảng dòng của trang Mushaf (height 2.2)',
+        (tester) async {
+      await tester.pumpWidget(await _app(_FakeRepo()));
+      await tester.pumpAndSettle();
+
+      // Ngoài Focus Mode: khoảng dòng mặc định của quranTextStyle.
+      expect(
+        tester.widget<Text>(find.text('نص عربي ١')).style?.height,
+        2.0,
+      );
+
+      await tester.tap(find.byIcon(Icons.center_focus_strong));
+      await tester.pumpAndSettle();
+
+      expect(
+        tester.widget<Text>(find.textContaining('نص عربي ١')).style?.height,
+        2.2,
+      );
+    });
+
+    _testReading('vỏ dưới thu gọn dần, không tắt phụt ngay khung hình đầu',
+        (tester) async {
+      await tester.pumpWidget(await _app(_FakeRepo()));
+      await tester.pumpAndSettle();
+      expect(find.byType(ReadingProgressIndicator), findsOneWidget);
+
+      await tester.tap(find.byIcon(Icons.center_focus_strong));
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 80));
+      // Vẫn còn: đang thu gọn giữa chừng.
+      expect(find.byType(ReadingProgressIndicator), findsOneWidget);
+
+      await tester.pumpAndSettle();
+      // Thu xong -> tháo hẳn, Focus Mode không còn dựng vỏ dưới nữa.
+      expect(find.byType(ReadingProgressIndicator), findsNothing);
+    });
+  });
+
+  group('Sprint 25.4 — Sheet thao tác Ayah', () {
+    Future<void> openSheet(WidgetTester tester) async {
+      await tester.longPress(find.textContaining('نص عربي ١'));
+      await tester.pumpAndSettle();
+    }
+
+    _testReading('gom đủ thao tác nhanh + nhóm tô màu/trạng thái/ghi chú',
+        (tester) async {
+      tester.view.physicalSize = const Size(500, 1400);
+      tester.view.devicePixelRatio = 1.0;
+      addTearDown(tester.view.resetPhysicalSize);
+      addTearDown(tester.view.resetDevicePixelRatio);
+
+      await tester.pumpWidget(await _app(_FakeRepo()));
+      await tester.pumpAndSettle();
+      await openSheet(tester);
+
+      expect(find.byType(AyahActionsSheet), findsOneWidget);
+      // Thao tác nhanh — gồm cả Nghe/Sao chép/Chia sẻ mới thêm.
+      expect(find.text('Bookmark'), findsOneWidget);
+      expect(find.text('Yêu thích'), findsOneWidget);
+      expect(find.text('Nghe từ Ayah này'), findsOneWidget);
+      expect(find.text('Sao chép'), findsOneWidget);
+      expect(find.text('Chia sẻ'), findsOneWidget);
+      // Các nhóm bên dưới, mỗi nhóm có nhãn riêng.
+      expect(find.text('Tô màu'), findsOneWidget);
+      expect(find.text('Trạng thái học'), findsOneWidget);
+      expect(find.text('Thêm ghi chú'), findsOneWidget);
+    });
+
+    _testReading('bật/tắt bookmark trong sheet -> GIỮ sheet mở, đổi ngay',
+        (tester) async {
+      await tester.pumpWidget(await _app(_FakeRepo()));
+      await tester.pumpAndSettle();
+      await openSheet(tester);
+
+      expect(find.byIcon(Icons.bookmark_rounded), findsNothing);
+
+      await tester.tap(find.bySemanticsLabel('Bookmark'));
+      await tester.pumpAndSettle();
+
+      // Toggle -> sheet vẫn mở để thấy trạng thái vừa đổi.
+      expect(find.byType(AyahActionsSheet), findsOneWidget);
+      expect(find.byIcon(Icons.bookmark_rounded), findsWidgets);
+    });
+
+    _testReading('Nghe từ Ayah này -> đóng sheet rồi bắt đầu phát',
+        (tester) async {
+      await tester.pumpWidget(await _app(_FakeRepo()));
+      await tester.pumpAndSettle();
+      await openSheet(tester);
+
+      await tester.tap(find.bySemanticsLabel('Nghe từ Ayah này'));
+      await tester.pumpAndSettle();
+
+      // Hành động một lần -> trả người dùng về trang đọc.
+      expect(find.byType(AyahActionsSheet), findsNothing);
+      // Dùng LẠI audio controller sẵn có: thanh phát xuất hiện.
+      expect(find.byIcon(Icons.pause_circle_filled), findsOneWidget);
+      expect(find.text('1:1'), findsWidgets);
+    });
+  });
+
+  group('Sprint 25.5 — Bảng Hiển thị', () {
+    Future<void> openPanel(WidgetTester tester) async {
+      await tester.tap(find.byIcon(Icons.text_fields));
+      await tester.pumpAndSettle();
+    }
+
+    _testReading('gom đủ nhóm: chế độ đọc, cỡ chữ, lớp hỗ trợ đọc',
+        (tester) async {
+      await tester.pumpWidget(await _app(_FakeRepo()));
+      await tester.pumpAndSettle();
+      await openPanel(tester);
+
+      expect(find.byType(ReadingSettingsSheet), findsOneWidget);
+      // Chế độ đọc — trước Sprint 25.5 chỉ có ở nút trên AppBar.
+      expect(find.text('Chế độ đọc'), findsOneWidget);
+      expect(find.byType(SegmentedButton<ReadingMode>), findsOneWidget);
+      // Cỡ chữ + giá trị hiện tại hiển thị ngay cạnh nhãn.
+      expect(find.text('Cỡ chữ Ả Rập'), findsOneWidget);
+      expect(find.text('100%'), findsOneWidget);
+      // Ba lớp hỗ trợ đọc.
+      expect(find.text('Lớp hỗ trợ đọc'), findsOneWidget);
+      expect(find.byType(SwitchListTile), findsNWidgets(3));
+    });
+
+    _testReading('đổi chế độ đọc trong bảng -> áp dụng ngay, bảng VẪN mở',
+        (tester) async {
+      await tester.pumpWidget(await _app(_FakeRepo()));
+      await tester.pumpAndSettle();
+      await openPanel(tester);
+
+      await tester.tap(find.text('Chế độ Mushaf'));
+      await tester.pumpAndSettle();
+
+      // Bảng vẫn mở để tinh chỉnh tiếp...
+      expect(find.byType(ReadingSettingsSheet), findsOneWidget);
+      // ...và thay đổi đã áp dụng cho trang đọc phía sau.
+      expect(find.byType(PageView), findsOneWidget);
+    });
+
+    _testReading('kéo cỡ chữ -> phần trăm đổi theo và chữ Ả Rập lớn lên',
+        (tester) async {
+      await tester.pumpWidget(await _app(_FakeRepo()));
+      await tester.pumpAndSettle();
+
+      double arabicSize() =>
+          tester.widget<Text>(find.text('نص عربي ١')).style!.fontSize!;
+      final before = arabicSize();
+
+      await openPanel(tester);
+      expect(find.text('100%'), findsOneWidget);
+
+      await tester.drag(find.byType(Slider), const Offset(120, 0));
+      await tester.pumpAndSettle();
+
+      // Giá trị mới hiện ngay trong bảng, không cần đóng ra xem.
+      expect(find.text('100%'), findsNothing);
+      await tester.tapAt(const Offset(10, 10)); // đóng bảng
+      await tester.pumpAndSettle();
+      expect(arabicSize(), greaterThan(before));
     });
   });
 }

@@ -4,6 +4,7 @@ import 'package:uuid/uuid.dart';
 import '../../../core/database/user/user_database.dart';
 import '../../../core/logging/logger.dart';
 import '../../../core/logging/repository_boundary_logging.dart';
+import '../../../core/time/epoch.dart';
 import '../domain/entities/bookmark_collection.dart';
 import '../domain/repositories/bookmark_collection_repository.dart';
 
@@ -29,14 +30,12 @@ class BookmarkCollectionRepositoryImpl implements BookmarkCollectionRepository {
     String Function()? newId,
     int Function()? nowMs,
   })  : _newId = newId ?? const Uuid().v4,
-        _nowMs = nowMs ?? _epochNow;
+        _nowMs = nowMs ?? epochNowMs;
 
   final UserDatabase _db;
   final Logger _logger;
   final String Function() _newId;
   final int Function() _nowMs;
-
-  static int _epochNow() => DateTime.now().toUtc().millisecondsSinceEpoch;
 
   BookmarkCollection _toEntity(BookmarkCollectionRow row) => BookmarkCollection(
         id: row.id,

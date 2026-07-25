@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:quran_companion/features/quran/domain/entities/ayah_search_result.dart';
 import 'package:quran_companion/l10n/app_localizations.dart';
@@ -68,11 +69,14 @@ Future<void> openSearchScreen(
   WidgetTester tester, {
   Map<String, Object> prefs = const {},
   Size? viewSize,
+  List<Override> extraOverrides = const [],
 }) async {
   if (viewSize != null) {
     setViewSize(tester, viewSize);
   }
-  await tester.pumpWidget(await makeApp(prefs: prefs));
+  await tester.pumpWidget(
+    await makeApp(prefs: prefs, extraOverrides: extraOverrides),
+  );
   await tester.pumpAndSettle();
   await tester.tap(find.byIcon(Icons.search));
   await tester.pumpAndSettle();

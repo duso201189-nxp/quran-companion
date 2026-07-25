@@ -208,30 +208,6 @@ abstract class AppLocalizations {
   /// **'Sẽ xây dựng ở Bước {step}'**
   String comingInStep(int step);
 
-  /// No description provided for @placeholderHome.
-  ///
-  /// In vi, this message translates to:
-  /// **'Bước 8 sẽ xây dựng Dashboard học tập: tiếp tục đọc, tiến độ hôm nay, chuỗi ngày học, câu Qur\'an trong ngày.'**
-  String get placeholderHome;
-
-  /// No description provided for @placeholderQuran.
-  ///
-  /// In vi, this message translates to:
-  /// **'Bước 3 sẽ hiển thị danh sách 114 Surah với tìm kiếm và bộ lọc Mecca / Madinah.'**
-  String get placeholderQuran;
-
-  /// No description provided for @placeholderStudy.
-  ///
-  /// In vi, this message translates to:
-  /// **'Bước 9 sẽ xây dựng Flashcard (Spaced Repetition) và Quiz.'**
-  String get placeholderStudy;
-
-  /// No description provided for @placeholderStats.
-  ///
-  /// In vi, this message translates to:
-  /// **'Bước 9 sẽ hiển thị biểu đồ: chuỗi ngày học, tổng Ayah, thời gian học, nhật ký học.'**
-  String get placeholderStats;
-
   /// No description provided for @searchSurahHint.
   ///
   /// In vi, this message translates to:
@@ -280,6 +256,12 @@ abstract class AppLocalizations {
   /// **'Không tìm thấy Surah nào phù hợp.'**
   String get emptySearchResults;
 
+  /// No description provided for @surahListLoading.
+  ///
+  /// In vi, this message translates to:
+  /// **'Đang tải danh sách Surah…'**
+  String get surahListLoading;
+
   /// No description provided for @displaySettings.
   ///
   /// In vi, this message translates to:
@@ -291,6 +273,18 @@ abstract class AppLocalizations {
   /// In vi, this message translates to:
   /// **'Cỡ chữ Ả Rập'**
   String get readingFontSize;
+
+  /// No description provided for @readingModeLabel.
+  ///
+  /// In vi, this message translates to:
+  /// **'Chế độ đọc'**
+  String get readingModeLabel;
+
+  /// No description provided for @readingLayersLabel.
+  ///
+  /// In vi, this message translates to:
+  /// **'Lớp hỗ trợ đọc'**
+  String get readingLayersLabel;
 
   /// No description provided for @showTransliteration.
   ///
@@ -309,6 +303,54 @@ abstract class AppLocalizations {
   /// In vi, this message translates to:
   /// **'Bản dịch tiếng Anh'**
   String get showEnglish;
+
+  /// No description provided for @jumpToAyahTitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Chuyển tới Ayah'**
+  String get jumpToAyahTitle;
+
+  /// No description provided for @jumpToAyahSurahLabel.
+  ///
+  /// In vi, this message translates to:
+  /// **'Surah'**
+  String get jumpToAyahSurahLabel;
+
+  /// No description provided for @jumpToAyahNumberLabel.
+  ///
+  /// In vi, this message translates to:
+  /// **'Số câu'**
+  String get jumpToAyahNumberLabel;
+
+  /// No description provided for @jumpToAyahRange.
+  ///
+  /// In vi, this message translates to:
+  /// **'1–{max}'**
+  String jumpToAyahRange(int max);
+
+  /// No description provided for @jumpToAyahAction.
+  ///
+  /// In vi, this message translates to:
+  /// **'Chuyển tới'**
+  String get jumpToAyahAction;
+
+  /// No description provided for @jumpToAyahListModeOnly.
+  ///
+  /// In vi, this message translates to:
+  /// **'Chuyển tới Ayah hiện chỉ dùng được ở chế độ Danh sách.'**
+  String get jumpToAyahListModeOnly;
+
+  /// No description provided for @readingProgressPosition.
+  ///
+  /// In vi, this message translates to:
+  /// **'Ayah {current} / {total}'**
+  String readingProgressPosition(int current, int total);
+
+  /// No description provided for @readingProgressSemantics.
+  ///
+  /// In vi, this message translates to:
+  /// **'Ayah {current} trên {total}, {percent}%'**
+  String readingProgressSemantics(int current, int total, int percent);
 
   /// No description provided for @surahNotFound.
   ///
@@ -405,6 +447,18 @@ abstract class AppLocalizations {
   /// In vi, this message translates to:
   /// **'Nghe từ Ayah này'**
   String get playFromHere;
+
+  /// No description provided for @nowPlaying.
+  ///
+  /// In vi, this message translates to:
+  /// **'Đang phát'**
+  String get nowPlaying;
+
+  /// No description provided for @openReadingScreen.
+  ///
+  /// In vi, this message translates to:
+  /// **'Mở trang đọc'**
+  String get openReadingScreen;
 
   /// No description provided for @bookmarkLabel.
   ///
@@ -538,12 +592,6 @@ abstract class AppLocalizations {
   /// **'Tiến độ hôm nay'**
   String get dailyProgress;
 
-  /// No description provided for @lastRead.
-  ///
-  /// In vi, this message translates to:
-  /// **'Đọc gần đây'**
-  String get lastRead;
-
   /// No description provided for @quickAccess.
   ///
   /// In vi, this message translates to:
@@ -573,18 +621,6 @@ abstract class AppLocalizations {
   /// In vi, this message translates to:
   /// **'Ayah đã đọc'**
   String get ayahsReadLabel;
-
-  /// No description provided for @minutesLabel.
-  ///
-  /// In vi, this message translates to:
-  /// **'Phút học'**
-  String get minutesLabel;
-
-  /// No description provided for @myBookmarks.
-  ///
-  /// In vi, this message translates to:
-  /// **'Bookmark của tôi'**
-  String get myBookmarks;
 
   /// No description provided for @studyFlashcards.
   ///
@@ -754,11 +790,29 @@ abstract class AppLocalizations {
   /// **'Sao chép bản dịch'**
   String get copyTranslation;
 
+  /// No description provided for @ayahHighlightLabel.
+  ///
+  /// In vi, this message translates to:
+  /// **'Tô màu'**
+  String get ayahHighlightLabel;
+
   /// No description provided for @searchResultsAyahs.
   ///
   /// In vi, this message translates to:
   /// **'Kết quả trong nội dung'**
   String get searchResultsAyahs;
+
+  /// No description provided for @searchResultsSurahs.
+  ///
+  /// In vi, this message translates to:
+  /// **'Surah'**
+  String get searchResultsSurahs;
+
+  /// No description provided for @searchNoResults.
+  ///
+  /// In vi, this message translates to:
+  /// **'Không tìm thấy kết quả nào.'**
+  String get searchNoResults;
 
   /// No description provided for @searchNoAyahResults.
   ///
@@ -831,6 +885,12 @@ abstract class AppLocalizations {
   /// In vi, this message translates to:
   /// **'Thư viện của tôi'**
   String get libraryTitle;
+
+  /// No description provided for @libraryLoading.
+  ///
+  /// In vi, this message translates to:
+  /// **'Đang tải thư viện…'**
+  String get libraryLoading;
 
   /// No description provided for @libraryBookmarks.
   ///
@@ -958,6 +1018,12 @@ abstract class AppLocalizations {
   /// **'Bộ sưu tập'**
   String get collectionsTitle;
 
+  /// No description provided for @collectionsLoading.
+  ///
+  /// In vi, this message translates to:
+  /// **'Đang tải bộ sưu tập…'**
+  String get collectionsLoading;
+
   /// No description provided for @collectionsEmpty.
   ///
   /// In vi, this message translates to:
@@ -1084,6 +1150,12 @@ abstract class AppLocalizations {
   /// **'Mở trong Kinh'**
   String get reviewOpenInReading;
 
+  /// No description provided for @reviewSessionLoading.
+  ///
+  /// In vi, this message translates to:
+  /// **'Đang tải phiên ôn tập…'**
+  String get reviewSessionLoading;
+
   /// No description provided for @reviewSessionComplete.
   ///
   /// In vi, this message translates to:
@@ -1114,11 +1186,23 @@ abstract class AppLocalizations {
   /// **'Không còn từ vựng nào đến hạn ôn tập lúc này.'**
   String get flashcardReviewCompleteSubtitle;
 
+  /// No description provided for @flashcardReviewLoading.
+  ///
+  /// In vi, this message translates to:
+  /// **'Đang tải Flashcard…'**
+  String get flashcardReviewLoading;
+
   /// No description provided for @flashcardsTitle.
   ///
   /// In vi, this message translates to:
   /// **'Flashcard'**
   String get flashcardsTitle;
+
+  /// No description provided for @flashcardsLoading.
+  ///
+  /// In vi, this message translates to:
+  /// **'Đang tải Flashcard…'**
+  String get flashcardsLoading;
 
   /// No description provided for @flashcardSearchHint.
   ///
@@ -1143,6 +1227,12 @@ abstract class AppLocalizations {
   /// In vi, this message translates to:
   /// **'Chuyển sang deck'**
   String get flashcardMoveToDeck;
+
+  /// No description provided for @flashcardMoveToDeckLoading.
+  ///
+  /// In vi, this message translates to:
+  /// **'Đang tải danh sách deck…'**
+  String get flashcardMoveToDeckLoading;
 
   /// No description provided for @flashcardRemove.
   ///
@@ -1252,6 +1342,12 @@ abstract class AppLocalizations {
   /// **'Deck Flashcard'**
   String get flashcardDecksTitle;
 
+  /// No description provided for @flashcardDecksLoading.
+  ///
+  /// In vi, this message translates to:
+  /// **'Đang tải deck…'**
+  String get flashcardDecksLoading;
+
   /// No description provided for @flashcardDecksEmpty.
   ///
   /// In vi, this message translates to:
@@ -1305,6 +1401,12 @@ abstract class AppLocalizations {
   /// In vi, this message translates to:
   /// **'Thêm Flashcard'**
   String get addFlashcardTitle;
+
+  /// No description provided for @addFlashcardLoading.
+  ///
+  /// In vi, this message translates to:
+  /// **'Đang tìm kiếm...'**
+  String get addFlashcardLoading;
 
   /// No description provided for @addFlashcardSourceLemma.
   ///
@@ -1383,6 +1485,12 @@ abstract class AppLocalizations {
   /// In vi, this message translates to:
   /// **'Chưa có Flashcard nào trong Smart Deck này.'**
   String get smartDeckEmpty;
+
+  /// No description provided for @smartDeckLoading.
+  ///
+  /// In vi, this message translates to:
+  /// **'Đang tải Smart Deck…'**
+  String get smartDeckLoading;
 
   /// No description provided for @smartDeckVerbFormLabel.
   ///
@@ -1948,6 +2056,12 @@ abstract class AppLocalizations {
   /// **'Chưa đúng.'**
   String get quizIncorrect;
 
+  /// No description provided for @quizSessionLoading.
+  ///
+  /// In vi, this message translates to:
+  /// **'Đang tải câu hỏi…'**
+  String get quizSessionLoading;
+
   /// No description provided for @quizEmpty.
   ///
   /// In vi, this message translates to:
@@ -1977,6 +2091,12 @@ abstract class AppLocalizations {
   /// In vi, this message translates to:
   /// **'Bắt đầu buổi học'**
   String get learningSessionStart;
+
+  /// No description provided for @learningSessionLoading.
+  ///
+  /// In vi, this message translates to:
+  /// **'Đang chuẩn bị buổi học…'**
+  String get learningSessionLoading;
 
   /// No description provided for @learningSummaryTitle.
   ///

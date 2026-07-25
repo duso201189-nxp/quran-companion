@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:quran_companion/l10n/app_localizations.dart';
 
+import '../../../../shared/widgets/loading_state.dart';
 import '../../data/bookmark_collection_providers.dart';
 import '../../domain/entities/bookmark_collection.dart';
 import 'collection_edit_dialog.dart';
@@ -24,7 +25,7 @@ class CollectionsScreen extends ConsumerWidget {
       appBar: AppBar(title: Text(l10n.collectionsTitle)),
       body: SafeArea(
         child: collectionsAsync.when(
-          loading: () => const Center(child: CircularProgressIndicator()),
+          loading: () => LoadingState(semanticsLabel: l10n.collectionsLoading),
           error: (_, __) => Center(child: Text(l10n.errorLoadData)),
           data: (collections) {
             if (collections.isEmpty) {

@@ -1,10 +1,16 @@
 import 'package:flutter/foundation.dart' show kDebugMode;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:quran_companion/l10n/app_localizations.dart';
 
+import '../../../app/router.dart';
+import '../../../shared/widgets/card_shell.dart';
+import '../../../shared/widgets/empty_state_banner.dart';
 import '../../quran/domain/entities/ayah_search_result.dart';
+import '../../quran/domain/entities/surah.dart';
 import '../../quran/presentation/reading/reading_navigation.dart';
+import '../../quran/presentation/surah_list_controller.dart';
 import 'widgets/search_error_state.dart';
 import 'widgets/search_result_section.dart';
 
@@ -155,9 +161,14 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
       };
 
   /// Thân màn hình — ưu tiên trạng thái xem trước của dev (chỉ khả
-  /// dụng khi [kDebugMode]), nếu không thì rơi về hành vi thật hôm
-  /// nay (chỉ có Empty State, vì chưa có search engine).
-  Widget _buildBody(AppLocalizations l10n) {
+  /// dụng khi [kDebugMode]), nếu không thì chạy tìm kiếm THẬT.
+  ///
+  /// Sprint 26.1: trước đây thân màn hình luôn dừng ở Empty State —
+  /// gõ gì cũng không truy vấn, trong khi SurahListScreen đã tìm được
+  /// từ lâu. Nay dùng LẠI đúng [ayahSearchProvider] của màn hình kia
+  /// (FTS5 qua QuranRepository), không thêm repository hay logic tìm
+  /// kiếm nào mới.
+  Widget _buildBody(AppLocalizations l10n, String query) {
     if (kDebugMode) {
       switch (_devPreview) {
         case _DevPreviewState.real:
@@ -183,10 +194,12 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
           );
       }
     }
-    if (_queryController.text.trim().isEmpty) {
+    // Dưới 2 ký tự: chưa đủ để tìm (cùng ngưỡng với ayahSearchProvider)
+    // -> giữ Empty State thay vì báo "không có kết quả" gây hiểu nhầm.
+    if (query.length < 2) {
       return SearchEmptyState(l10n: l10n);
     }
-    return const SizedBox.shrink();
+    return _UnifiedSearchResults(query: query);
   }
 
   @override
@@ -201,15 +214,26 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
           hintText: l10n.searchQueryHint,
           leading: const Icon(Icons.search),
           elevation: const WidgetStatePropertyAll(0),
+          // Mở màn hình Tìm kiếm là gõ được ngay — bớt đúng một lần
+          // chạm cho thao tác thường dùng nhất ở đây.
+          autoFocus: true,
+          textInputAction: TextInputAction.search,
           trailing: [
-            if (_queryController.text.isNotEmpty)
-              IconButton(
-                icon: const Icon(Icons.clear),
-                tooltip: l10n.searchClearTooltip,
-                onPressed: () => setState(_queryController.clear),
-              ),
+            // Sprint 26.1 — chỉ nút xoá này nghe ô nhập, KHÔNG còn
+            // `setState` cho mỗi phím gõ: trước đây mỗi ký tự dựng lại
+            // cả Scaffold (AppBar + bộ chọn chế độ + hàng chip).
+            ValueListenableBuilder<TextEditingValue>(
+              valueListenable: _queryController,
+              builder: (context, value, _) {
+                if (value.text.isEmpty) return const SizedBox.shrink();
+                return IconButton(
+                  icon: const Icon(Icons.clear),
+                  tooltip: l10n.searchClearTooltip,
+                  onPressed: _queryController.clear,
+                );
+              },
+            ),
           ],
-          onChanged: (_) => setState(() {}),
         ),
         actions: [
           // Chỉ tồn tại khi kDebugMode == true — bị tree-shake khỏi
@@ -292,12 +316,109 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
                 ),
               ),
               const SizedBox(height: 8),
-              _buildBody(l10n),
+              // Chỉ phần thân nghe ô nhập -> gõ chữ chỉ dựng lại kết
+              // quả, không đụng tới phần điều khiển phía trên.
+              ValueListenableBuilder<TextEditingValue>(
+                valueListenable: _queryController,
+                builder: (context, value, _) =>
+                    _buildBody(l10n, value.text.trim()),
+              ),
             ],
           ),
         ),
       ),
     );
+  }
+}
+
+/// Kết quả tìm kiếm hợp nhất (Sprint 26.2): Surah TRƯỚC, rồi tới Ayah
+/// — widget RIÊNG để mỗi lần trạng thái truy vấn đổi chỉ dựng lại phần
+/// kết quả, không dựng lại ô nhập / bộ chọn chế độ / hàng chip.
+///
+/// KHÔNG có provider mới và KHÔNG có bộ lọc thứ hai:
+/// - Surah: [surahListProvider] (đã cache sẵn, dùng chung với màn hình
+///   danh sách Surah) + hàm thuần [filterSurahs] — đúng bộ lọc mà
+///   SurahListScreen đang dùng, nên "55", "Rahman", "Khai Đề" hay tên
+///   Ả Rập đều khớp y hệt nhau ở hai nơi.
+/// - Ayah: [ayahSearchProvider] (family theo query, Sprint 26.1).
+///
+/// Khu vực nào không có kết quả thì ẩn hẳn; chỉ khi CẢ HAI cùng rỗng
+/// mới báo "không tìm thấy". Trong lúc Ayah còn đang tải, khu vực
+/// Surah đã hiện ngay — kết quả tới sớm chừng nào hay chừng ấy.
+class _UnifiedSearchResults extends ConsumerWidget {
+  const _UnifiedSearchResults({required this.query});
+
+  final String query;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context);
+
+    // Danh sách 114 Surah đã nằm sẵn trong cache -> lọc tại chỗ bằng
+    // hàm thuần, không cần thêm provider chỉ để chạy một bộ lọc.
+    final allSurahs =
+        ref.watch(surahListProvider).valueOrNull ?? const <Surah>[];
+    final surahMatches = filterSurahs(
+      allSurahs,
+      query: query,
+      filter: SurahFilter.all,
+    );
+
+    // null = "không có gì để hiện cho khu vực Ayah" (đã tải xong và
+    // rỗng) -> ẩn khu vực; khác null thì luôn hiện (kể cả khung chờ).
+    final ayahSection = ref.watch(ayahSearchProvider(query)).when<Widget?>(
+          loading: () => const SearchLoadingSkeleton(),
+          error: (_, __) => SearchErrorState(
+            onRetry: () => ref.invalidate(ayahSearchProvider(query)),
+          ),
+          data: (results) => results.isEmpty
+              ? null
+              : SearchResultSection.ayahs(
+                  l10n: l10n,
+                  results: results,
+                  // Tô đậm phần khớp — dùng lại highlightSpans sẵn có.
+                  query: query,
+                  onResultTap: (result) => openAyahInReadingScreen(
+                    context,
+                    ref,
+                    surahId: result.surahId,
+                    ayahNumber: result.ayahNumber,
+                  ),
+                ),
+        );
+
+    if (surahMatches.isEmpty && ayahSection == null) {
+      return EmptyStateBanner(text: l10n.searchNoResults);
+    }
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        if (surahMatches.isNotEmpty)
+          SearchResultSection.surahs(
+            l10n: l10n,
+            results: surahMatches,
+            query: query,
+            onResultTap: (surah) => _openSurah(context, surah),
+          ),
+        if (ayahSection != null) ayahSection,
+      ],
+    );
+  }
+
+  /// Mở Surah từ màn hình Tìm kiếm.
+  ///
+  /// Dùng [AppRoutes.read] (route đọc top-level) chứ KHÔNG phải
+  /// [AppRoutes.surahReading] — vì lý do đã ghi rõ ở
+  /// `reading_navigation.dart`: SearchScreen là route top-level, push
+  /// route lồng trong shell từ đây làm go_router dựng lại Navigator
+  /// của nhánh shell và ném lỗi GlobalKey trùng.
+  ///
+  /// KHÔNG ghi đè vị trí đọc đã lưu: mở cả Surah nghĩa là "mở Surah
+  /// này", người dùng quay lại đúng chỗ đang đọc dở — khác với chạm
+  /// một Ayah cụ thể (khi đó [openAyahInReadingScreen] mới đặt vị trí).
+  void _openSurah(BuildContext context, Surah surah) {
+    context.push(AppRoutes.read(surah.id));
   }
 }
 
@@ -437,13 +558,17 @@ class SearchLoadingSkeleton extends StatelessWidget {
             for (var i = 0; i < itemCount; i++)
               Padding(
                 key: ValueKey('search-loading-card-$i'),
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                // Sprint 27.1 — lấy ĐÚNG hằng số hình học của thẻ thật
+                // ([CardShell]) thay vì chép số: khung chờ phải khớp
+                // thẻ kết quả, nếu thẻ đổi thì khung chờ đổi theo.
+                // Không dùng cả CardShell vì khung chờ KHÔNG bấm được.
+                padding: CardShell.outerPadding,
                 child: Container(
                   width: double.infinity,
-                  padding: const EdgeInsets.all(14),
+                  padding: CardShell.innerPadding,
                   decoration: BoxDecoration(
                     color: scheme.surfaceContainerLow,
-                    borderRadius: BorderRadius.circular(14),
+                    borderRadius: BorderRadius.circular(CardShell.radius),
                   ),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,

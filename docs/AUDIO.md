@@ -20,6 +20,31 @@ AudioBar (UI) ──> AudioController (Riverpod, business logic)
   nhận nhầm file tải dở; mất mạng giữ phần đã có, lần sau tải bù.
 - Lặp: off -> lặp 1 Ayah -> lặp cả Surah. Tốc độ: 0.75–2.0x.
 
+## Một đường nạp nguồn duy nhất (Sprint 28.1)
+
+`AudioController` KHÔNG lưu danh sách URL đã dựng. Nó lưu đầu vào —
+số thứ tự các Ayah (`_ayahNumbers`) — còn Surah và Qari nằm trong
+`AudioState`. URL luôn được sinh lại tại thời điểm nạp:
+
+```
+_ayahNumbers + state.surahId + state.reciter
+        │
+   _sourcesFor()      <- nơi DUY NHẤT dựng URL
+        │
+     _load()          <- nơi DUY NHẤT nạp xuống engine
+        │
+   playSurah / retry / selectReciter
+```
+
+Hệ quả: đổi Qari giữa chừng nạp lại đúng giọng mới, giữ nguyên Surah,
+Ayah, vị trí trong Ayah (`setPlaylist(initialPosition:)`), tốc độ,
+chế độ lặp và trạng thái phát/tạm dừng; "Thử lại" sau lỗi mạng cũng
+dùng giọng đang chọn chứ không phải giọng lúc bắt đầu phát.
+
+Trước đó controller lưu `List<Uri> _sources` dựng sẵn một lần trong
+`playSurah`. Vì URL đã đóng băng Qari, `selectReciter` không thể có
+tác dụng thật dù doc của nó ghi là "nạp lại nguồn".
+
 ## Cấu hình phát nền (giai đoạn phát hành)
 
 Phát khi tắt màn hình + nút điều khiển trên thông báo cần:

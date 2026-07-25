@@ -32,13 +32,24 @@ final filteredSurahsProvider = Provider<AsyncValue<List<Surah>>>((ref) {
 
 /// Tìm toàn văn trong nội dung Ayah (FTS5) — chạy khi query đủ dài,
 /// debounce nhẹ để không truy vấn theo từng phím gõ.
-final ayahSearchProvider =
-    FutureProvider.autoDispose<List<AyahSearchResult>>((ref) async {
-  final query = ref.watch(surahSearchQueryProvider);
+///
+/// Sprint 26.1 — nhận query làm THAM SỐ family thay vì tự đọc
+/// [surahSearchQueryProvider]. Trước đây provider gắn chặt vào ô tìm
+/// kiếm của SurahListScreen, nên màn hình Tìm kiếm không thể dùng lại
+/// mà không ghi đè state của màn hình kia; giờ MỌI màn hình tìm kiếm
+/// dùng CHUNG đúng một provider, không có bản sao logic thứ hai.
+final ayahSearchProvider = FutureProvider.autoDispose
+    .family<List<AyahSearchResult>, String>((ref, query) async {
   if (query.trim().length < 2) return const [];
+
+  // Người dùng gõ tiếp -> phiên bản này không còn ai nghe và bị huỷ;
+  // cờ dưới đây giúp bỏ luôn lượt truy vấn database, không chỉ bỏ kết
+  // quả (trước đây vẫn chạm database rồi mới vứt kết quả đi).
+  var disposed = false;
+  ref.onDispose(() => disposed = true);
   await Future<void>.delayed(const Duration(milliseconds: 250));
-  // Query đã đổi trong lúc chờ -> phiên bản provider mới lo tiếp.
-  if (query != ref.read(surahSearchQueryProvider)) return const [];
+  if (disposed) return const [];
+
   return ref.watch(quranRepositoryProvider).searchAyahs(query);
 });
 

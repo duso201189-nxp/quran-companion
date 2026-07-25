@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../../../app/theme/app_theme.dart';
 import '../../../../shared/utils/highlight.dart';
+import '../../../../shared/widgets/card_shell.dart';
 import '../../../quran/domain/entities/ayah_search_result.dart';
 
 /// Thẻ kết quả tìm kiếm — HỢP ĐỒNG HIỂN THỊ DÙNG CHUNG cho MỌI domain
@@ -25,6 +26,10 @@ import '../../../quran/domain/entities/ayah_search_result.dart';
 /// Cùng padding/bo góc/màu nền đã dùng cho `_AyahResultTile`
 /// (SurahListScreen) và `LibraryAyahTile` (Thư viện của tôi) — tái
 /// dùng đúng khoảng cách/kiểu chữ đã có, không phát minh giá trị mới.
+///
+/// Sprint 27.1: phần vỏ đó nay là [CardShell] dùng chung, và kiểu chữ
+/// dùng [cardSourceLabelStyle]/[cardSecondaryTextStyle]. Widget này
+/// VẪN domain-agnostic — [CardShell] chỉ là bố cục, không biết Qur'an.
 class ResultCard extends StatelessWidget {
   const ResultCard({
     super.key,
@@ -55,7 +60,7 @@ class ResultCard extends StatelessWidget {
       primaryText: result.arabic,
       primaryTextDirection: TextDirection.rtl,
       useQuranFont: true,
-      primaryFontSize: 22,
+      primaryFontSize: kPreviewArabicFontSize,
       secondaryText: result.translation,
       highlightQuery: highlightQuery,
       onTap: onTap,
@@ -102,11 +107,7 @@ class ResultCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
     final textTheme = Theme.of(context).textTheme;
-    final highlightStyle = TextStyle(
-      fontWeight: FontWeight.w700,
-      color: scheme.primary,
-      backgroundColor: scheme.primaryContainer.withValues(alpha: 0.35),
-    );
+    final highlightStyle = searchHighlightStyle(scheme);
 
     final semanticsLabel = [
       sourceLabel,
@@ -116,83 +117,64 @@ class ResultCard extends StatelessWidget {
 
     final primaryStyle = useQuranFont
         ? quranTextStyle(
-            fontSize: primaryFontSize ?? 22,
+            fontSize: primaryFontSize ?? kPreviewArabicFontSize,
             color: scheme.onSurface,
           )
         : textTheme.bodyLarge?.copyWith(fontSize: primaryFontSize);
 
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-      child: Semantics(
-        label: semanticsLabel,
-        button: onTap != null,
-        excludeSemantics: true,
-        child: Material(
-          color: scheme.surfaceContainerLow,
-          borderRadius: BorderRadius.circular(14),
-          child: InkWell(
-            borderRadius: BorderRadius.circular(14),
-            onTap: onTap,
-            child: Padding(
-              padding: const EdgeInsets.all(14),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    children: [
-                      Icon(icon, size: 16, color: scheme.primary),
-                      const SizedBox(width: 6),
-                      Expanded(
-                        child: Text(
-                          sourceLabel,
-                          style: textTheme.labelMedium
-                              ?.copyWith(color: scheme.primary),
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 8),
-                  Text.rich(
-                    TextSpan(
-                      children: highlightSpans(
-                        primaryText,
-                        highlightQuery,
-                        highlightStyle: highlightStyle,
-                      ),
-                    ),
-                    textDirection: primaryTextDirection,
-                    textAlign: primaryTextDirection == TextDirection.rtl
-                        ? TextAlign.right
-                        : TextAlign.left,
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                    style: primaryStyle ?? textTheme.bodyLarge,
-                  ),
-                  if (secondaryText != null) ...[
-                    const SizedBox(height: 6),
-                    Text.rich(
-                      TextSpan(
-                        children: highlightSpans(
-                          secondaryText!,
-                          highlightQuery,
-                          highlightStyle: highlightStyle,
-                        ),
-                      ),
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                      style: textTheme.bodyMedium?.copyWith(
-                        height: 1.5,
-                        color: scheme.onSurfaceVariant,
-                      ),
-                    ),
-                  ],
-                ],
+    return CardShell(
+      onTap: onTap,
+      semanticsLabel: semanticsLabel,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Icon(icon, size: 16, color: scheme.primary),
+              const SizedBox(width: 6),
+              Expanded(
+                child: Text(
+                  sourceLabel,
+                  style: cardSourceLabelStyle(textTheme, scheme),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 8),
+          Text.rich(
+            TextSpan(
+              children: highlightSpans(
+                primaryText,
+                highlightQuery,
+                highlightStyle: highlightStyle,
               ),
             ),
+            textDirection: primaryTextDirection,
+            textAlign: primaryTextDirection == TextDirection.rtl
+                ? TextAlign.right
+                : TextAlign.left,
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
+            style: primaryStyle ?? textTheme.bodyLarge,
           ),
-        ),
+          if (secondaryText != null) ...[
+            const SizedBox(height: 6),
+            Text.rich(
+              TextSpan(
+                children: highlightSpans(
+                  secondaryText!,
+                  highlightQuery,
+                  highlightStyle: highlightStyle,
+                ),
+              ),
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+              style: cardSecondaryTextStyle(textTheme, scheme),
+            ),
+          ],
+        ],
       ),
     );
   }

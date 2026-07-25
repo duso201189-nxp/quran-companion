@@ -22,10 +22,14 @@ import '../../domain/entities/surah.dart';
 import '../annotations/ayah_actions_sheet.dart';
 import '../audio/audio_bar.dart';
 import '../audio/audio_controller.dart';
+import 'focus_transition.dart';
+import 'jump_to_ayah_sheet.dart';
 import 'mushaf_builder.dart';
 import 'reading_controller.dart';
 import 'reading_position_store.dart';
+import 'reading_progress_indicator.dart';
 import 'reading_settings.dart';
+import 'reading_settings_sheet.dart';
 
 /// Trang đọc Qur'an — màn hình quan trọng nhất của ứng dụng.
 ///
@@ -57,6 +61,13 @@ class _ReadingScreenState extends ConsumerState<ReadingScreen> {
   int _initialAyahIndex = 0;
   int? _lastSavedIndex;
 
+  /// Vị trí Ayah đang đọc, CHỈ phục vụ hiển thị (dải tiến độ) — tách
+  /// khỏi [_lastSavedIndex], vốn phục vụ việc chống ghi trùng khi lưu:
+  /// hai mối quan tâm khác nhau (hiển thị vs lưu trữ), nên giữ riêng.
+  /// Dùng ValueNotifier thay cho setState: cuộn chỉ dựng lại đúng dải
+  /// tiến độ, KHÔNG dựng lại cả ReadingScreen.
+  late final ValueNotifier<int> _currentAyahIndex;
+
   // pinch-zoom
   double _pinchBaseScale = 1.0;
   int _maxPointers = 1;
@@ -71,6 +82,9 @@ class _ReadingScreenState extends ConsumerState<ReadingScreen> {
     super.initState();
     _initialAyahIndex =
         ref.read(readingPositionStoreProvider).positionFor(widget.surahId) ?? 0;
+    // Khởi tạo từ vị trí đã lưu -> mở lại Surah là dải tiến độ hiện
+    // ĐÚNG chỗ đang đọc ngay từ khung hình đầu, không đợi cuộn.
+    _currentAyahIndex = ValueNotifier<int>(_initialAyahIndex);
     _positionsListener.itemPositions.addListener(_onPositionsChanged);
     _statsStore = ref.read(statsStoreProvider);
     _studySessionRepository = ref.read(studySessionRepositoryProvider);
@@ -81,6 +95,7 @@ class _ReadingScreenState extends ConsumerState<ReadingScreen> {
   @override
   void dispose() {
     _positionsListener.itemPositions.removeListener(_onPositionsChanged);
+    _currentAyahIndex.dispose();
     final seconds = _sessionWatch.elapsed.inSeconds;
     unawaited(_statsStore.addSeconds(seconds));
     // Sprint 8 (DR-2026-0003 mục A) — ghi song song vào
@@ -110,6 +125,8 @@ class _ReadingScreenState extends ConsumerState<ReadingScreen> {
     if (visible.isEmpty) return;
     final minItemIndex = visible.map((p) => p.index).reduce(min);
     final ayahIndex = max(0, minItemIndex - 1); // index 0 là header
+    // ValueNotifier tự bỏ qua giá trị trùng -> không có rebuild thừa.
+    _currentAyahIndex.value = ayahIndex;
     if (ayahIndex == _lastSavedIndex) return;
     _lastSavedIndex = ayahIndex;
     unawaited(
@@ -120,6 +137,8 @@ class _ReadingScreenState extends ConsumerState<ReadingScreen> {
   }
 
   void _savePage(int firstAyahIndex) {
+    // Chế độ Mushaf lật trang -> dải tiến độ theo Ayah đầu của trang.
+    _currentAyahIndex.value = firstAyahIndex;
     unawaited(
       ref
           .read(readingPositionStoreProvider)
@@ -169,27 +188,44 @@ class _ReadingScreenState extends ConsumerState<ReadingScreen> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    final settings = ref.watch(readingSettingsProvider);
+    final scheme = Theme.of(context).colorScheme;
+    // CHỈ nghe `mode` — không nghe cả ReadingSettings. Trước đây kéo
+    // hai ngón đổi cỡ chữ (previewArabicScale phát state mới theo TỪNG
+    // khung hình cử chỉ) dựng lại cả màn hình đọc: Scaffold, AppBar và
+    // toàn bộ cây danh sách. Giờ chỉ những widget thật sự dùng cỡ chữ
+    // (AyahCard, _MushafView) dựng lại.
+    final mode = ref.watch(readingSettingsProvider.select((s) => s.mode));
     final reading = ref.watch(surahReadingProvider(widget.surahId));
+    final totalAyahs = reading.valueOrNull?.ayahs.length ?? 0;
 
     // Đang nghe audio -> tự cuộn đến Ayah đang phát (mục UX #5).
-    ref.listen<AudioState>(audioControllerProvider, (prev, next) {
-      final sameAyah = prev?.currentIndex == next.currentIndex &&
-          prev?.surahId == next.surahId;
-      if (!next.active ||
-          next.surahId != widget.surahId ||
-          sameAyah ||
-          settings.mode != ReadingMode.list ||
-          !_itemScrollController.isAttached) {
-        return;
-      }
-      _itemScrollController.scrollTo(
-        index: next.currentIndex + 1, // +1: header
-        alignment: 0.15,
-        duration: const Duration(milliseconds: 350),
-        curve: Curves.easeOutCubic,
-      );
-    });
+    //
+    // Sprint 28.0 — select(): trước đây đăng ký nghe TOÀN BỘ AudioState,
+    // nên callback này chạy theo từng tick vị trí (~3 lần/giây) chỉ để
+    // so `sameAyah` rồi thoát. Nay chỉ nghe đúng ba trường quyết định
+    // việc cuộn, nên callback chỉ chạy khi thật sự sang Ayah khác.
+    ref.listen(
+      audioControllerProvider.select(
+        (s) => (active: s.active, surahId: s.surahId, index: s.currentIndex),
+      ),
+      (prev, next) {
+        final sameAyah =
+            prev?.index == next.index && prev?.surahId == next.surahId;
+        if (!next.active ||
+            next.surahId != widget.surahId ||
+            sameAyah ||
+            mode != ReadingMode.list ||
+            !_itemScrollController.isAttached) {
+          return;
+        }
+        _itemScrollController.scrollTo(
+          index: next.index + 1, // +1: header
+          alignment: 0.15,
+          duration: const Duration(milliseconds: 350),
+          curve: Curves.easeOutCubic,
+        );
+      },
+    );
 
     // Phím tắt desktop: Space phát/dừng · ←/→ Ayah trước/kế ·
     // +/- cỡ chữ · F chế độ tập trung · M đổi List/Mushaf.
@@ -211,7 +247,7 @@ class _ReadingScreenState extends ConsumerState<ReadingScreen> {
             setState(() => _focusMode = !_focusMode),
         const SingleActivator(LogicalKeyboardKey.keyM): () => unawaited(
               ref.read(readingSettingsProvider.notifier).setMode(
-                    settings.mode == ReadingMode.list
+                    mode == ReadingMode.list
                         ? ReadingMode.mushaf
                         : ReadingMode.list,
                   ),
@@ -220,7 +256,27 @@ class _ReadingScreenState extends ConsumerState<ReadingScreen> {
       child: Focus(
         autofocus: true,
         child: Scaffold(
-          bottomNavigationBar: _focusMode ? null : const AudioBar(),
+          // Dải tiến độ nằm ở mép dưới, ngay trên AudioBar: xa vùng mắt
+          // đọc kinh văn nhất, và chỉ lấy ~28px — khu vực chữ Ả Rập gần
+          // như không đổi.
+          //
+          // Sprint 25.3 — vào/ra Focus Mode: vỏ dưới THU GỌN dần rồi
+          // mới biến mất (thay vì bật/tắt đột ngột), và khi thu xong
+          // thì được tháo hẳn khỏi cây (xem [FocusCollapse]).
+          bottomNavigationBar: FocusCollapse(
+            visible: !_focusMode,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                if (totalAyahs > 0)
+                  ReadingProgressIndicator(
+                    currentAyahIndex: _currentAyahIndex,
+                    totalAyahs: totalAyahs,
+                  ),
+                const AudioBar(),
+              ],
+            ),
+          ),
           appBar: _focusMode
               ? null
               : AppBar(
@@ -230,22 +286,27 @@ class _ReadingScreenState extends ConsumerState<ReadingScreen> {
                   ),
                   actions: [
                     IconButton(
+                      tooltip: l10n.jumpToAyahTitle,
+                      icon: const Icon(Icons.numbers),
+                      onPressed: () => unawaited(_openJumpToAyah(context)),
+                    ),
+                    IconButton(
                       tooltip: l10n.focusMode,
                       icon: const Icon(Icons.center_focus_strong),
                       onPressed: () => setState(() => _focusMode = true),
                     ),
                     IconButton(
-                      tooltip: settings.mode == ReadingMode.list
+                      tooltip: mode == ReadingMode.list
                           ? l10n.readingModeMushaf
                           : l10n.readingModeList,
                       icon: Icon(
-                        settings.mode == ReadingMode.list
+                        mode == ReadingMode.list
                             ? Icons.auto_stories_outlined
                             : Icons.view_agenda_outlined,
                       ),
                       onPressed: () => unawaited(
                         ref.read(readingSettingsProvider.notifier).setMode(
-                              settings.mode == ReadingMode.list
+                              mode == ReadingMode.list
                                   ? ReadingMode.mushaf
                                   : ReadingMode.list,
                             ),
@@ -258,49 +319,59 @@ class _ReadingScreenState extends ConsumerState<ReadingScreen> {
                     ),
                   ],
                 ),
-          body: SafeArea(
-            child: reading.when(
-              loading: () => const Center(child: CircularProgressIndicator()),
-              error: (error, _) => _ReadingErrorState(
-                l10n: l10n,
-                notFound: error is SurahNotFoundException,
-                onRetry: () =>
-                    ref.invalidate(surahReadingProvider(widget.surahId)),
+          // Nền dịch RẤT nhẹ giữa hai chế độ (surface -> surfaceContainerLowest):
+          // đủ để cảm thấy trang lùi lại một bước, không đủ để gây chú
+          // ý. Cả hai đều là vai trò bề mặt M3 nên tương phản với
+          // onSurface không đổi. AnimatedContainer giữ nguyên instance
+          // widget con -> danh sách đọc KHÔNG dựng lại theo từng khung
+          // hình của chuyển cảnh.
+          body: AnimatedContainer(
+            duration: focusTransitionDuration(context),
+            curve: kFocusTransitionCurve,
+            color: _focusMode ? scheme.surfaceContainerLowest : scheme.surface,
+            child: SafeArea(
+              child: reading.when(
+                loading: () => const Center(child: CircularProgressIndicator()),
+                error: (error, _) => _ReadingErrorState(
+                  l10n: l10n,
+                  notFound: error is SurahNotFoundException,
+                  onRetry: () =>
+                      ref.invalidate(surahReadingProvider(widget.surahId)),
+                ),
+                data: (data) {
+                  if (data.ayahs.isEmpty) {
+                    return _ReadingEmptyState(l10n: l10n);
+                  }
+                  final content = mode == ReadingMode.mushaf
+                      ? _MushafView(
+                          ayahs: data.ayahs,
+                          focus: _focusMode,
+                          initialAyahIndex: _initialAyahIndex,
+                          onPageFirstAyah: _savePage,
+                        )
+                      : _AyahListView(
+                          surah: data.surah,
+                          ayahs: data.ayahs,
+                          surahId: widget.surahId,
+                          focus: _focusMode,
+                          // Vị trí 0 = chưa đọc dở -> mở từ ĐẦU trang (kèm
+                          // header Surah); đọc dở -> nhảy thẳng tới Ayah đó.
+                          initialScrollIndex: _initialAyahIndex == 0
+                              ? 0
+                              : min(_initialAyahIndex + 1, data.ayahs.length),
+                          itemScrollController: _itemScrollController,
+                          itemPositionsListener: _positionsListener,
+                        );
+                  return GestureDetector(
+                    behavior: HitTestBehavior.translucent,
+                    onTap: _onTap,
+                    onScaleStart: _onScaleStart,
+                    onScaleUpdate: _onScaleUpdate,
+                    onScaleEnd: _onScaleEnd,
+                    child: content,
+                  );
+                },
               ),
-              data: (data) {
-                if (data.ayahs.isEmpty) {
-                  return _ReadingEmptyState(l10n: l10n);
-                }
-                final content = settings.mode == ReadingMode.mushaf
-                    ? _MushafView(
-                        ayahs: data.ayahs,
-                        settings: settings,
-                        focus: _focusMode,
-                        initialAyahIndex: _initialAyahIndex,
-                        onPageFirstAyah: _savePage,
-                      )
-                    : _AyahListView(
-                        surah: data.surah,
-                        ayahs: data.ayahs,
-                        surahId: widget.surahId,
-                        focus: _focusMode,
-                        // Vị trí 0 = chưa đọc dở -> mở từ ĐẦU trang (kèm
-                        // header Surah); đọc dở -> nhảy thẳng tới Ayah đó.
-                        initialScrollIndex: _initialAyahIndex == 0
-                            ? 0
-                            : min(_initialAyahIndex + 1, data.ayahs.length),
-                        itemScrollController: _itemScrollController,
-                        itemPositionsListener: _positionsListener,
-                      );
-                return GestureDetector(
-                  behavior: HitTestBehavior.translucent,
-                  onTap: _onTap,
-                  onScaleStart: _onScaleStart,
-                  onScaleUpdate: _onScaleUpdate,
-                  onScaleEnd: _onScaleEnd,
-                  child: content,
-                );
-              },
             ),
           ),
         ),
@@ -339,10 +410,74 @@ class _ReadingScreenState extends ConsumerState<ReadingScreen> {
   }
 
   void _openDisplaySettings(BuildContext context) {
-    showModalBottomSheet<void>(
-      context: context,
-      showDragHandle: true,
-      builder: (_) => const DisplaySettingsSheet(),
+    unawaited(ReadingSettingsSheet.show(context));
+  }
+
+  /// Mở sheet "Chuyển tới Ayah" rồi thực hiện đúng cú nhảy đã chọn.
+  Future<void> _openJumpToAyah(BuildContext context) async {
+    final l10n = AppLocalizations.of(context);
+
+    // Chế độ Mushaf: KHÔNG tự đổi sang Danh sách — đổi chế độ hiển thị
+    // sau lưng người dùng là hành vi bất ngờ. Báo rõ rồi dừng.
+    // (PageController lật trang là state riêng của _MushafView, màn
+    // hình này không nắm; nhảy trong Mushaf thuộc phạm vi phase khác.)
+    if (ref.read(readingSettingsProvider).mode == ReadingMode.mushaf) {
+      ScaffoldMessenger.of(context)
+        ..hideCurrentSnackBar()
+        ..showSnackBar(
+          SnackBar(
+            content: Text(l10n.jumpToAyahListModeOnly),
+            behavior: SnackBarBehavior.floating,
+          ),
+        );
+      return;
+    }
+
+    final data = ref.read(surahReadingProvider(widget.surahId)).valueOrNull;
+    if (data == null) return;
+
+    final target = await JumpToAyahSheet.show(
+      context,
+      currentSurah: data.surah,
+    );
+    if (target == null) return;
+    if (!mounted) return;
+    _jumpToAyah(target, ayahCount: data.ayahs.length);
+  }
+
+  /// Cùng Surah -> cuộn tại chỗ (KHÔNG dựng lại màn hình, không đụng
+  /// setState). Khác Surah -> mở Surah mới ĐÚNG cách vuốt ngang đổi
+  /// Surah đang dùng ([_onScaleEnd]), không tạo đường điều hướng thứ
+  /// hai. Cả hai nhánh đều ghi vị trí đọc qua [ReadingPositionStore]
+  /// đã có — không thêm cơ chế lưu vị trí riêng.
+  void _jumpToAyah(JumpTarget target, {required int ayahCount}) {
+    final store = ref.read(readingPositionStoreProvider);
+
+    if (target.surahId != widget.surahId) {
+      // Lưu TRƯỚC khi rời màn hình: ReadingScreen mới tự đọc lại vị
+      // trí này trong initState và mở đúng Ayah.
+      unawaited(
+        store.save(
+          surahId: target.surahId,
+          ayahIndex: target.ayahNumber - 1,
+        ),
+      );
+      context.pushReplacement(AppRoutes.surahReading(target.surahId));
+      return;
+    }
+
+    if (!_itemScrollController.isAttached) return;
+    // index 0 là header Surah -> Ayah số N nằm ở index N (cùng quy ước
+    // với cuộn theo audio trong build()).
+    final index = target.ayahNumber.clamp(1, ayahCount);
+    unawaited(store.save(surahId: target.surahId, ayahIndex: index - 1));
+    _itemScrollController.scrollTo(
+      index: index,
+      // Cùng alignment/thời lượng/curve với cuộn theo audio — một
+      // chuyển động duy nhất cho mọi lần "trang đọc tự di chuyển".
+      alignment: 0.15,
+      duration: const Duration(milliseconds: 350),
+      curve: Curves.easeOutCubic,
     );
   }
 }
@@ -375,17 +510,26 @@ class _AyahListView extends ConsumerWidget {
         // Điện thoại (< 760): giữ lề 20 như cũ. Tablet/Desktop: căn
         // giữa nội dung ở bề rộng đọc tối đa 720 (dễ đọc, không dàn
         // chữ quá rộng).
-        const maxContentWidth = 720.0;
+        //
+        // Sprint 25.3 — Focus Mode nới lề và RÚT NGẮN dòng (720 -> 640):
+        // dòng ngắn hơn thì mắt bắt đầu dòng kế dễ hơn, đúng cách một
+        // trang Mushaf in được dàn. Đổi tĩnh, KHÔNG animate: animate bề
+        // rộng sẽ bắt toàn bộ chữ Ả Rập đang hiển thị dàn lại từng
+        // khung hình — cái giá không đáng cho một thay đổi gần như
+        // không nhìn thấy.
+        final maxContentWidth = focus ? 640.0 : 720.0;
         final horizontal = constraints.maxWidth > maxContentWidth + 40
             ? (constraints.maxWidth - maxContentWidth) / 2
-            : 20.0;
+            : (focus ? 28.0 : 20.0);
         return ScrollablePositionedList.builder(
           initialScrollIndex: initialScrollIndex,
           itemScrollController: itemScrollController,
           itemPositionsListener: itemPositionsListener,
           padding: EdgeInsets.symmetric(
             horizontal: horizontal,
-            vertical: 12,
+            // Focus Mode: nhiều khoảng thở phía trên hơn, vì header
+            // Surah đã được ẩn đi.
+            vertical: focus ? 28 : 12,
           ),
           itemCount: ayahs.length + 1,
           itemBuilder: (context, index) {
@@ -419,26 +563,24 @@ class _AyahListView extends ConsumerWidget {
 
 // ==================== CHẾ ĐỘ MUSHAF ====================
 
-class _MushafView extends StatefulWidget {
+class _MushafView extends ConsumerStatefulWidget {
   const _MushafView({
     required this.ayahs,
-    required this.settings,
     required this.focus,
     required this.initialAyahIndex,
     required this.onPageFirstAyah,
   });
 
   final List<AyahContent> ayahs;
-  final ReadingSettings settings;
   final bool focus;
   final int initialAyahIndex;
   final ValueChanged<int> onPageFirstAyah;
 
   @override
-  State<_MushafView> createState() => _MushafViewState();
+  ConsumerState<_MushafView> createState() => _MushafViewState();
 }
 
-class _MushafViewState extends State<_MushafView> {
+class _MushafViewState extends ConsumerState<_MushafView> {
   late final List<MushafPage> _pages = buildMushafPages(widget.ayahs);
   late final PageController _controller = PageController(
     initialPage: pageIndexForAyah(_pages, widget.initialAyahIndex),
@@ -454,6 +596,11 @@ class _MushafViewState extends State<_MushafView> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     final scheme = Theme.of(context).colorScheme;
+    // Tự nghe ĐÚNG cỡ chữ thay vì nhận cả ReadingSettings từ màn hình
+    // cha — nhờ vậy đổi cỡ chữ chỉ dựng lại trang Mushaf, không dựng
+    // lại ReadingScreen.
+    final arabicScale =
+        ref.watch(readingSettingsProvider.select((s) => s.arabicScale));
 
     return PageView.builder(
       controller: _controller,
@@ -478,8 +625,7 @@ class _MushafViewState extends State<_MushafView> {
                       textDirection: TextDirection.rtl,
                       textAlign: TextAlign.justify,
                       style: quranTextStyle(
-                        fontSize: quranBaseFontSize(width) *
-                            widget.settings.arabicScale,
+                        fontSize: quranBaseFontSize(width) * arabicScale,
                         height: 2.2,
                         color: scheme.onSurface,
                       ),
@@ -661,9 +807,39 @@ class AyahCard extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final l10n = AppLocalizations.of(context);
     final settings = ref.watch(readingSettingsProvider);
     final scheme = Theme.of(context).colorScheme;
+    final width = MediaQuery.sizeOf(context).width;
+
+    if (focus) {
+      // Focus Mode: thuần văn bản Qur'an, kết Ayah kiểu Mushaf.
+      //
+      // Sprint 25.3 — thoát SỚM, TRƯỚC các ref.watch audio/chú thích ở
+      // dưới: chế độ này không vẽ highlight đang phát, bookmark, ghi
+      // chú hay trạng thái học, nên cũng KHÔNG cần đăng ký nghe chúng.
+      // Nhờ vậy mỗi tick của trình phát hoặc mỗi lần đổi chú thích
+      // không còn dựng lại các Ayah đang hiển thị.
+      return Padding(
+        // Nhịp dọc rộng hơn giữa các Ayah — khoảng thở của trang in,
+        // thay cho 6px sát nhau trước đây.
+        padding: const EdgeInsets.symmetric(vertical: 14),
+        child: Text(
+          '${content.ayah.textUthmani} '
+          '﴿${toArabicDigits(content.ayah.ayahNumber)}﴾',
+          textDirection: TextDirection.rtl,
+          textAlign: TextAlign.right,
+          // height 2.2 = ĐÚNG khoảng dòng chế độ Mushaf đang dùng
+          // (_MushafView), không phát minh con số mới.
+          style: quranTextStyle(
+            fontSize: quranBaseFontSize(width) * settings.arabicScale,
+            color: scheme.onSurface,
+            height: 2.2,
+          ),
+        ),
+      );
+    }
+
+    final l10n = AppLocalizations.of(context);
     final textTheme = Theme.of(context).textTheme;
 
     // Ayah đang phát audio -> nền highlight nhẹ (mục UX #6).
@@ -679,33 +855,24 @@ class AyahCard extends ConsumerWidget {
     );
 
     // Chú thích người dùng (bookmark/highlight/note/status) realtime.
-    final annotation = ref
-            .watch(ayahAnnotationsProvider(content.ayah.surahId))
-            .valueOrNull?[content.ayah.id] ??
-        AyahAnnotation.empty;
+    //
+    // Sprint 25.4 — select(): thẻ CHỈ dựng lại khi chú thích của CHÍNH
+    // Ayah này đổi. Trước đây mọi thẻ đang hiển thị đều watch cả Map
+    // của Surah, nên đánh dấu một Ayah làm dựng lại tất cả các Ayah
+    // khác đang nhìn thấy. (Cần `==` theo giá trị của AyahAnnotation.)
+    final annotation = ref.watch(
+      ayahAnnotationsProvider(content.ayah.surahId).select(
+        (value) => value.valueOrNull?[content.ayah.id] ?? AyahAnnotation.empty,
+      ),
+    );
     final highlightColor = annotation.highlightColors.isEmpty
         ? null
         : kHighlightColorValues[annotation.highlightColors.first];
 
-    final width = MediaQuery.sizeOf(context).width;
     final arabicStyle = quranTextStyle(
       fontSize: quranBaseFontSize(width) * settings.arabicScale,
       color: scheme.onSurface,
     );
-
-    if (focus) {
-      // Focus Mode: thuần văn bản Qur'an, kết Ayah kiểu Mushaf.
-      return Padding(
-        padding: const EdgeInsets.symmetric(vertical: 6),
-        child: Text(
-          '${content.ayah.textUthmani} '
-          '﴿${toArabicDigits(content.ayah.ayahNumber)}﴾',
-          textDirection: TextDirection.rtl,
-          textAlign: TextAlign.right,
-          style: arabicStyle,
-        ),
-      );
-    }
 
     // Chế độ Danh sách: Ayah 1 của Surah có Basmalah dẫn đầu bỏ phần
     // Basmalah (đã đưa lên header trang trí) -> chỉ một Basmalah.
@@ -976,11 +1143,10 @@ class AyahCard extends ConsumerWidget {
   }
 
   void _openActionsSheet(BuildContext context) {
-    showModalBottomSheet<void>(
-      context: context,
-      showDragHandle: true,
-      isScrollControlled: true,
-      builder: (_) => AyahActionsSheet(
+    final l10n = AppLocalizations.of(context);
+    unawaited(
+      AyahActionsSheet.show(
+        context,
         surahId: content.ayah.surahId,
         ayahId: content.ayah.id,
         ayahNumber: content.ayah.ayahNumber,
@@ -991,6 +1157,11 @@ class AyahCard extends ConsumerWidget {
           textUthmani: content.ayah.textUthmani,
         ),
         translationText: content.texts['vi_main'] ?? content.texts['en_sahih'],
+        // Nghe/sao chép/chia sẻ: đưa thẳng hàm SẴN CÓ của thẻ xuống
+        // sheet — không có bản sao logic thứ hai, hai nơi luôn khớp.
+        onPlay: onPlay,
+        onCopy: () => unawaited(_copyAyah(context, l10n)),
+        onShare: () => unawaited(_copyAyah(context, l10n, forShare: true)),
       ),
     );
   }
@@ -1135,69 +1306,6 @@ class _ActionIconState extends State<_ActionIcon> {
           visualDensity: VisualDensity.compact,
           icon: Icon(widget.icon, size: 21, color: widget.color),
           onPressed: widget.onPressed,
-        ),
-      ),
-    );
-  }
-}
-
-/// Bottom sheet cài đặt hiển thị — áp dụng live khi kéo slider.
-class DisplaySettingsSheet extends ConsumerWidget {
-  const DisplaySettingsSheet({super.key});
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final l10n = AppLocalizations.of(context);
-    final settings = ref.watch(readingSettingsProvider);
-    final controller = ref.read(readingSettingsProvider.notifier);
-
-    return SafeArea(
-      child: Padding(
-        padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              l10n.displaySettings,
-              style: Theme.of(context).textTheme.titleMedium,
-            ),
-            const SizedBox(height: 8),
-            Row(
-              children: [
-                const Icon(Icons.text_decrease),
-                Expanded(
-                  child: Slider(
-                    value: settings.arabicScale,
-                    min: ReadingSettings.minScale,
-                    max: ReadingSettings.maxScale,
-                    divisions: 8,
-                    label: l10n.readingFontSize,
-                    onChanged: controller.setArabicScale,
-                  ),
-                ),
-                const Icon(Icons.text_increase),
-              ],
-            ),
-            SwitchListTile(
-              contentPadding: EdgeInsets.zero,
-              title: Text(l10n.showTransliteration),
-              value: settings.showTransliteration,
-              onChanged: controller.setShowTransliteration,
-            ),
-            SwitchListTile(
-              contentPadding: EdgeInsets.zero,
-              title: Text(l10n.showVietnamese),
-              value: settings.showVietnamese,
-              onChanged: controller.setShowVietnamese,
-            ),
-            SwitchListTile(
-              contentPadding: EdgeInsets.zero,
-              title: Text(l10n.showEnglish),
-              value: settings.showEnglish,
-              onChanged: controller.setShowEnglish,
-            ),
-          ],
         ),
       ),
     );

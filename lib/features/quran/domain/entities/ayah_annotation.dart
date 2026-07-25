@@ -36,4 +36,32 @@ class AyahAnnotation {
       status == AyahStatus.none;
 
   static const AyahAnnotation empty = AyahAnnotation();
+
+  /// So sánh theo GIÁ TRỊ (Sprint 25.4) — để tầng UI dùng được
+  /// `ref.watch(provider.select(...))`: khi chú thích của MỘT Ayah đổi,
+  /// chỉ Ayah đó dựng lại, các Ayah khác trong Surah giữ nguyên. Không
+  /// có `==` thì mỗi lần đọc lại sinh instance mới và `select` mất tác
+  /// dụng.
+  ///
+  /// So sánh Set bằng tay (độ dài + containsAll) thay vì `setEquals`
+  /// của Flutter: entity domain KHÔNG được import Flutter (PROJ-P-003).
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is AyahAnnotation &&
+          other.bookmarked == bookmarked &&
+          other.favorited == favorited &&
+          other.note == note &&
+          other.status == status &&
+          other.highlightColors.length == highlightColors.length &&
+          other.highlightColors.containsAll(highlightColors);
+
+  @override
+  int get hashCode => Object.hash(
+        bookmarked,
+        favorited,
+        note,
+        status,
+        Object.hashAllUnordered(highlightColors),
+      );
 }

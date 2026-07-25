@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:quran_companion/l10n/app_localizations.dart';
 
 import '../../../quran/domain/entities/ayah_search_result.dart';
+import '../../../quran/domain/entities/surah.dart';
 import 'result_card.dart';
 
 /// Một khu vực kết quả (tiêu đề + số lượng + danh sách thẻ) — HỢP
@@ -50,6 +51,41 @@ class SearchResultSection extends StatelessWidget {
             result,
             highlightQuery: query,
             onTap: onResultTap == null ? null : () => onResultTap(result),
+          ),
+      ],
+    );
+  }
+
+  /// Adapter cho domain Surah (Sprint 26.2) — theo ĐÚNG mẫu của
+  /// [SearchResultSection.ayahs]: dùng lại entity `Surah` đã có và
+  /// [ResultCard] dùng chung, không thêm widget thẻ riêng.
+  ///
+  /// Nhãn nguồn dựng ở đây (chứ không trong một factory của
+  /// ResultCard) vì cần [l10n] cho số câu — giữ ResultCard hoàn toàn
+  /// không phụ thuộc l10n, đúng như thiết kế ban đầu của nó.
+  factory SearchResultSection.surahs({
+    Key? key,
+    required AppLocalizations l10n,
+    required List<Surah> results,
+    String query = '',
+    void Function(Surah surah)? onResultTap,
+  }) {
+    return SearchResultSection(
+      key: key,
+      title: '${l10n.searchResultsSurahs} · ${results.length}',
+      children: [
+        for (final surah in results)
+          ResultCard(
+            icon: Icons.menu_book_rounded,
+            sourceLabel:
+                '${surah.id} · ${l10n.surahAyahCount(surah.ayahCount)}',
+            primaryText: surah.nameLatin,
+            primaryFontSize: 18,
+            // Tên tiếng Việt cũng nằm trong dữ liệu mà filterSurahs so
+            // khớp -> hiện ra để người dùng thấy VÌ SAO Surah này khớp.
+            secondaryText: surah.nameVi,
+            highlightQuery: query,
+            onTap: onResultTap == null ? null : () => onResultTap(surah),
           ),
       ],
     );

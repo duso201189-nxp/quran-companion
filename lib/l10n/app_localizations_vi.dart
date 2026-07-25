@@ -65,22 +65,6 @@ class AppLocalizationsVi extends AppLocalizations {
   }
 
   @override
-  String get placeholderHome =>
-      'Bước 8 sẽ xây dựng Dashboard học tập: tiếp tục đọc, tiến độ hôm nay, chuỗi ngày học, câu Qur\'an trong ngày.';
-
-  @override
-  String get placeholderQuran =>
-      'Bước 3 sẽ hiển thị danh sách 114 Surah với tìm kiếm và bộ lọc Mecca / Madinah.';
-
-  @override
-  String get placeholderStudy =>
-      'Bước 9 sẽ xây dựng Flashcard (Spaced Repetition) và Quiz.';
-
-  @override
-  String get placeholderStats =>
-      'Bước 9 sẽ hiển thị biểu đồ: chuỗi ngày học, tổng Ayah, thời gian học, nhật ký học.';
-
-  @override
   String get searchSurahHint => 'Tìm Surah theo tên hoặc số...';
 
   @override
@@ -107,10 +91,19 @@ class AppLocalizationsVi extends AppLocalizations {
   String get emptySearchResults => 'Không tìm thấy Surah nào phù hợp.';
 
   @override
+  String get surahListLoading => 'Đang tải danh sách Surah…';
+
+  @override
   String get displaySettings => 'Hiển thị';
 
   @override
   String get readingFontSize => 'Cỡ chữ Ả Rập';
+
+  @override
+  String get readingModeLabel => 'Chế độ đọc';
+
+  @override
+  String get readingLayersLabel => 'Lớp hỗ trợ đọc';
 
   @override
   String get showTransliteration => 'Phiên âm Latin';
@@ -120,6 +113,37 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get showEnglish => 'Bản dịch tiếng Anh';
+
+  @override
+  String get jumpToAyahTitle => 'Chuyển tới Ayah';
+
+  @override
+  String get jumpToAyahSurahLabel => 'Surah';
+
+  @override
+  String get jumpToAyahNumberLabel => 'Số câu';
+
+  @override
+  String jumpToAyahRange(int max) {
+    return '1–$max';
+  }
+
+  @override
+  String get jumpToAyahAction => 'Chuyển tới';
+
+  @override
+  String get jumpToAyahListModeOnly =>
+      'Chuyển tới Ayah hiện chỉ dùng được ở chế độ Danh sách.';
+
+  @override
+  String readingProgressPosition(int current, int total) {
+    return 'Ayah $current / $total';
+  }
+
+  @override
+  String readingProgressSemantics(int current, int total, int percent) {
+    return 'Ayah $current trên $total, $percent%';
+  }
 
   @override
   String get surahNotFound => 'Không tìm thấy Surah này.';
@@ -173,6 +197,12 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get playFromHere => 'Nghe từ Ayah này';
+
+  @override
+  String get nowPlaying => 'Đang phát';
+
+  @override
+  String get openReadingScreen => 'Mở trang đọc';
 
   @override
   String get bookmarkLabel => 'Bookmark';
@@ -241,9 +271,6 @@ class AppLocalizationsVi extends AppLocalizations {
   String get dailyProgress => 'Tiến độ hôm nay';
 
   @override
-  String get lastRead => 'Đọc gần đây';
-
-  @override
   String get quickAccess => 'Truy cập nhanh';
 
   @override
@@ -259,12 +286,6 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get ayahsReadLabel => 'Ayah đã đọc';
-
-  @override
-  String get minutesLabel => 'Phút học';
-
-  @override
-  String get myBookmarks => 'Bookmark của tôi';
 
   @override
   String get studyFlashcards => 'Flashcard';
@@ -352,7 +373,16 @@ class AppLocalizationsVi extends AppLocalizations {
   String get copyTranslation => 'Sao chép bản dịch';
 
   @override
+  String get ayahHighlightLabel => 'Tô màu';
+
+  @override
   String get searchResultsAyahs => 'Kết quả trong nội dung';
+
+  @override
+  String get searchResultsSurahs => 'Surah';
+
+  @override
+  String get searchNoResults => 'Không tìm thấy kết quả nào.';
 
   @override
   String get searchNoAyahResults => 'Không tìm thấy Ayah nào phù hợp.';
@@ -390,6 +420,9 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get libraryTitle => 'Thư viện của tôi';
+
+  @override
+  String get libraryLoading => 'Đang tải thư viện…';
 
   @override
   String get libraryBookmarks => 'Đã lưu';
@@ -461,6 +494,9 @@ class AppLocalizationsVi extends AppLocalizations {
   String get collectionsTitle => 'Bộ sưu tập';
 
   @override
+  String get collectionsLoading => 'Đang tải bộ sưu tập…';
+
+  @override
   String get collectionsEmpty => 'Chưa có bộ sưu tập nào.';
 
   @override
@@ -529,6 +565,9 @@ class AppLocalizationsVi extends AppLocalizations {
   String get reviewOpenInReading => 'Mở trong Kinh';
 
   @override
+  String get reviewSessionLoading => 'Đang tải phiên ôn tập…';
+
+  @override
   String get reviewSessionComplete => 'Đã ôn xong!';
 
   @override
@@ -546,7 +585,13 @@ class AppLocalizationsVi extends AppLocalizations {
       'Không còn từ vựng nào đến hạn ôn tập lúc này.';
 
   @override
+  String get flashcardReviewLoading => 'Đang tải Flashcard…';
+
+  @override
   String get flashcardsTitle => 'Flashcard';
+
+  @override
+  String get flashcardsLoading => 'Đang tải Flashcard…';
 
   @override
   String get flashcardSearchHint => 'Tìm theo chữ Ả Rập, phiên âm hoặc nghĩa';
@@ -559,6 +604,9 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get flashcardMoveToDeck => 'Chuyển sang deck';
+
+  @override
+  String get flashcardMoveToDeckLoading => 'Đang tải danh sách deck…';
 
   @override
   String get flashcardRemove => 'Gỡ Flashcard';
@@ -617,6 +665,9 @@ class AppLocalizationsVi extends AppLocalizations {
   String get flashcardDecksTitle => 'Deck Flashcard';
 
   @override
+  String get flashcardDecksLoading => 'Đang tải deck…';
+
+  @override
   String get flashcardDecksEmpty => 'Chưa có deck nào.';
 
   @override
@@ -652,6 +703,9 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get addFlashcardTitle => 'Thêm Flashcard';
+
+  @override
+  String get addFlashcardLoading => 'Đang tìm kiếm...';
 
   @override
   String get addFlashcardSourceLemma => 'Từ điển';
@@ -692,6 +746,9 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get smartDeckEmpty => 'Chưa có Flashcard nào trong Smart Deck này.';
+
+  @override
+  String get smartDeckLoading => 'Đang tải Smart Deck…';
 
   @override
   String smartDeckVerbFormLabel(String form) {
@@ -1016,6 +1073,9 @@ class AppLocalizationsVi extends AppLocalizations {
   String get quizIncorrect => 'Chưa đúng.';
 
   @override
+  String get quizSessionLoading => 'Đang tải câu hỏi…';
+
+  @override
   String get quizEmpty => 'Không đủ nội dung để tạo câu hỏi.';
 
   @override
@@ -1033,6 +1093,9 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get learningSessionStart => 'Bắt đầu buổi học';
+
+  @override
+  String get learningSessionLoading => 'Đang chuẩn bị buổi học…';
 
   @override
   String get learningSummaryTitle => 'Tóm tắt buổi học';

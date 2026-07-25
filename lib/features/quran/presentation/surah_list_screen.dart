@@ -8,6 +8,10 @@ import 'package:quran_companion/l10n/app_localizations.dart';
 import '../../../app/router.dart';
 import '../../../app/theme/app_theme.dart';
 import '../../../shared/utils/highlight.dart';
+import '../../../shared/widgets/card_shell.dart';
+import '../../../shared/widgets/full_empty_state.dart';
+import '../../../shared/widgets/loading_state.dart';
+import '../../search/presentation/widgets/search_error_state.dart';
 import '../domain/entities/ayah_search_result.dart';
 import '../domain/entities/surah.dart';
 import 'reading/reading_position_store.dart';
@@ -39,14 +43,20 @@ class SurahListScreen extends ConsumerWidget {
           _SearchAndFilterBar(l10n: l10n),
           Expanded(
             child: surahsAsync.when(
-              loading: () => const Center(child: CircularProgressIndicator()),
-              error: (error, _) => _ErrorState(l10n: l10n),
+              loading: () =>
+                  LoadingState(semanticsLabel: l10n.surahListLoading),
+              error: (error, _) => SearchErrorState(
+                onRetry: () => ref.invalidate(surahListProvider),
+              ),
               data: (surahs) {
                 final query = ref.watch(surahSearchQueryProvider).trim();
                 // Không tìm kiếm: danh sách 114 Surah như thường.
                 if (query.isEmpty) {
                   return surahs.isEmpty
-                      ? _EmptyState(l10n: l10n)
+                      ? FullEmptyState(
+                          icon: Icons.search_off_outlined,
+                          message: l10n.emptySearchResults,
+                        )
                       : _SurahListView(surahs: surahs);
                 }
                 // Đang tìm: Surah khớp tên + kết quả toàn văn Ayah.
@@ -229,7 +239,7 @@ class _SearchResultsView extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final ayahResults = ref.watch(ayahSearchProvider);
+    final ayahResults = ref.watch(ayahSearchProvider(query));
     final textTheme = Theme.of(context).textTheme;
     final scheme = Theme.of(context).colorScheme;
 
@@ -237,7 +247,10 @@ class _SearchResultsView extends ConsumerWidget {
     final noAyahResults =
         query.length < 2 || (ayahResults.valueOrNull?.isEmpty ?? false);
     if (surahs.isEmpty && noAyahResults && !ayahResults.isLoading) {
-      return _EmptyState(l10n: l10n);
+      return FullEmptyState(
+        icon: Icons.search_off_outlined,
+        message: l10n.emptySearchResults,
+      );
     }
 
     return ListView(
@@ -286,6 +299,26 @@ class _SearchResultsView extends ConsumerWidget {
   }
 }
 
+/// Thẻ kết quả Ayah TRONG danh sách Surah (ô tìm kiếm tại chỗ).
+///
+/// Sprint 27.1 — vì sao KHÔNG dùng [ResultCard] / [CardShell] /
+/// [openAyahInReadingScreen] dù nhìn gần giống:
+///
+/// 1. [ResultCard] luôn vẽ một icon domain ở đầu nhãn nguồn; thẻ này
+///    không có. Chuyển sang sẽ THÊM icon -> đổi giao diện, không còn
+///    là refactor bảo toàn hành vi.
+/// 2. [CardShell] dùng `Material` nên vệt ripple hiện ra khi chạm;
+///    thẻ này dùng `Container` có nền mờ đục nên ripple bị che (xem
+///    "Remaining concerns" của Sprint 27.1). Đổi sang là đổi hành vi
+///    nhìn thấy được.
+/// 3. Điều hướng KHÁC NHAU CÓ CHỦ Ý: [openAyahInReadingScreen] push
+///    `AppRoutes.read` (route top-level) vì nó phục vụ nơi gọi NGOÀI
+///    vỏ 5 tab. Màn hình này nằm TRONG nhánh Qur'an của shell nên
+///    phải push `AppRoutes.surahReading` để giữ thanh tab — xem doc
+///    của `reading_navigation.dart`. Trùng hai bước "lưu vị trí rồi
+///    push" là trùng bề mặt, không phải trùng thật.
+///
+/// Phần trùng THẬT (kiểu chữ, khoảng cách, kiểu tô đậm) đã dùng chung.
 class _AyahResultTile extends ConsumerWidget {
   const _AyahResultTile({required this.result, required this.query});
 
@@ -296,137 +329,81 @@ class _AyahResultTile extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final scheme = Theme.of(context).colorScheme;
     final textTheme = Theme.of(context).textTheme;
-    final highlightStyle = TextStyle(
-      fontWeight: FontWeight.w700,
-      color: scheme.primary,
-      backgroundColor: scheme.primaryContainer.withValues(alpha: 0.35),
-    );
+    final highlightStyle = searchHighlightStyle(scheme);
 
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-      child: InkWell(
-        borderRadius: BorderRadius.circular(14),
-        onTap: () async {
-          // Mở trang đọc ĐÚNG tại Ayah này (đặt vị trí trước khi mở).
-          await ref.read(readingPositionStoreProvider).save(
-                surahId: result.surahId,
-                ayahIndex: result.ayahNumber - 1,
-              );
-          if (context.mounted) {
-            unawaited(context.push(AppRoutes.surahReading(result.surahId)));
-          }
-        },
-        child: Container(
-          width: double.infinity,
-          padding: const EdgeInsets.all(14),
-          decoration: BoxDecoration(
-            color: scheme.surfaceContainerLow,
-            borderRadius: BorderRadius.circular(14),
-          ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                '${result.surahNameLatin} · '
-                '${result.surahId}:${result.ayahNumber}',
-                style: textTheme.labelMedium?.copyWith(color: scheme.primary),
-              ),
-              const SizedBox(height: 8),
-              Text.rich(
-                TextSpan(
-                  children: highlightSpans(
-                    result.arabic,
-                    query,
-                    highlightStyle: highlightStyle,
-                  ),
+    return Semantics(
+      // Cùng mẫu với SurahTile — screen reader đọc trọn thông tin một
+      // lần (ref + Ả Rập + bản dịch), thay vì từng mảnh Text rời rạc.
+      label: '${result.surahNameLatin} ${result.surahId}:'
+          '${result.ayahNumber}. ${result.arabic}'
+          '${result.translation != null ? '. ${result.translation}' : ''}',
+      excludeSemantics: true,
+      button: true,
+      child: Padding(
+        padding: CardShell.outerPadding,
+        child: InkWell(
+          borderRadius: BorderRadius.circular(CardShell.radius),
+          onTap: () async {
+            // Mở trang đọc ĐÚNG tại Ayah này (đặt vị trí trước khi mở).
+            await ref.read(readingPositionStoreProvider).save(
+                  surahId: result.surahId,
+                  ayahIndex: result.ayahNumber - 1,
+                );
+            if (context.mounted) {
+              unawaited(context.push(AppRoutes.surahReading(result.surahId)));
+            }
+          },
+          child: Container(
+            width: double.infinity,
+            padding: CardShell.innerPadding,
+            decoration: BoxDecoration(
+              color: scheme.surfaceContainerLow,
+              borderRadius: BorderRadius.circular(CardShell.radius),
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  '${result.surahNameLatin} · '
+                  '${result.surahId}:${result.ayahNumber}',
+                  style: cardSourceLabelStyle(textTheme, scheme),
                 ),
-                textDirection: TextDirection.rtl,
-                textAlign: TextAlign.right,
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
-                style: quranTextStyle(
-                  fontSize: 22,
-                  color: scheme.onSurface,
-                ),
-              ),
-              if (result.translation != null) ...[
-                const SizedBox(height: 6),
+                const SizedBox(height: 8),
                 Text.rich(
                   TextSpan(
                     children: highlightSpans(
-                      result.translation!,
+                      result.arabic,
                       query,
                       highlightStyle: highlightStyle,
                     ),
                   ),
+                  textDirection: TextDirection.rtl,
+                  textAlign: TextAlign.right,
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
-                  style: textTheme.bodyMedium?.copyWith(
-                    height: 1.5,
-                    color: scheme.onSurfaceVariant,
+                  style: quranTextStyle(
+                    fontSize: kPreviewArabicFontSize,
+                    color: scheme.onSurface,
                   ),
                 ),
+                if (result.translation != null) ...[
+                  const SizedBox(height: 6),
+                  Text.rich(
+                    TextSpan(
+                      children: highlightSpans(
+                        result.translation!,
+                        query,
+                        highlightStyle: highlightStyle,
+                      ),
+                    ),
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                    style: cardSecondaryTextStyle(textTheme, scheme),
+                  ),
+                ],
               ],
-            ],
+            ),
           ),
-        ),
-      ),
-    );
-  }
-}
-
-class _ErrorState extends ConsumerWidget {
-  const _ErrorState({required this.l10n});
-
-  final AppLocalizations l10n;
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final scheme = Theme.of(context).colorScheme;
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.all(24),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(Icons.cloud_off_outlined, size: 56, color: scheme.error),
-            const SizedBox(height: 12),
-            Text(l10n.errorLoadData, textAlign: TextAlign.center),
-            const SizedBox(height: 16),
-            FilledButton.icon(
-              onPressed: () => ref.invalidate(surahListProvider),
-              icon: const Icon(Icons.refresh),
-              label: Text(l10n.retry),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class _EmptyState extends StatelessWidget {
-  const _EmptyState({required this.l10n});
-
-  final AppLocalizations l10n;
-
-  @override
-  Widget build(BuildContext context) {
-    final scheme = Theme.of(context).colorScheme;
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.all(24),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(
-              Icons.search_off_outlined,
-              size: 56,
-              color: scheme.onSurfaceVariant,
-            ),
-            const SizedBox(height: 12),
-            Text(l10n.emptySearchResults, textAlign: TextAlign.center),
-          ],
         ),
       ),
     );

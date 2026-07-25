@@ -65,22 +65,6 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get placeholderHome =>
-      'Step 8 will build the learning dashboard: continue reading, today\'s progress, study streak, verse of the day.';
-
-  @override
-  String get placeholderQuran =>
-      'Step 3 will show all 114 Surahs with search and Mecca / Madinah filters.';
-
-  @override
-  String get placeholderStudy =>
-      'Step 9 will build Flashcards (Spaced Repetition) and Quizzes.';
-
-  @override
-  String get placeholderStats =>
-      'Step 9 will show charts: study streak, total Ayahs, study time, daily journal.';
-
-  @override
   String get searchSurahHint => 'Search Surah by name or number...';
 
   @override
@@ -107,10 +91,19 @@ class AppLocalizationsEn extends AppLocalizations {
   String get emptySearchResults => 'No Surah matches your search.';
 
   @override
+  String get surahListLoading => 'Loading surah list…';
+
+  @override
   String get displaySettings => 'Display';
 
   @override
   String get readingFontSize => 'Arabic font size';
+
+  @override
+  String get readingModeLabel => 'Reading mode';
+
+  @override
+  String get readingLayersLabel => 'Reading aids';
 
   @override
   String get showTransliteration => 'Transliteration';
@@ -120,6 +113,37 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get showEnglish => 'English translation';
+
+  @override
+  String get jumpToAyahTitle => 'Jump to Ayah';
+
+  @override
+  String get jumpToAyahSurahLabel => 'Surah';
+
+  @override
+  String get jumpToAyahNumberLabel => 'Ayah number';
+
+  @override
+  String jumpToAyahRange(int max) {
+    return '1–$max';
+  }
+
+  @override
+  String get jumpToAyahAction => 'Jump';
+
+  @override
+  String get jumpToAyahListModeOnly =>
+      'Jump to Ayah is currently available in List Mode.';
+
+  @override
+  String readingProgressPosition(int current, int total) {
+    return 'Ayah $current / $total';
+  }
+
+  @override
+  String readingProgressSemantics(int current, int total, int percent) {
+    return 'Ayah $current of $total, $percent%';
+  }
 
   @override
   String get surahNotFound => 'This Surah was not found.';
@@ -173,6 +197,12 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get playFromHere => 'Play from this ayah';
+
+  @override
+  String get nowPlaying => 'Now playing';
+
+  @override
+  String get openReadingScreen => 'Open reading screen';
 
   @override
   String get bookmarkLabel => 'Bookmark';
@@ -241,9 +271,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get dailyProgress => 'Daily progress';
 
   @override
-  String get lastRead => 'Last read';
-
-  @override
   String get quickAccess => 'Quick access';
 
   @override
@@ -259,12 +286,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get ayahsReadLabel => 'Ayahs read';
-
-  @override
-  String get minutesLabel => 'Minutes';
-
-  @override
-  String get myBookmarks => 'My bookmarks';
 
   @override
   String get studyFlashcards => 'Flashcards';
@@ -354,7 +375,16 @@ class AppLocalizationsEn extends AppLocalizations {
   String get copyTranslation => 'Copy translation';
 
   @override
+  String get ayahHighlightLabel => 'Highlight';
+
+  @override
   String get searchResultsAyahs => 'Results in content';
+
+  @override
+  String get searchResultsSurahs => 'Surahs';
+
+  @override
+  String get searchNoResults => 'No results found.';
 
   @override
   String get searchNoAyahResults => 'No matching ayahs found.';
@@ -392,6 +422,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get libraryTitle => 'My Library';
+
+  @override
+  String get libraryLoading => 'Loading library…';
 
   @override
   String get libraryBookmarks => 'Bookmarks';
@@ -463,6 +496,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get collectionsTitle => 'Collections';
 
   @override
+  String get collectionsLoading => 'Loading collections…';
+
+  @override
   String get collectionsEmpty => 'No collections yet.';
 
   @override
@@ -531,6 +567,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get reviewOpenInReading => 'Open in Reading';
 
   @override
+  String get reviewSessionLoading => 'Loading review session…';
+
+  @override
   String get reviewSessionComplete => 'Session complete!';
 
   @override
@@ -548,7 +587,13 @@ class AppLocalizationsEn extends AppLocalizations {
       'No vocabulary is due for review right now.';
 
   @override
+  String get flashcardReviewLoading => 'Loading flashcards…';
+
+  @override
   String get flashcardsTitle => 'Flashcards';
+
+  @override
+  String get flashcardsLoading => 'Loading flashcards…';
 
   @override
   String get flashcardSearchHint =>
@@ -562,6 +607,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get flashcardMoveToDeck => 'Move to deck';
+
+  @override
+  String get flashcardMoveToDeckLoading => 'Loading decks…';
 
   @override
   String get flashcardRemove => 'Remove flashcard';
@@ -620,6 +668,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get flashcardDecksTitle => 'Flashcard decks';
 
   @override
+  String get flashcardDecksLoading => 'Loading decks…';
+
+  @override
   String get flashcardDecksEmpty => 'No decks yet.';
 
   @override
@@ -655,6 +706,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get addFlashcardTitle => 'Add flashcard';
+
+  @override
+  String get addFlashcardLoading => 'Searching...';
 
   @override
   String get addFlashcardSourceLemma => 'Lemma';
@@ -695,6 +749,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get smartDeckEmpty => 'No flashcards in this Smart Deck yet.';
+
+  @override
+  String get smartDeckLoading => 'Loading smart deck…';
 
   @override
   String smartDeckVerbFormLabel(String form) {
@@ -1021,6 +1078,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get quizIncorrect => 'Not quite.';
 
   @override
+  String get quizSessionLoading => 'Loading questions…';
+
+  @override
   String get quizEmpty => 'Not enough content to build a quiz.';
 
   @override
@@ -1038,6 +1098,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get learningSessionStart => 'Start Learning Session';
+
+  @override
+  String get learningSessionLoading => 'Preparing your session…';
 
   @override
   String get learningSummaryTitle => 'Session Summary';

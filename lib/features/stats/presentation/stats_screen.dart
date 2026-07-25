@@ -3,6 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:quran_companion/l10n/app_localizations.dart';
 
+import '../../../shared/widgets/empty_state_banner.dart';
+import '../../../shared/widgets/stat_card.dart';
 import '../../khatm/presentation/active_khatm_card.dart';
 import '../data/stats_store.dart';
 import '../data/study_session_providers.dart';
@@ -76,7 +78,7 @@ class StatsScreen extends ConsumerWidget {
               padding: EdgeInsets.fromLTRB(horizontal, 12, horizontal, 24),
               children: [
                 if (!hasData) ...[
-                  _EmptyHint(text: l10n.statsNoData),
+                  EmptyStateBanner(text: l10n.statsNoData),
                   const SizedBox(height: 16),
                 ],
                 GridView.count(
@@ -88,7 +90,7 @@ class StatsScreen extends ConsumerWidget {
                   childAspectRatio: 1.55,
                   children: [
                     for (final m in metrics)
-                      _MetricCard(
+                      StatCard(
                         icon: m.icon,
                         value: m.value,
                         label: m.label,
@@ -114,91 +116,6 @@ class StatsScreen extends ConsumerWidget {
             );
           },
         ),
-      ),
-    );
-  }
-}
-
-class _EmptyHint extends StatelessWidget {
-  const _EmptyHint({required this.text});
-
-  final String text;
-
-  @override
-  Widget build(BuildContext context) {
-    final scheme = Theme.of(context).colorScheme;
-    return Container(
-      padding: const EdgeInsets.all(14),
-      decoration: BoxDecoration(
-        color: scheme.secondaryContainer.withValues(alpha: 0.5),
-        borderRadius: BorderRadius.circular(12),
-      ),
-      child: Row(
-        children: [
-          Icon(
-            Icons.info_outline_rounded,
-            size: 20,
-            color: scheme.onSecondaryContainer,
-          ),
-          const SizedBox(width: 10),
-          Expanded(
-            child: Text(
-              text,
-              style: Theme.of(context)
-                  .textTheme
-                  .bodyMedium
-                  ?.copyWith(color: scheme.onSecondaryContainer),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _MetricCard extends StatelessWidget {
-  const _MetricCard({
-    required this.icon,
-    required this.value,
-    required this.label,
-  });
-
-  final IconData icon;
-  final String value;
-  final String label;
-
-  @override
-  Widget build(BuildContext context) {
-    final scheme = Theme.of(context).colorScheme;
-    final textTheme = Theme.of(context).textTheme;
-    return Container(
-      padding: const EdgeInsets.all(14),
-      decoration: BoxDecoration(
-        color: scheme.surfaceContainerLow,
-        borderRadius: BorderRadius.circular(16),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(icon, size: 22, color: scheme.primary),
-          const SizedBox(height: 8),
-          FittedBox(
-            child: Text(
-              value,
-              style:
-                  textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w700),
-            ),
-          ),
-          const SizedBox(height: 2),
-          Text(
-            label,
-            style:
-                textTheme.labelSmall?.copyWith(color: scheme.onSurfaceVariant),
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-          ),
-        ],
       ),
     );
   }

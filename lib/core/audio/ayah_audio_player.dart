@@ -29,7 +29,20 @@ abstract interface class AyahAudioPlayer {
   /// ngoài; mọi lỗi đi qua stream này để UI xử lý một chỗ.
   Stream<String> get errorStream;
 
-  Future<void> setPlaylist(List<Uri> sources, {int initialIndex = 0});
+  /// Nạp playlist và đặt con trỏ phát tại [initialIndex].
+  ///
+  /// [initialPosition] — vị trí BÊN TRONG Ayah đó. Sprint 28.1 thêm
+  /// tham số này (mặc định 0 = giữ nguyên hành vi cũ ở mọi nơi gọi
+  /// hiện có) để đổi Qari giữa chừng nạp lại nguồn mà không nhảy về
+  /// đầu Ayah. Engine thật (just_audio) đã hỗ trợ sẵn qua
+  /// `setAudioSource(..., initialPosition:)`, nên đây chỉ là mở rộng
+  /// bề mặt trừu tượng cho đúng khả năng đã có — không phải cơ chế
+  /// phát mới.
+  Future<void> setPlaylist(
+    List<Uri> sources, {
+    int initialIndex = 0,
+    Duration initialPosition = Duration.zero,
+  });
 
   Future<void> play();
 

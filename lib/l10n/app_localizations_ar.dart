@@ -65,22 +65,6 @@ class AppLocalizationsAr extends AppLocalizations {
   }
 
   @override
-  String get placeholderHome =>
-      'الخطوة 8 ستبني لوحة التعلم: متابعة القراءة، تقدم اليوم، سلسلة الأيام، آية اليوم.';
-
-  @override
-  String get placeholderQuran =>
-      'الخطوة 3 ستعرض 114 سورة مع البحث والتصفية (مكية / مدنية).';
-
-  @override
-  String get placeholderStudy =>
-      'الخطوة 9 ستبني البطاقات التعليمية (التكرار المتباعد) والاختبارات.';
-
-  @override
-  String get placeholderStats =>
-      'الخطوة 9 ستعرض الرسوم البيانية: سلسلة الأيام، مجموع الآيات، وقت الدراسة، اليوميات.';
-
-  @override
   String get searchSurahHint => 'ابحث عن سورة بالاسم أو الرقم...';
 
   @override
@@ -107,10 +91,19 @@ class AppLocalizationsAr extends AppLocalizations {
   String get emptySearchResults => 'لا توجد سورة مطابقة للبحث.';
 
   @override
+  String get surahListLoading => 'جارٍ تحميل قائمة السور…';
+
+  @override
   String get displaySettings => 'العرض';
 
   @override
   String get readingFontSize => 'حجم الخط العربي';
+
+  @override
+  String get readingModeLabel => 'وضع القراءة';
+
+  @override
+  String get readingLayersLabel => 'أدوات مساعدة القراءة';
 
   @override
   String get showTransliteration => 'النقل الصوتي';
@@ -120,6 +113,37 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get showEnglish => 'الترجمة الإنجليزية';
+
+  @override
+  String get jumpToAyahTitle => 'الانتقال إلى آية';
+
+  @override
+  String get jumpToAyahSurahLabel => 'السورة';
+
+  @override
+  String get jumpToAyahNumberLabel => 'رقم الآية';
+
+  @override
+  String jumpToAyahRange(int max) {
+    return '1–$max';
+  }
+
+  @override
+  String get jumpToAyahAction => 'انتقال';
+
+  @override
+  String get jumpToAyahListModeOnly =>
+      'الانتقال إلى آية متاح حاليًا في وضع القائمة.';
+
+  @override
+  String readingProgressPosition(int current, int total) {
+    return 'آية $current / $total';
+  }
+
+  @override
+  String readingProgressSemantics(int current, int total, int percent) {
+    return 'الآية $current من $total، $percent%';
+  }
 
   @override
   String get surahNotFound => 'لم يتم العثور على هذه السورة.';
@@ -172,6 +196,12 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get playFromHere => 'التشغيل من هذه الآية';
+
+  @override
+  String get nowPlaying => 'قيد التشغيل';
+
+  @override
+  String get openReadingScreen => 'فتح صفحة القراءة';
 
   @override
   String get bookmarkLabel => 'إشارة مرجعية';
@@ -240,9 +270,6 @@ class AppLocalizationsAr extends AppLocalizations {
   String get dailyProgress => 'تقدم اليوم';
 
   @override
-  String get lastRead => 'آخر قراءة';
-
-  @override
   String get quickAccess => 'وصول سريع';
 
   @override
@@ -258,12 +285,6 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get ayahsReadLabel => 'آيات مقروءة';
-
-  @override
-  String get minutesLabel => 'دقائق';
-
-  @override
-  String get myBookmarks => 'علاماتي المرجعية';
 
   @override
   String get studyFlashcards => 'بطاقات تعليمية';
@@ -351,7 +372,16 @@ class AppLocalizationsAr extends AppLocalizations {
   String get copyTranslation => 'نسخ الترجمة';
 
   @override
+  String get ayahHighlightLabel => 'تمييز';
+
+  @override
   String get searchResultsAyahs => 'نتائج في المحتوى';
+
+  @override
+  String get searchResultsSurahs => 'السور';
+
+  @override
+  String get searchNoResults => 'لا توجد نتائج.';
 
   @override
   String get searchNoAyahResults => 'لا توجد آيات مطابقة.';
@@ -389,6 +419,9 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get libraryTitle => 'مكتبتي';
+
+  @override
+  String get libraryLoading => 'جارٍ تحميل المكتبة…';
 
   @override
   String get libraryBookmarks => 'المحفوظة';
@@ -460,6 +493,9 @@ class AppLocalizationsAr extends AppLocalizations {
   String get collectionsTitle => 'المجموعات';
 
   @override
+  String get collectionsLoading => 'جارٍ تحميل المجموعات…';
+
+  @override
   String get collectionsEmpty => 'لا توجد مجموعات بعد.';
 
   @override
@@ -528,6 +564,9 @@ class AppLocalizationsAr extends AppLocalizations {
   String get reviewOpenInReading => 'فتح في القراءة';
 
   @override
+  String get reviewSessionLoading => 'جارٍ تحميل جلسة المراجعة…';
+
+  @override
   String get reviewSessionComplete => 'اكتملت الجلسة!';
 
   @override
@@ -545,7 +584,13 @@ class AppLocalizationsAr extends AppLocalizations {
       'لا توجد مفردات مستحقة للمراجعة الآن.';
 
   @override
+  String get flashcardReviewLoading => 'جارٍ تحميل البطاقات التعليمية…';
+
+  @override
   String get flashcardsTitle => 'البطاقات التعليمية';
+
+  @override
+  String get flashcardsLoading => 'جارٍ تحميل البطاقات التعليمية…';
 
   @override
   String get flashcardSearchHint => 'ابحث بالعربية أو النطق أو المعنى';
@@ -558,6 +603,9 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get flashcardMoveToDeck => 'نقل إلى مجموعة';
+
+  @override
+  String get flashcardMoveToDeckLoading => 'جارٍ تحميل المجموعات…';
 
   @override
   String get flashcardRemove => 'إزالة البطاقة';
@@ -616,6 +664,9 @@ class AppLocalizationsAr extends AppLocalizations {
   String get flashcardDecksTitle => 'مجموعات البطاقات';
 
   @override
+  String get flashcardDecksLoading => 'جارٍ تحميل المجموعات…';
+
+  @override
   String get flashcardDecksEmpty => 'لا توجد مجموعات بعد.';
 
   @override
@@ -651,6 +702,9 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get addFlashcardTitle => 'إضافة بطاقة';
+
+  @override
+  String get addFlashcardLoading => 'جارٍ البحث...';
 
   @override
   String get addFlashcardSourceLemma => 'مدخل معجمي';
@@ -691,6 +745,9 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get smartDeckEmpty => 'لا توجد بطاقات في هذه المجموعة الذكية بعد.';
+
+  @override
+  String get smartDeckLoading => 'جارٍ تحميل المجموعة الذكية…';
 
   @override
   String smartDeckVerbFormLabel(String form) {
@@ -1013,6 +1070,9 @@ class AppLocalizationsAr extends AppLocalizations {
   String get quizIncorrect => 'إجابة غير صحيحة.';
 
   @override
+  String get quizSessionLoading => 'جارٍ تحميل الأسئلة…';
+
+  @override
   String get quizEmpty => 'لا يوجد محتوى كافٍ لإنشاء اختبار.';
 
   @override
@@ -1030,6 +1090,9 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get learningSessionStart => 'ابدأ جلسة التعلم';
+
+  @override
+  String get learningSessionLoading => 'جارٍ تجهيز الجلسة…';
 
   @override
   String get learningSummaryTitle => 'ملخص الجلسة';

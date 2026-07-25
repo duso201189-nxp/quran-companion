@@ -25,10 +25,6 @@
       }
     }
   },
-  "placeholderHome": "الخطوة 8 ستبني لوحة التعلم: متابعة القراءة، تقدم اليوم، سلسلة الأيام، آية اليوم.",
-  "placeholderQuran": "الخطوة 3 ستعرض 114 سورة مع البحث والتصفية (مكية / مدنية).",
-  "placeholderStudy": "الخطوة 9 ستبني البطاقات التعليمية (التكرار المتباعد) والاختبارات.",
-  "placeholderStats": "الخطوة 9 ستعرض الرسوم البيانية: سلسلة الأيام، مجموع الآيات، وقت الدراسة، اليوميات.",
   "searchSurahHint": "ابحث عن سورة بالاسم أو الرقم...",
   "filterAll": "الكل",
   "revelationMecca": "مكية",
@@ -44,11 +40,52 @@
   "errorLoadData": "تعذر تحميل البيانات. حاول مرة أخرى.",
   "retry": "إعادة المحاولة",
   "emptySearchResults": "لا توجد سورة مطابقة للبحث.",
+  "surahListLoading": "جارٍ تحميل قائمة السور…",
   "displaySettings": "العرض",
   "readingFontSize": "حجم الخط العربي",
+  "readingModeLabel": "وضع القراءة",
+  "readingLayersLabel": "أدوات مساعدة القراءة",
   "showTransliteration": "النقل الصوتي",
   "showVietnamese": "الترجمة الفيتنامية",
   "showEnglish": "الترجمة الإنجليزية",
+  "jumpToAyahTitle": "الانتقال إلى آية",
+  "jumpToAyahSurahLabel": "السورة",
+  "jumpToAyahNumberLabel": "رقم الآية",
+  "jumpToAyahRange": "1–{max}",
+  "@jumpToAyahRange": {
+    "placeholders": {
+      "max": {
+        "type": "int"
+      }
+    }
+  },
+  "jumpToAyahAction": "انتقال",
+  "jumpToAyahListModeOnly": "الانتقال إلى آية متاح حاليًا في وضع القائمة.",
+  "readingProgressPosition": "آية {current} / {total}",
+  "@readingProgressPosition": {
+    "placeholders": {
+      "current": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "readingProgressSemantics": "الآية {current} من {total}، {percent}%",
+  "@readingProgressSemantics": {
+    "placeholders": {
+      "current": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      },
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
   "surahNotFound": "لم يتم العثور على هذه السورة.",
   "surahNoContent": "لا يوجد محتوى لهذه السورة.",
   "ayahSemanticLabel": "الآية {number}",
@@ -79,6 +116,8 @@
   "stopAudio": "إيقاف الصوت",
   "selectReciter": "اختر القارئ",
   "playFromHere": "التشغيل من هذه الآية",
+  "nowPlaying": "قيد التشغيل",
+  "openReadingScreen": "فتح صفحة القراءة",
   "bookmarkLabel": "إشارة مرجعية",
   "statusLabel": "حالة التعلم",
   "statusNone": "غير مقروءة",
@@ -101,7 +140,6 @@
   "homeLoading": "جارٍ تحميل الشاشة الرئيسية…",
   "homeTodaysVerseLoading": "جارٍ تحميل آية اليوم…",
   "dailyProgress": "تقدم اليوم",
-  "lastRead": "آخر قراءة",
   "quickAccess": "وصول سريع",
   "learningStreak": "سلسلة أيام التعلم",
   "streakDays": "{count} يوم",
@@ -114,8 +152,6 @@
   },
   "recentSurahs": "السور الأخيرة",
   "ayahsReadLabel": "آيات مقروءة",
-  "minutesLabel": "دقائق",
-  "myBookmarks": "علاماتي المرجعية",
   "studyFlashcards": "بطاقات تعليمية",
   "studyFlashcardsDesc": "احفظ مفردات القرآن ببطاقات ذات وجهين",
   "studySpaced": "تكرار متباعد",
@@ -144,7 +180,10 @@
   "favoriteLabel": "المفضلة",
   "copyArabic": "نسخ النص العربي",
   "copyTranslation": "نسخ الترجمة",
+  "ayahHighlightLabel": "تمييز",
   "searchResultsAyahs": "نتائج في المحتوى",
+  "searchResultsSurahs": "السور",
+  "searchNoResults": "لا توجد نتائج.",
   "searchNoAyahResults": "لا توجد آيات مطابقة.",
   "searchLabel": "بحث",
   "searchAskLabel": "اسأل الذكاء الاصطناعي",
@@ -157,6 +196,7 @@
   "searchEmptySuggestedSectionTitle": "مقترح",
   "searchLoadingLabel": "جارٍ البحث...",
   "libraryTitle": "مكتبتي",
+  "libraryLoading": "جارٍ تحميل المكتبة…",
   "libraryBookmarks": "المحفوظة",
   "libraryFavorites": "المفضلة",
   "libraryNotes": "الملاحظات",
@@ -202,6 +242,7 @@
     }
   },
   "collectionsTitle": "المجموعات",
+  "collectionsLoading": "جارٍ تحميل المجموعات…",
   "collectionsEmpty": "لا توجد مجموعات بعد.",
   "collectionsCreate": "مجموعة جديدة",
   "collectionsRename": "إعادة تسمية",
@@ -240,16 +281,20 @@
   "reviewGradeGood": "جيد",
   "reviewGradeEasy": "سهل",
   "reviewOpenInReading": "فتح في القراءة",
+  "reviewSessionLoading": "جارٍ تحميل جلسة المراجعة…",
   "reviewSessionComplete": "اكتملت الجلسة!",
   "reviewSessionCompleteSubtitle": "لا توجد بطاقات مستحقة للمراجعة الآن.",
   "flashcardReviewTitle": "البطاقات التعليمية",
   "flashcardReviewComplete": "اكتملت مراجعة البطاقات!",
   "flashcardReviewCompleteSubtitle": "لا توجد مفردات مستحقة للمراجعة الآن.",
+  "flashcardReviewLoading": "جارٍ تحميل البطاقات التعليمية…",
   "flashcardsTitle": "البطاقات التعليمية",
+  "flashcardsLoading": "جارٍ تحميل البطاقات التعليمية…",
   "flashcardSearchHint": "ابحث بالعربية أو النطق أو المعنى",
   "flashcardAdd": "إضافة",
   "flashcardContentUnavailable": "المحتوى غير متاح",
   "flashcardMoveToDeck": "نقل إلى مجموعة",
+  "flashcardMoveToDeckLoading": "جارٍ تحميل المجموعات…",
   "flashcardRemove": "إزالة البطاقة",
   "flashcardNoDeck": "بدون مجموعة",
   "flashcardEmptyDeck": "لا توجد بطاقات في هذه المجموعة بعد.",
@@ -268,6 +313,7 @@
   "flashcardOnboardingReviewNudge": "تمت إضافة أول بطاقة! هل تريد مراجعتها الآن؟",
   "flashcardOnboardingReviewCta": "راجع الآن",
   "flashcardDecksTitle": "مجموعات البطاقات",
+  "flashcardDecksLoading": "جارٍ تحميل المجموعات…",
   "flashcardDecksEmpty": "لا توجد مجموعات بعد.",
   "flashcardDecksCreate": "إنشاء مجموعة",
   "flashcardDecksRename": "إعادة تسمية",
@@ -284,6 +330,7 @@
     }
   },
   "addFlashcardTitle": "إضافة بطاقة",
+  "addFlashcardLoading": "جارٍ البحث...",
   "addFlashcardSourceLemma": "مدخل معجمي",
   "addFlashcardSourceRoot": "جذر",
   "addFlashcardSourcePhrase": "عبارة",
@@ -297,6 +344,7 @@
   "smartDeckWeakRoots": "الجذور الضعيفة",
   "smartDeckVerbForms": "أوزان الفعل",
   "smartDeckEmpty": "لا توجد بطاقات في هذه المجموعة الذكية بعد.",
+  "smartDeckLoading": "جارٍ تحميل المجموعة الذكية…",
   "smartDeckVerbFormLabel": "الوزن {form}",
   "@smartDeckVerbFormLabel": {
     "placeholders": {
@@ -518,6 +566,7 @@
   "smartLearningStrategyRecovery": "تعافٍ",
   "quizCorrect": "إجابة صحيحة!",
   "quizIncorrect": "إجابة غير صحيحة.",
+  "quizSessionLoading": "جارٍ تحميل الأسئلة…",
   "quizEmpty": "لا يوجد محتوى كافٍ لإنشاء اختبار.",
   "quizQuestionProgress": "سؤال {current}/{total}",
   "@quizQuestionProgress": {
@@ -543,6 +592,7 @@
   },
   "quizRetry": "إعادة المحاولة",
   "learningSessionStart": "ابدأ جلسة التعلم",
+  "learningSessionLoading": "جارٍ تجهيز الجلسة…",
   "learningSummaryTitle": "ملخص الجلسة",
   "learningSummaryReviewCount": "تمت مراجعة {count} بطاقة",
   "@learningSummaryReviewCount": {

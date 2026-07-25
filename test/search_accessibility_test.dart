@@ -26,6 +26,10 @@ void main() {
         'mercy',
       );
       await tester.pumpAndSettle();
+      // Sprint 26.1 — gõ ≥ 2 ký tự nay khởi động truy vấn thật; xả nốt
+      // debounce 250ms để test không kết thúc khi còn timer treo.
+      await tester.pump(const Duration(milliseconds: 300));
+      await tester.pumpAndSettle();
 
       final size = tester.getSize(
         find.descendant(

@@ -4,6 +4,7 @@ import 'package:uuid/uuid.dart';
 import '../../../core/database/user/user_database.dart';
 import '../../../core/logging/logger.dart';
 import '../../../core/logging/repository_boundary_logging.dart';
+import '../../../core/time/epoch.dart';
 import '../domain/entities/srs_card.dart';
 import '../domain/repositories/scheduler_repository.dart';
 import '../domain/scheduling_algorithm.dart';
@@ -26,15 +27,13 @@ class SchedulerRepositoryImpl implements SchedulerRepository {
     String Function()? newId,
     int Function()? nowMs,
   })  : _newId = newId ?? const Uuid().v4,
-        _nowMs = nowMs ?? _epochNow;
+        _nowMs = nowMs ?? epochNowMs;
 
   final UserDatabase _db;
   final SchedulingAlgorithm _algorithm;
   final Logger _logger;
   final String Function() _newId;
   final int Function() _nowMs;
-
-  static int _epochNow() => DateTime.now().toUtc().millisecondsSinceEpoch;
 
   SrsCard _toEntity(SrsCardRow row) => SrsCard(
         id: row.id,

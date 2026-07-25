@@ -4,7 +4,9 @@
 /// vùng khớp ánh xạ ngược về đúng đoạn văn bản gốc (kể cả tashkeel).
 library;
 
-import 'package:flutter/widgets.dart';
+// material (không phải widgets) vì [searchHighlightStyle] nhận
+// ColorScheme — kiểu chữ tô đậm phải lấy màu từ theme, không hardcode.
+import 'package:flutter/material.dart';
 
 import '../../features/quran/data/fts_query.dart';
 import 'text_folding.dart';
@@ -86,6 +88,21 @@ List<(int, int)> matchRanges(String text, String query) {
     }
   }
   return merged;
+}
+
+/// Kiểu chữ cho phần khớp từ khoá — dùng chung cho MỌI nơi tô đậm
+/// kết quả tìm kiếm (Sprint 27.1).
+///
+/// Trước đây literal này được chép nguyên văn ở `result_card.dart` và
+/// `surah_list_screen.dart`; hai bản lệch nhau là lỗi hiển thị âm
+/// thầm (cùng một truy vấn tô đậm khác nhau ở hai màn hình). Đặt cạnh
+/// [highlightSpans] vì luôn đi kèm nó.
+TextStyle searchHighlightStyle(ColorScheme scheme) {
+  return TextStyle(
+    fontWeight: FontWeight.w700,
+    color: scheme.primary,
+    backgroundColor: scheme.primaryContainer.withValues(alpha: 0.35),
+  );
 }
 
 /// Cắt [text] thành spans, phần khớp [query] mang [highlightStyle].

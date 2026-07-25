@@ -4,6 +4,7 @@ import 'package:uuid/uuid.dart';
 import '../../../core/database/user/user_database.dart';
 import '../../../core/logging/logger.dart';
 import '../../../core/logging/repository_boundary_logging.dart';
+import '../../../core/time/epoch.dart';
 import '../domain/entities/quiz_result.dart';
 import '../domain/repositories/quiz_repository.dart';
 
@@ -24,14 +25,12 @@ class QuizRepositoryImpl implements QuizRepository {
     String Function()? newId,
     int Function()? nowMs,
   })  : _newId = newId ?? const Uuid().v4,
-        _nowMs = nowMs ?? _epochNow;
+        _nowMs = nowMs ?? epochNowMs;
 
   final UserDatabase _db;
   final Logger _logger;
   final String Function() _newId;
   final int Function() _nowMs;
-
-  static int _epochNow() => DateTime.now().toUtc().millisecondsSinceEpoch;
 
   QuizResult _toEntity(QuizResultRow row) => QuizResult(
         id: row.id,

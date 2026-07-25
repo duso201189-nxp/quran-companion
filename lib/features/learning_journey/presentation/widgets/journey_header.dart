@@ -1,9 +1,16 @@
 import 'package:flutter/material.dart';
 
+import '../../../../shared/widgets/feature_hero_card.dart';
+
 /// Khối mở đầu màn hình Learning Journey (Sprint 16 Phase 2 mục 3) —
 /// thuần trình bày, KHÔNG đọc provider (nhận sẵn [title]/[dateLabel]/
 /// [stepCountLabel] đã dịch từ nơi gọi) — cùng nguyên tắc
 /// GoalCard/AchievementCard/TutorHeader.
+///
+/// Sprint 21.4 Phase A, mục A1 — khung NGOÀI chuyển sang dùng chung
+/// `FeatureHeroCard` (xác nhận byte-identical với TutorHeader/
+/// SmartLearningHeader/SessionSummaryCard). Semantics bọc ngoài + nội
+/// dung BÊN TRONG không đổi.
 class JourneyHeader extends StatelessWidget {
   const JourneyHeader({
     super.key,
@@ -24,12 +31,7 @@ class JourneyHeader extends StatelessWidget {
     return Semantics(
       label: '$title. $dateLabel. $stepCountLabel',
       child: ExcludeSemantics(
-        child: Container(
-          padding: const EdgeInsets.all(20),
-          decoration: BoxDecoration(
-            color: scheme.primaryContainer,
-            borderRadius: BorderRadius.circular(16),
-          ),
+        child: FeatureHeroCard(
           child: Row(
             children: [
               Icon(Icons.map_rounded, color: scheme.onPrimaryContainer),

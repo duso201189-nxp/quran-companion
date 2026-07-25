@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:quran_companion/l10n/app_localizations.dart';
 
 import '../../../app/theme/app_theme.dart';
+import '../../../shared/widgets/loading_state.dart';
 import '../data/quiz_providers.dart';
 import '../domain/entities/quiz_question.dart';
 
@@ -41,7 +42,7 @@ class QuizSessionScreen extends ConsumerWidget {
               totalQuestions: session.questions.length,
             );
           },
-          loading: () => const Center(child: CircularProgressIndicator()),
+          loading: () => LoadingState(semanticsLabel: l10n.quizSessionLoading),
           error: (_, __) => Center(
             child: Text(
               l10n.errorLoadData,
