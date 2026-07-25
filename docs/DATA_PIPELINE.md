@@ -19,6 +19,7 @@
 | English (Sahih International) | Tanzil.net (en.sahih) | Tanzil terms — phi thương mại, ghi nguồn |
 | Tiếng Việt | QuranEnc.com (tự phát hiện key; ưu tiên Hasan Abdul Karim) | Sử dụng với ghi nguồn — kiểm tra điều khoản từng bản trên quranenc.com |
 | Audio | everyayah.com (URL trong bảng `reciters`) | Phi thương mại — xem everyayah.com |
+| Tafsir | Quran.com/QUL — Tafsir Al-Muyassar (`ar-tafsir-muyassar`) | Dữ liệu cộng đồng Quran.com/QUL — ghi nguồn; **kiểm tra điều khoản trước khi phát hành thương mại** |
 
 ⚠️ **Lưu ý pháp lý trước khi phát hành Store:** điều khoản Tanzil cho
 bản DỊCH ghi "non-commercial". App miễn phí thường được chấp nhận,
@@ -28,6 +29,9 @@ nguồn bản dịch. Đã ghi vào TODO.md mục pháp lý.
 ## Chạy pipeline
 
 ```bash
+# Tải bộ Tafsir (tuỳ chọn, chạy TRƯỚC khi build; ghi ra tool/data/)
+python3 tool/fetch_tafsir.py
+
 # Liệt kê các bản dịch tiếng Việt có trên QuranEnc
 python3 tool/build_quran_db.py --list-vi
 
@@ -41,8 +45,27 @@ python3 tool/build_quran_db.py --vi-key vietnamese_rwwad
 Script tự **kiểm tra toàn vẹn** trước khi hoàn tất, build FAIL nếu:
 - ≠ 114 Surah hoặc ≠ 6.236 Ayah
 - Surah nào có số Ayah không khớp metadata / đánh số không liên tục
-- Nguồn nào không phủ đủ 6.236 Ayah hoặc có văn bản rỗng
+- Nguồn **bản dịch/phiên âm** nào không phủ đủ 6.236 Ayah, hoặc BẤT KỲ
+  nguồn nào có văn bản rỗng
 - Vi phạm foreign key
+
+### Nguồn phủ KHÔNG đầy đủ (Sprint 31.3)
+
+Ràng buộc "mọi nguồn phải phủ đủ 6.236 Ayah" đúng cho bản dịch nhưng
+**sai cho Tafsir**. Đo trên dữ liệu thật: Tafsir Al-Muyassar chú giải
+**5.278/6.236 Ayah** — 958 Ayah (15,4%) không có mục, rải trên 80
+Surah. Bỏ qua Ayah hoặc chú giải theo cụm là chuyện bình thường của
+thể loại chú giải, không phải lỗi dữ liệu.
+
+`validate()` vì vậy nhận thêm `partial_codes`: các nguồn được phép phủ
+thiếu. Văn bản RỖNG vẫn bị cấm với mọi nguồn — thiếu hẳn dòng khác với
+có dòng trống.
+
+### Tafsir không vào chỉ mục tìm kiếm
+
+`search_index` cố ý bỏ qua nguồn `type='tafsir'` (quyết định D9,
+Sprint 30.2): chú giải dài sẽ lấn át kết quả tìm trong kinh văn. Kiểm
+chứng bằng test trên dữ liệu thật (`tafsir_real_corpus_test.dart`).
 
 ## Cập nhật dữ liệu (bản dịch mới, sửa lỗi nguồn)
 

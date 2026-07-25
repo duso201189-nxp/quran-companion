@@ -14,6 +14,7 @@ record's own "Relationship to" note) DR.
 | [DR-2026-0004](DR-2026-0004-sprint9-streak-daily-goal-revision-queue.md) | Sprint 9: canonical streak source, Daily Goal storage split, Revision Queue reuse | accepted | 2026-07-20 |
 | [DR-2026-0005](DR-2026-0005.md) | Sprint 10: Learning Engine architecture — Scheduler (SM-2), Review Session, Quiz | accepted | 2026-07-20 |
 | [DR-2026-0006](DR-2026-0006-study-architecture-foundation.md) | Sprint 30: Study Experience architecture foundation — Tafsir as a content source, layer model, ownership, extension shapes | accepted | 2026-07-25 |
+| [DR-2026-0007](DR-2026-0007-study-workspace-architecture.md) | Sprint 31: Study Workspace — per-ayah surface, `/study/:ayahId` route, feature ownership, enforced Reading dependency budget | accepted | 2026-07-25 |
 
 ## Known gap: `DR-2026-0002`
 

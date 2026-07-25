@@ -74,30 +74,16 @@ class QuranRepositoryImpl implements QuranRepository {
 
       final ayahIds = ayahRows.map((a) => a.id).toList(growable: false);
 
-      // 1 truy vấn join lấy văn bản mọi nguồn đang bật cho cả Surah —
-      // tránh N+1 (hiệu năng là yêu cầu bất biến, xem ARCHITECTURE.md).
-      final query = _db.select(_db.translations).join([
-        innerJoin(
-          _db.translationSources,
-          _db.translationSources.id.equalsExp(_db.translations.sourceId),
-        ),
-      ])
-        ..where(
-          _db.translations.ayahId.isIn(ayahIds) &
-              _db.translationSources.isEnabled.equals(true),
-        );
-
-      final byAyah = <int, Map<String, String>>{};
-      for (final row in await query.get()) {
-        final translation = row.readTable(_db.translations);
-        final source = row.readTable(_db.translationSources);
-        // Phiên âm đi qua TransliterationRepository: dataset chuẩn giữ
-        // nguyên, dữ liệu định dạng cũ được chuyển sang Unicode sạch.
-        final text = source.type == TransliterationRepository.sourceType
-            ? _transliteration.normalize(translation.content)
-            : translation.content;
-        (byAyah[translation.ayahId] ??= <String, String>{})[source.code] = text;
-      }
+      // Sprint 30.2 — RANH GIỚI ĐỌC nằm trong mệnh đề WHERE, không
+      // phải ở tầng trình bày: lọc sau khi đã đọc lên bộ nhớ vẫn phải
+      // trả giá đọc đĩa + cấp phát chuỗi cho toàn bộ chú giải của cả
+      // Surah. Loại trừ theo danh sách dẫn xuất từ `kSourceTypeByCode`
+      // (không phải liệt kê loại được phép) nên loại LẠ — bộ dữ liệu
+      // mới hơn mã nguồn — vẫn hiển thị, đúng quyết định Sprint 30.2.
+      final byAyah = await _textsForAyahs(
+        ayahIds,
+        _db.translationSources.type.isNotIn(kNonReadingSourceTypeCodes),
+      );
 
       return [
         for (final a in ayahRows)
@@ -107,6 +93,62 @@ class QuranRepositoryImpl implements QuranRepository {
           ),
       ];
     });
+  }
+
+  @override
+  Future<Map<String, String>> getAyahTexts({
+    required int ayahId,
+    required Set<SourceType> types,
+  }) {
+    return withFailureLogging(_logger, 'getAyahTexts', () async {
+      if (types.isEmpty) return const <String, String>{};
+      final byAyah = await _textsForAyahs(
+        [ayahId],
+        _db.translationSources.type.isIn(sourceTypeCodesFor(types)),
+      );
+      return byAyah[ayahId] ?? const <String, String>{};
+    });
+  }
+
+  /// MỘT truy vấn join, dùng chung cho mọi lối nạp văn bản theo Ayah.
+  ///
+  /// Sprint 31.2 — trước đây phần join này chỉ tồn tại bên trong
+  /// `getAyahsOfSurah`; Study cần đúng phép join đó với bộ lọc khác.
+  /// Tách ra và nhận [sourceFilter] làm THAM SỐ để hai lối nạp không
+  /// bao giờ lệch nhau về chuẩn hoá phiên âm hay điều kiện `is_enabled`
+  /// — đó là "không nhân bản SQL" theo đúng nghĩa.
+  ///
+  /// Bộ lọc là biểu thức chứ không phải danh sách loại: đường đọc loại
+  /// TRỪ (giữ loại lạ), Study chọn VÀO (chỉ đúng loại yêu cầu) — hai
+  /// hình dạng vị từ khác nhau, không gộp được thành một tham số.
+  Future<Map<int, Map<String, String>>> _textsForAyahs(
+    List<int> ayahIds,
+    Expression<bool> sourceFilter,
+  ) async {
+    final query = _db.select(_db.translations).join([
+      innerJoin(
+        _db.translationSources,
+        _db.translationSources.id.equalsExp(_db.translations.sourceId),
+      ),
+    ])
+      ..where(
+        _db.translations.ayahId.isIn(ayahIds) &
+            _db.translationSources.isEnabled.equals(true) &
+            sourceFilter,
+      );
+
+    final byAyah = <int, Map<String, String>>{};
+    for (final row in await query.get()) {
+      final translation = row.readTable(_db.translations);
+      final source = row.readTable(_db.translationSources);
+      // Phiên âm đi qua TransliterationRepository: dataset chuẩn giữ
+      // nguyên, dữ liệu định dạng cũ được chuyển sang Unicode sạch.
+      final text = source.type == TransliterationRepository.sourceType
+          ? _transliteration.normalize(translation.content)
+          : translation.content;
+      (byAyah[translation.ayahId] ??= <String, String>{})[source.code] = text;
+    }
+    return byAyah;
   }
 
   @override
@@ -191,6 +233,13 @@ class QuranRepositoryImpl implements QuranRepository {
         .get();
     final surahName = {for (final s in surahRows) s.id: s.nameLatin};
 
+    // Bản dịch xem trước cho tiêu đề kết quả: liệt kê MÃ nguồn cụ thể
+    // nên Tafsir không lọt vào — nhưng là do trùng hợp, không do
+    // ranh giới. Nếu sau này đổi sang lọc theo LOẠI (vd "bản dịch
+    // theo ngôn ngữ giao diện"), PHẢI dùng
+    // `type.isNotIn(kNonReadingSourceTypeCodes)` như
+    // `getAyahsOfSurah`, nếu không chú giải dài sẽ tràn vào ô xem
+    // trước một dòng.
     final translationQuery = _db.select(_db.translations).join([
       innerJoin(
         _db.translationSources,
@@ -255,11 +304,10 @@ class QuranRepositoryImpl implements QuranRepository {
         code: row.code,
         name: row.name,
         language: row.language,
-        type: switch (row.type) {
-          'transliteration' => SourceType.transliteration,
-          'tafsir' => SourceType.tafsir,
-          _ => SourceType.translation,
-        },
+        // Dùng bảng ánh xạ dùng chung (Sprint 30.2) thay cho `switch`
+        // riêng ở đây — cùng một nguồn sự thật với bộ lọc SQL của
+        // đường đọc.
+        type: kSourceTypeByCode[row.type] ?? SourceType.translation,
         displayOrder: row.displayOrder,
         author: row.author,
         license: row.license,

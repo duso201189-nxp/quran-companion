@@ -106,15 +106,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get readingLayersLabel => 'Reading aids';
 
   @override
-  String get showTransliteration => 'Transliteration';
-
-  @override
-  String get showVietnamese => 'Vietnamese translation';
-
-  @override
-  String get showEnglish => 'English translation';
-
-  @override
   String get jumpToAyahTitle => 'Jump to Ayah';
 
   @override
@@ -200,6 +191,15 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get nowPlaying => 'Now playing';
+
+  @override
+  String get studyWorkspaceTitle => 'Study';
+
+  @override
+  String get studyTafsirTitle => 'Tafsir';
+
+  @override
+  String get studyOpenWorkspace => 'Study this ayah';
 
   @override
   String get openReadingScreen => 'Open reading screen';

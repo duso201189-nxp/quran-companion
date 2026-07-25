@@ -106,15 +106,6 @@ class AppLocalizationsAr extends AppLocalizations {
   String get readingLayersLabel => 'أدوات مساعدة القراءة';
 
   @override
-  String get showTransliteration => 'النقل الصوتي';
-
-  @override
-  String get showVietnamese => 'الترجمة الفيتنامية';
-
-  @override
-  String get showEnglish => 'الترجمة الإنجليزية';
-
-  @override
   String get jumpToAyahTitle => 'الانتقال إلى آية';
 
   @override
@@ -199,6 +190,15 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get nowPlaying => 'قيد التشغيل';
+
+  @override
+  String get studyWorkspaceTitle => 'دراسة';
+
+  @override
+  String get studyTafsirTitle => 'التفسير';
+
+  @override
+  String get studyOpenWorkspace => 'دراسة هذه الآية';
 
   @override
   String get openReadingScreen => 'فتح صفحة القراءة';

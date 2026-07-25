@@ -1,6 +1,9 @@
+import 'dart:convert';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:quran_companion/core/storage/prefs_provider.dart';
+import 'package:quran_companion/features/quran/domain/entities/translation_source.dart';
 import 'package:quran_companion/features/quran/presentation/reading/reading_settings.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -14,7 +17,34 @@ Future<ProviderContainer> _container({
   );
 }
 
+const _translit = TranslationSource(
+  id: 1,
+  code: 'translit_latin',
+  name: 'Phien am',
+  language: 'en',
+  type: SourceType.transliteration,
+  displayOrder: 1,
+);
+const _vi = TranslationSource(
+  id: 2,
+  code: 'vi_main',
+  name: 'Ban dich tieng Viet',
+  language: 'vi',
+  type: SourceType.translation,
+  displayOrder: 2,
+);
+const _en = TranslationSource(
+  id: 3,
+  code: 'en_sahih',
+  name: 'English',
+  language: 'en',
+  type: SourceType.translation,
+  displayOrder: 3,
+);
+
 void main() {
+  // Sprint 30.1 — cùng KỲ VỌNG như bản cũ (phiên âm + Việt bật, Anh
+  // tắt), chỉ khác cách hỏi: qua mã nguồn thay vì ba cờ cứng.
   test('mặc định: scale 1.0, translit + Việt bật, Anh tắt', () async {
     final c = await _container();
     addTearDown(c.dispose);
@@ -22,9 +52,9 @@ void main() {
     final s = c.read(readingSettingsProvider);
     expect(s.arabicScale, 1.0);
     expect(s.arabicFontSize, 28);
-    expect(s.showTransliteration, isTrue);
-    expect(s.showVietnamese, isTrue);
-    expect(s.showEnglish, isFalse);
+    expect(s.isSourceVisible(_translit, 'vi'), isTrue);
+    expect(s.isSourceVisible(_vi, 'vi'), isTrue);
+    expect(s.isSourceVisible(_en, 'vi'), isFalse);
   });
 
   test('setArabicScale lưu bền và clamp trong khoảng cho phép', () async {
@@ -106,19 +136,23 @@ void main() {
     );
   });
 
-  test('bật/tắt lớp văn bản lưu bền', () async {
+  test('bật/tắt lớp văn bản lưu bền (theo mã nguồn)', () async {
     final c = await _container();
     addTearDown(c.dispose);
 
     final controller = c.read(readingSettingsProvider.notifier);
-    await controller.setShowEnglish(true);
-    await controller.setShowTransliteration(false);
+    await controller.setSourceVisible('en_sahih', true);
+    await controller.setSourceVisible('translit_latin', false);
 
     final s = c.read(readingSettingsProvider);
-    expect(s.showEnglish, isTrue);
-    expect(s.showTransliteration, isFalse);
+    expect(s.isSourceVisible(_en, 'vi'), isTrue);
+    expect(s.isSourceVisible(_translit, 'vi'), isFalse);
+
     final prefs = c.read(sharedPreferencesProvider);
-    expect(prefs.getBool('reading.show_english'), isTrue);
-    expect(prefs.getBool('reading.show_transliteration'), isFalse);
+    final stored = jsonDecode(
+      prefs.getString(ReadingSettingsController.kSourceVisibilityKey)!,
+    ) as Map<String, dynamic>;
+    expect(stored['en_sahih'], isTrue);
+    expect(stored['translit_latin'], isFalse);
   });
 }

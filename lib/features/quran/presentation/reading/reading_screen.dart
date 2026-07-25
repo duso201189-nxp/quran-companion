@@ -14,11 +14,13 @@ import '../../../../app/theme/app_theme.dart';
 import '../../../stats/data/stats_store.dart';
 import '../../../stats/data/study_session_providers.dart';
 import '../../../stats/domain/repositories/study_session_repository.dart';
+import '../../data/quran_providers.dart';
 import '../../data/user_content_providers.dart';
 import '../../domain/basmalah.dart';
 import '../../domain/entities/ayah_annotation.dart';
 import '../../domain/entities/ayah_content.dart';
 import '../../domain/entities/surah.dart';
+import '../../domain/entities/translation_source.dart';
 import '../annotations/ayah_actions_sheet.dart';
 import '../audio/audio_bar.dart';
 import '../audio/audio_controller.dart';
@@ -30,6 +32,7 @@ import 'reading_position_store.dart';
 import 'reading_progress_indicator.dart';
 import 'reading_settings.dart';
 import 'reading_settings_sheet.dart';
+import 'reading_source_style.dart';
 
 /// Trang đọc Qur'an — màn hình quan trọng nhất của ứng dụng.
 ///
@@ -882,9 +885,31 @@ class AyahCard extends ConsumerWidget {
       textUthmani: content.ayah.textUthmani,
     );
 
-    final translit = content.texts['translit_latin'];
-    final vi = content.texts['vi_main'];
-    final en = content.texts['en_sahih'];
+    // Sprint 30.1 — CÁC LỚP VĂN BẢN DỰNG TỪ DỮ LIỆU NGUỒN.
+    //
+    // Trước đây ba dòng cứng đọc đúng ba mã ('translit_latin',
+    // 'vi_main', 'en_sahih'), mỗi mã một cờ và một kiểu chữ riêng —
+    // thêm bản dịch hay Tafsir đều phải sửa widget này. Nay danh sách
+    // lớp = giao của (nguồn đang bật trong database) × (nguồn người
+    // dùng để hiện) × (Ayah này thực sự có văn bản), sắp theo
+    // `display_order` của chính dữ liệu.
+    //
+    // Một truy vấn duy nhất cho cả phiên chạy, dùng chung mọi AyahCard
+    // (xem `translationSourcesProvider`); đọc bằng `valueOrNull` nên
+    // lúc chưa nạp xong thẻ vẫn hiện kinh văn, không nháy khung chờ.
+    //
+    // Sprint 30.2 — `readingSourcesProvider` (KHÔNG phải danh mục đầy
+    // đủ): Tafsir không bao giờ là một lớp của trang đọc.
+    final sources = ref.watch(
+      readingSourcesProvider.select((value) => value.valueOrNull),
+    );
+    final appLanguage = Localizations.localeOf(context).languageCode;
+    final layers = <({TranslationSource source, String text})>[
+      for (final source in sources ?? const <TranslationSource>[])
+        if (settings.isSourceVisible(source, appLanguage))
+          if (content.texts[source.code] case final text?)
+            (source: source, text: text),
+    ]..sort((a, b) => a.source.displayOrder.compareTo(b.source.displayOrder));
 
     // Nền thẻ: đang phát > highlight người dùng > mặt thẻ tối.
     final cardColor = isPlayingThis
@@ -1063,9 +1088,7 @@ class AyahCard extends ConsumerWidget {
                   ),
 
                   // Ngăn cách kinh văn với các lớp hỗ trợ đọc.
-                  if ((settings.showTransliteration && translit != null) ||
-                      (settings.showVietnamese && vi != null) ||
-                      (settings.showEnglish && en != null)) ...[
+                  if (layers.isNotEmpty) ...[
                     const SizedBox(height: 18),
                     Divider(
                       height: 1,
@@ -1074,47 +1097,28 @@ class AyahCard extends ConsumerWidget {
                     const SizedBox(height: 18),
                   ],
 
-                  // ---- Phiên âm (nhỏ hơn, kiểu phụ) ----
-                  if (settings.showTransliteration && translit != null) ...[
-                    Text(
-                      translit,
-                      textDirection: TextDirection.ltr,
-                      style: TextStyle(
-                        fontFamily: AppTheme.latinFont,
-                        fontStyle: FontStyle.italic,
-                        fontSize: 15,
-                        height: 1.55,
-                        letterSpacing: 0.2,
-                        color: scheme.onSurfaceVariant.withValues(alpha: 0.7),
-                      ),
-                    ),
-                    const SizedBox(height: 14),
-                  ],
-
-                  // ---- Bản dịch (LTR, dễ đọc) ----
-                  if (settings.showVietnamese && vi != null) ...[
-                    Text(
-                      vi,
-                      textDirection: TextDirection.ltr,
-                      style: TextStyle(
-                        fontFamily: AppTheme.latinFont,
-                        fontSize: 18,
-                        height: 1.7,
-                        color: scheme.onSurface,
-                      ),
-                    ),
-                    const SizedBox(height: 14),
-                  ],
-                  if (settings.showEnglish && en != null) ...[
-                    Text(
-                      en,
-                      textDirection: TextDirection.ltr,
-                      style: TextStyle(
-                        fontFamily: AppTheme.latinFont,
-                        fontSize: 16,
-                        height: 1.6,
-                        color: scheme.onSurfaceVariant,
-                      ),
+                  // ---- Các lớp văn bản, theo đúng thứ tự dữ liệu ----
+                  //
+                  // Mỗi lớp vẫn là MỘT `Text` riêng, y như trước: thẻ
+                  // Ayah đã có `Semantics` gộp ở ngoài, nên KHÔNG thêm
+                  // nhãn ngữ nghĩa cho từng lớp — làm vậy sẽ chèn tên
+                  // nguồn vào giữa mạch đọc của trình đọc màn hình,
+                  // tức đổi hành vi chứ không phải giữ nguyên.
+                  for (final layer in layers) ...[
+                    Builder(
+                      builder: (context) {
+                        final layout = readingLayerStyle(
+                          source: layer.source,
+                          scheme: scheme,
+                          appLanguage: appLanguage,
+                        );
+                        return Text(
+                          layer.text,
+                          textDirection: layout.textDirection,
+                          textAlign: layout.textAlign,
+                          style: layout.textStyle,
+                        );
+                      },
                     ),
                     const SizedBox(height: 14),
                   ],

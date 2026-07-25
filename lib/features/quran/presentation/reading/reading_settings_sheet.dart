@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:quran_companion/l10n/app_localizations.dart';
 
+import '../../data/quran_providers.dart';
+import '../../domain/entities/translation_source.dart';
 import 'reading_settings.dart';
 import 'reading_sheet_motion.dart';
 
@@ -179,58 +181,65 @@ class _FontSizeControl extends ConsumerWidget {
   }
 }
 
-/// Ba lớp hỗ trợ đọc. Widget này CHỈ `read` notifier (không watch), nên
-/// bản thân nó không bao giờ dựng lại — mỗi công tắc con tự nghe đúng
-/// trường của mình.
+/// Danh sách công tắc lớp văn bản — DỰNG TỪ DANH MỤC NGUỒN, không từ
+/// ba công tắc viết sẵn (Sprint 30.1).
+///
+/// Thêm một bản dịch hay một nguồn Tafsir vào database là đủ để nó
+/// xuất hiện ở đây, mang đúng tên do dữ liệu khai báo.
 class _ReadingLayers extends ConsumerWidget {
   const _ReadingLayers();
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context);
-    final controller = ref.read(readingSettingsProvider.notifier);
+    // Sprint 30.2 — chỉ nguồn thuộc đường đọc: bật một công tắc
+    // Tafsir ở đây sẽ không hiện gì, vì trang đọc không nạp Tafsir.
+    final sources = ref.watch(readingSourcesProvider);
 
-    return Column(
-      children: [
-        _LayerSwitch(
-          label: l10n.showTransliteration,
-          selector: (s) => s.showTransliteration,
-          onChanged: controller.setShowTransliteration,
-        ),
-        _LayerSwitch(
-          label: l10n.showVietnamese,
-          selector: (s) => s.showVietnamese,
-          onChanged: controller.setShowVietnamese,
-        ),
-        _LayerSwitch(
-          label: l10n.showEnglish,
-          selector: (s) => s.showEnglish,
-          onChanged: controller.setShowEnglish,
-        ),
-      ],
+    return sources.when(
+      // Cùng nhịp với phần còn lại của bảng: không nháy khung chờ toàn
+      // bảng chỉ vì danh mục nguồn (một truy vấn nhỏ, thường đã sẵn).
+      loading: () => const SizedBox.shrink(),
+      error: (_, __) => Padding(
+        padding: const EdgeInsets.symmetric(vertical: 8),
+        child: Text(l10n.errorLoadData),
+      ),
+      data: (list) => Column(
+        children: [
+          for (final source in list) _LayerSwitch(source: source),
+        ],
+      ),
     );
   }
 }
 
 class _LayerSwitch extends ConsumerWidget {
-  const _LayerSwitch({
-    required this.label,
-    required this.selector,
-    required this.onChanged,
-  });
+  const _LayerSwitch({required this.source});
 
-  final String label;
-  final bool Function(ReadingSettings) selector;
-  final Future<void> Function(bool) onChanged;
+  final TranslationSource source;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final value = ref.watch(readingSettingsProvider.select(selector));
+    final appLanguage = Localizations.localeOf(context).languageCode;
+    // select() trả về bool -> công tắc chỉ dựng lại khi CHÍNH nguồn
+    // này đổi trạng thái, không phải khi bất kỳ nguồn nào đổi.
+    final value = ref.watch(
+      readingSettingsProvider.select(
+        (s) => s.isSourceVisible(source, appLanguage),
+      ),
+    );
+
     return SwitchListTile(
       contentPadding: EdgeInsets.zero,
-      title: Text(label),
+      // Nhãn lấy từ dữ liệu (`translation_sources.name`) chứ không từ
+      // l10n: tên nguồn là danh xưng của chính bản dịch/Tafsir đó
+      // ("Bản dịch tiếng Việt", "Tafsir Ibn Kathir"), do bộ dữ liệu
+      // khai báo — không thể có khoá l10n cho nguồn chưa tồn tại.
+      title: Text(source.name),
       value: value,
-      onChanged: onChanged,
+      onChanged: (next) => ref
+          .read(readingSettingsProvider.notifier)
+          .setSourceVisible(source.code, next),
     );
   }
 }

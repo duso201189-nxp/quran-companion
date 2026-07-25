@@ -51,6 +51,13 @@ class _Repo implements QuranRepository {
   }) async =>
       const [];
   @override
+  Future<Map<String, String>> getAyahTexts({
+    required int ayahId,
+    required Set<SourceType> types,
+  }) async =>
+      const {};
+
+  @override
   Future<List<AyahSearchResult>> getAyahsByIds(List<int> ids) async => const [];
 }
 

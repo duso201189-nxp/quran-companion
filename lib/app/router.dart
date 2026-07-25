@@ -24,6 +24,7 @@ import '../features/smart_learning/presentation/smart_learning_screen.dart';
 import '../features/stats/presentation/stats_screen.dart';
 import '../features/study/presentation/revision_queue_screen.dart';
 import '../features/study/presentation/study_screen.dart';
+import '../features/study/presentation/workspace/study_workspace_screen.dart';
 import '../shared/widgets/app_scaffold.dart';
 
 /// Tên route tập trung một chỗ — tránh gõ chuỗi rải rác trong code.
@@ -119,6 +120,17 @@ abstract final class AppRoutes {
   /// tôi): /read/2. Không dùng nhánh shell nên tránh xung đột khi
   /// push chồng route top-level.
   static String read(int surahId) => '/read/$surahId';
+
+  /// Study Workspace cho MỘT Ayah (Sprint 31.1, `DR-2026-0007` D3):
+  /// /study/2583. Route TOP-LEVEL — Thư viện, Tìm kiếm, AI Tutor phải
+  /// mở được trực tiếp, mà push route lồng trong shell từ những nơi
+  /// đó làm go_router dựng lại Navigator nhánh và ném lỗi GlobalKey
+  /// (xem `reading_navigation.dart`).
+  ///
+  /// KHÁC [study] (`/study`) — đó là TAB Học, một nhánh của shell.
+  /// Hai đường dẫn không đụng nhau vì go_router khớp toàn bộ path:
+  /// `/study` khớp route tab, `/study/2583` khớp route này.
+  static String studyAyah(int ayahId) => '/study/$ayahId';
 
   /// [location] có phải một trang đọc không — tức nơi ĐÃ có `AudioBar`
   /// đầy đủ trên màn hình (Sprint 29.0).
@@ -281,6 +293,16 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: AppRoutes.learningSession,
         builder: (context, state) => const LearningSessionScreen(),
+      ),
+
+      // Study Workspace cho một Ayah — top-level, deep-link được.
+      GoRoute(
+        path: '/study/:ayahId',
+        builder: (context, state) => StudyWorkspaceScreen(
+          // id hỏng ('abc') -> 0 -> màn hình hiện trạng thái rỗng,
+          // cùng cách xử lý deep link hỏng của trang đọc.
+          ayahId: int.tryParse(state.pathParameters['ayahId'] ?? '') ?? 0,
+        ),
       ),
 
       // Trang đọc full-screen (nhảy từ Thư viện của tôi / ngoài shell).

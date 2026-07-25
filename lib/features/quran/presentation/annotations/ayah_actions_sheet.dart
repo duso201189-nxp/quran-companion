@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart' show Clipboard, ClipboardData;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:quran_companion/l10n/app_localizations.dart';
 
+import '../../../../app/router.dart';
 import '../../data/user_content_providers.dart';
 import '../../domain/entities/ayah_annotation.dart';
 
@@ -153,6 +155,19 @@ class AyahActionsSheet extends ConsumerWidget {
                   label: l10n.favoriteLabel,
                   selected: annotation.favorited,
                   onTap: () => repo.toggleFavorite(ayahId),
+                ),
+                // Lối vào Study Workspace (`DR-2026-0007` D3). Đặt ở
+                // ĐÂY, không phải trên `AyahCard`: thêm một nút cố
+                // định vào mọi thẻ Ayah bắt trang đọc trả giá bố cục
+                // + accessibility cho một tính năng của Study.
+                _SheetAction(
+                  icon: Icons.school_outlined,
+                  label: l10n.studyOpenWorkspace,
+                  // Rời hẳn sang màn hình khác -> đóng sheet trước.
+                  onTap: () => _runAndClose(
+                    context,
+                    () => context.push(AppRoutes.studyAyah(ayahId)),
+                  ),
                 ),
                 if (onPlay != null)
                   _SheetAction(

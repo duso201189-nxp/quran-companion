@@ -100,6 +100,23 @@ Future<void> seedTestContent(AppDatabase db) async {
         version: null,
         updatedAt: null,
       ),
+      // Sprint 30.2 — Tafsir ĐANG BẬT. Không có nguồn này thì không
+      // bài kiểm nào chứng minh được ranh giới đọc: bản cũ chỉ có
+      // Tafsir đã tắt, tức chỉ kiểm tra bộ lọc `is_enabled`.
+      const TranslationSourceRow(
+        id: 5,
+        code: 'tafsir_enabled',
+        name: 'Tafsir dang bat (fixture)',
+        language: 'vi',
+        author: 'Fixture',
+        type: 'tafsir',
+        isEnabled: true,
+        displayOrder: 5,
+        license: null,
+        sourceUrl: null,
+        version: null,
+        updatedAt: null,
+      ),
       const TranslationSourceRow(
         id: 4,
         code: 'tafsir_off',
@@ -127,6 +144,12 @@ Future<void> seedTestContent(AppDatabase db) async {
         TranslationRow(sourceId: 3, ayahId: n, content: 'english $n'),
         // nguồn 4 (tắt) vẫn có dữ liệu — để test bộ lọc is_enabled
         TranslationRow(sourceId: 4, ayahId: n, content: 'tafsir $n'),
+        // nguồn 5 BẬT nhưng là Tafsir — để test ranh giới đọc
+        TranslationRow(
+          sourceId: 5,
+          ayahId: n,
+          content: 'tafsir bat $n',
+        ),
       ],
       // Surah 114 chỉ có bản Việt — test trường hợp nguồn thiếu ayah
       for (var n = 1; n <= 6; n++)

@@ -106,15 +106,6 @@ class AppLocalizationsVi extends AppLocalizations {
   String get readingLayersLabel => 'Lớp hỗ trợ đọc';
 
   @override
-  String get showTransliteration => 'Phiên âm Latin';
-
-  @override
-  String get showVietnamese => 'Bản dịch tiếng Việt';
-
-  @override
-  String get showEnglish => 'Bản dịch tiếng Anh';
-
-  @override
   String get jumpToAyahTitle => 'Chuyển tới Ayah';
 
   @override
@@ -200,6 +191,15 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get nowPlaying => 'Đang phát';
+
+  @override
+  String get studyWorkspaceTitle => 'Nghiên cứu';
+
+  @override
+  String get studyTafsirTitle => 'Chú giải (Tafsir)';
+
+  @override
+  String get studyOpenWorkspace => 'Nghiên cứu Ayah';
 
   @override
   String get openReadingScreen => 'Mở trang đọc';

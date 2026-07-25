@@ -52,12 +52,31 @@ void main() {
     test('getEnabledSources: chỉ nguồn bật, đúng thứ tự', () async {
       final sources = await repo.getEnabledSources();
 
-      expect(sources.length, 3);
+      // Sprint 30.2 — đây là DANH MỤC ĐẦY ĐỦ các nguồn đang bật, gồm
+      // cả Tafsir: ranh giới đọc nằm ở `getAyahsOfSurah` và
+      // `readingSourcesProvider`, không phải ở đây. Giữ danh mục đầy
+      // đủ để mặt hàng Tafsir tương lai dựng khung nhìn riêng từ
+      // CÙNG một truy vấn.
+      expect(sources.length, 4);
       expect(
         sources.map((s) => s.code).toList(),
-        ['translit_latin', 'vi_main', 'en_sahih'],
+        ['translit_latin', 'vi_main', 'en_sahih', 'tafsir_enabled'],
       );
       expect(sources.any((s) => s.code == 'tafsir_off'), isFalse);
+    });
+
+    test('isReadingLayer: Tafsir bị loại khỏi đường đọc', () async {
+      final sources = await repo.getEnabledSources();
+
+      final reading = [
+        for (final s in sources)
+          if (s.isReadingLayer) s.code,
+      ];
+      expect(reading, ['translit_latin', 'vi_main', 'en_sahih']);
+      expect(
+        sources.singleWhere((s) => s.code == 'tafsir_enabled').isReadingLayer,
+        isFalse,
+      );
     });
 
     test('metadata nguồn (license, url) được ánh xạ', () async {
@@ -92,6 +111,23 @@ void main() {
       final ayahs = await repo.getAyahsOfSurah(1);
 
       expect(ayahs.first.texts.containsKey('tafsir_off'), isFalse);
+    });
+
+    test(
+        'RANH GIỚI ĐỌC: Tafsir ĐANG BẬT vẫn KHÔNG được nạp kèm Ayah '
+        '(Sprint 30.2)', () async {
+      final ayahs = await repo.getAyahsOfSurah(1);
+
+      for (final a in ayahs) {
+        expect(a.texts.containsKey('tafsir_enabled'), isFalse);
+      }
+      // ...trong khi các lớp đọc vẫn nguyên vẹn: loại trừ theo LOẠI,
+      // không phải cắt bớt truy vấn.
+      expect(ayahs.first.texts.keys.toSet(), {
+        'translit_latin',
+        'vi_main',
+        'en_sahih',
+      });
     });
 
     test('Surah thiếu một số nguồn -> texts chỉ chứa nguồn có dữ liệu',

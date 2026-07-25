@@ -23,6 +23,13 @@ import 'package:shared_preferences/shared_preferences.dart';
 /// Repo giả: chỉ trả header cho ayah id = 1 (Al-Fatihah 1:1).
 class _FakeQuranRepo implements QuranRepository {
   @override
+  Future<Map<String, String>> getAyahTexts({
+    required int ayahId,
+    required Set<SourceType> types,
+  }) async =>
+      const {};
+
+  @override
   Future<List<AyahSearchResult>> getAyahsByIds(List<int> ids) async => [
         for (final id in ids)
           if (id == 1)

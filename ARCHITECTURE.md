@@ -63,6 +63,151 @@ Domain KHÔNG import Flutter, KHÔNG import Drift/Supabase.
 - 800–1099px: NavigationRail thu gọn (tablet dọc)
 - ≥ 1100px: NavigationRail mở rộng (tablet ngang / web / desktop)
 
+## 6b. Reading sources (data-driven)
+
+Ayah text layers — transliteration, translations, Tafsir — are **data,
+not code**. Nothing in `lib/` names a source code on the render path.
+
+```
+translation_sources (group A, read-only)
+        │  getEnabledSources()
+        ▼
+translationSourcesProvider     ← one query per app run, shared
+        │
+        ├─ AyahCard            visibility × text present, sorted by display_order
+        └─ ReadingSettingsSheet one switch per source, label = source.name
+```
+
+- **Visibility** is keyed by `TranslationSource.code`, persisted as one
+  JSON entry (`reading.source_visibility`). A source the user has never
+  touched falls back to a default derived from `SourceType` + language:
+  transliteration on, translation on when its language matches the app
+  locale, Tafsir off.
+- **Presentation** (text style, direction, alignment) derives *only*
+  from `SourceType` and language — see `reading_source_style.dart`.
+  Direction comes from `TranslationSource.isRtl`, so an Arabic-language
+  Tafsir renders RTL without any widget change.
+- **Adding a source** = one row in `translation_sources` + its text in
+  `translations`. No Dart change. See `DR-2026-0006` decision D3.
+
+### Reading Boundary vs Tafsir Boundary
+
+Reading carries **Arabic + transliteration + translation. Never Tafsir.**
+
+```
+Reading boundary            Tafsir boundary (not built)
+─────────────────           ───────────────────────────
+getAyahsOfSurah()           a dedicated per-ayah fetch
+  WHERE is_enabled          keyed by ayahId
+    AND type NOT IN         (DR-2026-0006 D4)
+        (tafsir)
+      │                              │
+readingSourcesProvider      a Tafsir view over the SAME
+  (filters the catalogue)   translationSourcesProvider result
+      │                              │
+AyahCard · settings sheet   a Tafsir surface
+```
+
+The boundary is enforced in **three** places, deliberately:
+
+1. **SQL** — `getAyahsOfSurah` excludes non-reading types in its
+   `WHERE`. Filtering after the read would still pay the disk and
+   allocation cost for every commentary in the Surah.
+2. **Domain** — `kReadingSourceTypes` / `TranslationSource.isReadingLayer`
+   define what "reading" means, once. The SQL exclusion list is derived
+   from `kSourceTypeByCode`, so the filter cannot drift from the row
+   mapping.
+3. **Provider** — `readingSourcesProvider` filters the catalogue so the
+   settings sheet never offers a Tafsir switch that would toggle text
+   the reading query will never load.
+
+**Why eager loading was rejected.** `getAyahsOfSurah` is one join for
+the whole Surah — correct for translations, which are one or two lines.
+Tafsir entries run one to three orders of magnitude longer; Al-Baqarah
+is 286 ayahs. Enabling a single Tafsir source would have turned opening
+a Surah into a multi-megabyte read, held in memory, for text that is
+not on screen — with no code change to signal it. The failure mode was
+silent, data-triggered, and would have shipped as "the app got slow".
+
+**Extension strategy.** A Tafsir surface adds a per-ayah repository
+method plus an `autoDispose.family` provider keyed by `ayahId`, and
+derives its own source view from the *same* `translationSourcesProvider`
+result — no new query, no change to Reading. Neither exists yet: a
+provider without a consumer is speculation (`DR-2026-0006` D4). The
+catalogue therefore stays complete (`getEnabledSources` still returns
+Tafsir); only the reading *view* filters.
+
+Why not per-feature booleans (`showVietnamese`…)? They cannot express
+*multiple* Tafsir sources, and every new source forced edits to
+`ReadingSettings`, `AyahCard` and the settings sheet at once. Why not
+derive visibility from `is_enabled`? That column is a packaging
+decision by the data pipeline; visibility is a per-user preference —
+collapsing them makes one of the two unchangeable.
+
+## 6c. Study Boundary (feature ownership)
+
+Reading presents Qur'an text. **Study** owns deep-learning features.
+The Tafsir loading boundary (§6b) is the first instance of a general
+rule: Reading never loads, and never knows how to load, study data.
+
+| Area | Owns | Must not own |
+|---|---|---|
+| **Reading** | Layout modes, fonts, scroll position, focus mode, reading-layer rendering | Learning artifacts or their loading |
+| **Study** | Per-ayah learning artifacts: Tafsir, notes, highlights, cross references, word analysis | Qur'an text layout; cross-ayah lists |
+| **Library** | Collections and lists across ayahs | Per-ayah editing surfaces |
+| **Search** | Discovery and ranking | Rendering study content |
+| **Audio** | Playback, playlist, transport | Reading layout |
+| **Navigation** | Routes and nesting rules | Feature logic |
+
+**Navigation flow.** Study is a per-ayah surface reached by a top-level
+route `/study/:ayahId`, opened from the existing `AyahActionsSheet`
+(long-press → "Study"). Top-level because Library, Search and AI Tutor
+must link to it directly, and pushing a shell-nested route from a
+top-level screen crashes go_router (see `reading_navigation.dart`).
+`ayahId` is the global 1..6236 id already used by every user-artifact
+table.
+
+**Data flow.** Reading passes only an `ayahId`. Study loads everything
+itself through `autoDispose.family` providers, one per panel, fanning
+out to the repositories that already own each kind of data — there is
+no `StudyRepository` (`DR-2026-0006` D5).
+
+```
+ReadingScreen ──ayahId──▶ /study/:ayahId ──▶ per-panel providers ──▶ render
+```
+
+**Extension strategy.** One panel = one widget + one provider. Going
+from 1 Tafsir to 10 changes nothing: the Tafsir panel iterates a Tafsir
+view over the same `translationSourcesProvider` result, mirroring
+`readingSourcesProvider`. Multiple notes, additional highlight systems
+and future modules each add a panel; Reading's files are not opened.
+
+**Tafsir is the reference panel.** It was built first because it is the
+only planned feature that exercises every part of the architecture at
+once: it crosses the Reading/Study boundary (its data is excluded from
+the reading query by §6b), it is inherently multi-source (1 or 10), it
+needs source metadata for names and RTL, and it needs a repository read
+that Reading must never make. A panel that only touched user data would
+have validated far less. Copy `sections/tafsir_section.dart` to add a
+panel:
+
+```
+StudySection(id: …, builder: …)        ← one value in kStudySections
+FutureProvider.autoDispose.family(…)   ← its own loading, keyed by ayahId
+a ConsumerWidget wrapping StudyPanel   ← renders, or SizedBox.shrink()
+```
+
+**Panels own their own header.** A section that has nothing to show
+renders `SizedBox.shrink()` and disappears entirely — header included.
+The shell only positions sections; it deliberately does *not* draw
+titles, because only the panel knows (after its provider resolves)
+whether it has content. `StudyPanel` supplies the uniform title styling.
+
+**Enforced, not just documented.** `test/architecture_boundaries_test.dart`
+freezes Reading's cross-feature dependency budget and forbids importing
+any feature Study will own. Full rationale, rejected alternatives and
+the current debt list: `DR-2026-0007`.
+
 ## 7. Localization
 
 - 3 ngôn ngữ: vi (mặc định) · en · ar (RTL tự động).

@@ -11,6 +11,7 @@ import 'package:drift/native.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'package:quran_companion/core/database/app_database.dart';
+import 'package:quran_companion/core/database/database_constants.dart';
 import 'package:quran_companion/core/logging/console_logger.dart';
 import 'package:quran_companion/features/quran/data/quran_repository_impl.dart';
 
@@ -31,7 +32,14 @@ void main() {
       tearDownAll(() async => db.close());
 
       test('data_version khớp hằng số app', () async {
-        expect(await repo.getMetaValue('data_version'), '4');
+        // Sprint 31.3 — so với HẰNG SỐ, không phải chuỗi chép tay.
+        // Bản cũ ghi cứng '4' nên mỗi lần phát hành dữ liệu mới là một
+        // lần test đỏ vì lý do sai: nó vốn phải kiểm "asset và app
+        // khớp nhau", chứ không phải "asset đang ở phiên bản 4".
+        expect(
+          await repo.getMetaValue('data_version'),
+          DatabaseConstants.expectedDataVersion,
+        );
       });
 
       test('danh sách Surah: đủ 114, đúng thứ tự, đúng dữ liệu', () async {

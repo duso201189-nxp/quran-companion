@@ -32,5 +32,21 @@ abstract interface class QuranRepository {
   /// Header (tên Surah + văn bản + bản dịch) cho danh sách id Ayah
   /// bất kỳ — dùng cho Thư viện của tôi. Bỏ qua id không tồn tại;
   /// trả về theo thứ tự id tăng dần (Mushaf).
+  /// Văn bản của MỘT Ayah, giới hạn theo [types].
+  ///
+  /// Sprint 31.2 — mở rộng trừu tượng ĐÃ CÓ thay vì thêm
+  /// `TafsirRepository`: trả về đúng hình dạng `Map<mã nguồn, văn bản>`
+  /// mà `AyahContent.texts` đang dùng, nên không phát sinh kiểu dữ
+  /// liệu mới. Nơi gọi nêu rõ loại nguồn mình cần, nên RANH GIỚI ĐỌC
+  /// (Sprint 30.2) vẫn là một tham số tường minh chứ không phải quy
+  /// ước ngầm.
+  ///
+  /// Chỉ nguồn đang bật. Metadata nguồn (tên, ngôn ngữ, thứ tự) lấy từ
+  /// `getEnabledSources()` — không lặp lại ở đây.
+  Future<Map<String, String>> getAyahTexts({
+    required int ayahId,
+    required Set<SourceType> types,
+  });
+
   Future<List<AyahSearchResult>> getAyahsByIds(List<int> ids);
 }

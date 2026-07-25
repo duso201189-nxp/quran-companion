@@ -48,7 +48,7 @@ EXPECTED_AYAHS = 6236
 # v3 (Sprint 2.1b): quy tắc biên tập thống nhất — Allah viết hoa,
 #   một kiểu dấu (ʾ/ʿ), không nguyên âm dài lặp, không dấu ' thừa.
 # v4: tên 114 Surah chuẩn Quran.com (Al-Fatihah, Ya-Sin, Ar-Rahman).
-DATA_VERSION = "4"
+DATA_VERSION = "5"
 
 TANZIL_METADATA_URL = "https://tanzil.net/res/text/metadata/quran-data.xml"
 TANZIL_QURAN_URLS = [
@@ -233,6 +233,32 @@ def import_quranenc(key: str) -> dict:
 # ---------------------------------------------------------------
 TRANSLIT_DATASET = Path(__file__).parent / "data" / "transliteration.json"
 SURAH_NAMES_DATASET = Path(__file__).parent / "data" / "surah_names.json"
+DATA_DIR = Path(__file__).parent / "data"
+
+
+def load_tafsir_datasets() -> list[tuple[dict, dict]]:
+    """Đọc MỌI dataset Tafsir trong tool/data/ (tafsir_*.json).
+
+    Sprint 31.4 — trước đây chỉ đọc `files[0]`: bộ Tafsir thứ hai bị bỏ
+    qua trong IM LẶNG, không cảnh báo, không lỗi. Nay đọc tất cả.
+
+    THỨ TỰ TẤT ĐỊNH: sắp theo `slug` trong metadata (không theo thứ tự
+    hệ thống tệp trả về). Cùng bộ dữ liệu -> cùng id, cùng display_order,
+    cùng database — điều kiện để build tái lập được.
+
+    Rỗng = không có Tafsir; build vẫn chạy và ra database như trước.
+    """
+    datasets: list[tuple[dict, dict]] = []
+    for path in DATA_DIR.glob("tafsir_*.json"):
+        raw = json.loads(path.read_text(encoding="utf-8"))
+        texts: dict[tuple[int, int], str] = {}
+        for key, value in raw.get("texts", {}).items():
+            sura, _, aya = key.partition(":")
+            if sura.isdigit() and aya.isdigit() and value:
+                texts[(int(sura), int(aya))] = value
+        datasets.append((raw.get("meta", {}), texts))
+    datasets.sort(key=lambda d: str(d[0].get("slug", "")))
+    return datasets
 
 
 def load_surah_names() -> dict[int, dict] | None:
@@ -407,7 +433,21 @@ RECITERS_SEED = [
 # ---------------------------------------------------------------
 # Kiểm tra toàn vẹn TRƯỚC khi ghi file cuối
 # ---------------------------------------------------------------
-def validate(conn: sqlite3.Connection, source_codes: list[str]) -> None:
+def validate(
+    conn: sqlite3.Connection,
+    source_codes: list[str],
+    partial_codes: list[str] | None = None,
+) -> None:
+    """Kiểm tra toàn vẹn.
+
+    [partial_codes] = nguồn ĐƯỢC PHÉP phủ thiếu. Sprint 31.3 phát hiện
+    bằng dữ liệu thật: Tafsir Al-Muyassar chỉ chú giải 5.278/6.236 Ayah
+    (80 Surah có khoảng trống). Ràng buộc "mọi nguồn phải phủ đủ 6.236"
+    đúng cho BẢN DỊCH nhưng sai cho CHÚ GIẢI — chú giải theo cụm hoặc
+    bỏ qua Ayah là chuyện bình thường của thể loại này. Văn bản rỗng
+    vẫn bị cấm với MỌI nguồn: thiếu hẳn dòng khác với có dòng trống.
+    """
+    partial = set(partial_codes or [])
     cur = conn.cursor()
     errors: list[str] = []
 
@@ -444,7 +484,10 @@ def validate(conn: sqlite3.Connection, source_codes: list[str]) -> None:
                WHERE s.code = ?""",
             (code,),
         ).fetchone()[0]
-        if n != EXPECTED_AYAHS:
+        if code in partial:
+            if n == 0:
+                errors.append(f"nguồn '{code}' không có ayah nào")
+        elif n != EXPECTED_AYAHS:
             errors.append(f"nguồn '{code}' có {n}/{EXPECTED_AYAHS} ayah")
         n = cur.execute(
             """SELECT COUNT(*) FROM translations t
@@ -572,6 +615,27 @@ def main() -> None:
     ]
     texts_by_source = {1: translit, 2: vietnamese, 3: english}
 
+    # --- Tafsir (Sprint 31.3, nhiều bộ từ 31.4) ---
+    # Id và display_order cấp phát THEO THỨ TỰ đã sắp, nối tiếp sau 3
+    # nguồn cố định. Thêm bộ thứ ba = thả file JSON vào tool/data/.
+    tafsir_codes: list[str] = []
+    for offset, (tmeta, ttexts) in enumerate(load_tafsir_datasets()):
+        sid = 4 + offset
+        slug = str(tmeta.get("slug", f"unknown{offset}"))
+        tcode = f"tafsir_{slug}".replace("-", "_")
+        sources.append((
+            sid, tcode, str(tmeta.get("name") or "Tafsir"),
+            str(tmeta.get("language") or "ar")[:2].lower(),
+            str(tmeta.get("author") or ""), "tafsir", sid,
+            str(tmeta.get("license") or ""),
+            str(tmeta.get("source_url") or ""),
+            str(tmeta.get("fetched_at") or ""),
+        ))
+        texts_by_source[sid] = ttexts
+        tafsir_codes.append(tcode)
+        print(f"   Tafsir #{offset + 1}: {tcode} — "
+              f"{len(ttexts)}/{EXPECTED_AYAHS} ayah có chú giải")
+
     print("6/6 Build SQLite...")
     out = Path(args.out)
     out.parent.mkdir(parents=True, exist_ok=True)
@@ -662,8 +726,15 @@ def main() -> None:
         aid = id_of[(sura, aya)]
         fts_rows.append((aid, "arabic", text))
         fts_rows.append((aid, "arabic_plain", strip_tashkeel(text)))
+    code_by_id = {src[0]: src[1] for src in sources}
     for sid, verses in texts_by_source.items():
-        code = sources[sid - 1][1]
+        code = code_by_id[sid]
+        # Tafsir KHÔNG vào chỉ mục tìm kiếm: `searchAyahs` chỉ tìm
+        # trong kinh văn + bản dịch, chú giải dài sẽ lấn át kết quả
+        # (quyết định D9, Sprint 30.2). Đổi ý sau này = thêm cột
+        # `is_searchable` vào translation_sources, không sửa chỗ này.
+        if code in tafsir_codes:
+            continue
         folded = code in ("vi_main", "translit_latin")
         for k, v in verses.items():
             fts_rows.append((id_of[k], code, v))
@@ -687,7 +758,7 @@ def main() -> None:
     conn.executemany("INSERT INTO meta VALUES (?,?)", meta.items())
 
     conn.commit()
-    validate(conn, [s[1] for s in sources])
+    validate(conn, [s[1] for s in sources], tafsir_codes)
     conn.execute("VACUUM")
     conn.close()
 

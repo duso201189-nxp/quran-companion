@@ -286,24 +286,6 @@ abstract class AppLocalizations {
   /// **'Lớp hỗ trợ đọc'**
   String get readingLayersLabel;
 
-  /// No description provided for @showTransliteration.
-  ///
-  /// In vi, this message translates to:
-  /// **'Phiên âm Latin'**
-  String get showTransliteration;
-
-  /// No description provided for @showVietnamese.
-  ///
-  /// In vi, this message translates to:
-  /// **'Bản dịch tiếng Việt'**
-  String get showVietnamese;
-
-  /// No description provided for @showEnglish.
-  ///
-  /// In vi, this message translates to:
-  /// **'Bản dịch tiếng Anh'**
-  String get showEnglish;
-
   /// No description provided for @jumpToAyahTitle.
   ///
   /// In vi, this message translates to:
@@ -453,6 +435,24 @@ abstract class AppLocalizations {
   /// In vi, this message translates to:
   /// **'Đang phát'**
   String get nowPlaying;
+
+  /// No description provided for @studyWorkspaceTitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Nghiên cứu'**
+  String get studyWorkspaceTitle;
+
+  /// No description provided for @studyTafsirTitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Chú giải (Tafsir)'**
+  String get studyTafsirTitle;
+
+  /// No description provided for @studyOpenWorkspace.
+  ///
+  /// In vi, this message translates to:
+  /// **'Nghiên cứu Ayah'**
+  String get studyOpenWorkspace;
 
   /// No description provided for @openReadingScreen.
   ///

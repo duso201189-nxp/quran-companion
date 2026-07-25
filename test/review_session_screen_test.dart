@@ -56,6 +56,13 @@ class _FakeQuranRepo implements QuranRepository {
   };
 
   @override
+  Future<Map<String, String>> getAyahTexts({
+    required int ayahId,
+    required Set<SourceType> types,
+  }) async =>
+      const {};
+
+  @override
   Future<List<AyahSearchResult>> getAyahsByIds(List<int> ids) async => [
         for (final id in ids)
           if (byId[id] case final r?) r,

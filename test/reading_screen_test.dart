@@ -137,7 +137,34 @@ class _FakeRepo implements QuranRepository {
   Future<List<Surah>> getAllSurahs() async => [_surah];
 
   @override
-  Future<List<TranslationSource>> getEnabledSources() async => const [];
+  // Sprint 30.1 — trang đọc dựng lớp văn bản TỪ danh mục nguồn, nên
+  // fake phải cung cấp nó (trước đây trả rỗng vì không ai gọi tới).
+  Future<List<TranslationSource>> getEnabledSources() async => const [
+        TranslationSource(
+          id: 1,
+          code: 'translit_latin',
+          name: 'Phien am Latin',
+          language: 'en',
+          type: SourceType.transliteration,
+          displayOrder: 1,
+        ),
+        TranslationSource(
+          id: 2,
+          code: 'vi_main',
+          name: 'Ban dich tieng Viet',
+          language: 'vi',
+          type: SourceType.translation,
+          displayOrder: 2,
+        ),
+        TranslationSource(
+          id: 3,
+          code: 'en_sahih',
+          name: 'English',
+          language: 'en',
+          type: SourceType.translation,
+          displayOrder: 3,
+        ),
+      ];
 
   @override
   Future<List<Reciter>> getEnabledReciters() async => const [
@@ -157,6 +184,13 @@ class _FakeRepo implements QuranRepository {
     int limit = 40,
   }) async =>
       const [];
+
+  @override
+  Future<Map<String, String>> getAyahTexts({
+    required int ayahId,
+    required Set<SourceType> types,
+  }) async =>
+      const {};
 
   @override
   Future<List<AyahSearchResult>> getAyahsByIds(List<int> ids) async => const [];
@@ -264,7 +298,9 @@ void main() {
 
     await tester.tap(find.byIcon(Icons.text_fields));
     await tester.pumpAndSettle();
-    await tester.tap(find.text('Bản dịch tiếng Anh'));
+    // Sprint 30.1 — nhãn công tắc nay là TÊN NGUỒN từ dữ liệu
+    // (`translation_sources.name`), không còn là chuỗi l10n cố định.
+    await tester.tap(find.text('English'));
     await tester.pumpAndSettle();
 
     // đóng sheet
