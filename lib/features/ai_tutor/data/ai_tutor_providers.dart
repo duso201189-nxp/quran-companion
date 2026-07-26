@@ -13,20 +13,20 @@ import 'ai_tutor_repository_impl.dart';
 /// analyticsRepositoryProvider, không đổi), các FutureProvider.autoDispose
 /// gọi lại đúng 1 phương thức Repository. Chưa có UI nào watch những
 /// provider này (mục "No UI yet").
-final aiTutorRepositoryProvider = Provider<AITutorRepository>((ref) {
+final studyCoachRepositoryProvider = Provider<AITutorRepository>((ref) {
   return AITutorRepositoryImpl(ref.watch(analyticsRepositoryProvider));
 });
 
 final tutorContextProvider = FutureProvider.autoDispose<TutorContext>((ref) {
-  return ref.watch(aiTutorRepositoryProvider).getTutorContext();
+  return ref.watch(studyCoachRepositoryProvider).getTutorContext();
 });
 
 final tutorSuggestionsProvider =
     FutureProvider.autoDispose<List<TutorSuggestion>>((ref) {
-  return ref.watch(aiTutorRepositoryProvider).getSuggestions();
+  return ref.watch(studyCoachRepositoryProvider).getSuggestions();
 });
 
 final tutorInsightsProvider =
     FutureProvider.autoDispose<List<TutorInsight>>((ref) {
-  return ref.watch(aiTutorRepositoryProvider).getInsights();
+  return ref.watch(studyCoachRepositoryProvider).getInsights();
 });

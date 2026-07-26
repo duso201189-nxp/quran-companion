@@ -141,35 +141,27 @@ void main() {
             ),
           )
           .dy;
-      final modeSwitchY =
-          tester.getTopLeft(find.byType(SegmentedButton<SearchMode>)).dy;
       final scopeChipY = tester.getTopLeft(find.byType(ChoiceChip).first).dy;
       final emptyStateY = tester.getTopLeft(find.byType(SearchEmptyState)).dy;
 
-      expect(queryFieldY, lessThan(modeSwitchY));
-      expect(modeSwitchY, lessThan(scopeChipY));
+      expect(queryFieldY, lessThan(scopeChipY));
       expect(scopeChipY, lessThan(emptyStateY));
     });
   });
 
   group('Task 7.1.15 — tiêu đề khu vực được đánh dấu header', () {
-    testWidgets('Empty State: 3 tiêu đề đều là header semantics',
-        (tester) async {
+    testWidgets('Empty State: tiêu đề là header semantics', (tester) async {
       final handle = tester.ensureSemantics();
       await openSearchScreen(tester);
 
-      for (final label in [
-        'Tìm điều bạn cần trong Qur\'an',
-        'Gần đây',
-        'Gợi ý',
-      ]) {
-        final node = tester.getSemantics(find.text(label));
-        expect(
-          node.flagsCollection.isHeader,
-          isTrue,
-          reason: '"$label" phải có flag isHeader',
-        );
-      }
+      // RC-1 — chỉ còn MỘT tiêu đề. Hai tiêu đề "Gần đây"/"Gợi ý" đã
+      // bị gỡ cùng những khối xám bên dưới chúng: một heading đúng
+      // chuẩn đặt trên nội dung không tồn tại vẫn là nội dung không
+      // tồn tại — và trình đọc màn hình còn đọc nó ra thành lời hứa.
+      final node = tester.getSemantics(
+        find.text('Tìm điều bạn cần trong Qur\'an'),
+      );
+      expect(node.flagsCollection.isHeader, isTrue);
       // Phụ đề KHÔNG phải heading.
       final subtitle = tester.getSemantics(
         find.text(

@@ -14,17 +14,7 @@ import '../../quran/presentation/surah_list_controller.dart';
 import 'widgets/search_error_state.dart';
 import 'widgets/search_result_section.dart';
 
-/// Chế độ tìm kiếm — trục riêng, KHÔNG phải nguồn nội dung (xem
-/// [SearchMode.ask] vs Scope Chips ở Task 7.1.7). Chỉ 2 giá trị vì
-/// đây là Sprint 7.1 (nền tảng UI); khi Bước 7.2+ nối AI thật
-/// (`DR-2026-0002` mục 5 — AI là một provider, không thay thế công
-/// cụ tìm kiếm), state chọn chế độ nên chuyển sang provider dùng
-/// chung nếu có màn hình khác cần đọc — hiện tại chưa có, nên vẫn để
-/// state cục bộ.
-enum SearchMode { search, ask }
-
-/// Phạm vi nội dung tìm — trục HOÀN TOÀN riêng với [SearchMode] (một
-/// bên chọn "cách trả lời", một bên chọn "tìm ở đâu"; xem
+/// Phạm vi nội dung tìm — CHỌN TÌM Ở ĐÂU; xem
 /// `DR-2026-0002` mục 2 — Search domain-agnostic). Task 7.1.7: chỉ 2
 /// phạm vi có thật hôm nay (Qur'an, Ghi chú của tôi) + "Tất cả"; các
 /// domain tương lai (Tafsir, Hadith, Dua...) thêm bằng cách thêm giá
@@ -84,20 +74,15 @@ const _devPreviewResults = [
 /// cục bộ của ô nhập; chưa truy vấn, chưa hiển thị kết quả — thuộc
 /// các task sau (7.1.9 trở đi).
 ///
-/// Task 7.1.6: chuyển chế độ Tìm kiếm / Hỏi AI. "Hỏi AI" luôn khoá
-/// (disabled) + nhãn "Sắp ra mắt" — chưa có logic AI (`DR-2026-0002`
-/// mục 5, mục 6: AI phụ thuộc mạng, không phải chỗ dựa mặc định).
+/// RC-1: nút chuyển chế độ "Hỏi AI" ĐÃ BỊ GỠ. Nó luôn ở trạng thái
+/// khoá kèm nhãn "Sắp ra mắt" — một lời hứa về tính năng không nằm
+/// trong bản phát hành này (RAG là v2.0, `DR-2026-0002` mục 5).
 ///
 /// Task 7.1.7: Scope Chips — chỉ đổi trạng thái CHỌN trực quan, không
-/// lọc hay truy vấn gì. Độc lập hoàn toàn với [_mode].
+/// lọc hay truy vấn gì.
 ///
-/// Task 7.1.8: Empty State đầy đủ (tiêu đề + gợi ý cách gõ + hai khu
-/// vực "Gần đây" / "Gợi ý"). Hai khu vực đó CHƯA có dữ liệu thật —
-/// tính năng Recent Searches và Suggestions không nằm trong phạm vi
-/// Sprint 7.1 — nên chỉ vẽ khối placeholder (không chữ, không thao
-/// tác được) để giữ đúng HÌNH DẠNG bố cục cho lúc nối dữ liệu thật,
-/// tránh vẽ sẵn nội dung minh hoạ có thể bị hiểu nhầm là tính năng
-/// đã xong.
+/// Empty State: tiêu đề + gợi ý cách gõ. Hai khu "Gần đây" /
+/// "Gợi ý" đã bị gỡ ở RC-1 cùng các khối giữ chỗ bên dưới chúng.
 ///
 /// Task 7.1.9: [SearchLoadingSkeleton] — component khung xương chờ
 /// tải. Không có truy vấn thật (`DR-2026-0002` mục 4 — chưa có
@@ -139,7 +124,6 @@ class SearchScreen extends ConsumerStatefulWidget {
 
 class _SearchScreenState extends ConsumerState<SearchScreen> {
   final _queryController = TextEditingController();
-  SearchMode _mode = SearchMode.search;
   SearchScope _scope = SearchScope.all;
 
   /// [_DevPreviewState.real] = hành vi thật (theo [_queryController]);
@@ -275,31 +259,6 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Align(
-                alignment: Alignment.centerLeft,
-                child: SegmentedButton<SearchMode>(
-                  showSelectedIcon: false,
-                  segments: [
-                    ButtonSegment(
-                      value: SearchMode.search,
-                      icon: const Icon(Icons.search),
-                      label: Text(l10n.searchLabel),
-                    ),
-                    ButtonSegment(
-                      value: SearchMode.ask,
-                      enabled: false,
-                      icon: const Icon(Icons.auto_awesome_rounded),
-                      label:
-                          Text('${l10n.searchAskLabel} · ${l10n.comingSoon}'),
-                      tooltip: l10n.comingSoon,
-                    ),
-                  ],
-                  selected: {_mode},
-                  onSelectionChanged: (selection) =>
-                      setState(() => _mode = selection.first),
-                ),
-              ),
-              const SizedBox(height: 12),
               SingleChildScrollView(
                 scrollDirection: Axis.horizontal,
                 child: Row(
@@ -464,68 +423,7 @@ class SearchEmptyState extends StatelessWidget {
           textAlign: TextAlign.center,
           style: textTheme.bodyMedium?.copyWith(color: scheme.onSurfaceVariant),
         ),
-        const SizedBox(height: 28),
-        Semantics(
-          header: true,
-          child: Text(
-            l10n.searchEmptyRecentSectionTitle,
-            style:
-                textTheme.labelLarge?.copyWith(color: scheme.onSurfaceVariant),
-          ),
-        ),
-        const SizedBox(height: 8),
-        const _PlaceholderChipRow(
-          key: Key('search-empty-recent-chips'),
-          widths: [72, 96, 60],
-        ),
-        const SizedBox(height: 20),
-        Semantics(
-          header: true,
-          child: Text(
-            l10n.searchEmptySuggestedSectionTitle,
-            style:
-                textTheme.labelLarge?.copyWith(color: scheme.onSurfaceVariant),
-          ),
-        ),
-        const SizedBox(height: 8),
-        const _PlaceholderChipRow(
-          key: Key('search-empty-suggested-chips'),
-          widths: [88, 64, 100, 76],
-        ),
       ],
-    );
-  }
-}
-
-/// Hàng khối placeholder xám (bo tròn, không chữ, không thao tác) —
-/// giữ chỗ cho nội dung thật của Recent Searches / Suggestions ở
-/// sprint sau. Bọc [ExcludeSemantics] vì không mang thông tin gì cho
-/// người dùng trình đọc màn hình.
-class _PlaceholderChipRow extends StatelessWidget {
-  const _PlaceholderChipRow({super.key, required this.widths});
-
-  final List<double> widths;
-
-  @override
-  Widget build(BuildContext context) {
-    final scheme = Theme.of(context).colorScheme;
-
-    return ExcludeSemantics(
-      child: Wrap(
-        spacing: 8,
-        runSpacing: 8,
-        children: [
-          for (final width in widths)
-            Container(
-              width: width,
-              height: 32,
-              decoration: BoxDecoration(
-                color: scheme.surfaceContainerHighest,
-                borderRadius: BorderRadius.circular(999),
-              ),
-            ),
-        ],
-      ),
     );
   }
 }

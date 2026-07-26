@@ -287,33 +287,16 @@ void main() {
     });
   });
 
-  group('Task 7.1.6 — chuyển đổi Tìm kiếm / Hỏi AI', () {
-    testWidgets('hiển thị 2 chế độ, Tìm kiếm đang chọn, Hỏi AI bị khoá',
-        (tester) async {
+  // RC-1 — nút chế độ "Hỏi AI" ĐÃ BỊ GỠ. Nó là một lời hứa về
+  // tính năng không tồn tại và không nằm trong bản phát hành này
+  // (RAG là v2.0 theo ROADMAP). Test dưới đây khoá lại việc gỡ đó:
+  // đưa nhãn AI trở lại màn hình sẽ làm nó đỏ.
+  group('RC-1 — không hứa hẹn AI trên màn hình Tìm kiếm', () {
+    testWidgets('không còn nút chuyển chế độ nào', (tester) async {
       await openSearchScreen(tester);
-
-      expect(find.text('Tìm kiếm'), findsOneWidget);
-      expect(find.text('Hỏi AI · Sắp ra mắt'), findsOneWidget);
-
-      final button = tester.widget<SegmentedButton<SearchMode>>(
-        find.byType(SegmentedButton<SearchMode>),
-      );
-      expect(button.selected, {SearchMode.search});
-      final askSegment =
-          button.segments.firstWhere((s) => s.value == SearchMode.ask);
-      expect(askSegment.enabled, isFalse);
-    });
-
-    testWidgets('bấm vào Hỏi AI không đổi chế độ, không lỗi', (tester) async {
-      await openSearchScreen(tester);
-
-      await tester.tap(find.text('Hỏi AI · Sắp ra mắt'));
-      await tester.pumpAndSettle();
-
-      final button = tester.widget<SegmentedButton<SearchMode>>(
-        find.byType(SegmentedButton<SearchMode>),
-      );
-      expect(button.selected, {SearchMode.search});
+      expect(find.byType(SegmentedButton<Object>), findsNothing);
+      expect(find.textContaining('AI'), findsNothing);
+      expect(find.textContaining('Sắp ra mắt'), findsNothing);
       expect(tester.takeException(), isNull);
     });
   });
@@ -350,12 +333,6 @@ void main() {
       expect(chips[1].selected, isTrue);
       expect(chips[2].selected, isFalse);
 
-      // Search Mode hoàn toàn độc lập — đổi Scope không đụng Mode.
-      final mode = tester.widget<SegmentedButton<SearchMode>>(
-        find.byType(SegmentedButton<SearchMode>),
-      );
-      expect(mode.selected, {SearchMode.search});
-
       expect(find.byType(CircularProgressIndicator), findsNothing);
       expect(find.byType(ListView), findsNothing);
       expect(tester.takeException(), isNull);
@@ -363,7 +340,7 @@ void main() {
   });
 
   group('Task 7.1.8 — Empty State đầy đủ', () {
-    testWidgets('hiển thị tiêu đề, gợi ý gõ, và 2 khu vực placeholder',
+    testWidgets('chỉ hiển thị tiêu đề và gợi ý gõ — không nội dung giả',
         (tester) async {
       await openSearchScreen(tester);
 
@@ -374,19 +351,21 @@ void main() {
         ),
         findsOneWidget,
       );
-      expect(find.text('Gần đây'), findsOneWidget);
-      expect(find.text('Gợi ý'), findsOneWidget);
 
-      final recentChips = find.descendant(
-        of: find.byKey(const Key('search-empty-recent-chips')),
-        matching: find.byType(Container),
+      // RC-1 — hai khu 'Gần đây' / 'Gợi ý' ĐÃ BỊ GỠ. Chúng là tiêu đề
+      // thật đặt trên các khối xám không chữ, không bấm được: người
+      // dùng đọc ra 'đang tải' cho thứ không bao giờ tải xong, vì
+      // không có kho tìm kiếm gần đây và không có bộ sinh gợi ý nào.
+      expect(find.text('Gần đây'), findsNothing);
+      expect(find.text('Gợi ý'), findsNothing);
+      expect(
+        find.byKey(const Key('search-empty-recent-chips')),
+        findsNothing,
       );
-      final suggestedChips = find.descendant(
-        of: find.byKey(const Key('search-empty-suggested-chips')),
-        matching: find.byType(Container),
+      expect(
+        find.byKey(const Key('search-empty-suggested-chips')),
+        findsNothing,
       );
-      expect(recentChips, findsNWidgets(3));
-      expect(suggestedChips, findsNWidgets(4));
     });
 
     testWidgets('gõ chữ -> Empty State biến mất; xoá hết -> quay lại',
@@ -420,11 +399,6 @@ void main() {
 
     testWidgets('không đụng Mode/Scope, không lỗi', (tester) async {
       await openSearchScreen(tester);
-
-      final mode = tester.widget<SegmentedButton<SearchMode>>(
-        find.byType(SegmentedButton<SearchMode>),
-      );
-      expect(mode.selected, {SearchMode.search});
 
       final scopeChips = tester
           .widgetList<ChoiceChip>(
@@ -499,10 +473,6 @@ void main() {
       expect(find.byType(SearchLoadingSkeleton), findsNothing);
 
       // Mode/Scope vẫn không đổi — mặc định chưa bật preview nào.
-      final mode = tester.widget<SegmentedButton<SearchMode>>(
-        find.byType(SegmentedButton<SearchMode>),
-      );
-      expect(mode.selected, {SearchMode.search});
     });
   });
 
@@ -581,11 +551,6 @@ void main() {
       await pickDevPreview(tester, 'Results');
       await pickDevPreview(tester, 'Error');
       await pickDevPreview(tester, 'Loading');
-
-      final mode = tester.widget<SegmentedButton<SearchMode>>(
-        find.byType(SegmentedButton<SearchMode>),
-      );
-      expect(mode.selected, {SearchMode.search});
 
       final scopeChips = tester
           .widgetList<ChoiceChip>(

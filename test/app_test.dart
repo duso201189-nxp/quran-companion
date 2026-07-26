@@ -120,7 +120,11 @@ void main() {
 
       await tester.tap(find.text('Học').last);
       await tester.pumpAndSettle();
-      expect(find.textContaining('Flashcard'), findsOneWidget);
+      // Trắc nghiệm luôn có mặt: kho câu hỏi dựng từ nội dung Qur'an,
+      // vốn luôn đầy đủ. Flashcard thì KHÔNG — cổng tính năng (RC-1)
+      // ẩn nó khi bảng `lemmas` rỗng, đúng như bản dữ liệu hiện tại.
+      expect(find.textContaining('Trắc nghiệm'), findsOneWidget);
+      expect(find.textContaining('Flashcard'), findsNothing);
 
       await tester.tap(find.text('Thống kê').last);
       await tester.pumpAndSettle();

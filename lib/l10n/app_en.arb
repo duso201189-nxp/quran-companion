@@ -15,16 +15,8 @@
   "languageEnglish": "English",
   "languageArabic": "العربية",
   "profilePersonalInfo": "Personal information",
-  "profileGoal": "Learning goal",
+  "profileGoal": "Daily goal",
   "profileSync": "Cloud sync",
-  "comingInStep": "Coming in Step {step}",
-  "@comingInStep": {
-    "placeholders": {
-      "step": {
-        "type": "int"
-      }
-    }
-  },
   "searchSurahHint": "Search Surah by name or number...",
   "filterAll": "All",
   "revelationMecca": "Mecca",
@@ -162,7 +154,6 @@
   "studyDailyReviewDesc": "Ayahs due for review today",
   "studyProgress": "Progress",
   "studyProgressDesc": "Stats, history, and improvement tips",
-  "comingSoon": "Coming soon",
   "statsReadingDays": "Reading days",
   "statsAyahsRead": "Ayahs read",
   "statsMinutes": "Minutes studied",
@@ -174,6 +165,9 @@
   "sectionAbout": "About",
   "aboutSources": "Data sources",
   "aboutSourcesDetail": "Copyright, licence and address of every content source.",
+  "profileGoalFixed": "Fixed at 15 minutes of reading a day. Not adjustable in this build.",
+  "profileNotAvailableYet": "Not available in this build.",
+  "profileSyncNotAvailable": "Not available in this build. All your data stays on this device.",
   "versionLabel": "Version",
   "attributionTitle": "Sources & attribution",
   "attributionIntro": "The Qur'an text, transliteration, translations, commentary and recitations in this app come from the sources below. Each is the copyright of its author or publisher and is used under the licence shown with it.",
@@ -204,14 +198,11 @@
   "searchNoResults": "No results found.",
   "searchNoAyahResults": "No matching ayahs found.",
   "searchLabel": "Search",
-  "searchAskLabel": "Ask AI",
   "searchQueryHint": "Search the Qur'an...",
   "searchClearTooltip": "Clear",
   "searchScopeMyNotes": "My notes",
   "searchEmptyTitle": "Find what you're looking for",
   "searchEmptySubtitle": "Type a Surah name, an ayah reference (e.g. 2:255), or a keyword.",
-  "searchEmptyRecentSectionTitle": "Recent",
-  "searchEmptySuggestedSectionTitle": "Suggested",
   "searchLoadingLabel": "Searching...",
   "libraryTitle": "My Library",
   "libraryLoading": "Loading library…",
@@ -460,78 +451,78 @@
   },
   "achievementUnlocked": "Unlocked",
   "achievementLocked": "Locked",
-  "aiTutorTitle": "AI Tutor",
-  "studyAiTutor": "AI Tutor",
-  "studyAiTutorDesc": "Personalized suggestions based on your progress",
-  "aiTutorSummaryTitle": "Your overview",
-  "aiTutorSuggestionsTitle": "Suggestions",
-  "aiTutorInsightsTitle": "Insights",
-  "aiTutorSuggestionsEmpty": "You're all caught up — nothing needs your attention right now.",
-  "aiTutorLoading": "Loading your tutor…",
-  "aiTutorPriorityHigh": "High priority",
-  "aiTutorPriorityMedium": "Medium priority",
-  "aiTutorPriorityLow": "Low priority",
-  "aiTutorSuggestionReviewDueTitle": "Review your due cards",
-  "aiTutorSuggestionReviewDueDetail": "{count} cards waiting",
-  "@aiTutorSuggestionReviewDueDetail": {
+  "studyCoachTitle": "Study coach",
+  "studyCoachTile": "Study coach",
+  "studyCoachTileDesc": "Personalized suggestions based on your progress",
+  "studyCoachSummaryTitle": "Your overview",
+  "studyCoachSuggestionsTitle": "Suggestions",
+  "studyCoachInsightsTitle": "Insights",
+  "studyCoachSuggestionsEmpty": "You're all caught up — nothing needs your attention right now.",
+  "studyCoachLoading": "Loading your suggestions…",
+  "studyCoachPriorityHigh": "High priority",
+  "studyCoachPriorityMedium": "Medium priority",
+  "studyCoachPriorityLow": "Low priority",
+  "studyCoachSuggestionReviewDueTitle": "Review your due cards",
+  "studyCoachSuggestionReviewDueDetail": "{count} cards waiting",
+  "@studyCoachSuggestionReviewDueDetail": {
     "placeholders": {
       "count": {
         "type": "int"
       }
     }
   },
-  "aiTutorSuggestionDailyStudyTitle": "Reach your daily study goal",
-  "aiTutorSuggestionDailyStudyDetail": "{count} min left today",
-  "@aiTutorSuggestionDailyStudyDetail": {
+  "studyCoachSuggestionDailyStudyTitle": "Reach your daily study goal",
+  "studyCoachSuggestionDailyStudyDetail": "{count} min left today",
+  "@studyCoachSuggestionDailyStudyDetail": {
     "placeholders": {
       "count": {
         "type": "int"
       }
     }
   },
-  "aiTutorSuggestionDailyReviewTitle": "Reach your daily review goal",
-  "aiTutorSuggestionDailyReviewDetail": "{count} reviews left today",
-  "@aiTutorSuggestionDailyReviewDetail": {
+  "studyCoachSuggestionDailyReviewTitle": "Reach your daily review goal",
+  "studyCoachSuggestionDailyReviewDetail": "{count} reviews left today",
+  "@studyCoachSuggestionDailyReviewDetail": {
     "placeholders": {
       "count": {
         "type": "int"
       }
     }
   },
-  "aiTutorSuggestionWeakRootsTitle": "Strengthen your weak roots",
-  "aiTutorSuggestionWeakRootsDetail": "{count} roots to review",
-  "@aiTutorSuggestionWeakRootsDetail": {
+  "studyCoachSuggestionWeakRootsTitle": "Strengthen your weak roots",
+  "studyCoachSuggestionWeakRootsDetail": "{count} roots to review",
+  "@studyCoachSuggestionWeakRootsDetail": {
     "placeholders": {
       "count": {
         "type": "int"
       }
     }
   },
-  "aiTutorSuggestionForgottenTitle": "Review frequently forgotten cards",
-  "aiTutorSuggestionForgottenDetail": "{count} cards to revisit",
-  "@aiTutorSuggestionForgottenDetail": {
+  "studyCoachSuggestionForgottenTitle": "Review frequently forgotten cards",
+  "studyCoachSuggestionForgottenDetail": "{count} cards to revisit",
+  "@studyCoachSuggestionForgottenDetail": {
     "placeholders": {
       "count": {
         "type": "int"
       }
     }
   },
-  "aiTutorSuggestionStreakTitle": "Keep your streak alive",
-  "aiTutorSuggestionStreakDetail": "{count}-day streak",
-  "@aiTutorSuggestionStreakDetail": {
+  "studyCoachSuggestionStreakTitle": "Keep your streak alive",
+  "studyCoachSuggestionStreakDetail": "{count}-day streak",
+  "@studyCoachSuggestionStreakDetail": {
     "placeholders": {
       "count": {
         "type": "int"
       }
     }
   },
-  "aiTutorInsightAchievementsUnlockedLabel": "Achievements unlocked",
-  "aiTutorActionReviewNow": "Review now",
-  "aiTutorActionContinueLearning": "Continue learning",
-  "aiTutorActionOpenWeakCards": "Open weak cards",
-  "aiTutorActionOpenFlashcards": "Open flashcards",
-  "aiTutorJourneyEntryTitle": "View your Learning Journey",
-  "aiTutorJourneyEntryDesc": "See today's plan, ordered step by step",
+  "studyCoachInsightAchievementsUnlockedLabel": "Achievements unlocked",
+  "studyCoachActionReviewNow": "Review now",
+  "studyCoachActionContinueLearning": "Continue learning",
+  "studyCoachActionOpenWeakCards": "Open weak cards",
+  "studyCoachActionOpenFlashcards": "Open flashcards",
+  "studyCoachJourneyEntryTitle": "View your Learning Journey",
+  "studyCoachJourneyEntryDesc": "See today's plan, ordered step by step",
   "learningJourneyTitle": "Learning Journey",
   "journeyHeaderTitle": "Today's plan",
   "journeyStepCountLabel": "{count} steps planned",

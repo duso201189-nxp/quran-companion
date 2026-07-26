@@ -69,7 +69,7 @@ void main() {
           builder: (_, __) => const StudyScreen(),
         ),
         GoRoute(
-          path: AppRoutes.aiTutor,
+          path: AppRoutes.studyCoach,
           builder: (_, __) => const TutorHomeScreen(),
         ),
         GoRoute(
@@ -132,7 +132,7 @@ void main() {
     return tester.runAsync(() async {
       await tester.pumpWidget(wrap());
       await tester.pump();
-      await tester.tap(find.text('AI Tutor'));
+      await tester.tap(find.text('Study coach'));
       await tester.pump();
       await pumpUntilLoaded(tester);
     });
@@ -165,7 +165,7 @@ void main() {
   }
 
   testWidgets(
-      'StudyScreen -> chạm AI Tutor -> TutorHomeScreen, hiện đủ tổng '
+      'StudyScreen -> chạm Study coach -> TutorHomeScreen, hiện đủ tổng '
       'quan/gợi ý/nhận định', (tester) async {
     await pumpAndWaitForData(tester);
 

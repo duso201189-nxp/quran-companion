@@ -54,15 +54,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get profilePersonalInfo => 'Personal information';
 
   @override
-  String get profileGoal => 'Learning goal';
+  String get profileGoal => 'Daily goal';
 
   @override
   String get profileSync => 'Cloud sync';
-
-  @override
-  String comingInStep(int step) {
-    return 'Coming in Step $step';
-  }
 
   @override
   String get searchSurahHint => 'Search Surah by name or number...';
@@ -320,9 +315,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get studyProgressDesc => 'Stats, history, and improvement tips';
 
   @override
-  String get comingSoon => 'Coming soon';
-
-  @override
   String get statsReadingDays => 'Reading days';
 
   @override
@@ -355,6 +347,17 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get aboutSourcesDetail =>
       'Copyright, licence and address of every content source.';
+
+  @override
+  String get profileGoalFixed =>
+      'Fixed at 15 minutes of reading a day. Not adjustable in this build.';
+
+  @override
+  String get profileNotAvailableYet => 'Not available in this build.';
+
+  @override
+  String get profileSyncNotAvailable =>
+      'Not available in this build. All your data stays on this device.';
 
   @override
   String get versionLabel => 'Version';
@@ -450,9 +453,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get searchLabel => 'Search';
 
   @override
-  String get searchAskLabel => 'Ask AI';
-
-  @override
   String get searchQueryHint => 'Search the Qur\'an...';
 
   @override
@@ -467,12 +467,6 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get searchEmptySubtitle =>
       'Type a Surah name, an ayah reference (e.g. 2:255), or a keyword.';
-
-  @override
-  String get searchEmptyRecentSectionTitle => 'Recent';
-
-  @override
-  String get searchEmptySuggestedSectionTitle => 'Suggested';
 
   @override
   String get searchLoadingLabel => 'Searching...';
@@ -945,110 +939,112 @@ class AppLocalizationsEn extends AppLocalizations {
   String get achievementLocked => 'Locked';
 
   @override
-  String get aiTutorTitle => 'AI Tutor';
+  String get studyCoachTitle => 'Study coach';
 
   @override
-  String get studyAiTutor => 'AI Tutor';
+  String get studyCoachTile => 'Study coach';
 
   @override
-  String get studyAiTutorDesc =>
+  String get studyCoachTileDesc =>
       'Personalized suggestions based on your progress';
 
   @override
-  String get aiTutorSummaryTitle => 'Your overview';
+  String get studyCoachSummaryTitle => 'Your overview';
 
   @override
-  String get aiTutorSuggestionsTitle => 'Suggestions';
+  String get studyCoachSuggestionsTitle => 'Suggestions';
 
   @override
-  String get aiTutorInsightsTitle => 'Insights';
+  String get studyCoachInsightsTitle => 'Insights';
 
   @override
-  String get aiTutorSuggestionsEmpty =>
+  String get studyCoachSuggestionsEmpty =>
       'You\'re all caught up — nothing needs your attention right now.';
 
   @override
-  String get aiTutorLoading => 'Loading your tutor…';
+  String get studyCoachLoading => 'Loading your suggestions…';
 
   @override
-  String get aiTutorPriorityHigh => 'High priority';
+  String get studyCoachPriorityHigh => 'High priority';
 
   @override
-  String get aiTutorPriorityMedium => 'Medium priority';
+  String get studyCoachPriorityMedium => 'Medium priority';
 
   @override
-  String get aiTutorPriorityLow => 'Low priority';
+  String get studyCoachPriorityLow => 'Low priority';
 
   @override
-  String get aiTutorSuggestionReviewDueTitle => 'Review your due cards';
+  String get studyCoachSuggestionReviewDueTitle => 'Review your due cards';
 
   @override
-  String aiTutorSuggestionReviewDueDetail(int count) {
+  String studyCoachSuggestionReviewDueDetail(int count) {
     return '$count cards waiting';
   }
 
   @override
-  String get aiTutorSuggestionDailyStudyTitle => 'Reach your daily study goal';
+  String get studyCoachSuggestionDailyStudyTitle =>
+      'Reach your daily study goal';
 
   @override
-  String aiTutorSuggestionDailyStudyDetail(int count) {
+  String studyCoachSuggestionDailyStudyDetail(int count) {
     return '$count min left today';
   }
 
   @override
-  String get aiTutorSuggestionDailyReviewTitle =>
+  String get studyCoachSuggestionDailyReviewTitle =>
       'Reach your daily review goal';
 
   @override
-  String aiTutorSuggestionDailyReviewDetail(int count) {
+  String studyCoachSuggestionDailyReviewDetail(int count) {
     return '$count reviews left today';
   }
 
   @override
-  String get aiTutorSuggestionWeakRootsTitle => 'Strengthen your weak roots';
+  String get studyCoachSuggestionWeakRootsTitle => 'Strengthen your weak roots';
 
   @override
-  String aiTutorSuggestionWeakRootsDetail(int count) {
+  String studyCoachSuggestionWeakRootsDetail(int count) {
     return '$count roots to review';
   }
 
   @override
-  String get aiTutorSuggestionForgottenTitle =>
+  String get studyCoachSuggestionForgottenTitle =>
       'Review frequently forgotten cards';
 
   @override
-  String aiTutorSuggestionForgottenDetail(int count) {
+  String studyCoachSuggestionForgottenDetail(int count) {
     return '$count cards to revisit';
   }
 
   @override
-  String get aiTutorSuggestionStreakTitle => 'Keep your streak alive';
+  String get studyCoachSuggestionStreakTitle => 'Keep your streak alive';
 
   @override
-  String aiTutorSuggestionStreakDetail(int count) {
+  String studyCoachSuggestionStreakDetail(int count) {
     return '$count-day streak';
   }
 
   @override
-  String get aiTutorInsightAchievementsUnlockedLabel => 'Achievements unlocked';
+  String get studyCoachInsightAchievementsUnlockedLabel =>
+      'Achievements unlocked';
 
   @override
-  String get aiTutorActionReviewNow => 'Review now';
+  String get studyCoachActionReviewNow => 'Review now';
 
   @override
-  String get aiTutorActionContinueLearning => 'Continue learning';
+  String get studyCoachActionContinueLearning => 'Continue learning';
 
   @override
-  String get aiTutorActionOpenWeakCards => 'Open weak cards';
+  String get studyCoachActionOpenWeakCards => 'Open weak cards';
 
   @override
-  String get aiTutorActionOpenFlashcards => 'Open flashcards';
+  String get studyCoachActionOpenFlashcards => 'Open flashcards';
 
   @override
-  String get aiTutorJourneyEntryTitle => 'View your Learning Journey';
+  String get studyCoachJourneyEntryTitle => 'View your Learning Journey';
 
   @override
-  String get aiTutorJourneyEntryDesc =>
+  String get studyCoachJourneyEntryDesc =>
       'See today\'s plan, ordered step by step';
 
   @override

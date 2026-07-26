@@ -1,37 +1,47 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:quran_companion/l10n/app_localizations.dart';
 
+import '../../../app/feature_gate.dart';
 import '../../../app/router.dart';
 
 /// Màn hình Học — điểm vào chính "Bắt đầu buổi học" (Sprint 11 Phase
-/// 3, Learning Session) phía trên, bốn công cụ truy cập trực tiếp
-/// (Flashcard, Lặp lại ngắt quãng, Trắc nghiệm, Ôn tập hằng ngày) giữ
-/// nguyên bên dưới làm lối tắt — Phase 0 Revision cố ý để cả hai cùng
-/// tồn tại thay vì bỏ 4 thẻ cũ (câu hỏi sản phẩm còn mở, xem kiến
-/// trúc). Flashcard nối vào FlashcardBrowseScreen từ Sprint 13 Phase
-/// 3 — LƯU Ý: Lexicon (nhóm A) hiện CHƯA có dữ liệu Lemma thật (xem
-/// Sprint 12 Phase 3 §5), nên màn hình Duyệt/Thêm sẽ trống cho tới khi
-/// dữ liệu thật được nạp; đây là hạn chế dữ liệu, không phải lỗi UI.
-class StudyScreen extends StatelessWidget {
+/// 3, Learning Session) phía trên, các công cụ truy cập trực tiếp bên
+/// dưới làm lối tắt.
+///
+/// RC-1 — ô Flashcard đi qua [featureAvailabilityProvider]: nó CHỈ
+/// xuất hiện khi bảng `lemmas` có dữ liệu. Trước đây nó luôn hiện và
+/// luôn dẫn tới một bộ sưu tập không thể có phần tử nào (xem
+/// `feature_gate.dart`). Ẩn chứ KHÔNG hiện chip "Sắp ra mắt": chip đó
+/// lại là một lời hứa, và sprint này tồn tại để gỡ những lời hứa
+/// không có gì bảo đảm.
+class StudyScreen extends ConsumerWidget {
   const StudyScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context);
+    // Chưa biết thì chưa hiện: trong khoảnh khắc chờ dò dữ liệu, thà
+    // thiếu một ô còn hơn hiện rồi giật mất.
+    final flashcardsAvailable = ref
+            .watch(featureAvailabilityProvider(GatedFeature.flashcards))
+            .valueOrNull ??
+        false;
 
     final tools = <({
       IconData icon,
       String title,
       String subtitle,
-      VoidCallback? onTap,
+      VoidCallback onTap,
     })>[
-      (
-        icon: Icons.style_rounded,
-        title: l10n.studyFlashcards,
-        subtitle: l10n.studyFlashcardsDesc,
-        onTap: () => context.push(AppRoutes.flashcards),
-      ),
+      if (flashcardsAvailable)
+        (
+          icon: Icons.style_rounded,
+          title: l10n.studyFlashcards,
+          subtitle: l10n.studyFlashcardsDesc,
+          onTap: () => context.push(AppRoutes.flashcards),
+        ),
       (
         icon: Icons.update_rounded,
         title: l10n.studySpaced,
@@ -58,9 +68,9 @@ class StudyScreen extends StatelessWidget {
       ),
       (
         icon: Icons.auto_awesome_rounded,
-        title: l10n.studyAiTutor,
-        subtitle: l10n.studyAiTutorDesc,
-        onTap: () => context.push(AppRoutes.aiTutor),
+        title: l10n.studyCoachTile,
+        subtitle: l10n.studyCoachTileDesc,
+        onTap: () => context.push(AppRoutes.studyCoach),
       ),
     ];
 
@@ -101,7 +111,6 @@ class StudyScreen extends StatelessWidget {
                         icon: t.icon,
                         title: t.title,
                         subtitle: t.subtitle,
-                        comingSoonLabel: l10n.comingSoon,
                         onTap: t.onTap,
                       ),
                   ],
@@ -120,17 +129,18 @@ class _StudyToolCard extends StatelessWidget {
     required this.icon,
     required this.title,
     required this.subtitle,
-    required this.comingSoonLabel,
     required this.onTap,
   });
 
   final IconData icon;
   final String title;
   final String subtitle;
-  final String comingSoonLabel;
 
-  /// null = công cụ chưa nối logic thật, hiện chip "Sắp ra mắt".
-  final VoidCallback? onTap;
+  /// RC-1 — KHÔNG còn nullable. Mọi ô hiện trên màn hình đều dẫn tới
+  /// một màn hình hoạt động thật; ô nào không có dữ liệu đứng sau thì
+  /// bị ẩn hẳn bởi cổng tính năng, chứ không hiện ra kèm chip "Sắp ra
+  /// mắt" — một chip như thế lại là lời hứa không có gì bảo đảm.
+  final VoidCallback onTap;
 
   @override
   Widget build(BuildContext context) {
@@ -181,28 +191,10 @@ class _StudyToolCard extends StatelessWidget {
                   ],
                 ),
               ),
-              if (onTap == null) ...[
-                const SizedBox(width: 10),
-                Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 10,
-                    vertical: 5,
-                  ),
-                  decoration: BoxDecoration(
-                    color: scheme.secondaryContainer,
-                    borderRadius: BorderRadius.circular(999),
-                  ),
-                  child: Text(
-                    comingSoonLabel,
-                    style: textTheme.labelSmall
-                        ?.copyWith(color: scheme.onSecondaryContainer),
-                  ),
-                ),
-              ] else
-                Icon(
-                  Icons.chevron_right_rounded,
-                  color: scheme.onSurfaceVariant,
-                ),
+              Icon(
+                Icons.chevron_right_rounded,
+                color: scheme.onSurfaceVariant,
+              ),
             ],
           ),
         ),

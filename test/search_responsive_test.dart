@@ -29,12 +29,10 @@ void main() {
         expect(tester.takeException(), isNull);
       });
 
-      testWidgets(
-          '${entry.key}: Mode Switch + Scope Chips dựng được, '
-          'không lỗi', (tester) async {
+      testWidgets('${entry.key}: Scope Chips dựng được, không lỗi',
+          (tester) async {
         await openSearchScreen(tester, viewSize: Size(entry.value, 800));
 
-        expect(find.byType(SegmentedButton<SearchMode>), findsOneWidget);
         expect(find.byType(ChoiceChip), findsWidgets);
         expect(tester.takeException(), isNull);
       });

@@ -94,7 +94,7 @@ void main() {
   ProviderContainer makeContainer(List<TutorSuggestion> suggestions) {
     return ProviderContainer(
       overrides: [
-        aiTutorRepositoryProvider
+        studyCoachRepositoryProvider
             .overrideWithValue(_FakeAITutorRepository(suggestions)),
       ],
     );
@@ -103,7 +103,7 @@ void main() {
   tearDown(() => container.dispose());
 
   test(
-      'learningJourneyRepositoryProvider ghép ĐÚNG aiTutorRepositoryProvider '
+      'learningJourneyRepositoryProvider ghép ĐÚNG studyCoachRepositoryProvider '
       'đã override, không tạo repository riêng', () async {
     container = makeContainer(const []);
 
@@ -146,7 +146,7 @@ void main() {
       ),
     ]);
     container = ProviderContainer(
-      overrides: [aiTutorRepositoryProvider.overrideWithValue(fake)],
+      overrides: [studyCoachRepositoryProvider.overrideWithValue(fake)],
     );
 
     // Mô phỏng TutorHomeScreen đang mounted bên dưới — 1 subscription

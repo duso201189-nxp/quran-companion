@@ -193,7 +193,7 @@ abstract class AppLocalizations {
   /// No description provided for @profileGoal.
   ///
   /// In vi, this message translates to:
-  /// **'Mục tiêu học'**
+  /// **'Mục tiêu hằng ngày'**
   String get profileGoal;
 
   /// No description provided for @profileSync.
@@ -201,12 +201,6 @@ abstract class AppLocalizations {
   /// In vi, this message translates to:
   /// **'Đồng bộ đám mây'**
   String get profileSync;
-
-  /// No description provided for @comingInStep.
-  ///
-  /// In vi, this message translates to:
-  /// **'Sẽ xây dựng ở Bước {step}'**
-  String comingInStep(int step);
 
   /// No description provided for @searchSurahHint.
   ///
@@ -682,12 +676,6 @@ abstract class AppLocalizations {
   /// **'Số liệu, lịch sử và gợi ý cải thiện'**
   String get studyProgressDesc;
 
-  /// No description provided for @comingSoon.
-  ///
-  /// In vi, this message translates to:
-  /// **'Sắp ra mắt'**
-  String get comingSoon;
-
   /// No description provided for @statsReadingDays.
   ///
   /// In vi, this message translates to:
@@ -753,6 +741,24 @@ abstract class AppLocalizations {
   /// In vi, this message translates to:
   /// **'Bản quyền, giấy phép và địa chỉ của mọi nguồn nội dung.'**
   String get aboutSourcesDetail;
+
+  /// No description provided for @profileGoalFixed.
+  ///
+  /// In vi, this message translates to:
+  /// **'Cố định 15 phút đọc mỗi ngày. Chưa đổi được trong bản này.'**
+  String get profileGoalFixed;
+
+  /// No description provided for @profileNotAvailableYet.
+  ///
+  /// In vi, this message translates to:
+  /// **'Chưa có trong bản này.'**
+  String get profileNotAvailableYet;
+
+  /// No description provided for @profileSyncNotAvailable.
+  ///
+  /// In vi, this message translates to:
+  /// **'Chưa có trong bản này. Mọi dữ liệu của bạn chỉ nằm trên máy này.'**
+  String get profileSyncNotAvailable;
 
   /// No description provided for @versionLabel.
   ///
@@ -934,12 +940,6 @@ abstract class AppLocalizations {
   /// **'Tìm kiếm'**
   String get searchLabel;
 
-  /// No description provided for @searchAskLabel.
-  ///
-  /// In vi, this message translates to:
-  /// **'Hỏi AI'**
-  String get searchAskLabel;
-
   /// No description provided for @searchQueryHint.
   ///
   /// In vi, this message translates to:
@@ -969,18 +969,6 @@ abstract class AppLocalizations {
   /// In vi, this message translates to:
   /// **'Nhập tên Surah, số Ayah (ví dụ 2:255), hoặc một từ khoá.'**
   String get searchEmptySubtitle;
-
-  /// No description provided for @searchEmptyRecentSectionTitle.
-  ///
-  /// In vi, this message translates to:
-  /// **'Gần đây'**
-  String get searchEmptyRecentSectionTitle;
-
-  /// No description provided for @searchEmptySuggestedSectionTitle.
-  ///
-  /// In vi, this message translates to:
-  /// **'Gợi ý'**
-  String get searchEmptySuggestedSectionTitle;
 
   /// No description provided for @searchLoadingLabel.
   ///
@@ -1840,185 +1828,185 @@ abstract class AppLocalizations {
   /// **'Chưa mở khoá'**
   String get achievementLocked;
 
-  /// No description provided for @aiTutorTitle.
+  /// No description provided for @studyCoachTitle.
   ///
   /// In vi, this message translates to:
-  /// **'Gia sư AI'**
-  String get aiTutorTitle;
+  /// **'Gợi ý học tập'**
+  String get studyCoachTitle;
 
-  /// No description provided for @studyAiTutor.
+  /// No description provided for @studyCoachTile.
   ///
   /// In vi, this message translates to:
-  /// **'Gia sư AI'**
-  String get studyAiTutor;
+  /// **'Gợi ý học tập'**
+  String get studyCoachTile;
 
-  /// No description provided for @studyAiTutorDesc.
+  /// No description provided for @studyCoachTileDesc.
   ///
   /// In vi, this message translates to:
   /// **'Gợi ý riêng dựa trên tiến độ học tập của bạn'**
-  String get studyAiTutorDesc;
+  String get studyCoachTileDesc;
 
-  /// No description provided for @aiTutorSummaryTitle.
+  /// No description provided for @studyCoachSummaryTitle.
   ///
   /// In vi, this message translates to:
   /// **'Tổng quan của bạn'**
-  String get aiTutorSummaryTitle;
+  String get studyCoachSummaryTitle;
 
-  /// No description provided for @aiTutorSuggestionsTitle.
+  /// No description provided for @studyCoachSuggestionsTitle.
   ///
   /// In vi, this message translates to:
   /// **'Gợi ý'**
-  String get aiTutorSuggestionsTitle;
+  String get studyCoachSuggestionsTitle;
 
-  /// No description provided for @aiTutorInsightsTitle.
+  /// No description provided for @studyCoachInsightsTitle.
   ///
   /// In vi, this message translates to:
   /// **'Nhận định'**
-  String get aiTutorInsightsTitle;
+  String get studyCoachInsightsTitle;
 
-  /// No description provided for @aiTutorSuggestionsEmpty.
+  /// No description provided for @studyCoachSuggestionsEmpty.
   ///
   /// In vi, this message translates to:
   /// **'Bạn đã theo kịp mọi thứ — hiện chưa có gì cần chú ý.'**
-  String get aiTutorSuggestionsEmpty;
+  String get studyCoachSuggestionsEmpty;
 
-  /// No description provided for @aiTutorLoading.
+  /// No description provided for @studyCoachLoading.
   ///
   /// In vi, this message translates to:
-  /// **'Đang tải gia sư của bạn…'**
-  String get aiTutorLoading;
+  /// **'Đang tải gợi ý…'**
+  String get studyCoachLoading;
 
-  /// No description provided for @aiTutorPriorityHigh.
+  /// No description provided for @studyCoachPriorityHigh.
   ///
   /// In vi, this message translates to:
   /// **'Ưu tiên cao'**
-  String get aiTutorPriorityHigh;
+  String get studyCoachPriorityHigh;
 
-  /// No description provided for @aiTutorPriorityMedium.
+  /// No description provided for @studyCoachPriorityMedium.
   ///
   /// In vi, this message translates to:
   /// **'Ưu tiên trung bình'**
-  String get aiTutorPriorityMedium;
+  String get studyCoachPriorityMedium;
 
-  /// No description provided for @aiTutorPriorityLow.
+  /// No description provided for @studyCoachPriorityLow.
   ///
   /// In vi, this message translates to:
   /// **'Ưu tiên thấp'**
-  String get aiTutorPriorityLow;
+  String get studyCoachPriorityLow;
 
-  /// No description provided for @aiTutorSuggestionReviewDueTitle.
+  /// No description provided for @studyCoachSuggestionReviewDueTitle.
   ///
   /// In vi, this message translates to:
   /// **'Ôn các thẻ đến hạn'**
-  String get aiTutorSuggestionReviewDueTitle;
+  String get studyCoachSuggestionReviewDueTitle;
 
-  /// No description provided for @aiTutorSuggestionReviewDueDetail.
+  /// No description provided for @studyCoachSuggestionReviewDueDetail.
   ///
   /// In vi, this message translates to:
   /// **'{count} thẻ đang chờ'**
-  String aiTutorSuggestionReviewDueDetail(int count);
+  String studyCoachSuggestionReviewDueDetail(int count);
 
-  /// No description provided for @aiTutorSuggestionDailyStudyTitle.
+  /// No description provided for @studyCoachSuggestionDailyStudyTitle.
   ///
   /// In vi, this message translates to:
   /// **'Hoàn thành mục tiêu học hôm nay'**
-  String get aiTutorSuggestionDailyStudyTitle;
+  String get studyCoachSuggestionDailyStudyTitle;
 
-  /// No description provided for @aiTutorSuggestionDailyStudyDetail.
+  /// No description provided for @studyCoachSuggestionDailyStudyDetail.
   ///
   /// In vi, this message translates to:
   /// **'Còn {count} phút hôm nay'**
-  String aiTutorSuggestionDailyStudyDetail(int count);
+  String studyCoachSuggestionDailyStudyDetail(int count);
 
-  /// No description provided for @aiTutorSuggestionDailyReviewTitle.
+  /// No description provided for @studyCoachSuggestionDailyReviewTitle.
   ///
   /// In vi, this message translates to:
   /// **'Hoàn thành mục tiêu ôn hôm nay'**
-  String get aiTutorSuggestionDailyReviewTitle;
+  String get studyCoachSuggestionDailyReviewTitle;
 
-  /// No description provided for @aiTutorSuggestionDailyReviewDetail.
+  /// No description provided for @studyCoachSuggestionDailyReviewDetail.
   ///
   /// In vi, this message translates to:
   /// **'Còn {count} lượt ôn hôm nay'**
-  String aiTutorSuggestionDailyReviewDetail(int count);
+  String studyCoachSuggestionDailyReviewDetail(int count);
 
-  /// No description provided for @aiTutorSuggestionWeakRootsTitle.
+  /// No description provided for @studyCoachSuggestionWeakRootsTitle.
   ///
   /// In vi, this message translates to:
   /// **'Củng cố gốc từ yếu'**
-  String get aiTutorSuggestionWeakRootsTitle;
+  String get studyCoachSuggestionWeakRootsTitle;
 
-  /// No description provided for @aiTutorSuggestionWeakRootsDetail.
+  /// No description provided for @studyCoachSuggestionWeakRootsDetail.
   ///
   /// In vi, this message translates to:
   /// **'{count} gốc từ cần ôn'**
-  String aiTutorSuggestionWeakRootsDetail(int count);
+  String studyCoachSuggestionWeakRootsDetail(int count);
 
-  /// No description provided for @aiTutorSuggestionForgottenTitle.
+  /// No description provided for @studyCoachSuggestionForgottenTitle.
   ///
   /// In vi, this message translates to:
   /// **'Ôn lại các thẻ hay quên'**
-  String get aiTutorSuggestionForgottenTitle;
+  String get studyCoachSuggestionForgottenTitle;
 
-  /// No description provided for @aiTutorSuggestionForgottenDetail.
+  /// No description provided for @studyCoachSuggestionForgottenDetail.
   ///
   /// In vi, this message translates to:
   /// **'{count} thẻ cần xem lại'**
-  String aiTutorSuggestionForgottenDetail(int count);
+  String studyCoachSuggestionForgottenDetail(int count);
 
-  /// No description provided for @aiTutorSuggestionStreakTitle.
+  /// No description provided for @studyCoachSuggestionStreakTitle.
   ///
   /// In vi, this message translates to:
   /// **'Giữ chuỗi ngày đọc'**
-  String get aiTutorSuggestionStreakTitle;
+  String get studyCoachSuggestionStreakTitle;
 
-  /// No description provided for @aiTutorSuggestionStreakDetail.
+  /// No description provided for @studyCoachSuggestionStreakDetail.
   ///
   /// In vi, this message translates to:
   /// **'Chuỗi {count} ngày'**
-  String aiTutorSuggestionStreakDetail(int count);
+  String studyCoachSuggestionStreakDetail(int count);
 
-  /// No description provided for @aiTutorInsightAchievementsUnlockedLabel.
+  /// No description provided for @studyCoachInsightAchievementsUnlockedLabel.
   ///
   /// In vi, this message translates to:
   /// **'Thành tựu đã mở khoá'**
-  String get aiTutorInsightAchievementsUnlockedLabel;
+  String get studyCoachInsightAchievementsUnlockedLabel;
 
-  /// No description provided for @aiTutorActionReviewNow.
+  /// No description provided for @studyCoachActionReviewNow.
   ///
   /// In vi, this message translates to:
   /// **'Ôn ngay'**
-  String get aiTutorActionReviewNow;
+  String get studyCoachActionReviewNow;
 
-  /// No description provided for @aiTutorActionContinueLearning.
+  /// No description provided for @studyCoachActionContinueLearning.
   ///
   /// In vi, this message translates to:
   /// **'Tiếp tục học'**
-  String get aiTutorActionContinueLearning;
+  String get studyCoachActionContinueLearning;
 
-  /// No description provided for @aiTutorActionOpenWeakCards.
+  /// No description provided for @studyCoachActionOpenWeakCards.
   ///
   /// In vi, this message translates to:
   /// **'Mở thẻ yếu'**
-  String get aiTutorActionOpenWeakCards;
+  String get studyCoachActionOpenWeakCards;
 
-  /// No description provided for @aiTutorActionOpenFlashcards.
+  /// No description provided for @studyCoachActionOpenFlashcards.
   ///
   /// In vi, this message translates to:
   /// **'Mở Flashcard'**
-  String get aiTutorActionOpenFlashcards;
+  String get studyCoachActionOpenFlashcards;
 
-  /// No description provided for @aiTutorJourneyEntryTitle.
+  /// No description provided for @studyCoachJourneyEntryTitle.
   ///
   /// In vi, this message translates to:
   /// **'Xem Hành trình học tập'**
-  String get aiTutorJourneyEntryTitle;
+  String get studyCoachJourneyEntryTitle;
 
-  /// No description provided for @aiTutorJourneyEntryDesc.
+  /// No description provided for @studyCoachJourneyEntryDesc.
   ///
   /// In vi, this message translates to:
   /// **'Xem kế hoạch hôm nay, từng bước theo thứ tự'**
-  String get aiTutorJourneyEntryDesc;
+  String get studyCoachJourneyEntryDesc;
 
   /// No description provided for @learningJourneyTitle.
   ///

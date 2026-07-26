@@ -54,15 +54,10 @@ class AppLocalizationsAr extends AppLocalizations {
   String get profilePersonalInfo => 'المعلومات الشخصية';
 
   @override
-  String get profileGoal => 'هدف التعلم';
+  String get profileGoal => 'الهدف اليومي';
 
   @override
   String get profileSync => 'المزامنة السحابية';
-
-  @override
-  String comingInStep(int step) {
-    return 'سيتم بناؤه في الخطوة $step';
-  }
 
   @override
   String get searchSurahHint => 'ابحث عن سورة بالاسم أو الرقم...';
@@ -317,9 +312,6 @@ class AppLocalizationsAr extends AppLocalizations {
   String get studyProgressDesc => 'إحصاءات وسجل ونصائح للتحسين';
 
   @override
-  String get comingSoon => 'قريباً';
-
-  @override
   String get statsReadingDays => 'أيام القراءة';
 
   @override
@@ -352,6 +344,17 @@ class AppLocalizationsAr extends AppLocalizations {
   @override
   String get aboutSourcesDetail =>
       'حقوق النشر والترخيص وعنوان كل مصدر من مصادر المحتوى.';
+
+  @override
+  String get profileGoalFixed =>
+      'ثابت عند ١٥ دقيقة قراءة يوميًا. غير قابل للتعديل في هذا الإصدار.';
+
+  @override
+  String get profileNotAvailableYet => 'غير متوفر في هذا الإصدار.';
+
+  @override
+  String get profileSyncNotAvailable =>
+      'غير متوفر في هذا الإصدار. تبقى جميع بياناتك على هذا الجهاز.';
 
   @override
   String get versionLabel => 'الإصدار';
@@ -446,9 +449,6 @@ class AppLocalizationsAr extends AppLocalizations {
   String get searchLabel => 'بحث';
 
   @override
-  String get searchAskLabel => 'اسأل الذكاء الاصطناعي';
-
-  @override
   String get searchQueryHint => 'ابحث في القرآن...';
 
   @override
@@ -463,12 +463,6 @@ class AppLocalizationsAr extends AppLocalizations {
   @override
   String get searchEmptySubtitle =>
       'اكتب اسم سورة، رقم آية (مثل 2:255)، أو كلمة مفتاحية.';
-
-  @override
-  String get searchEmptyRecentSectionTitle => 'الأخيرة';
-
-  @override
-  String get searchEmptySuggestedSectionTitle => 'مقترح';
 
   @override
   String get searchLoadingLabel => 'جارٍ البحث...';
@@ -940,108 +934,108 @@ class AppLocalizationsAr extends AppLocalizations {
   String get achievementLocked => 'مقفل';
 
   @override
-  String get aiTutorTitle => 'المعلم الذكي';
+  String get studyCoachTitle => 'مرشد الدراسة';
 
   @override
-  String get studyAiTutor => 'المعلم الذكي';
+  String get studyCoachTile => 'مرشد الدراسة';
 
   @override
-  String get studyAiTutorDesc => 'اقتراحات مخصّصة بناءً على تقدّمك';
+  String get studyCoachTileDesc => 'اقتراحات مخصّصة بناءً على تقدّمك';
 
   @override
-  String get aiTutorSummaryTitle => 'نظرتك العامة';
+  String get studyCoachSummaryTitle => 'نظرتك العامة';
 
   @override
-  String get aiTutorSuggestionsTitle => 'اقتراحات';
+  String get studyCoachSuggestionsTitle => 'اقتراحات';
 
   @override
-  String get aiTutorInsightsTitle => 'ملاحظات';
+  String get studyCoachInsightsTitle => 'ملاحظات';
 
   @override
-  String get aiTutorSuggestionsEmpty =>
+  String get studyCoachSuggestionsEmpty =>
       'أنت متابع لكل شيء — لا يوجد ما يستدعي انتباهك الآن.';
 
   @override
-  String get aiTutorLoading => 'جارٍ تحميل معلمك…';
+  String get studyCoachLoading => 'جارٍ تحميل الاقتراحات…';
 
   @override
-  String get aiTutorPriorityHigh => 'أولوية عالية';
+  String get studyCoachPriorityHigh => 'أولوية عالية';
 
   @override
-  String get aiTutorPriorityMedium => 'أولوية متوسطة';
+  String get studyCoachPriorityMedium => 'أولوية متوسطة';
 
   @override
-  String get aiTutorPriorityLow => 'أولوية منخفضة';
+  String get studyCoachPriorityLow => 'أولوية منخفضة';
 
   @override
-  String get aiTutorSuggestionReviewDueTitle => 'راجع بطاقاتك المستحقة';
+  String get studyCoachSuggestionReviewDueTitle => 'راجع بطاقاتك المستحقة';
 
   @override
-  String aiTutorSuggestionReviewDueDetail(int count) {
+  String studyCoachSuggestionReviewDueDetail(int count) {
     return '$count بطاقة بانتظارك';
   }
 
   @override
-  String get aiTutorSuggestionDailyStudyTitle => 'أكمل هدف الدراسة اليومي';
+  String get studyCoachSuggestionDailyStudyTitle => 'أكمل هدف الدراسة اليومي';
 
   @override
-  String aiTutorSuggestionDailyStudyDetail(int count) {
+  String studyCoachSuggestionDailyStudyDetail(int count) {
     return 'تبقّى $count دقيقة اليوم';
   }
 
   @override
-  String get aiTutorSuggestionDailyReviewTitle => 'أكمل هدف المراجعة اليومي';
+  String get studyCoachSuggestionDailyReviewTitle => 'أكمل هدف المراجعة اليومي';
 
   @override
-  String aiTutorSuggestionDailyReviewDetail(int count) {
+  String studyCoachSuggestionDailyReviewDetail(int count) {
     return 'تبقّى $count مراجعة اليوم';
   }
 
   @override
-  String get aiTutorSuggestionWeakRootsTitle => 'قوِّ جذورك الضعيفة';
+  String get studyCoachSuggestionWeakRootsTitle => 'قوِّ جذورك الضعيفة';
 
   @override
-  String aiTutorSuggestionWeakRootsDetail(int count) {
+  String studyCoachSuggestionWeakRootsDetail(int count) {
     return '$count جذر للمراجعة';
   }
 
   @override
-  String get aiTutorSuggestionForgottenTitle =>
+  String get studyCoachSuggestionForgottenTitle =>
       'راجع البطاقات التي تُنسى كثيرًا';
 
   @override
-  String aiTutorSuggestionForgottenDetail(int count) {
+  String studyCoachSuggestionForgottenDetail(int count) {
     return '$count بطاقة للمراجعة';
   }
 
   @override
-  String get aiTutorSuggestionStreakTitle => 'حافظ على سلسلتك';
+  String get studyCoachSuggestionStreakTitle => 'حافظ على سلسلتك';
 
   @override
-  String aiTutorSuggestionStreakDetail(int count) {
+  String studyCoachSuggestionStreakDetail(int count) {
     return 'سلسلة $count يوم';
   }
 
   @override
-  String get aiTutorInsightAchievementsUnlockedLabel => 'الإنجازات المفتوحة';
+  String get studyCoachInsightAchievementsUnlockedLabel => 'الإنجازات المفتوحة';
 
   @override
-  String get aiTutorActionReviewNow => 'راجع الآن';
+  String get studyCoachActionReviewNow => 'راجع الآن';
 
   @override
-  String get aiTutorActionContinueLearning => 'متابعة التعلّم';
+  String get studyCoachActionContinueLearning => 'متابعة التعلّم';
 
   @override
-  String get aiTutorActionOpenWeakCards => 'فتح البطاقات الضعيفة';
+  String get studyCoachActionOpenWeakCards => 'فتح البطاقات الضعيفة';
 
   @override
-  String get aiTutorActionOpenFlashcards => 'فتح البطاقات التعليمية';
+  String get studyCoachActionOpenFlashcards => 'فتح البطاقات التعليمية';
 
   @override
-  String get aiTutorJourneyEntryTitle => 'عرض رحلة التعلم الخاصة بك';
+  String get studyCoachJourneyEntryTitle => 'عرض رحلة التعلم الخاصة بك';
 
   @override
-  String get aiTutorJourneyEntryDesc => 'اطّلع على خطة اليوم، خطوة بخطوة';
+  String get studyCoachJourneyEntryDesc => 'اطّلع على خطة اليوم، خطوة بخطوة';
 
   @override
   String get learningJourneyTitle => 'رحلة التعلم';

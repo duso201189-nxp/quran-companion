@@ -15,16 +15,8 @@
   "languageEnglish": "English",
   "languageArabic": "العربية",
   "profilePersonalInfo": "Thông tin cá nhân",
-  "profileGoal": "Mục tiêu học",
+  "profileGoal": "Mục tiêu hằng ngày",
   "profileSync": "Đồng bộ đám mây",
-  "comingInStep": "Sẽ xây dựng ở Bước {step}",
-  "@comingInStep": {
-    "placeholders": {
-      "step": {
-        "type": "int"
-      }
-    }
-  },
   "searchSurahHint": "Tìm Surah theo tên hoặc số...",
   "filterAll": "Tất cả",
   "revelationMecca": "Mecca",
@@ -162,7 +154,6 @@
   "studyDailyReviewDesc": "Danh sách Ayah cần ôn hôm nay",
   "studyProgress": "Tiến độ học tập",
   "studyProgressDesc": "Số liệu, lịch sử và gợi ý cải thiện",
-  "comingSoon": "Sắp ra mắt",
   "statsReadingDays": "Ngày đọc",
   "statsAyahsRead": "Ayah đã đọc",
   "statsMinutes": "Phút học",
@@ -174,6 +165,9 @@
   "sectionAbout": "Giới thiệu",
   "aboutSources": "Nguồn dữ liệu",
   "aboutSourcesDetail": "Bản quyền, giấy phép và địa chỉ của mọi nguồn nội dung.",
+  "profileGoalFixed": "Cố định 15 phút đọc mỗi ngày. Chưa đổi được trong bản này.",
+  "profileNotAvailableYet": "Chưa có trong bản này.",
+  "profileSyncNotAvailable": "Chưa có trong bản này. Mọi dữ liệu của bạn chỉ nằm trên máy này.",
   "versionLabel": "Phiên bản",
   "attributionTitle": "Nguồn & Ghi nguồn",
   "attributionIntro": "Văn bản Qur'an, phiên âm, bản dịch, chú giải và bản thu trong ứng dụng đến từ các nguồn dưới đây. Mỗi nguồn thuộc bản quyền của tác giả hoặc nhà phát hành tương ứng và được sử dụng theo giấy phép ghi kèm.",
@@ -204,14 +198,11 @@
   "searchNoResults": "Không tìm thấy kết quả nào.",
   "searchNoAyahResults": "Không tìm thấy Ayah nào phù hợp.",
   "searchLabel": "Tìm kiếm",
-  "searchAskLabel": "Hỏi AI",
   "searchQueryHint": "Tìm kiếm trong Qur'an...",
   "searchClearTooltip": "Xoá",
   "searchScopeMyNotes": "Ghi chú của tôi",
   "searchEmptyTitle": "Tìm điều bạn cần trong Qur'an",
   "searchEmptySubtitle": "Nhập tên Surah, số Ayah (ví dụ 2:255), hoặc một từ khoá.",
-  "searchEmptyRecentSectionTitle": "Gần đây",
-  "searchEmptySuggestedSectionTitle": "Gợi ý",
   "searchLoadingLabel": "Đang tìm kiếm...",
   "libraryTitle": "Thư viện của tôi",
   "libraryLoading": "Đang tải thư viện…",
@@ -460,78 +451,78 @@
   },
   "achievementUnlocked": "Đã mở khoá",
   "achievementLocked": "Chưa mở khoá",
-  "aiTutorTitle": "Gia sư AI",
-  "studyAiTutor": "Gia sư AI",
-  "studyAiTutorDesc": "Gợi ý riêng dựa trên tiến độ học tập của bạn",
-  "aiTutorSummaryTitle": "Tổng quan của bạn",
-  "aiTutorSuggestionsTitle": "Gợi ý",
-  "aiTutorInsightsTitle": "Nhận định",
-  "aiTutorSuggestionsEmpty": "Bạn đã theo kịp mọi thứ — hiện chưa có gì cần chú ý.",
-  "aiTutorLoading": "Đang tải gia sư của bạn…",
-  "aiTutorPriorityHigh": "Ưu tiên cao",
-  "aiTutorPriorityMedium": "Ưu tiên trung bình",
-  "aiTutorPriorityLow": "Ưu tiên thấp",
-  "aiTutorSuggestionReviewDueTitle": "Ôn các thẻ đến hạn",
-  "aiTutorSuggestionReviewDueDetail": "{count} thẻ đang chờ",
-  "@aiTutorSuggestionReviewDueDetail": {
+  "studyCoachTitle": "Gợi ý học tập",
+  "studyCoachTile": "Gợi ý học tập",
+  "studyCoachTileDesc": "Gợi ý riêng dựa trên tiến độ học tập của bạn",
+  "studyCoachSummaryTitle": "Tổng quan của bạn",
+  "studyCoachSuggestionsTitle": "Gợi ý",
+  "studyCoachInsightsTitle": "Nhận định",
+  "studyCoachSuggestionsEmpty": "Bạn đã theo kịp mọi thứ — hiện chưa có gì cần chú ý.",
+  "studyCoachLoading": "Đang tải gợi ý…",
+  "studyCoachPriorityHigh": "Ưu tiên cao",
+  "studyCoachPriorityMedium": "Ưu tiên trung bình",
+  "studyCoachPriorityLow": "Ưu tiên thấp",
+  "studyCoachSuggestionReviewDueTitle": "Ôn các thẻ đến hạn",
+  "studyCoachSuggestionReviewDueDetail": "{count} thẻ đang chờ",
+  "@studyCoachSuggestionReviewDueDetail": {
     "placeholders": {
       "count": {
         "type": "int"
       }
     }
   },
-  "aiTutorSuggestionDailyStudyTitle": "Hoàn thành mục tiêu học hôm nay",
-  "aiTutorSuggestionDailyStudyDetail": "Còn {count} phút hôm nay",
-  "@aiTutorSuggestionDailyStudyDetail": {
+  "studyCoachSuggestionDailyStudyTitle": "Hoàn thành mục tiêu học hôm nay",
+  "studyCoachSuggestionDailyStudyDetail": "Còn {count} phút hôm nay",
+  "@studyCoachSuggestionDailyStudyDetail": {
     "placeholders": {
       "count": {
         "type": "int"
       }
     }
   },
-  "aiTutorSuggestionDailyReviewTitle": "Hoàn thành mục tiêu ôn hôm nay",
-  "aiTutorSuggestionDailyReviewDetail": "Còn {count} lượt ôn hôm nay",
-  "@aiTutorSuggestionDailyReviewDetail": {
+  "studyCoachSuggestionDailyReviewTitle": "Hoàn thành mục tiêu ôn hôm nay",
+  "studyCoachSuggestionDailyReviewDetail": "Còn {count} lượt ôn hôm nay",
+  "@studyCoachSuggestionDailyReviewDetail": {
     "placeholders": {
       "count": {
         "type": "int"
       }
     }
   },
-  "aiTutorSuggestionWeakRootsTitle": "Củng cố gốc từ yếu",
-  "aiTutorSuggestionWeakRootsDetail": "{count} gốc từ cần ôn",
-  "@aiTutorSuggestionWeakRootsDetail": {
+  "studyCoachSuggestionWeakRootsTitle": "Củng cố gốc từ yếu",
+  "studyCoachSuggestionWeakRootsDetail": "{count} gốc từ cần ôn",
+  "@studyCoachSuggestionWeakRootsDetail": {
     "placeholders": {
       "count": {
         "type": "int"
       }
     }
   },
-  "aiTutorSuggestionForgottenTitle": "Ôn lại các thẻ hay quên",
-  "aiTutorSuggestionForgottenDetail": "{count} thẻ cần xem lại",
-  "@aiTutorSuggestionForgottenDetail": {
+  "studyCoachSuggestionForgottenTitle": "Ôn lại các thẻ hay quên",
+  "studyCoachSuggestionForgottenDetail": "{count} thẻ cần xem lại",
+  "@studyCoachSuggestionForgottenDetail": {
     "placeholders": {
       "count": {
         "type": "int"
       }
     }
   },
-  "aiTutorSuggestionStreakTitle": "Giữ chuỗi ngày đọc",
-  "aiTutorSuggestionStreakDetail": "Chuỗi {count} ngày",
-  "@aiTutorSuggestionStreakDetail": {
+  "studyCoachSuggestionStreakTitle": "Giữ chuỗi ngày đọc",
+  "studyCoachSuggestionStreakDetail": "Chuỗi {count} ngày",
+  "@studyCoachSuggestionStreakDetail": {
     "placeholders": {
       "count": {
         "type": "int"
       }
     }
   },
-  "aiTutorInsightAchievementsUnlockedLabel": "Thành tựu đã mở khoá",
-  "aiTutorActionReviewNow": "Ôn ngay",
-  "aiTutorActionContinueLearning": "Tiếp tục học",
-  "aiTutorActionOpenWeakCards": "Mở thẻ yếu",
-  "aiTutorActionOpenFlashcards": "Mở Flashcard",
-  "aiTutorJourneyEntryTitle": "Xem Hành trình học tập",
-  "aiTutorJourneyEntryDesc": "Xem kế hoạch hôm nay, từng bước theo thứ tự",
+  "studyCoachInsightAchievementsUnlockedLabel": "Thành tựu đã mở khoá",
+  "studyCoachActionReviewNow": "Ôn ngay",
+  "studyCoachActionContinueLearning": "Tiếp tục học",
+  "studyCoachActionOpenWeakCards": "Mở thẻ yếu",
+  "studyCoachActionOpenFlashcards": "Mở Flashcard",
+  "studyCoachJourneyEntryTitle": "Xem Hành trình học tập",
+  "studyCoachJourneyEntryDesc": "Xem kế hoạch hôm nay, từng bước theo thứ tự",
   "learningJourneyTitle": "Hành trình học tập",
   "journeyHeaderTitle": "Kế hoạch hôm nay",
   "journeyStepCountLabel": "{count} bước đã lên kế hoạch",

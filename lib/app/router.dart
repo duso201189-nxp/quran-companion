@@ -104,20 +104,30 @@ abstract final class AppRoutes {
   /// full-screen từ tab Học, cùng mẫu [flashcards]/[revisionQueue].
   static const String progressDashboard = '/progress-dashboard';
 
-  /// AI Tutor (Sprint 15 Phase 2) — push full-screen từ tab Học, cùng
-  /// mẫu [progressDashboard]. Chỉ trình bày, không AI/mạng thật (xem
-  /// AITutorRepositoryImpl, Sprint 15 Phase 1).
-  static const String aiTutor = '/ai-tutor';
+  /// Gợi ý học tập (Sprint 15 Phase 2) — push full-screen từ tab Học,
+  /// cùng mẫu [progressDashboard].
+  ///
+  /// ĐƯỜNG DẪN ĐỔI Ở RC-1 từ `/ai-tutor` sang `/study-coach`. Màn hình
+  /// này KHÔNG có mô hình và KHÔNG suy luận: mọi gợi ý đến từ ngưỡng
+  /// thuần trên số liệu Analytics (xem `AITutorRepositoryImpl`, vốn tự
+  /// ghi rõ điều đó trong doc comment của nó). Đổi được vì app chưa
+  /// phát hành, nên chưa có deep link nào ngoài đời trỏ vào đường cũ.
+  ///
+  /// Tên thư mục `features/ai_tutor/` và các lớp `AITutor*` GIỮ NGUYÊN
+  /// — đó là định danh nội bộ, không phải chữ người dùng đọc, và đổi
+  /// chúng là một lần sửa cơ học xuyên 34 file mà không đổi một pixel
+  /// nào trên màn hình.
+  static const String studyCoach = '/study-coach';
 
-  /// Learning Journey (Sprint 16 Phase 2) — push từ [aiTutor] (lối
+  /// Learning Journey (Sprint 16 Phase 2) — push từ [studyCoach] (lối
   /// vào duy nhất ở phase này, xem TutorHomeScreen._JourneyEntryCard),
-  /// cùng mẫu [progressDashboard]/[aiTutor].
+  /// cùng mẫu [progressDashboard]/[studyCoach].
   static const String learningJourney = '/learning-journey';
 
   /// Smart Learning (Sprint 17 Phase 2) — push từ [learningJourney]
   /// (lối vào duy nhất ở phase này, xem
   /// LearningJourneyScreen._SmartLearningEntryCard), cùng mẫu
-  /// [progressDashboard]/[aiTutor]/[learningJourney].
+  /// [progressDashboard]/[studyCoach]/[learningJourney].
   static const String smartLearning = '/smart-learning';
 
   /// Trang đọc trong tab Qur'an (giữ thanh điều hướng): /quran/surah/2
@@ -273,7 +283,7 @@ final routerProvider = Provider<GoRouter>((ref) {
       ),
 
       GoRoute(
-        path: AppRoutes.aiTutor,
+        path: AppRoutes.studyCoach,
         builder: (context, state) => const TutorHomeScreen(),
       ),
 

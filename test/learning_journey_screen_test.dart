@@ -50,7 +50,7 @@ void main() {
       routes: [
         GoRoute(path: AppRoutes.study, builder: (_, __) => const StudyScreen()),
         GoRoute(
-          path: AppRoutes.aiTutor,
+          path: AppRoutes.studyCoach,
           builder: (_, __) => const TutorHomeScreen(),
         ),
         GoRoute(
@@ -83,14 +83,14 @@ void main() {
     }
   }
 
-  /// StudyScreen -> AI Tutor -> chạm thẻ lối vào Learning Journey —
+  /// StudyScreen -> Study coach -> chạm thẻ lối vào Learning Journey —
   /// đúng đường dẫn điều hướng THẬT của người dùng (Sprint 16 Phase 2
   /// mục 5), không nhảy thẳng route để bỏ qua bước tích hợp cần kiểm.
   Future<void> pumpAndNavigateToJourney(WidgetTester tester) {
     return tester.runAsync(() async {
       await tester.pumpWidget(wrap());
       await tester.pump();
-      await tester.tap(find.text('AI Tutor'));
+      await tester.tap(find.text('Study coach'));
       await tester.pump();
       await pumpUntilLoaded(tester);
       await tester.tap(find.text('View your Learning Journey'));
@@ -110,7 +110,7 @@ void main() {
       );
 
   testWidgets(
-      'AI Tutor -> chạm "View your Learning Journey" -> LearningJourneyScreen, '
+      'Study coach -> chạm "View your Learning Journey" -> LearningJourneyScreen, '
       'trạng thái rỗng khi chưa học/đọc gì', (tester) async {
     await pumpAndNavigateToJourney(tester);
 

@@ -26,33 +26,33 @@ import '../domain/entities/tutor_suggestion.dart';
   return switch (suggestion.kind) {
     TutorSuggestionKind.reviewDueCards => (
         icon: Icons.today_rounded,
-        title: l10n.aiTutorSuggestionReviewDueTitle,
-        detail: l10n.aiTutorSuggestionReviewDueDetail(count),
+        title: l10n.studyCoachSuggestionReviewDueTitle,
+        detail: l10n.studyCoachSuggestionReviewDueDetail(count),
       ),
     TutorSuggestionKind.completeDailyStudyGoal => (
         icon: Icons.menu_book_rounded,
-        title: l10n.aiTutorSuggestionDailyStudyTitle,
-        detail: l10n.aiTutorSuggestionDailyStudyDetail(count),
+        title: l10n.studyCoachSuggestionDailyStudyTitle,
+        detail: l10n.studyCoachSuggestionDailyStudyDetail(count),
       ),
     TutorSuggestionKind.completeDailyReviewGoal => (
         icon: Icons.style_rounded,
-        title: l10n.aiTutorSuggestionDailyReviewTitle,
-        detail: l10n.aiTutorSuggestionDailyReviewDetail(count),
+        title: l10n.studyCoachSuggestionDailyReviewTitle,
+        detail: l10n.studyCoachSuggestionDailyReviewDetail(count),
       ),
     TutorSuggestionKind.strengthenWeakRoots => (
         icon: Icons.psychology_rounded,
-        title: l10n.aiTutorSuggestionWeakRootsTitle,
-        detail: l10n.aiTutorSuggestionWeakRootsDetail(count),
+        title: l10n.studyCoachSuggestionWeakRootsTitle,
+        detail: l10n.studyCoachSuggestionWeakRootsDetail(count),
       ),
     TutorSuggestionKind.reviewFrequentlyForgotten => (
         icon: Icons.replay_rounded,
-        title: l10n.aiTutorSuggestionForgottenTitle,
-        detail: l10n.aiTutorSuggestionForgottenDetail(count),
+        title: l10n.studyCoachSuggestionForgottenTitle,
+        detail: l10n.studyCoachSuggestionForgottenDetail(count),
       ),
     TutorSuggestionKind.maintainStreak => (
         icon: Icons.local_fire_department_rounded,
-        title: l10n.aiTutorSuggestionStreakTitle,
-        detail: l10n.aiTutorSuggestionStreakDetail(count),
+        title: l10n.studyCoachSuggestionStreakTitle,
+        detail: l10n.studyCoachSuggestionStreakDetail(count),
       ),
   };
 }
@@ -62,9 +62,9 @@ String suggestionPriorityLabel(
   TutorSuggestionPriority p,
 ) {
   return switch (p) {
-    TutorSuggestionPriority.high => l10n.aiTutorPriorityHigh,
-    TutorSuggestionPriority.medium => l10n.aiTutorPriorityMedium,
-    TutorSuggestionPriority.low => l10n.aiTutorPriorityLow,
+    TutorSuggestionPriority.high => l10n.studyCoachPriorityHigh,
+    TutorSuggestionPriority.medium => l10n.studyCoachPriorityMedium,
+    TutorSuggestionPriority.low => l10n.studyCoachPriorityLow,
   };
 }
 
@@ -74,11 +74,11 @@ String suggestionPriorityLabel(
 /// tập), không phải trùng lặp.
 String suggestionActionLabel(AppLocalizations l10n, TutorActionDestination d) {
   return switch (d) {
-    TutorActionDestination.reviewSession => l10n.aiTutorActionReviewNow,
-    TutorActionDestination.flashcards => l10n.aiTutorActionOpenFlashcards,
-    TutorActionDestination.weakCards => l10n.aiTutorActionOpenWeakCards,
+    TutorActionDestination.reviewSession => l10n.studyCoachActionReviewNow,
+    TutorActionDestination.flashcards => l10n.studyCoachActionOpenFlashcards,
+    TutorActionDestination.weakCards => l10n.studyCoachActionOpenWeakCards,
     TutorActionDestination.learningSession =>
-      l10n.aiTutorActionContinueLearning,
+      l10n.studyCoachActionContinueLearning,
   };
 }
 
@@ -104,7 +104,7 @@ String suggestionActionLabel(AppLocalizations l10n, TutorActionDestination d) {
       ),
     TutorInsightKind.achievementsUnlockedSummary => (
         icon: Icons.emoji_events_rounded,
-        label: l10n.aiTutorInsightAchievementsUnlockedLabel,
+        label: l10n.studyCoachInsightAchievementsUnlockedLabel,
         value: '${insight.value.round()}',
       ),
   };

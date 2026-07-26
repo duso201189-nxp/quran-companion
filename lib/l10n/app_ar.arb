@@ -15,16 +15,8 @@
   "languageEnglish": "English",
   "languageArabic": "العربية",
   "profilePersonalInfo": "المعلومات الشخصية",
-  "profileGoal": "هدف التعلم",
+  "profileGoal": "الهدف اليومي",
   "profileSync": "المزامنة السحابية",
-  "comingInStep": "سيتم بناؤه في الخطوة {step}",
-  "@comingInStep": {
-    "placeholders": {
-      "step": {
-        "type": "int"
-      }
-    }
-  },
   "searchSurahHint": "ابحث عن سورة بالاسم أو الرقم...",
   "filterAll": "الكل",
   "revelationMecca": "مكية",
@@ -162,7 +154,6 @@
   "studyDailyReviewDesc": "آيات مستحقة للمراجعة اليوم",
   "studyProgress": "التقدم",
   "studyProgressDesc": "إحصاءات وسجل ونصائح للتحسين",
-  "comingSoon": "قريباً",
   "statsReadingDays": "أيام القراءة",
   "statsAyahsRead": "الآيات المقروءة",
   "statsMinutes": "دقائق الدراسة",
@@ -174,6 +165,9 @@
   "sectionAbout": "حول",
   "aboutSources": "مصادر البيانات",
   "aboutSourcesDetail": "حقوق النشر والترخيص وعنوان كل مصدر من مصادر المحتوى.",
+  "profileGoalFixed": "ثابت عند ١٥ دقيقة قراءة يوميًا. غير قابل للتعديل في هذا الإصدار.",
+  "profileNotAvailableYet": "غير متوفر في هذا الإصدار.",
+  "profileSyncNotAvailable": "غير متوفر في هذا الإصدار. تبقى جميع بياناتك على هذا الجهاز.",
   "versionLabel": "الإصدار",
   "attributionTitle": "المصادر والإسناد",
   "attributionIntro": "النص القرآني والنقحرة والترجمات والتفسير والتلاوات في هذا التطبيق مأخوذة من المصادر أدناه. كل مصدر محفوظ الحقوق لمؤلفه أو ناشره ويُستخدم وفق الترخيص المذكور معه.",
@@ -204,14 +198,11 @@
   "searchNoResults": "لا توجد نتائج.",
   "searchNoAyahResults": "لا توجد آيات مطابقة.",
   "searchLabel": "بحث",
-  "searchAskLabel": "اسأل الذكاء الاصطناعي",
   "searchQueryHint": "ابحث في القرآن...",
   "searchClearTooltip": "مسح",
   "searchScopeMyNotes": "ملاحظاتي",
   "searchEmptyTitle": "ابحث عمّا تريده في القرآن",
   "searchEmptySubtitle": "اكتب اسم سورة، رقم آية (مثل 2:255)، أو كلمة مفتاحية.",
-  "searchEmptyRecentSectionTitle": "الأخيرة",
-  "searchEmptySuggestedSectionTitle": "مقترح",
   "searchLoadingLabel": "جارٍ البحث...",
   "libraryTitle": "مكتبتي",
   "libraryLoading": "جارٍ تحميل المكتبة…",
@@ -460,78 +451,78 @@
   },
   "achievementUnlocked": "مفتوح",
   "achievementLocked": "مقفل",
-  "aiTutorTitle": "المعلم الذكي",
-  "studyAiTutor": "المعلم الذكي",
-  "studyAiTutorDesc": "اقتراحات مخصّصة بناءً على تقدّمك",
-  "aiTutorSummaryTitle": "نظرتك العامة",
-  "aiTutorSuggestionsTitle": "اقتراحات",
-  "aiTutorInsightsTitle": "ملاحظات",
-  "aiTutorSuggestionsEmpty": "أنت متابع لكل شيء — لا يوجد ما يستدعي انتباهك الآن.",
-  "aiTutorLoading": "جارٍ تحميل معلمك…",
-  "aiTutorPriorityHigh": "أولوية عالية",
-  "aiTutorPriorityMedium": "أولوية متوسطة",
-  "aiTutorPriorityLow": "أولوية منخفضة",
-  "aiTutorSuggestionReviewDueTitle": "راجع بطاقاتك المستحقة",
-  "aiTutorSuggestionReviewDueDetail": "{count} بطاقة بانتظارك",
-  "@aiTutorSuggestionReviewDueDetail": {
+  "studyCoachTitle": "مرشد الدراسة",
+  "studyCoachTile": "مرشد الدراسة",
+  "studyCoachTileDesc": "اقتراحات مخصّصة بناءً على تقدّمك",
+  "studyCoachSummaryTitle": "نظرتك العامة",
+  "studyCoachSuggestionsTitle": "اقتراحات",
+  "studyCoachInsightsTitle": "ملاحظات",
+  "studyCoachSuggestionsEmpty": "أنت متابع لكل شيء — لا يوجد ما يستدعي انتباهك الآن.",
+  "studyCoachLoading": "جارٍ تحميل الاقتراحات…",
+  "studyCoachPriorityHigh": "أولوية عالية",
+  "studyCoachPriorityMedium": "أولوية متوسطة",
+  "studyCoachPriorityLow": "أولوية منخفضة",
+  "studyCoachSuggestionReviewDueTitle": "راجع بطاقاتك المستحقة",
+  "studyCoachSuggestionReviewDueDetail": "{count} بطاقة بانتظارك",
+  "@studyCoachSuggestionReviewDueDetail": {
     "placeholders": {
       "count": {
         "type": "int"
       }
     }
   },
-  "aiTutorSuggestionDailyStudyTitle": "أكمل هدف الدراسة اليومي",
-  "aiTutorSuggestionDailyStudyDetail": "تبقّى {count} دقيقة اليوم",
-  "@aiTutorSuggestionDailyStudyDetail": {
+  "studyCoachSuggestionDailyStudyTitle": "أكمل هدف الدراسة اليومي",
+  "studyCoachSuggestionDailyStudyDetail": "تبقّى {count} دقيقة اليوم",
+  "@studyCoachSuggestionDailyStudyDetail": {
     "placeholders": {
       "count": {
         "type": "int"
       }
     }
   },
-  "aiTutorSuggestionDailyReviewTitle": "أكمل هدف المراجعة اليومي",
-  "aiTutorSuggestionDailyReviewDetail": "تبقّى {count} مراجعة اليوم",
-  "@aiTutorSuggestionDailyReviewDetail": {
+  "studyCoachSuggestionDailyReviewTitle": "أكمل هدف المراجعة اليومي",
+  "studyCoachSuggestionDailyReviewDetail": "تبقّى {count} مراجعة اليوم",
+  "@studyCoachSuggestionDailyReviewDetail": {
     "placeholders": {
       "count": {
         "type": "int"
       }
     }
   },
-  "aiTutorSuggestionWeakRootsTitle": "قوِّ جذورك الضعيفة",
-  "aiTutorSuggestionWeakRootsDetail": "{count} جذر للمراجعة",
-  "@aiTutorSuggestionWeakRootsDetail": {
+  "studyCoachSuggestionWeakRootsTitle": "قوِّ جذورك الضعيفة",
+  "studyCoachSuggestionWeakRootsDetail": "{count} جذر للمراجعة",
+  "@studyCoachSuggestionWeakRootsDetail": {
     "placeholders": {
       "count": {
         "type": "int"
       }
     }
   },
-  "aiTutorSuggestionForgottenTitle": "راجع البطاقات التي تُنسى كثيرًا",
-  "aiTutorSuggestionForgottenDetail": "{count} بطاقة للمراجعة",
-  "@aiTutorSuggestionForgottenDetail": {
+  "studyCoachSuggestionForgottenTitle": "راجع البطاقات التي تُنسى كثيرًا",
+  "studyCoachSuggestionForgottenDetail": "{count} بطاقة للمراجعة",
+  "@studyCoachSuggestionForgottenDetail": {
     "placeholders": {
       "count": {
         "type": "int"
       }
     }
   },
-  "aiTutorSuggestionStreakTitle": "حافظ على سلسلتك",
-  "aiTutorSuggestionStreakDetail": "سلسلة {count} يوم",
-  "@aiTutorSuggestionStreakDetail": {
+  "studyCoachSuggestionStreakTitle": "حافظ على سلسلتك",
+  "studyCoachSuggestionStreakDetail": "سلسلة {count} يوم",
+  "@studyCoachSuggestionStreakDetail": {
     "placeholders": {
       "count": {
         "type": "int"
       }
     }
   },
-  "aiTutorInsightAchievementsUnlockedLabel": "الإنجازات المفتوحة",
-  "aiTutorActionReviewNow": "راجع الآن",
-  "aiTutorActionContinueLearning": "متابعة التعلّم",
-  "aiTutorActionOpenWeakCards": "فتح البطاقات الضعيفة",
-  "aiTutorActionOpenFlashcards": "فتح البطاقات التعليمية",
-  "aiTutorJourneyEntryTitle": "عرض رحلة التعلم الخاصة بك",
-  "aiTutorJourneyEntryDesc": "اطّلع على خطة اليوم، خطوة بخطوة",
+  "studyCoachInsightAchievementsUnlockedLabel": "الإنجازات المفتوحة",
+  "studyCoachActionReviewNow": "راجع الآن",
+  "studyCoachActionContinueLearning": "متابعة التعلّم",
+  "studyCoachActionOpenWeakCards": "فتح البطاقات الضعيفة",
+  "studyCoachActionOpenFlashcards": "فتح البطاقات التعليمية",
+  "studyCoachJourneyEntryTitle": "عرض رحلة التعلم الخاصة بك",
+  "studyCoachJourneyEntryDesc": "اطّلع على خطة اليوم، خطوة بخطوة",
   "learningJourneyTitle": "رحلة التعلم",
   "journeyHeaderTitle": "خطة اليوم",
   "journeyStepCountLabel": "{count} خطوة مخطَّطة",

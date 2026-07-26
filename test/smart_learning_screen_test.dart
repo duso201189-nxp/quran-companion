@@ -50,7 +50,7 @@ void main() {
       routes: [
         GoRoute(path: AppRoutes.study, builder: (_, __) => const StudyScreen()),
         GoRoute(
-          path: AppRoutes.aiTutor,
+          path: AppRoutes.studyCoach,
           builder: (_, __) => const TutorHomeScreen(),
         ),
         GoRoute(
@@ -87,7 +87,7 @@ void main() {
     }
   }
 
-  /// StudyScreen -> AI Tutor -> Learning Journey -> chạm thẻ lối vào
+  /// StudyScreen -> Study coach -> Learning Journey -> chạm thẻ lối vào
   /// Smart Learning — đúng đường dẫn điều hướng THẬT (Sprint 17 Phase
   /// 2 mục 5), không nhảy thẳng route để bỏ qua bước tích hợp cần
   /// kiểm.
@@ -95,7 +95,7 @@ void main() {
     return tester.runAsync(() async {
       await tester.pumpWidget(wrap());
       await tester.pump();
-      await tester.tap(find.text('AI Tutor'));
+      await tester.tap(find.text('Study coach'));
       await tester.pump();
       await pumpUntilLoaded(tester);
       await tester.tap(find.text('View your Learning Journey'));

@@ -54,15 +54,10 @@ class AppLocalizationsVi extends AppLocalizations {
   String get profilePersonalInfo => 'Thông tin cá nhân';
 
   @override
-  String get profileGoal => 'Mục tiêu học';
+  String get profileGoal => 'Mục tiêu hằng ngày';
 
   @override
   String get profileSync => 'Đồng bộ đám mây';
-
-  @override
-  String comingInStep(int step) {
-    return 'Sẽ xây dựng ở Bước $step';
-  }
 
   @override
   String get searchSurahHint => 'Tìm Surah theo tên hoặc số...';
@@ -318,9 +313,6 @@ class AppLocalizationsVi extends AppLocalizations {
   String get studyProgressDesc => 'Số liệu, lịch sử và gợi ý cải thiện';
 
   @override
-  String get comingSoon => 'Sắp ra mắt';
-
-  @override
   String get statsReadingDays => 'Ngày đọc';
 
   @override
@@ -353,6 +345,17 @@ class AppLocalizationsVi extends AppLocalizations {
   @override
   String get aboutSourcesDetail =>
       'Bản quyền, giấy phép và địa chỉ của mọi nguồn nội dung.';
+
+  @override
+  String get profileGoalFixed =>
+      'Cố định 15 phút đọc mỗi ngày. Chưa đổi được trong bản này.';
+
+  @override
+  String get profileNotAvailableYet => 'Chưa có trong bản này.';
+
+  @override
+  String get profileSyncNotAvailable =>
+      'Chưa có trong bản này. Mọi dữ liệu của bạn chỉ nằm trên máy này.';
 
   @override
   String get versionLabel => 'Phiên bản';
@@ -447,9 +450,6 @@ class AppLocalizationsVi extends AppLocalizations {
   String get searchLabel => 'Tìm kiếm';
 
   @override
-  String get searchAskLabel => 'Hỏi AI';
-
-  @override
   String get searchQueryHint => 'Tìm kiếm trong Qur\'an...';
 
   @override
@@ -464,12 +464,6 @@ class AppLocalizationsVi extends AppLocalizations {
   @override
   String get searchEmptySubtitle =>
       'Nhập tên Surah, số Ayah (ví dụ 2:255), hoặc một từ khoá.';
-
-  @override
-  String get searchEmptyRecentSectionTitle => 'Gần đây';
-
-  @override
-  String get searchEmptySuggestedSectionTitle => 'Gợi ý';
 
   @override
   String get searchLoadingLabel => 'Đang tìm kiếm...';
@@ -941,109 +935,111 @@ class AppLocalizationsVi extends AppLocalizations {
   String get achievementLocked => 'Chưa mở khoá';
 
   @override
-  String get aiTutorTitle => 'Gia sư AI';
+  String get studyCoachTitle => 'Gợi ý học tập';
 
   @override
-  String get studyAiTutor => 'Gia sư AI';
+  String get studyCoachTile => 'Gợi ý học tập';
 
   @override
-  String get studyAiTutorDesc => 'Gợi ý riêng dựa trên tiến độ học tập của bạn';
+  String get studyCoachTileDesc =>
+      'Gợi ý riêng dựa trên tiến độ học tập của bạn';
 
   @override
-  String get aiTutorSummaryTitle => 'Tổng quan của bạn';
+  String get studyCoachSummaryTitle => 'Tổng quan của bạn';
 
   @override
-  String get aiTutorSuggestionsTitle => 'Gợi ý';
+  String get studyCoachSuggestionsTitle => 'Gợi ý';
 
   @override
-  String get aiTutorInsightsTitle => 'Nhận định';
+  String get studyCoachInsightsTitle => 'Nhận định';
 
   @override
-  String get aiTutorSuggestionsEmpty =>
+  String get studyCoachSuggestionsEmpty =>
       'Bạn đã theo kịp mọi thứ — hiện chưa có gì cần chú ý.';
 
   @override
-  String get aiTutorLoading => 'Đang tải gia sư của bạn…';
+  String get studyCoachLoading => 'Đang tải gợi ý…';
 
   @override
-  String get aiTutorPriorityHigh => 'Ưu tiên cao';
+  String get studyCoachPriorityHigh => 'Ưu tiên cao';
 
   @override
-  String get aiTutorPriorityMedium => 'Ưu tiên trung bình';
+  String get studyCoachPriorityMedium => 'Ưu tiên trung bình';
 
   @override
-  String get aiTutorPriorityLow => 'Ưu tiên thấp';
+  String get studyCoachPriorityLow => 'Ưu tiên thấp';
 
   @override
-  String get aiTutorSuggestionReviewDueTitle => 'Ôn các thẻ đến hạn';
+  String get studyCoachSuggestionReviewDueTitle => 'Ôn các thẻ đến hạn';
 
   @override
-  String aiTutorSuggestionReviewDueDetail(int count) {
+  String studyCoachSuggestionReviewDueDetail(int count) {
     return '$count thẻ đang chờ';
   }
 
   @override
-  String get aiTutorSuggestionDailyStudyTitle =>
+  String get studyCoachSuggestionDailyStudyTitle =>
       'Hoàn thành mục tiêu học hôm nay';
 
   @override
-  String aiTutorSuggestionDailyStudyDetail(int count) {
+  String studyCoachSuggestionDailyStudyDetail(int count) {
     return 'Còn $count phút hôm nay';
   }
 
   @override
-  String get aiTutorSuggestionDailyReviewTitle =>
+  String get studyCoachSuggestionDailyReviewTitle =>
       'Hoàn thành mục tiêu ôn hôm nay';
 
   @override
-  String aiTutorSuggestionDailyReviewDetail(int count) {
+  String studyCoachSuggestionDailyReviewDetail(int count) {
     return 'Còn $count lượt ôn hôm nay';
   }
 
   @override
-  String get aiTutorSuggestionWeakRootsTitle => 'Củng cố gốc từ yếu';
+  String get studyCoachSuggestionWeakRootsTitle => 'Củng cố gốc từ yếu';
 
   @override
-  String aiTutorSuggestionWeakRootsDetail(int count) {
+  String studyCoachSuggestionWeakRootsDetail(int count) {
     return '$count gốc từ cần ôn';
   }
 
   @override
-  String get aiTutorSuggestionForgottenTitle => 'Ôn lại các thẻ hay quên';
+  String get studyCoachSuggestionForgottenTitle => 'Ôn lại các thẻ hay quên';
 
   @override
-  String aiTutorSuggestionForgottenDetail(int count) {
+  String studyCoachSuggestionForgottenDetail(int count) {
     return '$count thẻ cần xem lại';
   }
 
   @override
-  String get aiTutorSuggestionStreakTitle => 'Giữ chuỗi ngày đọc';
+  String get studyCoachSuggestionStreakTitle => 'Giữ chuỗi ngày đọc';
 
   @override
-  String aiTutorSuggestionStreakDetail(int count) {
+  String studyCoachSuggestionStreakDetail(int count) {
     return 'Chuỗi $count ngày';
   }
 
   @override
-  String get aiTutorInsightAchievementsUnlockedLabel => 'Thành tựu đã mở khoá';
+  String get studyCoachInsightAchievementsUnlockedLabel =>
+      'Thành tựu đã mở khoá';
 
   @override
-  String get aiTutorActionReviewNow => 'Ôn ngay';
+  String get studyCoachActionReviewNow => 'Ôn ngay';
 
   @override
-  String get aiTutorActionContinueLearning => 'Tiếp tục học';
+  String get studyCoachActionContinueLearning => 'Tiếp tục học';
 
   @override
-  String get aiTutorActionOpenWeakCards => 'Mở thẻ yếu';
+  String get studyCoachActionOpenWeakCards => 'Mở thẻ yếu';
 
   @override
-  String get aiTutorActionOpenFlashcards => 'Mở Flashcard';
+  String get studyCoachActionOpenFlashcards => 'Mở Flashcard';
 
   @override
-  String get aiTutorJourneyEntryTitle => 'Xem Hành trình học tập';
+  String get studyCoachJourneyEntryTitle => 'Xem Hành trình học tập';
 
   @override
-  String get aiTutorJourneyEntryDesc =>
+  String get studyCoachJourneyEntryDesc =>
       'Xem kế hoạch hôm nay, từng bước theo thứ tự';
 
   @override

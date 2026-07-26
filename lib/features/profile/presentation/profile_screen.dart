@@ -17,7 +17,8 @@ final packageInfoProvider = FutureProvider<PackageInfo>(
 /// Màn hình Hồ sơ.
 ///
 /// Hiện có: đổi giao diện (Sáng/Hệ thống/Tối) và ngôn ngữ (vi/en/ar).
-/// Hồ sơ cá nhân, mục tiêu học, đồng bộ: Bước 8, 10, 11.
+/// Hồ sơ cá nhân và đồng bộ đám mây chưa có trong bản này; mục
+/// tiêu hằng ngày đã chạy nhưng cố định, chưa đặt được.
 class ProfileScreen extends ConsumerWidget {
   const ProfileScreen({super.key});
 
@@ -97,22 +98,29 @@ class ProfileScreen extends ConsumerWidget {
             onTap: () => context.push(AppRoutes.library),
           ),
           const Divider(height: 32),
-          ListTile(
-            leading: const Icon(Icons.person_outline),
-            title: Text(l10n.profilePersonalInfo),
-            subtitle: Text(l10n.comingInStep(10)),
-            enabled: false,
-          ),
+          // RC-1 — ba ô này trước đây ghi "Sẽ xây dựng ở Bước 10 / 8 /
+          // 11". "Bước N" là từ vựng NỘI BỘ của ROADMAP.md, vô nghĩa
+          // với người dùng, và ô giữa còn sai: mục tiêu hằng ngày ĐÃ
+          // tồn tại và đang chạy — chỉ là cố định, không đặt được.
+          //
+          // Giờ mỗi ô nói đúng trạng thái hôm nay. Hai ô chưa có thì
+          // nói thẳng là chưa có, không hẹn phiên bản nào.
           ListTile(
             leading: const Icon(Icons.flag_outlined),
             title: Text(l10n.profileGoal),
-            subtitle: Text(l10n.comingInStep(8)),
+            subtitle: Text(l10n.profileGoalFixed),
+            enabled: false,
+          ),
+          ListTile(
+            leading: const Icon(Icons.person_outline),
+            title: Text(l10n.profilePersonalInfo),
+            subtitle: Text(l10n.profileNotAvailableYet),
             enabled: false,
           ),
           ListTile(
             leading: const Icon(Icons.cloud_sync_outlined),
             title: Text(l10n.profileSync),
-            subtitle: Text(l10n.comingInStep(11)),
+            subtitle: Text(l10n.profileSyncNotAvailable),
             enabled: false,
           ),
           const Divider(height: 32),

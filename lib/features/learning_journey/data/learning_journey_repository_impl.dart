@@ -24,10 +24,10 @@ import '../domain/learning_journey_repository.dart';
 /// thuần) là toàn bộ "thông minh" ở phase này, đúng "Rule-based only.
 /// No AI model."
 class LearningJourneyRepositoryImpl implements LearningJourneyRepository {
-  LearningJourneyRepositoryImpl(this._aiTutor, {DateTime Function()? now})
+  LearningJourneyRepositoryImpl(this._studyCoach, {DateTime Function()? now})
       : _now = now ?? DateTime.now;
 
-  final AITutorRepository _aiTutor;
+  final AITutorRepository _studyCoach;
 
   /// Tiêm được để test có kết quả xác định — cùng mẫu now/newId/nowMs
   /// đã dùng ở mọi repository impl khác trong dự án.
@@ -35,15 +35,15 @@ class LearningJourneyRepositoryImpl implements LearningJourneyRepository {
 
   @override
   Future<DailyLearningPlan> getDailyPlan() async {
-    final suggestions = await _aiTutor.getSuggestions();
+    final suggestions = await _studyCoach.getSuggestions();
     return computeDailyLearningPlan(suggestions, _now());
   }
 
   @override
   Future<LearningJourney> getLearningJourney() async {
-    final context = await _aiTutor.getTutorContext();
-    final suggestions = await _aiTutor.getSuggestions();
-    final insights = await _aiTutor.getInsights();
+    final context = await _studyCoach.getTutorContext();
+    final suggestions = await _studyCoach.getSuggestions();
+    final insights = await _studyCoach.getInsights();
     return LearningJourney(
       context: context,
       todayPlan: computeDailyLearningPlan(suggestions, _now()),

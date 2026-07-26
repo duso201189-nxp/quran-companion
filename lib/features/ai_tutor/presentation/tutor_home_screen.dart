@@ -19,7 +19,7 @@ import 'widgets/tutor_suggestion_card.dart';
 
 /// Màn hình chính AI Tutor (Sprint 15 Phase 2, thêm hành động điều
 /// hướng ở Phase 3 mục 4, thêm lối vào Learning Journey ở Sprint 16
-/// Phase 2 mục 5) — CHỈ tiêu thụ aiTutorProviders
+/// Phase 2 mục 5) — CHỈ tiêu thụ studyCoachProviders
 /// (tutorContextProvider/tutorSuggestionsProvider/tutorInsightsProvider
 /// — Sprint 15 Phase 1), KHÔNG bao giờ đọc
 /// analyticsRepositoryProvider/AnalyticsRepository/SchedulerRepository/
@@ -55,7 +55,7 @@ class TutorHomeScreen extends ConsumerWidget {
     final l10n = AppLocalizations.of(context);
 
     return Scaffold(
-      appBar: AppBar(title: Text(l10n.aiTutorTitle)),
+      appBar: AppBar(title: Text(l10n.studyCoachTitle)),
       body: SafeArea(
         child: LayoutBuilder(
           builder: (context, constraints) {
@@ -93,13 +93,13 @@ class _TutorSummarySection extends ConsumerWidget {
     final contextAsync = ref.watch(tutorContextProvider);
 
     return contextAsync.when(
-      loading: () => LoadingState(semanticsLabel: l10n.aiTutorLoading),
+      loading: () => LoadingState(semanticsLabel: l10n.studyCoachLoading),
       error: (_, __) =>
           SearchErrorState(onRetry: () => ref.invalidate(tutorContextProvider)),
       data: (tutorContext) {
         final stats = tutorContext.statistics;
         return TutorHeader(
-          title: l10n.aiTutorSummaryTitle,
+          title: l10n.studyCoachSummaryTitle,
           stats: [
             (
               icon: Icons.style_rounded,
@@ -154,7 +154,7 @@ class _JourneyEntryCard extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  l10n.aiTutorJourneyEntryTitle,
+                  l10n.studyCoachJourneyEntryTitle,
                   style: textTheme.titleMedium?.copyWith(
                     fontWeight: FontWeight.w700,
                     color: scheme.onSecondaryContainer,
@@ -162,7 +162,7 @@ class _JourneyEntryCard extends StatelessWidget {
                 ),
                 const SizedBox(height: 2),
                 Text(
-                  l10n.aiTutorJourneyEntryDesc,
+                  l10n.studyCoachJourneyEntryDesc,
                   style: textTheme.bodySmall
                       ?.copyWith(color: scheme.onSecondaryContainer),
                 ),
@@ -190,16 +190,16 @@ class _TutorSuggestionsSection extends ConsumerWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        SectionHeader(text: l10n.aiTutorSuggestionsTitle),
+        SectionHeader(text: l10n.studyCoachSuggestionsTitle),
         const SizedBox(height: 12),
         suggestionsAsync.when(
-          loading: () => LoadingState(semanticsLabel: l10n.aiTutorLoading),
+          loading: () => LoadingState(semanticsLabel: l10n.studyCoachLoading),
           error: (_, __) => SearchErrorState(
             onRetry: () => ref.invalidate(tutorSuggestionsProvider),
           ),
           data: (suggestions) {
             if (suggestions.isEmpty) {
-              return EmptyStateBanner(text: l10n.aiTutorSuggestionsEmpty);
+              return EmptyStateBanner(text: l10n.studyCoachSuggestionsEmpty);
             }
             return Column(
               children: [
@@ -252,10 +252,10 @@ class _TutorInsightsSection extends ConsumerWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        SectionHeader(text: l10n.aiTutorInsightsTitle),
+        SectionHeader(text: l10n.studyCoachInsightsTitle),
         const SizedBox(height: 12),
         insightsAsync.when(
-          loading: () => LoadingState(semanticsLabel: l10n.aiTutorLoading),
+          loading: () => LoadingState(semanticsLabel: l10n.studyCoachLoading),
           error: (_, __) => SearchErrorState(
             onRetry: () => ref.invalidate(tutorInsightsProvider),
           ),

@@ -57,7 +57,7 @@ void main() {
   tearDown(() => container.dispose());
 
   test(
-      'aiTutorRepositoryProvider ghép ĐÚNG analyticsRepositoryProvider đã '
+      'studyCoachRepositoryProvider ghép ĐÚNG analyticsRepositoryProvider đã '
       'override, không tạo repository riêng', () async {
     container = makeContainer(
       const LearningStatistics(
