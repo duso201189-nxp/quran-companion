@@ -5,6 +5,36 @@ Nền tảng: **Android · iOS · iPad · Web · Desktop (tương lai)**.
 
 ![CI](https://github.com/<tài-khoản>/quran_companion/actions/workflows/ci.yml/badge.svg)
 
+## Website chính thức
+
+<https://duso201189-nxp.github.io/quran-companion/>
+
+Trang web tĩnh phục vụ bằng GitHub Pages từ nhánh `main`, thư mục gốc.
+Đây là địa chỉ công khai mà Google Play và App Store trỏ tới cho chính
+sách quyền riêng tư và điều khoản sử dụng.
+
+| Trang | Đường dẫn | Nội dung |
+|---|---|---|
+| Trang chủ | `index.html` | giới thiệu, nền tảng, liên hệ |
+| Quyền riêng tư | `privacy.html` | song ngữ Anh/Việt, bản HTML của `legal/PRIVACY_POLICY.md` |
+| Điều khoản | `terms.html` | song ngữ, bản HTML của `legal/TERMS_OF_USE.md` |
+| Ghi nguồn bên thứ ba | `third-party.html` | bản HTML của `legal/THIRD_PARTY_NOTICES.md` |
+| 404 | `404.html` | GitHub Pages tự phục vụ khi không tìm thấy trang |
+
+HTML/CSS viết tay, **không framework, không JavaScript**, tự thích ứng
+màn hình, theo sáng/tối của hệ thống. Kiểu dáng nằm trong
+`assets/style.css`.
+
+`_config.yml` giới hạn những gì Pages xuất bản: **chỉ 5 trang HTML và 1
+file CSS**. Mã nguồn Flutter, database nội dung 32,7 MB và các file
+phông chữ KHÔNG được đưa lên web — xuất bản chúng thành file tải về
+trực tiếp là một hành vi khác hẳn với việc đóng gói trong ứng dụng, và
+một số nguồn nội dung vẫn đang chờ trả lời về giấy phép (xem
+`docs/LICENSING.md`).
+
+Sửa nội dung pháp lý: sửa cả file `legal/*.md` (bản gốc) lẫn file
+`*.html` tương ứng, để hai bản không lệch nhau.
+
 ## Tài liệu
 
 | File | Nội dung |
@@ -57,10 +87,14 @@ flutter test --coverage     # phải 100% pass
 Mỗi push/PR tự chạy: secret scan (gitleaks) → format → analyze
 → `pub outdated` (thông tin) → test → **coverage gate ≥ 70%**
 (mục tiêu 80% khi phát hành v1.0 — xem ARCHITECTURE.md mục 9)
-→ build song song Android APK + Web + iOS (no-codesign).
+→ build song song Android + Web + iOS (no-codesign).
 
 - Nhánh `main` được bảo vệ: chỉ merge khi CI xanh toàn bộ.
-- APK/Web build đính kèm mỗi lần chạy (tab Actions → Artifacts).
+- **Pull request** dựng APK debug (phản hồi nhanh); **push lên `main`
+  và tag `v*`** dựng AAB **release** thật — cùng bản artifact sẽ nộp
+  cửa hàng, nên R8 và resource shrinking đều được chạy qua ở CI.
+- AAB, `mapping.txt` (giải mã stack trace) và bản build Web đính kèm
+  mỗi lần chạy (tab Actions → Artifacts).
 - **Chi phí:** runner macOS (job iOS) tính phút ×10 trên repo private.
   Nếu vượt hạn mức miễn phí, sửa job `build-ios` thêm điều kiện
   `if: github.ref == 'refs/heads/main'`.

@@ -1,0 +1,71 @@
+# GitHub Pages configuration — Qur'an Companion official site
+#
+# Pages serves this repository from `main` / (root). Without this file
+# EVERYTHING in the repository would be published, including the 32.7 MB
+# content database and the bundled font binaries — i.e. the Qur'anic
+# text, translations and commentary would become directly downloadable
+# as files, separately from the application.
+#
+# That is a materially different act from shipping them inside an app,
+# and several of those sources are still awaiting a licence answer (see
+# docs/LICENSING.md). So the site publishes the five HTML pages and one
+# stylesheet, and nothing else.
+#
+# The HTML pages carry no YAML front matter, so Jekyll treats them as
+# static files and copies them through byte-for-byte. Nothing here
+# templates or rewrites them.
+
+title: Qur'an Companion
+description: Free, ad-free, offline Qur'an study application.
+url: https://duso201189-nxp.github.io
+baseurl: /quran-companion
+
+# Everything the site must NOT publish.
+exclude:
+  # Content and binaries — the reason this file exists.
+  - assets/database/
+  - assets/fonts/
+  - assets/licenses/
+
+  # Application source and platform projects.
+  - lib/
+  - test/
+  - integration_test/
+  - tool/
+  - android/
+  - ios/
+  - linux/
+  - macos/
+  - windows/
+  - web/
+  - build/
+  - coverage/
+  - env/
+
+  # Project documentation and governance — public in the repository,
+  # but not part of the website.
+  - docs/
+  - legal/
+  - constitution/
+  - .github/
+  - .dart_tool/
+  - ARCHITECTURE.md
+  - CHANGELOG.md
+  - CLAUDE.md
+  - DATABASE.md
+  - KNOWN_ISSUES.md
+  - PERFORMANCE.md
+  - PROJECT_CONSTITUTION.md
+  - README.md
+  - RELEASE_CHECKLIST.md
+  - RELEASE_NOTES.md
+  - ROADMAP.md
+  - ROLES.md
+  - TODO.md
+  - analysis_options.yaml
+  - l10n.yaml
+  - pubspec.yaml
+  - pubspec.lock
+
+# No plugins, no theme, no Liquid processing of the pages themselves.
+plugins: []
