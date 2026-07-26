@@ -7,8 +7,11 @@ something here ever drifts from the files it points to, those files win.
 
 A Flutter Qur'an study app — see `README.md` for setup, `ARCHITECTURE.md`
 for design, `DATABASE.md` for schema, `ROADMAP.md` for the 12-step plan,
-`TODO.md` for open items. Currently mid Step 8 of 12 (v0.8.1) — see
-ROADMAP.md for exactly what's done vs. outstanding within the step.
+`TODO.md` for open items. Steps 1-9 are substantially done (v0.8.1);
+steps 10-12 (auth, cloud sync, AI) are v1.5/v2.0 and unbuilt. The
+project is in **release-candidate preparation** — see
+`RELEASE_CHECKLIST.md` for the objective gate, `KNOWN_ISSUES.md` for
+what is deliberately absent or unverified in the current build.
 
 ## This project runs under EIS
 

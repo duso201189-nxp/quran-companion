@@ -15,11 +15,11 @@ và đánh giá rủi ro.
 | # | Nội dung | Nguồn | Giấy phép | Thương mại | Phân phối lại | Bắt buộc kèm |
 |---|---|---|---|---|---|---|
 | 1 | Văn bản Ả Rập Uthmani | Tanzil Project | Tanzil Terms of Use | **Không nêu** | Cho phép, **cấm sửa** | Ghi "Tanzil Project" + **link tanzil.net** |
-| 2 | Phiên âm Latin | Quran.com / QUL (Tarteel AI) | **KHÔNG XÁC MINH ĐƯỢC** | không rõ | không rõ | ghi nguồn (theo thông lệ QUL) |
+| 2 | Phiên âm Latin | Quran.com / QUL (Tarteel AI) | QUL không bảo đảm; chưa có tuyên bố của chủ dữ liệu | không rõ | không rõ | ghi nguồn |
 | 3 | Bản dịch Việt (Rowwad) | QuranEnc.com | QuranEnc Terms (7 điều) | không nêu rõ | Cho phép có điều kiện | Ghi nhà phát hành + **QuranEnc.com** + **số phiên bản** |
 | 4 | Bản dịch Anh (Saheeh International) | Tanzil Project | Tanzil translations terms | **CẤM** — "for non-commercial purposes only" | Cho phép phi thương mại | Ghi nguồn; link nếu dùng >3 bản dịch |
-| 5 | Tafsir Al-Muyassar (ar) | Quran.com / QUL | **KHÔNG XÁC MINH ĐƯỢC** | không rõ | không rõ | ghi nguồn |
-| 6 | Tafsir Ibn Kathir (en, rút gọn) | Quran.com / QUL | **KHÔNG XÁC MINH ĐƯỢC** | không rõ | không rõ | ghi nguồn |
+| 5 | Tafsir Al-Muyassar (ar) | نخبة من العلماء · **مجمع الملك فهد** (qua QUL) | chưa có phép | không rõ | **cần phép** | ghi نخبة من العلماء + KFGQPC |
+| 6 | Tafsir Ibn Kathir (en, rút gọn) | **Maktaba Dar-us-Salam 2003** (qua QUL) | **CÒN BẢN QUYỀN HIỆU LỰC** | **cần phép** | **cần phép bằng văn bản** | ghi Darussalam + nhóm dịch |
 
 ### Nguyên văn điều kiện
 
@@ -57,12 +57,68 @@ kiện "hơn ba bản dịch" chưa áp dụng. Điều kiện phi thương mạ
 Điều 7 là một ràng buộc THỰC SỰ với bất kỳ mô hình quảng cáo nào sau
 này — đứng độc lập với `PROJ-P-005`.
 
-**Quran.com / QUL (Tarteel AI)** — trang tài nguyên (108 bộ tafsir tải
-được dạng JSON/SQLite) **không hiển thị trường giấy phép cho từng bộ**.
-Trang Terms of Use của Tarteel không truy xuất được nội dung ở thời
-điểm rà soát. Vì vậy giấy phép của phiên âm và **cả hai bộ Tafsir đang
-phát hành** là KHÔNG XÁC MINH ĐƯỢC. Đây là rủi ro pháp lý còn treo,
-không phải một dấu tích đã xong.
+**Quran.com / QUL (Tarteel AI)** — FAQ chính thức
+(https://qul.tarteel.ai/faq) nói rõ, nguyên văn:
+
+> "The resources available on QUL vary in their copyright status. Some
+> are in the public domain, while others may be subject to specific
+> licenses. We recommend reviewing the licensing information provided
+> by each resource's author before use."
+
+> "Yes, you can use QUL data in commercial projects. However, please
+> review the licensing terms for each resource. Some data may have
+> restrictions or require attribution, while others are freely
+> available for commercial use."
+
+Nói cách khác: **QUL KHÔNG bảo đảm giấy phép cho bất kỳ bộ dữ liệu
+nào.** Nghĩa vụ rơi về đúng chủ sở hữu của từng bộ. Trước Sprint này
+dự án ghi "không xác minh được"; thực ra điều khoản CÓ và nó chuyển
+trách nhiệm sang chúng ta. Truy ngược từng bộ:
+
+### Tafsir Ibn Kathir (Abridged, tiếng Anh) — RỦI RO CAO NHẤT
+
+Bản gốc tiếng Ả Rập của Ibn Kathir (mất 1373) thuộc phạm vi công
+cộng. Nhưng thứ app đang phát hành KHÔNG phải bản gốc: đó là bản
+**rút gọn + dịch sang tiếng Anh hiện đại**, do một nhóm học giả thực
+hiện dưới sự giám sát của Shaykh Safiur-Rahman al-Mubarakpuri, do
+**Darussalam** đặt hàng và xuất bản.
+
+| Sự kiện | Nguồn |
+|---|---|
+| Xuất bản lần đầu 2000, bản 2 tháng 7/2003 | Darussalam |
+| ISBN bộ 10 tập: 9960-892-71-9 | Darussalam |
+| **Bản quyền: Maktaba Dar-us-Salam, 2003** | trang bản quyền của chính sách |
+
+Hai hệ quả:
+
+1. **Đây là tác phẩm còn bản quyền hiệu lực của một nhà xuất bản
+   thương mại.** Phân phối lại toàn văn trong một ứng dụng cần phép
+   bằng văn bản. "Nguồn mở trên QUL" không thay thế được điều đó.
+2. **Ghi công đang SAI.** Database ghi `author = 'Hafiz Ibn Kathir'` —
+   đó là tác giả thế kỷ 14, không phải người giữ quyền đối với bản
+   dịch rút gọn. Ghi công đúng phải nêu Darussalam và nhóm dịch.
+
+### Tafsir Al-Muyassar (tiếng Ả Rập)
+
+Soạn bởi **نخبة من العلماء** (một nhóm học giả), xuất bản bởi **مجمع
+الملك فهد لطباعة المصحف الشريف** (King Fahd Glorious Qur'an Printing
+Complex, Madinah) — cùng cơ quan đã cấp EULA miễn phí cho phông chữ
+UthmanicHafs mà app đang dùng.
+
+Chưa tìm thấy tuyên bố giấy phép cho phần VĂN BẢN tafsir. Nhưng chủ
+sở hữu nay đã xác định chính xác, và KFGQPC là cơ quan nhà nước có
+tiền lệ cấp phép rộng rãi cho mục đích da'wah — nên đây là hồ sơ đáng
+hỏi và có khả năng được chấp thuận.
+
+**Ghi công đang thiếu.** Database ghi `author = 'المیسر'` — đó là TÊN
+TÁC PHẨM (và còn sai chính tả: dùng ی U+06CC của tiếng Ba Tư thay vì
+ي), không phải tác giả. Phải là نخبة من العلماء / مجمع الملك فهد.
+
+### Phiên âm Latin (Quran.com word-by-word)
+
+Dữ liệu do chính cộng đồng Quran.com/Tarteel tạo ra, không truy ngược
+về một nhà xuất bản bên thứ ba. Rủi ro thấp nhất trong ba bộ QUL,
+nhưng vẫn chưa có tuyên bố giấy phép rõ ràng.
 
 ## 2. Audio (phát trực tuyến, không đóng gói)
 
@@ -117,15 +173,27 @@ Software typefaces." Trước Sprint 33.0 app KHÔNG kèm thông báo nào —
 
 | # | Rủi ro | Mức | Trạng thái |
 |---|---|---|---|
-| 1 | Giấy phép Tafsir + phiên âm (QUL) không xác minh được | **Cao** | CÒN TREO — cần liên hệ Tarteel/Quran.com |
-| 2 | Giấy phép bản thu everyayah.com không xác minh được | **Cao** | CÒN TREO — cần liên hệ everyayah |
+| 1a | **Ibn Kathir (Abridged) là tác phẩm còn bản quyền của Darussalam** | **NGHIÊM TRỌNG** | CÒN TREO — cần phép bằng văn bản, HOẶC gỡ khỏi bản phát hành |
+| 1b | Ghi công Ibn Kathir sai (ghi tác giả thế kỷ 14 thay vì nhà xuất bản bản dịch) | **Cao** | CÒN TREO — sửa được ngay ở lần build dữ liệu kế tiếp |
+| 1c | Al-Muyassar: chủ sở hữu đã xác định (KFGQPC) nhưng chưa có phép | **Cao** | CÒN TREO — cần liên hệ KFGQPC |
+| 1d | Phiên âm Quran.com: chưa có tuyên bố giấy phép | Trung bình | CÒN TREO — rủi ro thấp nhất nhóm QUL |
+| 2 | Giấy phép bản thu everyayah.com không xác minh được | **Cao** | CÒN TREO — đã có kênh liên hệ: quran.zendesk.com |
 | 3 | Saheeh International phi thương mại (`PROJ-P-005`) | Cao nếu thu phí | Đã ghi nhận, chặn mọi mô hình có phí |
 | 4 | QuranEnc điều 7 cấm quảng cáo không phù hợp | Trung bình | Đã ghi nhận, chặn mô hình quảng cáo |
 | 5 | OFL thiếu thông báo giấy phép | Trung bình | **ĐÃ SỬA** Sprint 33.0 |
 | 6 | Thiếu màn hình ghi nguồn | Trung bình | **ĐÃ SỬA** Sprint 33.0 |
 | 7 | KFGQPC mơ hồ với app có phí | Thấp (miễn phí) | Ghi nhận, chỉ quan trọng khi thu phí |
 
-Rủi ro 1 và 2 **không thể đóng bằng cách viết mã**. Chúng cần một câu
-trả lời từ người giữ quyền. Cho tới lúc đó, bản phát hành phải là miễn
-phí, không quảng cáo, và ghi nguồn đầy đủ — đó là tư thế phòng vệ tốt
-nhất mà kỹ thuật có thể tạo ra.
+Không rủi ro nào ở nhóm 1-2 **đóng được bằng cách viết mã**. Chúng cần
+câu trả lời từ người giữ quyền.
+
+**Rủi ro 1a khác hẳn phần còn lại.** Ba mục kia là "chưa biết"; mục này
+là "đã biết, và câu trả lời bất lợi": bản dịch rút gọn tiếng Anh của
+Ibn Kathir là tài sản có bản quyền hiệu lực của một nhà xuất bản
+thương mại, và app đang phân phối lại toàn văn 8,9 triệu ký tự của nó.
+Không có tư thế phòng vệ nào cho việc đó ngoài (a) giấy phép bằng văn
+bản, hoặc (b) gỡ bộ này khỏi bản phát hành.
+
+Cho tới khi 1a được giải quyết theo một trong hai hướng ấy, **không có
+bản phát hành công khai nào**, kể cả miễn phí. Miễn phí không phải là
+phòng vệ trước vi phạm bản quyền.

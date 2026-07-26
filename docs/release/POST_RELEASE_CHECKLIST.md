@@ -14,7 +14,7 @@ those is before they are needed.
 | 3 | Install failures | Play Console → Statistics | no spike |
 | 4 | Uninstall rate day 1 | Play Console | no spike vs. installs |
 | 5 | User reviews mentioning data loss or wrong text | Play Console → Reviews | **any single one is a stop-ship signal** |
-| 6 | Support inbox | `{{SUPPORT_EMAIL}}` | triage within 24 h |
+| 6 | Support inbox | `qurancompanionhq@gmail.com` | triage within 24 h |
 
 **The app has no crash reporting.** Android vitals and user reviews are
 the *only* signals that something is wrong. Treat them accordingly, and

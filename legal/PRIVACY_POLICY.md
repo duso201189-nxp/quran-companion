@@ -1,15 +1,16 @@
 # Privacy Policy — Qur'an Companion
 
-**Effective date:** `{{EFFECTIVE_DATE}}`
+**Effective date:** `2026-07-26`
 **Applies to:** Qur'an Companion for Android and iOS, application ID
 `com.duso.qurancompanion`, version 0.8.1 and later.
-**Publisher:** `{{LEGAL_ENTITY_OR_INDIVIDUAL_NAME}}`
-**Contact:** `{{CONTACT_EMAIL}}`
+**Publisher:** `Du So`
+**Contact:** `qurancompanionhq@gmail.com`
 
-> **Placeholders.** Every `{{…}}` above must be filled before this
-> document is published. Nothing else in this policy is a placeholder —
-> the rest describes behaviour verified in the source code at Sprint
-> 34.0 (2026-07-26), not an aspiration.
+> **Published.** This policy is live at
+> <https://duso201189-nxp.github.io/quran-companion/privacy.html>.
+> Every statement in it describes behaviour verified in the source code
+> at Sprint 34.0 (2026-07-26), not an aspiration. The HTML page and this
+> file must be edited together — see the Website section of `README.md`.
 
 ---
 
@@ -98,7 +99,7 @@ for us to access, export, correct or delete on your behalf. All your
 data is in your hands: uninstalling the app deletes it.
 
 If you have a question about this policy, contact
-`{{CONTACT_EMAIL}}`.
+`qurancompanionhq@gmail.com`.
 
 ## 8. Changes to this policy
 
@@ -106,18 +107,18 @@ If a future version of the app introduces cloud synchronisation,
 accounts, analytics or crash reporting, this policy will be updated
 **before** that version is released, and the change will be described
 in the app's release notes. The version of the policy in force is the
-one published at `{{PRIVACY_POLICY_URL}}`.
+one published at `https://duso201189-nxp.github.io/quran-companion/privacy.html`.
 
 ---
 ---
 
 # Chính sách quyền riêng tư — Qur'an Companion
 
-**Ngày hiệu lực:** `{{EFFECTIVE_DATE}}`
+**Ngày hiệu lực:** `2026-07-26`
 **Áp dụng cho:** Qur'an Companion trên Android và iOS, mã ứng dụng
 `com.duso.qurancompanion`, phiên bản 0.8.1 trở lên.
-**Nhà phát hành:** `{{LEGAL_ENTITY_OR_INDIVIDUAL_NAME}}`
-**Liên hệ:** `{{CONTACT_EMAIL}}`
+**Nhà phát hành:** `Du So`
+**Liên hệ:** `qurancompanionhq@gmail.com`
 
 ## 1. Tóm tắt
 

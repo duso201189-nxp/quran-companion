@@ -5,6 +5,65 @@ Phiên bản theo [Semantic Versioning](https://semver.org/lang/vi/).
 
 ## [Unreleased]
 
+### RC-1 — Product truthfulness (Sprint 36.0 audit -> RC-1 fixes)
+
+- **"Gia sư AI" -> "Gợi ý học tập"** (`Study coach` / `مرشد الدراسة`).
+  36 khoá l10n `aiTutor*` đổi tên thành `studyCoach*`; route
+  `/ai-tutor` -> `/study-coach`. Màn hình này không có mô hình và
+  không suy luận — `AITutorRepositoryImpl` tự ghi rõ điều đó — nên
+  nhãn cũ là một tuyên bố sai về năng lực.
+- **Gỡ nút "Hỏi AI · Sắp ra mắt"** khỏi màn hình Tìm kiếm, cùng
+  `enum SearchMode`. RAG là v2.0; một nút vĩnh viễn khoá không phải là
+  tính năng.
+- **Gỡ hai khu "Gần đây" / "Gợi ý"** ở trạng thái rỗng của Tìm kiếm —
+  tiêu đề thật đặt trên các khối xám không chữ, không bấm được, đọc ra
+  như đang tải cho thứ không tồn tại.
+- **Cổng tính năng theo dữ liệu** (`lib/app/feature_gate.dart`): ô
+  Flashcard chỉ hiện khi bảng `lemmas` có dữ liệu. Trước đó nó luôn
+  hiện và luôn dẫn tới bộ sưu tập không thể có phần tử nào (chỉ tạo
+  được `FlashcardType.lemma`, mà bảng `lemmas` rỗng). Không cờ boolean:
+  cổng hỏi thẳng repository, nên nạp dữ liệu là tính năng tự hiện.
+- **Ba ô Hồ sơ** bỏ chữ "Sẽ xây dựng ở Bước N" (từ vựng nội bộ của
+  ROADMAP) và nói đúng trạng thái hôm nay; ô "Mục tiêu" nêu rõ mục
+  tiêu 15 phút/ngày là cố định, không đặt được.
+- **Test mới** `feature_truthfulness_test.dart`: chặn mọi chuỗi tuyên
+  bố AI trong ba file `.arb`, và khoá bất biến "cổng mở khi và chỉ khi
+  dữ liệu có thật" trên đúng database phát hành.
+
+### Added — Sprint 27–35 (tóm tắt hợp nhất)
+
+Mục này CỐ Ý là bản tóm tắt, không phải nhật ký từng sprint: lịch sử
+chi tiết nằm trong `docs/adr/` và các báo cáo sprint. Ghi ở đây để
+changelog không còn dừng ở Sprint 10.
+
+- **Study Workspace** (`DR-2026-0007`): route `/study/:ayahId`, panel
+  Tafsir đầu tiên, hợp đồng `StudySection`.
+- **Kiến trúc Study** (`DR-2026-0006`): ranh giới Đọc/Tafsir, nguồn
+  văn bản điều khiển bằng dữ liệu, Tafsir nạp theo từng Ayah.
+- **Hai bộ Tafsir thật**: Al-Muyassar (Ả Rập) và Ibn Kathir (Anh, rút
+  gọn).
+- **Truy vấn chú giải theo ĐOẠN**: chú giải viết cho cụm câu, nên
+  `getTextsCoveringAyah` hỏi "đoạn nào phủ Ayah này" thay vì khớp
+  chính xác `ayah_id`. Độ phủ 5.291 -> **6.236/6.236 Ayah**, không đổi
+  schema.
+- **Màn hình Ghi nguồn** (`/attribution`) dựng từ metadata trong
+  database; thông báo giấy phép 4 font đóng gói vào `assets/licenses/`
+  và đăng ký `LicenseRegistry`.
+- **Hồ sơ pháp lý**: `docs/LICENSING.md`, `legal/PRIVACY_POLICY.md`,
+  `legal/TERMS_OF_USE.md`, `legal/THIRD_PARTY_NOTICES.md`,
+  `legal/STORE_COMPLIANCE.md`.
+- **Metadata cửa hàng**: nhãn ứng dụng `quran_companion` ->
+  `Qur'an Companion`, `PrivacyInfo.xcprivacy`, khai báo miễn trừ mã
+  hoá xuất khẩu.
+- **Đường ống phát hành**: CI dựng AAB release trên `main`/tag và lưu
+  `mapping.txt`; `RELEASE_CHECKLIST.md` viết lại thành cổng kiểm được
+  bằng lệnh; thêm `RELEASE_NOTES.md`, `KNOWN_ISSUES.md` và ba checklist
+  vận hành trong `docs/release/`.
+- **Dữ liệu nội dung** lên `data_version` 6 (thêm khoá ghi nguồn văn
+  bản Ả Rập).
+- Mini player toàn cục; sửa lỗi tạm dừng audio và lỗi đổi Qari không
+  nạp lại nguồn.
+
 ### Added — Sprint 10: Learning Engine — Scheduler SM-2 + Quiz (Bước 9 phần 1)
 
 Thực hiện theo [DR-2026-0005](docs/adr/DR-2026-0005.md) (5 phase:

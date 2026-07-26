@@ -1,14 +1,20 @@
 # Terms of Use — Qur'an Companion
 
-**Effective date:** `{{EFFECTIVE_DATE}}`
-**Publisher:** `{{LEGAL_ENTITY_OR_INDIVIDUAL_NAME}}`
-**Contact:** `{{CONTACT_EMAIL}}`
-**Governing law:** `{{JURISDICTION}}`
+**Effective date:** `2026-07-26`
+**Publisher:** `Du So`
+**Contact:** `qurancompanionhq@gmail.com`
+**Governing law:** `Vietnam`
 
-> **Placeholders.** Every `{{…}}` must be filled before publication.
-> `{{JURISDICTION}}` in particular is a decision for the publisher, not
-> a technical default — it determines which courts and consumer-
-> protection rules apply.
+> **Published.** Live at
+> <https://duso201189-nxp.github.io/quran-companion/terms.html>. The
+> HTML page and this file must be edited together — see the Website
+> section of `README.md`.
+>
+> **Governing law is an inference, not a confirmed decision.** Vietnam
+> was taken from the release keystore's own certificate
+> (`L=Ho Chi Minh City, ST=Ho Chi Minh, C=VN`) and the app's default
+> locale. It determines which courts and consumer-protection rules
+> apply, so the publisher should confirm it explicitly.
 >
 > **This document has not been reviewed by a lawyer.** It is drafted to
 > be accurate about what the software does. It is not legal advice.
@@ -32,7 +38,7 @@ publisher, version, licence and source address.
 We do not claim authorship of, ownership of, or religious authority
 over any of that content. We have not altered it. If you believe any
 content is reproduced without proper permission or contains an error,
-write to `{{CONTACT_EMAIL}}` and we will investigate and, where
+write to `qurancompanionhq@gmail.com` and we will investigate and, where
 warranted, correct or remove it.
 
 **This app is a study aid, not a religious authority.** Translations
@@ -69,7 +75,7 @@ redistribution. See `legal/THIRD_PARTY_NOTICES.md`.
 
 The app is provided **"as is"**, without warranty of any kind, express
 or implied, including fitness for a particular purpose. To the maximum
-extent permitted by `{{JURISDICTION}}` law, the publisher is not liable
+extent permitted by `Vietnam` law, the publisher is not liable
 for any loss arising from use of the app, including loss of data stored
 on your device.
 
@@ -79,17 +85,17 @@ applicable consumer-protection law.
 ## 8. Changes
 
 These terms may change when the app changes materially. The version in
-force is the one published at `{{TERMS_URL}}`.
+force is the one published at `https://duso201189-nxp.github.io/quran-companion/terms.html`.
 
 ---
 ---
 
 # Điều khoản sử dụng — Qur'an Companion
 
-**Ngày hiệu lực:** `{{EFFECTIVE_DATE}}`
-**Nhà phát hành:** `{{LEGAL_ENTITY_OR_INDIVIDUAL_NAME}}`
-**Liên hệ:** `{{CONTACT_EMAIL}}`
-**Luật áp dụng:** `{{JURISDICTION}}`
+**Ngày hiệu lực:** `2026-07-26`
+**Nhà phát hành:** `Du So`
+**Liên hệ:** `qurancompanionhq@gmail.com`
+**Luật áp dụng:** `Vietnam`
 
 ## 1. Về ứng dụng
 
@@ -107,7 +113,7 @@ phiên bản, giấy phép và địa chỉ nguồn.
 Chúng tôi không nhận là tác giả, không sở hữu, và không có thẩm quyền
 tôn giáo đối với bất kỳ nội dung nào trong đó. Chúng tôi không sửa đổi
 chúng. Nếu bạn cho rằng có nội dung được sao chép không đúng phép hoặc
-có sai sót, xin viết cho `{{CONTACT_EMAIL}}`.
+có sai sót, xin viết cho `qurancompanionhq@gmail.com`.
 
 **Ứng dụng này là công cụ hỗ trợ học tập, không phải thẩm quyền tôn
 giáo.** Bản dịch và chú giải là diễn giải của con người. Với các vấn
@@ -141,7 +147,7 @@ sửa đổi và, trong nhiều trường hợp, hạn chế phân phối lại.
 ## 7. Bảo đảm và trách nhiệm
 
 Ứng dụng được cung cấp **"nguyên trạng"**, không kèm bảo đảm nào. Trong
-phạm vi tối đa mà luật `{{JURISDICTION}}` cho phép, nhà phát hành không
+phạm vi tối đa mà luật `Vietnam` cho phép, nhà phát hành không
 chịu trách nhiệm cho bất kỳ thiệt hại nào phát sinh từ việc sử dụng
 ứng dụng, kể cả mất dữ liệu lưu trên máy bạn.
 

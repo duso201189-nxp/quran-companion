@@ -106,11 +106,11 @@ it again if any cryptography is ever added.
 
 | Item | Required by | Status |
 |---|---|---|
-| Privacy policy URL | Play **and** App Store, mandatory | `{{PRIVACY_POLICY_URL}}` — **document written, not yet hosted** |
-| Terms of use URL | App Store (or Apple's standard EULA applies) | `{{TERMS_URL}}` — **document written, not yet hosted** |
-| Support URL | App Store, mandatory | `{{SUPPORT_URL}}` |
+| Privacy policy URL | Play **and** App Store, mandatory | `https://duso201189-nxp.github.io/quran-companion/privacy.html` — **document written, not yet hosted** |
+| Terms of use URL | App Store (or Apple's standard EULA applies) | `https://duso201189-nxp.github.io/quran-companion/terms.html` — **document written, not yet hosted** |
+| Support URL | App Store, mandatory | `https://duso201189-nxp.github.io/quran-companion/` |
 | Marketing URL | Optional | — |
-| Developer contact email | Both | `{{CONTACT_EMAIL}}` |
+| Developer contact email | Both | `qurancompanionhq@gmail.com` |
 
 Hosting the two documents is the smallest remaining step that unblocks
 the largest number of store fields. Any static host (GitHub Pages) is
