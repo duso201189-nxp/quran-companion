@@ -18,6 +18,7 @@ import 'package:quran_companion/features/quran/data/quran_providers.dart';
 import 'package:quran_companion/features/quran/domain/entities/ayah.dart';
 import 'package:quran_companion/features/quran/domain/entities/ayah_content.dart';
 import 'package:quran_companion/features/quran/domain/entities/ayah_search_result.dart';
+import 'package:quran_companion/features/quran/domain/entities/covering_text.dart';
 import 'package:quran_companion/features/quran/domain/entities/reciter.dart';
 import 'package:quran_companion/features/quran/domain/entities/surah.dart';
 import 'package:quran_companion/features/quran/domain/entities/translation_source.dart';
@@ -64,11 +65,11 @@ class _FakeQuranRepo implements QuranRepository {
       ];
 
   @override
-  Future<Map<String, String>> getAyahTexts({
+  Future<List<CoveringText>> getTextsCoveringAyah({
     required int ayahId,
     required Set<SourceType> types,
   }) async =>
-      const {};
+      const [];
 
   @override
   Future<List<AyahSearchResult>> getAyahsByIds(List<int> ids) async => [

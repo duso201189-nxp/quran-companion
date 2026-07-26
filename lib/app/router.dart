@@ -15,6 +15,7 @@ import '../features/learning_journey/presentation/learning_journey_screen.dart';
 import '../features/learning_session/presentation/learning_session_screen.dart';
 import '../features/library/presentation/collections/collections_screen.dart';
 import '../features/library/presentation/library_screen.dart';
+import '../features/profile/presentation/attribution/attribution_screen.dart';
 import '../features/profile/presentation/profile_screen.dart';
 import '../features/quiz/presentation/quiz_session_screen.dart';
 import '../features/quran/presentation/reading/reading_screen.dart';
@@ -41,6 +42,12 @@ abstract final class AppRoutes {
   /// Bộ sưu tập Bookmark (Sprint 8 — DR-2026-0003 mục C) — push
   /// full-screen từ Thư viện của tôi, giống [library]/[search].
   static const String collections = '/collections';
+
+  /// Ghi nguồn nội dung (Sprint 33.0) — push full-screen từ tab Hồ sơ,
+  /// cùng mẫu [library]/[collections]. Route TOP-LEVEL và có đường dẫn
+  /// ổn định vì đây là màn hình mà cửa hàng ứng dụng và người giữ bản
+  /// quyền có thể cần được chỉ tới trực tiếp.
+  static const String attribution = '/attribution';
 
   /// Ôn tập hằng ngày / Revision Queue (Sprint 9 — DR-2026-0004 mục
   /// 3) — push full-screen từ tab Học, giống [library]/[search]/
@@ -227,6 +234,11 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: AppRoutes.collections,
         builder: (context, state) => const CollectionsScreen(),
+      ),
+
+      GoRoute(
+        path: AppRoutes.attribution,
+        builder: (context, state) => const AttributionScreen(),
       ),
 
       GoRoute(

@@ -41,6 +41,12 @@ flutter:
 
   assets:
     - assets/database/quran.sqlite
+    # Giấy phép của các font đóng gói kèm. OFL 1.1 yêu cầu thông báo
+    # bản quyền + giấy phép phải đi kèm MỌI bản sao của font; EULA của
+    # KFGQPC cũng vậy. Đây là văn bản gốc, tải nguyên văn từ dự án font
+    # (OFL) hoặc trích thẳng từ bảng `name` của file .ttf (KFGQPC) —
+    # không chép tay, xem tool/verify_font_licenses.py.
+    - assets/licenses/
 
   fonts:
     # Văn bản Qur'an — font Mushaf chính thức của King Fahd Complex.

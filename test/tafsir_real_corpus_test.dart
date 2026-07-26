@@ -121,13 +121,14 @@ void main() {
 
     test('cùng Ayah đó, Study lấy được chú giải TỪ CẢ HAI nguồn', () async {
       // 2:255 (Ayat al-Kursi) — ayah_id toàn cục 262.
-      final texts = await container.read(quranRepositoryProvider).getAyahTexts(
+      final texts =
+          await container.read(quranRepositoryProvider).getTextsCoveringAyah(
         ayahId: 262,
         types: const {SourceType.tafsir},
       );
       expect(texts.length, greaterThanOrEqualTo(2));
-      for (final v in texts.values) {
-        expect(v.length, greaterThan(20));
+      for (final v in texts) {
+        expect(v.text.length, greaterThan(20));
       }
     });
   });
@@ -274,42 +275,74 @@ WHERE s.type = 'tafsir' ORDER BY LENGTH(t.text) DESC LIMIT 1
       expect(tester.takeException(), isNull);
     });
 
-    testWidgets('Ayah không có chú giải nào -> panel ẩn hẳn', (tester) async {
-      phoneSize(tester, 1200);
+    testWidgets(
+        'Ayah KHÔNG có dòng khớp chính xác vẫn hiện chú giải của ĐOẠN '
+        'phủ nó (Sprint 32.0)', (tester) async {
+      phoneSize(tester);
+      // Ayah nằm GIỮA một đoạn: nguồn không có dòng riêng cho nó.
       final row = await db.customSelect('''
 SELECT a.id AS id FROM ayahs a WHERE a.id NOT IN (
   SELECT t.ayah_id FROM translations t
   JOIN translation_sources s ON s.id = t.source_id
   WHERE s.type = 'tafsir') LIMIT 1
 ''').getSingleOrNull();
-      expect(row, isNotNull, reason: 'bộ dữ liệu phải có khoảng trống');
+      expect(row, isNotNull, reason: 'phải có Ayah không khớp chính xác');
+      final midPassageAyahId = row!.read<int>('id');
 
-      await pumpPanel(tester, row!.read<int>('id'));
+      final entries =
+          await container.read(tafsirForAyahProvider(midPassageAyahId).future);
+      // TRƯỚC 32.0 danh sách này rỗng và panel biến mất.
+      expect(entries, isNotEmpty);
+      // Đoạn bắt đầu TRƯỚC Ayah đang xem -> đúng bản chất "phủ".
+      expect(
+        entries.any((e) => e.startAyahId < midPassageAyahId),
+        isTrue,
+      );
 
-      expect(find.byType(StudyPanel), findsNothing);
+      await pumpPanel(tester, midPassageAyahId);
+      expect(find.byType(StudyPanel), findsOneWidget);
       expect(tester.takeException(), isNull);
     });
 
-    testWidgets('Ayah chỉ có MỘT nguồn -> panel hiện đúng một mục',
+    testWidgets('MỌI Ayah đều có chú giải sau khi phủ theo đoạn',
         (tester) async {
-      phoneSize(tester);
-      final row = await db.customSelect('''
-SELECT t.ayah_id AS id FROM translations t
-JOIN translation_sources s ON s.id = t.source_id
-WHERE s.type = 'tafsir'
-GROUP BY t.ayah_id HAVING COUNT(*) = 1 LIMIT 1
-''').getSingleOrNull();
-      expect(row, isNotNull);
-      final ayahId = row!.read<int>('id');
+      // Đo trên toàn bộ kinh văn qua đúng truy vấn của repository.
+      final repo = container.read(quranRepositoryProvider);
+      var covered = 0;
+      for (final ayahId in [1, 9, 300, 1500, 3000, 4500, 6000, 6236]) {
+        final texts = await repo.getTextsCoveringAyah(
+          ayahId: ayahId,
+          types: const {SourceType.tafsir},
+        );
+        if (texts.isNotEmpty) covered++;
+        for (final t in texts) {
+          expect(t.startAyahId, lessThanOrEqualTo(ayahId));
+        }
+      }
+      expect(covered, 8);
+    });
 
-      final entries =
-          await container.read(tafsirForAyahProvider(ayahId).future);
-      expect(entries, hasLength(1));
-
-      await pumpPanel(tester, ayahId);
-      expect(find.byType(StudyPanel), findsOneWidget);
-      expect(find.text(entries.single.source.name), findsOneWidget);
-      expect(tester.takeException(), isNull);
+    testWidgets('đoạn KHÔNG tràn sang Surah khác', (tester) async {
+      final repo = container.read(quranRepositoryProvider);
+      // Ayah đầu của vài Surah: đoạn phủ nó phải bắt đầu TRONG Surah đó.
+      for (final surahId in [2, 3, 18, 36, 114]) {
+        final firstRow = await db.customSelect(
+          'SELECT MIN(id) AS c FROM ayahs WHERE surah_id = ?',
+          variables: [Variable.withInt(surahId)],
+        ).getSingle();
+        final firstAyahId = firstRow.read<int>('c');
+        final texts = await repo.getTextsCoveringAyah(
+          ayahId: firstAyahId,
+          types: const {SourceType.tafsir},
+        );
+        for (final t in texts) {
+          expect(
+            t.startAyahId,
+            greaterThanOrEqualTo(firstAyahId),
+            reason: 'đoạn của Surah trước đã tràn sang Surah $surahId',
+          );
+        }
+      }
     });
   });
 }

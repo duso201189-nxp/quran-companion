@@ -49,17 +49,30 @@ Script tự **kiểm tra toàn vẹn** trước khi hoàn tất, build FAIL nế
   nguồn nào có văn bản rỗng
 - Vi phạm foreign key
 
-### Nguồn phủ KHÔNG đầy đủ (Sprint 31.3)
+### Chú giải viết theo ĐOẠN, không theo từng Ayah (Sprint 32.0)
 
-Ràng buộc "mọi nguồn phải phủ đủ 6.236 Ayah" đúng cho bản dịch nhưng
-**sai cho Tafsir**. Đo trên dữ liệu thật: Tafsir Al-Muyassar chú giải
-**5.278/6.236 Ayah** — 958 Ayah (15,4%) không có mục, rải trên 80
-Surah. Bỏ qua Ayah hoặc chú giải theo cụm là chuyện bình thường của
-thể loại chú giải, không phải lỗi dữ liệu.
+Sprint 31.3/31.4 đã **hiểu sai** dữ liệu này. Báo cáo lúc đó ghi
+"Al-Muyassar chỉ phủ 5.278/6.236 Ayah (15% khoảng trống)" và
+"Ibn Kathir chỉ phủ 30%". Cả hai đều SAI.
 
-`validate()` vì vậy nhận thêm `partial_codes`: các nguồn được phép phủ
-thiếu. Văn bản RỖNG vẫn bị cấm với mọi nguồn — thiếu hẳn dòng khác với
-có dòng trống.
+Đo lại đúng cách (đếm ĐOẠN, không đếm dòng):
+
+| Bộ | Số mục | Phủ thực tế | Nhịp đoạn |
+|---|---|---|---|
+| Al-Muyassar | 5.278 | **6.236/6.236 (100%)** | 1–14 Ayah |
+| Ibn Kathir | 1.895 | **6.231/6.236 (99,9%)** | 1–20 Ayah |
+
+Chú giải gắn vào Ayah ĐẦU của một đoạn; các Ayah tiếp theo trong đoạn
+không có dòng riêng. Nguồn trả về đúng như vậy (Ibn Kathir: 4.341 mục
+văn bản rỗng, 0 khoảng trống phân trang).
+
+`validate()` vì vậy nhận `partial_codes`: nguồn chú giải được phép có
+ít DÒNG hơn số Ayah — đó là hình dạng dữ liệu, không phải thiếu sót.
+Văn bản RỖNG vẫn bị cấm với mọi nguồn.
+
+**Hệ quả kiến trúc:** truy vấn khớp chính xác `ayah_id` bỏ sót 945 Ayah
+có chú giải thật. Xem `getTextsCoveringAyah` — quy tắc "mục gần nhất
+trước đó trong CÙNG Surah".
 
 ### Tafsir không vào chỉ mục tìm kiếm
 

@@ -351,10 +351,66 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get aboutSourcesDetail =>
-      'النص العربي والترجمات: Tanzil.net · QuranEnc.com. الصوت: EveryAyah.com. الخط: مجمع الملك فهد.';
+      'حقوق النشر والترخيص وعنوان كل مصدر من مصادر المحتوى.';
 
   @override
   String get versionLabel => 'الإصدار';
+
+  @override
+  String get attributionTitle => 'المصادر والإسناد';
+
+  @override
+  String get attributionIntro =>
+      'النص القرآني والنقحرة والترجمات والتفسير والتلاوات في هذا التطبيق مأخوذة من المصادر أدناه. كل مصدر محفوظ الحقوق لمؤلفه أو ناشره ويُستخدم وفق الترخيص المذكور معه.';
+
+  @override
+  String get attributionKindQuranText => 'النص القرآني';
+
+  @override
+  String get attributionKindTransliteration => 'النقحرة';
+
+  @override
+  String get attributionKindTranslation => 'الترجمات';
+
+  @override
+  String get attributionKindTafsir => 'التفسير';
+
+  @override
+  String get attributionKindAudio => 'التلاوات';
+
+  @override
+  String get attributionAuthor => 'المؤلف';
+
+  @override
+  String get attributionLanguage => 'اللغة';
+
+  @override
+  String get attributionLicense => 'الترخيص';
+
+  @override
+  String get attributionSourceUrl => 'عنوان المصدر';
+
+  @override
+  String get attributionUpdated => 'آخر تحديث';
+
+  @override
+  String get attributionCopyUrl => 'نسخ العنوان';
+
+  @override
+  String get attributionUrlCopied => 'تم نسخ عنوان المصدر';
+
+  @override
+  String get attributionDataVersion => 'إصدار البيانات';
+
+  @override
+  String get attributionSoftwareLicenses => 'تراخيص البرمجيات والخطوط';
+
+  @override
+  String get attributionSoftwareLicensesDetail =>
+      'تراخيص المكتبات مفتوحة المصدر والخطوط الأربعة المرفقة.';
+
+  @override
+  String get attributionEmpty => 'لا يصف إصدار البيانات هذا أي مصدر.';
 
   @override
   String get audioError => 'تعذر التشغيل. تحقق من الاتصال.';

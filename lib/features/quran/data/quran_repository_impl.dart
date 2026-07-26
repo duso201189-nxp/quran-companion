@@ -6,6 +6,7 @@ import '../../../core/logging/repository_boundary_logging.dart';
 import '../domain/entities/ayah.dart';
 import '../domain/entities/ayah_content.dart';
 import '../domain/entities/ayah_search_result.dart';
+import '../domain/entities/covering_text.dart';
 import '../domain/entities/reciter.dart';
 import '../domain/entities/surah.dart';
 import '../domain/entities/translation_source.dart';
@@ -96,17 +97,55 @@ class QuranRepositoryImpl implements QuranRepository {
   }
 
   @override
-  Future<Map<String, String>> getAyahTexts({
+  Future<List<CoveringText>> getTextsCoveringAyah({
     required int ayahId,
     required Set<SourceType> types,
   }) {
-    return withFailureLogging(_logger, 'getAyahTexts', () async {
-      if (types.isEmpty) return const <String, String>{};
-      final byAyah = await _textsForAyahs(
-        [ayahId],
-        _db.translationSources.type.isIn(sourceTypeCodesFor(types)),
-      );
-      return byAyah[ayahId] ?? const <String, String>{};
+    return withFailureLogging(_logger, 'getTextsCoveringAyah', () async {
+      if (types.isEmpty) return const <CoveringText>[];
+
+      // Với MỖI nguồn, lấy mục có `ayah_id` LỚN NHẤT mà vẫn <= Ayah
+      // đang xem VÀ còn nằm trong cùng Surah. Đó chính là đoạn đang
+      // phủ Ayah này — đoạn kéo dài tới ngay trước mục kế tiếp.
+      //
+      // Chặn `>= MIN(ayah của Surah này)` là thứ ngăn đoạn cuối của
+      // Surah trước tràn sang Surah sau (đã kiểm 114 Surah, 0 ca rò).
+      //
+      // VẪN MỘT truy vấn, không N+1: SQLite giải truy vấn tương quan
+      // cho từng nguồn bên trong cùng một câu lệnh.
+      final placeholders = List.filled(types.length, '?').join(', ');
+      final rows = await _db.customSelect(
+        'SELECT s.code AS code, t.text AS text, t.ayah_id AS start_id '
+        'FROM translation_sources s '
+        'JOIN translations t ON t.source_id = s.id '
+        'WHERE s.is_enabled = 1 '
+        'AND s.type IN ($placeholders) '
+        'AND t.ayah_id = ('
+        '  SELECT MAX(t2.ayah_id) FROM translations t2 '
+        '  WHERE t2.source_id = s.id AND t2.ayah_id <= ? '
+        '    AND t2.ayah_id >= ('
+        '      SELECT MIN(a2.id) FROM ayahs a2 '
+        '      WHERE a2.surah_id = (SELECT surah_id FROM ayahs WHERE id = ?)'
+        '    )'
+        ') '
+        'ORDER BY s.display_order',
+        variables: [
+          for (final code in sourceTypeCodesFor(types))
+            Variable.withString(code),
+          Variable.withInt(ayahId),
+          Variable.withInt(ayahId),
+        ],
+        readsFrom: {_db.translations, _db.translationSources, _db.ayahs},
+      ).get();
+
+      return [
+        for (final row in rows)
+          CoveringText(
+            sourceCode: row.read<String>('code'),
+            text: row.read<String>('text'),
+            startAyahId: row.read<int>('start_id'),
+          ),
+      ];
     });
   }
 
@@ -166,6 +205,8 @@ class QuranRepositoryImpl implements QuranRepository {
             nameArabic: r.nameArabic,
             audioUrlTemplate: r.audioUrlTemplate,
             bitrateKbps: r.bitrateKbps,
+            license: r.license,
+            sourceUrl: r.sourceUrl,
           ),
       ];
     });

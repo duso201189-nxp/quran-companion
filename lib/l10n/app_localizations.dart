@@ -751,7 +751,7 @@ abstract class AppLocalizations {
   /// No description provided for @aboutSourcesDetail.
   ///
   /// In vi, this message translates to:
-  /// **'Văn bản Ả Rập & bản dịch: Tanzil.net · QuranEnc.com. Audio: EveryAyah.com. Font: KFGQPC (King Fahd Complex).'**
+  /// **'Bản quyền, giấy phép và địa chỉ của mọi nguồn nội dung.'**
   String get aboutSourcesDetail;
 
   /// No description provided for @versionLabel.
@@ -759,6 +759,114 @@ abstract class AppLocalizations {
   /// In vi, this message translates to:
   /// **'Phiên bản'**
   String get versionLabel;
+
+  /// No description provided for @attributionTitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Nguồn & Ghi nguồn'**
+  String get attributionTitle;
+
+  /// No description provided for @attributionIntro.
+  ///
+  /// In vi, this message translates to:
+  /// **'Văn bản Qur\'an, phiên âm, bản dịch, chú giải và bản thu trong ứng dụng đến từ các nguồn dưới đây. Mỗi nguồn thuộc bản quyền của tác giả hoặc nhà phát hành tương ứng và được sử dụng theo giấy phép ghi kèm.'**
+  String get attributionIntro;
+
+  /// No description provided for @attributionKindQuranText.
+  ///
+  /// In vi, this message translates to:
+  /// **'Văn bản Qur\'an'**
+  String get attributionKindQuranText;
+
+  /// No description provided for @attributionKindTransliteration.
+  ///
+  /// In vi, this message translates to:
+  /// **'Phiên âm'**
+  String get attributionKindTransliteration;
+
+  /// No description provided for @attributionKindTranslation.
+  ///
+  /// In vi, this message translates to:
+  /// **'Bản dịch'**
+  String get attributionKindTranslation;
+
+  /// No description provided for @attributionKindTafsir.
+  ///
+  /// In vi, this message translates to:
+  /// **'Chú giải (Tafsir)'**
+  String get attributionKindTafsir;
+
+  /// No description provided for @attributionKindAudio.
+  ///
+  /// In vi, this message translates to:
+  /// **'Bản thu (Qari)'**
+  String get attributionKindAudio;
+
+  /// No description provided for @attributionAuthor.
+  ///
+  /// In vi, this message translates to:
+  /// **'Tác giả'**
+  String get attributionAuthor;
+
+  /// No description provided for @attributionLanguage.
+  ///
+  /// In vi, this message translates to:
+  /// **'Ngôn ngữ'**
+  String get attributionLanguage;
+
+  /// No description provided for @attributionLicense.
+  ///
+  /// In vi, this message translates to:
+  /// **'Giấy phép'**
+  String get attributionLicense;
+
+  /// No description provided for @attributionSourceUrl.
+  ///
+  /// In vi, this message translates to:
+  /// **'Địa chỉ nguồn'**
+  String get attributionSourceUrl;
+
+  /// No description provided for @attributionUpdated.
+  ///
+  /// In vi, this message translates to:
+  /// **'Cập nhật'**
+  String get attributionUpdated;
+
+  /// No description provided for @attributionCopyUrl.
+  ///
+  /// In vi, this message translates to:
+  /// **'Sao chép địa chỉ'**
+  String get attributionCopyUrl;
+
+  /// No description provided for @attributionUrlCopied.
+  ///
+  /// In vi, this message translates to:
+  /// **'Đã sao chép địa chỉ nguồn'**
+  String get attributionUrlCopied;
+
+  /// No description provided for @attributionDataVersion.
+  ///
+  /// In vi, this message translates to:
+  /// **'Phiên bản dữ liệu'**
+  String get attributionDataVersion;
+
+  /// No description provided for @attributionSoftwareLicenses.
+  ///
+  /// In vi, this message translates to:
+  /// **'Giấy phép phần mềm & phông chữ'**
+  String get attributionSoftwareLicenses;
+
+  /// No description provided for @attributionSoftwareLicensesDetail.
+  ///
+  /// In vi, this message translates to:
+  /// **'Giấy phép của các thư viện mã nguồn mở và của bốn phông chữ đóng gói kèm.'**
+  String get attributionSoftwareLicensesDetail;
+
+  /// No description provided for @attributionEmpty.
+  ///
+  /// In vi, this message translates to:
+  /// **'Bản dữ liệu này chưa mô tả nguồn nào.'**
+  String get attributionEmpty;
 
   /// No description provided for @audioError.
   ///

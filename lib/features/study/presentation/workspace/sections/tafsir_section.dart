@@ -10,7 +10,11 @@ import '../study_panel.dart';
 import '../study_section.dart';
 
 /// Một mục Tafsir đã ghép nguồn với văn bản của đúng Ayah đang mở.
-typedef TafsirEntry = ({TranslationSource source, String text});
+typedef TafsirEntry = ({
+  TranslationSource source,
+  String text,
+  int startAyahId,
+});
 
 /// Chú giải của MỘT Ayah.
 ///
@@ -28,14 +32,26 @@ final tafsirForAyahProvider =
 
     // Dùng LẠI `QuranRepository` — không có `TafsirRepository`
     // (`DR-2026-0006` D5). Chỉ MỘT Ayah, chỉ loại `tafsir`.
-    final texts = await ref.watch(quranRepositoryProvider).getAyahTexts(
+    //
+    // Sprint 32.0 — hỏi "đoạn nào PHỦ Ayah này", không phải "chú giải
+    // CỦA Ayah này": cả hai bộ đã nhập đều gắn chú giải vào Ayah đầu
+    // của một đoạn nhiều câu. Khớp chính xác bỏ sót 945 Ayah có chú
+    // giải thật.
+    final covering =
+        await ref.read(quranRepositoryProvider).getTextsCoveringAyah(
       ayahId: ayahId,
       types: const {SourceType.tafsir},
     );
 
+    final byCode = {for (final s in sources) s.code: s};
     return <TafsirEntry>[
-      for (final source in sources)
-        if (texts[source.code] case final text?) (source: source, text: text),
+      for (final item in covering)
+        if (byCode[item.sourceCode] case final source?)
+          (
+            source: source,
+            text: item.text,
+            startAyahId: item.startAyahId,
+          ),
     ]..sort((a, b) => a.source.displayOrder.compareTo(b.source.displayOrder));
   },
 );

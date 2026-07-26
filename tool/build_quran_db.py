@@ -48,7 +48,7 @@ EXPECTED_AYAHS = 6236
 # v3 (Sprint 2.1b): quy tắc biên tập thống nhất — Allah viết hoa,
 #   một kiểu dấu (ʾ/ʿ), không nguyên âm dài lặp, không dấu ' thừa.
 # v4: tên 114 Surah chuẩn Quran.com (Al-Fatihah, Ya-Sin, Ar-Rahman).
-DATA_VERSION = "5"
+DATA_VERSION = "6"
 
 TANZIL_METADATA_URL = "https://tanzil.net/res/text/metadata/quran-data.xml"
 TANZIL_QURAN_URLS = [
@@ -750,7 +750,18 @@ def main() -> None:
         "data_version": DATA_VERSION,
         "built_at": today,
         "generator": "tool/build_quran_db.py",
+        # Ghi nguồn văn bản Ả Rập. Bản thân văn bản KHÔNG nằm trong
+        # `translation_sources` (nó là cột `ayahs.text_uthmani`), nên
+        # đây là NƠI DUY NHẤT mô tả xuất xứ của nó — và màn hình Ghi
+        # nguồn đọc đúng những khoá này.
+        #
+        # `arabic_source_url` là BẮT BUỘC, không phải trang trí: điều
+        # khoản Tanzil đòi "a link is made to tanzil.net to enable users
+        # to keep track of changes". Thiếu khoá này thì màn hình Ghi
+        # nguồn không có gì để mở, và bản phát hành vi phạm giấy phép.
         "arabic_source": "Tanzil.net Uthmani (verified text)",
+        "arabic_author": "Tanzil Project",
+        "arabic_source_url": "https://tanzil.net/download/",
         "arabic_license": "Tanzil Terms — phân phối nguyên văn, "
                           "ghi nguồn + link tanzil.net",
         "vi_translation_key": vi_key,

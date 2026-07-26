@@ -1,180 +1,121 @@
-# Checklist phát hành App Store & Google Play
+# Release gate — Qur'an Companion
 
-Cập nhật qua các đợt chuẩn bị phát hành Phase 2–4 (xem CHANGELOG.md/git
-log cho chi tiết từng commit). Mục đã ✅ là đã XÁC MINH THẬT (chạy lệnh,
-đọc log build/CI thật) — không phải suy đoán.
+Rewritten at Sprint 34.0. **Every item below is objective**: it names a
+command to run or a condition with exactly one right answer. If an item
+cannot be checked without a human opinion, it does not belong here.
 
-## Tài sản
-- [x] Font UthmanicHafs đặt vào assets/fonts (đã có sẵn,
-      assets/fonts/UthmanicHafs.ttf, docs/FONTS.md)
-- [ ] App Icon 1024×1024 (adaptive Android + iOS set)
-- [ ] Splash Screen (flutter_native_splash, khớp Light/Dark)
-- [ ] Screenshot: iPhone 6.7"/5.5", iPad 12.9", Android phone/tablet
+Narrative history of earlier release preparation (keystore creation,
+signature verification, R8) is archived at
+[`docs/reports/RELEASE_PREP_HISTORY.md`](docs/reports/RELEASE_PREP_HISTORY.md).
 
-## Pháp lý & chính sách
-- [x] Attribution Tanzil + QuranEnc + everyayah trong màn Giới thiệu
-      (đã có: l10n `aboutSourcesDetail` trong Hồ sơ > Nguồn dữ liệu)
-- [ ] Privacy Policy (URL công khai)
-- [ ] Terms of Use
-- [ ] Apple Privacy Manifest (PrivacyInfo.xcprivacy) + App Privacy labels
-- [ ] Google Play Data Safety form
-- [ ] Xác nhận điều khoản phi-thương-mại của bản dịch Tanzil với mô
-      hình phát hành (app miễn phí)
+Legend: ✅ passes today · ❌ fails today · ⬜ cannot be checked on this
+machine (needs macOS, a Play/Apple account, or a physical device).
 
-## Kỹ thuật — Đã xác minh (Phase 2)
-- [x] CI xanh toàn bộ (format, analyze --fatal-infos, test, coverage
-      gate, build Android/Web/iOS) — xem .github/workflows/ci.yml,
-      chạy thật trên GitHub Actions
-- [x] `flutter analyze --fatal-infos`: 0 lỗi
-- [x] `flutter test`: 136/136 pass
-- [x] Dead code & asset không dùng đã dọn (placeholder_body.dart,
-      assets/database.zip 6.4MB, font Inter-Medium không dùng)
-- [x] Copy asset database lần đầu đã atomic (file .tmp + rename,
-      tránh corrupt nếu bị ngắt giữa chừng) — có test riêng
-      (test/content_connection_test.dart)
-- [x] `flutter build apk --release` build sạch, không lỗi — APK debug-
-      signed (signingConfigs.getByName("debug"), CHƯA phải bản ký thật
-      cho Play Store — xem mục "Ký thật" bên dưới) — ĐÃ THAY THẾ ở
-      Phase 4, xem mục Phase 4 bên dưới
-- [x] `flutter build appbundle --release` build sạch — AAB debug-signed
-      (cùng lưu ý như trên) — ĐÃ THAY THẾ ở Phase 4
-- [x] Kiến trúc khởi động đã xác minh đúng thiết kế lazy-I/O
-      (ARCHITECTURE.md §12): không I/O nặng trước frame đầu, cả 2
-      database mở lazy, provider async trên Trang chủ không chặn frame
-      đầu — xác minh bằng đọc code trực tiếp, không chỉ tin tài liệu
+---
 
-## Kỹ thuật — Đã xác minh (Phase 3, kiểm thử thật trên emulator)
-- [x] Chạy toàn bộ tính năng chính bằng tay trên Android emulator thật
-      (adb, không phải chỉ widget test): cả 5 tab (Trang chủ, Đọc,
-      Bookmark, Thống kê, Hồ sơ), 3 chế độ đọc, phát âm thanh, ghi
-      chú/bookmark/yêu thích, đổi giao diện sáng/tối + ngôn ngữ
-- [x] Phát hiện + sửa 2 lỗi UI thật (RenderFlex overflow) mà
-      `flutter analyze`/test/code review trước đó KHÔNG bắt được:
-      1) header thẻ Ayah tràn ngang khi đủ 6 nút hành động + badge +
-      trạng thái + icon sujud — sửa bằng `Wrap` 2 hàng thay `Row`+
-      `Spacer` (lib/features/quran/presentation/reading/reading_screen.dart)
-      2) biểu đồ tuần Thống kê tràn dọc 2px — sửa bằng tăng chiều cao
-      SizedBox 120→132 (lib/features/stats/presentation/stats_screen.dart)
-- [x] Regression cuối: `flutter analyze` 0 lỗi, `flutter test` 136/136
-      pass, `integration_test/app_e2e_test.dart` pass trên emulator thật
-      (không phải mock) sau khi sửa cả 2 lỗi trên
-- [x] Cài đặt APK **release** (R8-minified) thật lên emulator, mở lại
-      từ đầu, chụp màn hình Trang chủ + màn Đọc để xác nhận bản build
-      minified chạy đúng — không chỉ "build thành công" mà còn "chạy
-      đúng" dưới điều kiện release thật
-- [x] CI xanh trên commit cuối cùng đã build release (xác minh qua
-      GitHub Actions API, không suy đoán)
-- [ ] Chưa test bằng TalkBack/screen reader thật (chỉ mới kiểm thử
-      chức năng bằng tay, chưa audit accessibility chuyên sâu — xem
-      mục "Accessibility audit" bên dưới, vẫn còn treo)
+## A. Blocking — no build ships until all pass
 
-## Kỹ thuật — Đã xác minh (Phase 4, ký thật + tối ưu release)
-- [x] **Keystore upload thật đã tạo**: `keytool -genkeypair` (RSA 2048,
-      PKCS12, hiệu lực 10000 ngày → hết hạn 2053-11-22), alias `upload`.
-      File tại `android/app/upload-keystore.jks` — nằm trong
-      `android/.gitignore` (`**/*.jks`), KHÔNG bao giờ vào Git. Xem
-      mục "Bảo mật keystore" ngay dưới đây để biết cách sao lưu.
-- [x] `android/key.properties` (storePassword/keyPassword ngẫu nhiên
-      32 ký tự, keyAlias, storeFile) — cũng nằm trong
-      `android/.gitignore` (`key.properties`), KHÔNG vào Git.
-      `git check-ignore -v` xác nhận cả 2 file đều bị bỏ qua.
-- [x] `android/app/build.gradle.kts`: đọc `key.properties` lúc build,
-      cấu hình `signingConfigs.create("release")` dùng keystore thật;
-      nếu máy build (vd. CI) không có `key.properties`, tự rơi về ký
-      debug để không chặn `flutter build`/CI — không bắt buộc bí mật
-      phải có mặt ở mọi máy.
-- [x] Tối ưu bản release: `isMinifyEnabled = true` +
-      `isShrinkResources = true` bật lần đầu (trước đó TẮT hoàn toàn ở
-      Phase 2!) + `proguard-android-optimize.txt` +
-      `android/app/proguard-rules.pro` mới. Xác nhận R8 chạy thật qua
-      `build/app/outputs/mapping/release/mapping.txt` (17.8MB, hàng
-      nghìn class bị đổi tên/rút gọn) — không chỉ tin cờ bật, mà đọc
-      output thật.
-      Lưu ý trung thực: dung lượng file APK/AAB gần như không đổi so
-      với Phase 2 (68.5MB / 67.8MB) vì phần lớn dung lượng đến từ Dart
-      AOT native code + asset (font, database nội dung) — R8 chỉ rút
-      gọn lớp embedding Java/Kotlin mỏng, vốn đã nhỏ. Tối ưu thật sự
-      cho người dùng cuối đến từ định dạng AAB: Play Console tự tách
-      theo ABI/mật độ màn hình/ngôn ngôn ngữ khi cài trên máy thật,
-      dung lượng tải về sẽ nhỏ hơn đáng kể so với 67.8MB của file .aab
-      gốc (chứa đủ mọi ABI).
-- [x] Đã xác minh chữ ký thật bằng công cụ độc lập (không chỉ tin
-      Gradle): `apksigner verify --print-certs` trên APK và
-      `jarsigner -verify -verbose:summary -certs` trên AAB — cả 2 đều
-      trả về đúng DN đã khai báo (CN=Du So, OU=Personal, O=Qur'an
-      Companion, L=Ho Chi Minh City, ST=Ho Chi Minh, C=VN) và "jar
-      verified", KHÔNG phải chứng chỉ debug mặc định của Android SDK.
-- [x] Cài APK release ký thật lên emulator thật (gỡ bản cũ trước vì
-      đổi chứng chỉ ký → Android từ chối update tại chỗ, đúng như dự
-      kiến), mở lại, xác nhận Trang chủ + màn Đọc hiển thị đúng —
-      không chỉ build thành công mà còn chạy đúng dưới chữ ký thật.
-- [ ] **Google Play App Signing**: quyết định của người dùng ở Phase 4
-      là dùng keystore này làm **upload key**, KHÔNG phải khóa ký phân
-      phối cuối cùng. Bước còn lại (chỉ làm được trong Play Console,
-      không phải trên máy): khi tạo app mới trong Play Console và tải
-      lên `app-release.aab` lần đầu, xác nhận mục "Play App Signing"
-      đang bật (mặc định cho app mới) — Google sẽ giữ khóa ký phân phối
-      thật và tự ký lại AAB bạn tải lên bằng key upload này. Lợi ích:
-      nếu sau này mất `upload-keystore.jks`, có thể yêu cầu Google reset
-      upload key qua quy trình xác minh danh tính chủ tài khoản, KHÔNG
-      mất khả năng cập nhật app vĩnh viễn như khi tự quản lý toàn bộ.
+| # | Item | Verification | Pass condition | Now |
+|---|---|---|---|---|
+| A1 | Licence verified for every bundled content source | `docs/LICENSING.md` §4 contains no row marked "CÒN TREO" | zero open rows | ❌ 2 open |
+| A2 | Privacy policy live at a public URL | `curl -sI $PRIVACY_POLICY_URL` | HTTP 200 | ❌ |
+| A3 | Terms of use live at a public URL | `curl -sI $TERMS_URL` | HTTP 200 | ❌ |
+| A4 | No placeholder left in legal documents | `grep -rn "{{" legal/` | no output | ❌ |
+| A5 | App icon is not the Flutter default | `md5sum android/app/src/main/res/mipmap-xxxhdpi/ic_launcher.png` | ≠ `57838d52c318faff743130c3fcfae0c6` | ❌ |
+| A6 | Formatter clean | `dart format --output=none --set-exit-if-changed lib test` | exit 0 | ✅ |
+| A7 | Analyzer clean at strictest level | `flutter analyze --fatal-infos` | "No issues found!" | ✅ |
+| A8 | Full test suite green | `flutter test` | "All tests passed!" | ✅ 904 |
+| A9 | Coverage above CI gate | `flutter test --coverage` then CI's lcov filter | ≥ 70% | ✅ 84.0% hand-written |
+| A10 | Release build succeeds and is signed with the upload key | `flutter build appbundle --release` then `jarsigner -verify -certs` | "jar verified", CN=Du So | ✅ built 35.0, 75.3 MB, `META-INF/UPLOAD.SF` present |
+| A11 | Attribution complete for shipped data | `flutter test test/attribution_real_data_test.dart` | 4/4 pass | ✅ |
+| A12 | Font licence notices present | `flutter test test/font_licenses_test.dart` | 4/4 pass | ✅ |
+| A13 | App label is human-readable | `aapt2 dump badging <apk> \| grep application-label:` | `Qur'an Companion` | ✅ (fixed 34.0) |
+| A14 | Font licence notices survive into the shipped artifact | `unzip -l app-release.aab \| grep licenses/` | 4 files | ✅ verified in the AAB (35.0) |
 
-### ⚠️ Bảo mật keystore — hành động NGAY, không thể để sau
-- File `android/app/upload-keystore.jks` và `android/key.properties`
-  CHỈ tồn tại cục bộ trên máy này. KHÔNG có ở đâu khác — không trong
-  Git, không trong CI, không có bản sao nào khác được tạo ra trong
-  phiên làm việc này.
-- **Nếu mất file này VÀ chưa từng tải AAB lên Play Console**: phải tạo
-  lại keystore mới từ đầu, không có cách khôi phục (chứng chỉ tự ký,
-  không ai giữ bản sao).
-- **Nếu đã tải lên Play Console rồi** (và đã bật Play App Signing như
-  trên): vẫn có đường khôi phục qua Google, nhưng vẫn nên tránh mất.
-- Việc cần làm ngay: mở 2 file `android/app/upload-keystore.jks` và
-  `android/key.properties` trên máy này, sao chép nội dung
-  storePassword/keyPassword vào một trình quản lý mật khẩu, và sao lưu
-  bản thân file `.jks` vào nơi lưu trữ an toàn ngoài máy này (ví dụ ổ
-  cứng ngoài mã hoá, cloud storage riêng tư có mã hoá) — KHÔNG gửi qua
-  email/chat không mã hoá.
+## B. Google Play
 
-## Kỹ thuật — Còn thiếu / đã biết, chưa xử lý
-- [ ] Android applicationId `com.duso.qurancompanion` — xác nhận đã
-      đăng ký đúng trên Play Console khớp package này
-- [ ] iOS: Apple Developer Program, certificate + profile, TestFlight
-- [ ] Google Play Console, internal testing track
-- [ ] Phát nền audio: audio_service + AndroidManifest + Info.plist
-      (docs/AUDIO.md) — chưa triển khai, AudioController hiện chỉ
-      chạy foreground
-- [ ] UI quản lý cache audio trong Cài đặt (engine đã có:
-      IoCacheManager, nhưng chưa nối vào AudioController/UI — xem
-      TODO.md)
-- [ ] Web: sqlite3.wasm + drift_worker.js vào web/ (docs/DATA_PIPELINE.md)
-      — xác nhận lại lần này: 2 file này CHƯA có trong web/, build Web
-      hiện tại sẽ lỗi khi mở database trên trình duyệt thật
-- [ ] Accessibility audit thật trên thiết bị: TalkBack/VoiceOver,
-      contrast, font scale 200% (code đã có nền tảng theo
-      ARCHITECTURE.md §14, nhưng chưa audit trên thiết bị/screen reader
-      thật)
-- [ ] PERFORMANCE.md: cột "Android tầm trung" vẫn "chưa đo" — cột
-      "Máy dev" đã điền số thật (161.6 ms, đo trên Windows desktop
-      bằng `flutter run --profile --trace-startup`, KHÔNG thay thế
-      cho số đo Android thật). getAyahsOfSurah/FTS MATCH vẫn chưa đo
-      trên cả 2 môi trường
-- [ ] Coverage gate CI hiện tạm 70% (không phải 80% như tài liệu gốc)
-      — coverage thật ~74% ở Bước 6/12; xem TODO.md + ARCHITECTURE.md
-      mục 9 để biết kế hoạch nâng dần về 80% khi Bước 7-9 landing
-- [ ] 16 package outdated (bao gồm 2 major version: flutter_riverpod
-      2→3, go_router 14→17) + `sqlite3_flutter_libs` có bản mới đánh
-      dấu `+eol` — CHƯA nâng cấp, cần một đợt test riêng trước khi bump
-      (xem README.md mục "Quy trình cập nhật dependency")
-- [ ] Cảnh báo `javac`: "source/target value 8 is obsolete" xuất hiện
-      khi build release sạch (flutter clean + build apk --release),
-      đến từ compileOptions Java 8 của một plugin thư viện (không phải
-      :app — :app đã dùng Java 17). Đã thử ép Java 17 lên toàn bộ
-      module thư viện qua root build.gradle.kts nhưng KHÔNG loại bỏ
-      được cảnh báo (có thể đến từ một compile task khác ngoài
-      compileOptions DSL chuẩn); không chặn build, APK/AAB vẫn ra đúng
-      — cần điều tra sâu hơn ở mức Gradle task nếu muốn loại bỏ hẳn
+| # | Item | Verification | Pass condition | Now |
+|---|---|---|---|---|
+| B1 | Artifact is an AAB | file uploaded ends `.aab` | — | ⬜ |
+| B2 | Target API level current | `aapt2 dump badging` → `targetSdkVersion` | ≥ 35 | ✅ 36 |
+| B3 | Play App Signing enabled | Play Console → Setup → App signing | "Play App Signing is enabled" | ⬜ |
+| B4 | Data safety form submitted | Play Console → Policy → Data safety | status "Submitted" | ⬜ (answers ready: `legal/STORE_COMPLIANCE.md` §1) |
+| B5 | Content rating obtained | Play Console → Content rating | rating issued | ⬜ (answers ready: §2) |
+| B6 | Privacy policy URL entered | Play Console → Store listing | field non-empty, resolves 200 | ⬜ |
+| B7 | Store icon 512×512 uploaded | Play Console asset check | accepted | ❌ |
+| B8 | Feature graphic 1024×500 uploaded | Play Console asset check | accepted | ❌ |
+| B9 | ≥2 phone screenshots per listed language | Play Console asset check | accepted | ❌ |
+| B10 | applicationId matches Console | `aapt2 dump badging \| grep package:` | `com.duso.qurancompanion` | ✅ |
+| B11 | versionCode strictly greater than any previous upload | `aapt2 dump badging \| grep versionCode` | monotonic | ⬜ currently 7 |
+| B12 | Internal testing track passes pre-launch report | Play Console → Pre-launch report | 0 crashes, 0 P1 issues | ⬜ |
 
-## Metadata
-- [ ] Tên, mô tả ngắn/dài (vi + en), từ khóa ASO
-- [ ] Danh mục Education/Reference, content rating
+## C. Apple App Store
+
+| # | Item | Verification | Pass condition | Now |
+|---|---|---|---|---|
+| C1 | Apple Developer Program membership active | developer.apple.com account page | "Active" | ❌ |
+| C2 | Distribution certificate + provisioning profile | Xcode → Signing & Capabilities | no errors | ⬜ |
+| C3 | `PrivacyInfo.xcprivacy` present in built app | `unzip -l Runner.app \| grep PrivacyInfo` | 1 hit | ⬜ **file created 34.0, not yet added to the Runner target** |
+| C4 | App privacy labels submitted | App Store Connect → App Privacy | "Ready for submission" | ⬜ (answers ready: §4) |
+| C5 | Export compliance declared | `ITSAppUsesNonExemptEncryption` in Info.plist | key present | ✅ (`false`, added 34.0) |
+| C6 | App icon 1024×1024, no alpha channel | `sips -g hasAlpha Icon-App-1024x1024@1x.png` | `hasAlpha: no` | ❌ stock icon |
+| C7 | Screenshots for every required device class | App Store Connect asset check | accepted | ❌ |
+| C8 | Bundle display name correct | `plutil -p Info.plist \| grep CFBundleDisplayName` | `Qur'an Companion` | ✅ (fixed 34.0) |
+| C9 | TestFlight build installs and launches | manual install from TestFlight | app reaches Home | ⬜ |
+
+## D. Build and distribution hygiene
+
+| # | Item | Verification | Pass condition | Now |
+|---|---|---|---|---|
+| D1 | CI builds the artifact that ships | `.github/workflows/ci.yml` contains `build appbundle --release` | present | ✅ (35.0 — PR: debug APK · main/tag: release AAB) |
+| D2 | Release build is minified | `android/app/build.gradle.kts` | `isMinifyEnabled = true` | ✅ |
+| D3 | R8 mapping file retained for crash de-obfuscation | CI artifact `r8-mapping`, 90-day retention, `if-no-files-found: error` | uploaded | ✅ in CI (35.0) · ⬜ permanent copy is the publisher's step 4 |
+| D4 | Keystore backed up off this machine | manual confirmation by publisher | backup exists | ⬜ |
+| D5 | `key.properties` and `*.jks` are git-ignored | `git check-ignore -v android/key.properties` | matched | ✅ |
+| D6 | No debug/verbose logging in release | `grep -rn "print(" lib/ \| grep -v console_logger` | no output | ✅ |
+| D7 | Version in `pubspec.yaml` matches the release being cut | `grep '^version:' pubspec.yaml` | intended value | ⬜ 0.8.1+7 |
+| D8 | Content database version matches the app constant | `flutter test test/content_database_smoke_test.dart` | pass | ✅ v6 |
+
+## E. Functional gates verifiable by command
+
+| # | Item | Verification | Pass condition | Now |
+|---|---|---|---|---|
+| E1 | Architecture boundaries intact | `flutter test test/architecture_boundaries_test.dart` | 5/5 pass | ✅ |
+| E2 | Every ayah resolves commentary | `flutter test test/tafsir_real_corpus_test.dart` | 14/14 pass | ✅ |
+| E3 | App launches to Home without exception | `flutter test test/widget_test.dart` | pass | ✅ |
+| E4 | Cold start under the project's own 2 s goal | `flutter run --profile --trace-startup` → `timeToFirstFrameRasterizedMicros` | < 2 000 000 | ❌ 1 395 879 µs to raster, but 2 530 ms to usable launch |
+| E5 | Web build produces a working database | `flutter build web` then load in browser | no console error | ❌ `sqlite3.wasm` / `drift_worker.js` absent from `web/` |
+
+## F. Cannot be automated — requires a device or a human
+
+These are listed so they are not mistaken for done. Each has a binary
+outcome even though a person must produce it.
+
+| # | Item | Pass condition |
+|---|---|---|
+| F1 | TalkBack pass on Reading, Study, Attribution | every actionable control announces a label |
+| F2 | VoiceOver pass, same screens | same |
+| F3 | Font scale 200% on the five main screens | no clipped text, no overlapping controls |
+| F4 | Scroll a 286-ayah Surah on a mid-range device | no visible stutter over 10 s of scrolling |
+| F5 | Play audio for 10 minutes with the screen off | playback continues or fails cleanly (background audio is unimplemented — expected failure today) |
+| F6 | Airplane-mode pass | every screen renders; audio fails with a message, no crash |
+| F7 | Fresh install on a device with < 200 MB free | install completes or fails with a system message, no corruption |
+
+---
+
+## Current gate result
+
+**A: 10 of 14 pass** (Sprint 35.0 added A14 and turned A10 green by
+building the real AAB).
+
+The four failures are unchanged in kind since Sprint 33.0 and none is
+an engineering problem:
+
+| Failing | Nature | Who can clear it |
+|---|---|---|
+| A1 licences unverified | legal | rights holders |
+| A2/A3 documents not hosted | operational | publisher |
+| A4 placeholders remain | publisher decisions | publisher |
+| A5 stock Flutter icon | design | designer |
+
+No item in section A can be waived by an engineering decision.

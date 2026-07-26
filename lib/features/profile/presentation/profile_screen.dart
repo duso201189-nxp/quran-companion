@@ -117,11 +117,16 @@ class ProfileScreen extends ConsumerWidget {
           ),
           const Divider(height: 32),
           _SectionLabel(l10n.sectionAbout),
+          // Sprint 33.0 — trước đây đây là một dòng chữ TĨNH liệt kê
+          // bốn cái tên nguồn. Nó đã lỗi thời ngay khi Sprint 31.3
+          // nhập bộ Tafsir đầu tiên. Giờ nó dẫn sang màn hình đọc
+          // metadata thật, nên không thể lệch với dữ liệu được nữa.
           ListTile(
             leading: const Icon(Icons.source_outlined),
             title: Text(l10n.aboutSources),
             subtitle: Text(l10n.aboutSourcesDetail),
-            isThreeLine: true,
+            trailing: const Icon(Icons.chevron_right),
+            onTap: () => context.push(AppRoutes.attribution),
           ),
           ListTile(
             leading: const Icon(Icons.info_outline_rounded),

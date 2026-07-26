@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<!--
+	  Apple Privacy Manifest. BẮT BUỘC từ 2024-05 với app dùng
+	  "required reason API". Thiếu file này -> App Store Connect từ
+	  chối bản tải lên.
+
+	  Nội dung dưới đây mô tả ĐÚNG hành vi đo được của app ở Sprint
+	  34.0, không phải một mẫu chép sẵn:
+
+	  - NSPrivacyTracking = false: không có SDK quảng cáo, không có
+	    IDFA, không có mã theo dõi nào trong lib/.
+	  - NSPrivacyCollectedDataTypes rỗng: toàn bộ ghi chú, bookmark,
+	    tiến độ nằm trong SQLite cục bộ. `crashReporterProvider` trả
+	    về NoopCrashReporter và `loggerProvider` trả về ConsoleLogger
+	    — không có đường nào gửi dữ liệu đi.
+	  - Lối ra mạng DUY NHẤT là tải mp3 từ everyayah.com (xem
+	    lib/core/audio/audio_url.dart). Việc đó bộc lộ địa chỉ IP cho
+	    bên thứ ba nhưng KHÔNG phải "thu thập dữ liệu" theo định nghĩa
+	    của Apple, vì app không nhận lại hay lưu trữ gì.
+
+	  PHẢI CẬP NHẬT LẠI khi đồng bộ Supabase (Bước 11) bật lên: lúc
+	  đó app thật sự truyền dữ liệu người dùng và cả file này lẫn
+	  legal/PRIVACY_POLICY.md đều sai.
+
+	  Lý do truy cập API dưới đây theo danh mục của Apple:
+	  - CA92.1  UserDefaults: đọc/ghi cài đặt CỦA CHÍNH app này
+	            (shared_preferences: theme, ngôn ngữ, hiển thị nguồn).
+	  - C617.1  FileTimestamp: hiển thị/quản lý tệp trong hộp cát của
+	            app (path_provider + drift khi chép và mở database).
+	  - E174.1  DiskSpace: kiểm tra dung lượng trước khi ghi database
+	            nội dung 32.7 MB vào bộ nhớ app.
+	-->
+	<key>NSPrivacyTracking</key>
+	<false/>
+	<key>NSPrivacyTrackingDomains</key>
+	<array/>
+	<key>NSPrivacyCollectedDataTypes</key>
+	<array/>
+	<key>NSPrivacyAccessedAPITypes</key>
+	<array>
+		<dict>
+			<key>NSPrivacyAccessedAPIType</key>
+			<string>NSPrivacyAccessedAPICategoryUserDefaults</string>
+			<key>NSPrivacyAccessedAPITypeReasons</key>
+			<array>
+				<string>CA92.1</string>
+			</array>
+		</dict>
+		<dict>
+			<key>NSPrivacyAccessedAPIType</key>
+			<string>NSPrivacyAccessedAPICategoryFileTimestamp</string>
+			<key>NSPrivacyAccessedAPITypeReasons</key>
+			<array>
+				<string>C617.1</string>
+			</array>
+		</dict>
+		<dict>
+			<key>NSPrivacyAccessedAPIType</key>
+			<string>NSPrivacyAccessedAPICategoryDiskSpace</string>
+			<key>NSPrivacyAccessedAPITypeReasons</key>
+			<array>
+				<string>E174.1</string>
+			</array>
+		</dict>
+	</array>
+</dict>
+</plist>

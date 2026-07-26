@@ -5,10 +5,16 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'app/app.dart';
 import 'core/audio/ayah_audio_player.dart';
 import 'core/audio/just_audio_player.dart';
+import 'core/licenses/bundled_font_licenses.dart';
 import 'core/storage/prefs_provider.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  // Giấy phép của 4 font đóng gói kèm. Đăng ký là ĐỒNG BỘ và lười —
+  // `LicenseRegistry` chỉ chạy stream khi người dùng mở trang giấy
+  // phép, nên không tốn gì cho thời gian khởi động.
+  registerBundledFontLicenses();
 
   // Khởi tạo bộ lưu trữ cài đặt cục bộ TRƯỚC frame đầu tiên
   // để theme và ngôn ngữ đã lưu áp dụng ngay, không bị nháy.

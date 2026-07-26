@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Tên hiển thị dưới biểu tượng launcher và trong Cài đặt Android.
+
+  Sprint 34.0 — TRƯỚC ĐÓ AndroidManifest ghi thẳng
+  android:label="quran_companion", nên máy Android thật hiện tên gói
+  thô dưới biểu tượng. `aapt2 dump badging` trên bản release xác nhận:
+  application-label:'quran_companion' cho toàn bộ 84 locale.
+
+  Đặt ở string resource chứ không viết thẳng vào manifest để bản địa
+  hoá được (values-ar/ bên dưới) — cùng lý do mọi chuỗi giao diện đều
+  nằm trong .arb chứ không nằm trong widget.
+
+  Dấu nháy đơn PHẢI escape trong strings.xml, nếu không aapt2 báo lỗi.
+-->
+<resources>
+    <string name="app_name">Qur\'an Companion</string>
+</resources>

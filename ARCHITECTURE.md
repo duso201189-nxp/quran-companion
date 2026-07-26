@@ -144,6 +144,37 @@ derive visibility from `is_enabled`? That column is a packaging
 decision by the data pipeline; visibility is a per-user preference —
 collapsing them makes one of the two unchangeable.
 
+### Attribution reads the same catalogue
+
+The Ghi nguồn screen (`/attribution`, Sprint 33.0) is the third view
+over `translationSourcesProvider` — after Reading and Tafsir — and it
+adds **no query of its own** for sources or reciters:
+
+```
+translationSourcesProvider ──┬─ readingSourcesProvider   (Reading)
+  (1 query per app run)      ├─ tafsirSourcesProvider    (Study)
+                             └─┐
+recitersProvider ─────────────┼─ attributionProvider     (About)
+meta (4 key reads) ───────────┘     └─ List<AttributionEntry>
+```
+
+`AttributionEntry` exists so the screen has **one** build branch for
+three differently-shaped rows: `translation_sources`, `reciters`, and
+the Arabic text (described only by `meta`, since its text lives in
+`ayahs.text_uthmani` and has no catalogue row). Group order comes from
+`AttributionKind`'s declaration order and the label `switch` is
+exhaustive, so a new content kind cannot ship without a label.
+
+**Legal, not cosmetic.** Tanzil requires a link back; QuranEnc requires
+publisher, source and *version number*. `attribution_real_data_test`
+runs against the shipped `.sqlite` and fails the build if any released
+source lacks a licence or a URL — see `docs/LICENSING.md`.
+
+**Fonts are deliberately elsewhere.** Content provenance changes with
+the data build; font licences change with `pubspec.yaml`. The font
+notices are registered with Flutter's own `LicenseRegistry` and shown
+by `showLicensePage` — two lifetimes, two sources of truth.
+
 ## 6c. Study Boundary (feature ownership)
 
 Reading presents Qur'an text. **Study** owns deep-learning features.
@@ -196,6 +227,14 @@ StudySection(id: …, builder: …)        ← one value in kStudySections
 FutureProvider.autoDispose.family(…)   ← its own loading, keyed by ayahId
 a ConsumerWidget wrapping StudyPanel   ← renders, or SizedBox.shrink()
 ```
+
+**Chú giải phủ theo ĐOẠN.** Tafsir được viết cho cụm câu, không cho
+từng câu: cả hai bộ đã nhập gắn văn bản vào Ayah đầu đoạn (nhịp 1–20).
+`getTextsCoveringAyah` vì thế hỏi *"đoạn nào phủ Ayah này"* — mục gần
+nhất trước đó trong cùng Surah — chứ không khớp chính xác `ayah_id`.
+Nguồn viết theo từng câu suy biến về đúng khớp chính xác, nên MỘT quy
+tắc phục vụ cả hai hình dạng. Không đổi schema, không nhân bản văn bản
+(nhân bản sẽ tốn +280% dung lượng cho Ibn Kathir).
 
 **Panels own their own header.** A section that has nothing to show
 renders `SizedBox.shrink()` and disappears entirely — header included.

@@ -352,10 +352,66 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get aboutSourcesDetail =>
-      'Văn bản Ả Rập & bản dịch: Tanzil.net · QuranEnc.com. Audio: EveryAyah.com. Font: KFGQPC (King Fahd Complex).';
+      'Bản quyền, giấy phép và địa chỉ của mọi nguồn nội dung.';
 
   @override
   String get versionLabel => 'Phiên bản';
+
+  @override
+  String get attributionTitle => 'Nguồn & Ghi nguồn';
+
+  @override
+  String get attributionIntro =>
+      'Văn bản Qur\'an, phiên âm, bản dịch, chú giải và bản thu trong ứng dụng đến từ các nguồn dưới đây. Mỗi nguồn thuộc bản quyền của tác giả hoặc nhà phát hành tương ứng và được sử dụng theo giấy phép ghi kèm.';
+
+  @override
+  String get attributionKindQuranText => 'Văn bản Qur\'an';
+
+  @override
+  String get attributionKindTransliteration => 'Phiên âm';
+
+  @override
+  String get attributionKindTranslation => 'Bản dịch';
+
+  @override
+  String get attributionKindTafsir => 'Chú giải (Tafsir)';
+
+  @override
+  String get attributionKindAudio => 'Bản thu (Qari)';
+
+  @override
+  String get attributionAuthor => 'Tác giả';
+
+  @override
+  String get attributionLanguage => 'Ngôn ngữ';
+
+  @override
+  String get attributionLicense => 'Giấy phép';
+
+  @override
+  String get attributionSourceUrl => 'Địa chỉ nguồn';
+
+  @override
+  String get attributionUpdated => 'Cập nhật';
+
+  @override
+  String get attributionCopyUrl => 'Sao chép địa chỉ';
+
+  @override
+  String get attributionUrlCopied => 'Đã sao chép địa chỉ nguồn';
+
+  @override
+  String get attributionDataVersion => 'Phiên bản dữ liệu';
+
+  @override
+  String get attributionSoftwareLicenses => 'Giấy phép phần mềm & phông chữ';
+
+  @override
+  String get attributionSoftwareLicensesDetail =>
+      'Giấy phép của các thư viện mã nguồn mở và của bốn phông chữ đóng gói kèm.';
+
+  @override
+  String get attributionEmpty => 'Bản dữ liệu này chưa mô tả nguồn nào.';
 
   @override
   String get audioError => 'Không phát được audio. Kiểm tra kết nối mạng.';

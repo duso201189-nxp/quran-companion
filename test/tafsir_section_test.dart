@@ -12,6 +12,7 @@ import 'package:quran_companion/features/quran/data/quran_providers.dart';
 import 'package:quran_companion/features/quran/domain/entities/ayah.dart';
 import 'package:quran_companion/features/quran/domain/entities/ayah_content.dart';
 import 'package:quran_companion/features/quran/domain/entities/ayah_search_result.dart';
+import 'package:quran_companion/features/quran/domain/entities/covering_text.dart';
 import 'package:quran_companion/features/quran/domain/entities/reciter.dart';
 import 'package:quran_companion/features/quran/domain/entities/surah.dart';
 import 'package:quran_companion/features/quran/domain/entities/translation_source.dart';
@@ -80,14 +81,17 @@ class _Repo implements QuranRepository {
       [_vi, ...tafsirSources];
 
   @override
-  Future<Map<String, String>> getAyahTexts({
+  Future<List<CoveringText>> getTextsCoveringAyah({
     required int ayahId,
     required Set<SourceType> types,
   }) async {
     getAyahTextsCalls++;
     requestedAyahIds.add(ayahId);
     requestedTypes.add(types);
-    return tafsirTexts;
+    return [
+      for (final e in tafsirTexts.entries)
+        CoveringText(sourceCode: e.key, text: e.value, startAyahId: ayahId),
+    ];
   }
 
   @override

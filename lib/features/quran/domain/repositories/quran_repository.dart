@@ -1,5 +1,6 @@
 import '../entities/ayah_content.dart';
 import '../entities/ayah_search_result.dart';
+import '../entities/covering_text.dart';
 import '../entities/reciter.dart';
 import '../entities/surah.dart';
 import '../entities/translation_source.dart';
@@ -32,18 +33,23 @@ abstract interface class QuranRepository {
   /// Header (tên Surah + văn bản + bản dịch) cho danh sách id Ayah
   /// bất kỳ — dùng cho Thư viện của tôi. Bỏ qua id không tồn tại;
   /// trả về theo thứ tự id tăng dần (Mushaf).
-  /// Văn bản của MỘT Ayah, giới hạn theo [types].
+  /// Văn bản PHỦ một Ayah, giới hạn theo [types].
   ///
-  /// Sprint 31.2 — mở rộng trừu tượng ĐÃ CÓ thay vì thêm
-  /// `TafsirRepository`: trả về đúng hình dạng `Map<mã nguồn, văn bản>`
-  /// mà `AyahContent.texts` đang dùng, nên không phát sinh kiểu dữ
-  /// liệu mới. Nơi gọi nêu rõ loại nguồn mình cần, nên RANH GIỚI ĐỌC
-  /// (Sprint 30.2) vẫn là một tham số tường minh chứ không phải quy
-  /// ước ngầm.
+  /// Sprint 32.0 — "phủ", không phải "của". Đo trên dữ liệu thật: cả
+  /// hai bộ Tafsir đã nhập đều gắn chú giải vào Ayah ĐẦU của một ĐOẠN
+  /// nhiều câu, rồi để trống các câu tiếp theo:
   ///
-  /// Chỉ nguồn đang bật. Metadata nguồn (tên, ngôn ngữ, thứ tự) lấy từ
-  /// `getEnabledSources()` — không lặp lại ở đây.
-  Future<Map<String, String>> getAyahTexts({
+  ///   Al-Muyassar : 5.278 mục  -> phủ 6.236/6.236 Ayah (nhịp 1..14)
+  ///   Ibn Kathir  : 1.895 mục  -> phủ 6.231/6.236 Ayah (nhịp 1..20)
+  ///
+  /// Truy vấn khớp CHÍNH XÁC `ayah_id` vì thế bỏ sót 945 Ayah có chú
+  /// giải thật. Quy tắc đúng: lấy mục GẦN NHẤT TRƯỚC ĐÓ trong CÙNG
+  /// Surah — đoạn kéo dài tới ngay trước mục kế tiếp.
+  ///
+  /// Nguồn phủ đủ từng Ayah (mọi bản dịch — `validate()` bắt buộc)
+  /// suy biến về đúng khớp chính xác, nên một quy tắc phục vụ cả hai
+  /// hình dạng dữ liệu.
+  Future<List<CoveringText>> getTextsCoveringAyah({
     required int ayahId,
     required Set<SourceType> types,
   });

@@ -354,10 +354,67 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get aboutSourcesDetail =>
-      'Arabic text & translations: Tanzil.net · QuranEnc.com. Audio: EveryAyah.com. Font: KFGQPC (King Fahd Complex).';
+      'Copyright, licence and address of every content source.';
 
   @override
   String get versionLabel => 'Version';
+
+  @override
+  String get attributionTitle => 'Sources & attribution';
+
+  @override
+  String get attributionIntro =>
+      'The Qur\'an text, transliteration, translations, commentary and recitations in this app come from the sources below. Each is the copyright of its author or publisher and is used under the licence shown with it.';
+
+  @override
+  String get attributionKindQuranText => 'Qur\'an text';
+
+  @override
+  String get attributionKindTransliteration => 'Transliteration';
+
+  @override
+  String get attributionKindTranslation => 'Translations';
+
+  @override
+  String get attributionKindTafsir => 'Commentary (Tafsir)';
+
+  @override
+  String get attributionKindAudio => 'Recitations';
+
+  @override
+  String get attributionAuthor => 'Author';
+
+  @override
+  String get attributionLanguage => 'Language';
+
+  @override
+  String get attributionLicense => 'Licence';
+
+  @override
+  String get attributionSourceUrl => 'Source address';
+
+  @override
+  String get attributionUpdated => 'Updated';
+
+  @override
+  String get attributionCopyUrl => 'Copy address';
+
+  @override
+  String get attributionUrlCopied => 'Source address copied';
+
+  @override
+  String get attributionDataVersion => 'Data version';
+
+  @override
+  String get attributionSoftwareLicenses => 'Software & font licences';
+
+  @override
+  String get attributionSoftwareLicensesDetail =>
+      'Licences of the open-source libraries and of the four bundled fonts.';
+
+  @override
+  String get attributionEmpty =>
+      'This data build does not describe any source.';
 
   @override
   String get audioError => 'Playback failed. Check your connection.';

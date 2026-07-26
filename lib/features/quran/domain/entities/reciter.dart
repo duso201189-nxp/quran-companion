@@ -7,6 +7,8 @@ class Reciter {
     required this.audioUrlTemplate,
     this.nameArabic,
     this.bitrateKbps,
+    this.license,
+    this.sourceUrl,
   });
 
   final String code;
@@ -14,4 +16,11 @@ class Reciter {
   final String? nameArabic;
   final String audioUrlTemplate;
   final int? bitrateKbps;
+
+  // Metadata ghi nguồn (Sprint 33.0). Hai cột `license`/`source_url` ĐÃ
+  // có sẵn trong bảng `reciters` từ đầu nhưng chưa bao giờ được đọc lên
+  // — audio là nội dung của bên thứ ba giống hệt bản dịch, nên nó phải
+  // xuất hiện trong màn hình Ghi nguồn cùng một cách. Không đổi schema.
+  final String? license;
+  final String? sourceUrl;
 }

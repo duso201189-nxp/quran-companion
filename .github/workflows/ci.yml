@@ -8,11 +8,19 @@
 #   secret-scan   : quét key/secret bị lộ (chạy song song)
 #   quality       : format -> analyze -> pub outdated -> test
 #                   -> coverage gate >= 70% (mục tiêu v1.0: 80%)
-#   build-android : APK debug        (cần quality pass)
+#   build-android : PR   -> APK debug (nhanh)
+#                   main -> AAB RELEASE + mapping.txt (thứ THẬT SỰ
+#                           được phát hành)
 #   build-web     : Web release      (cần quality pass)
 #   build-ios     : iOS no-codesign  (cần quality pass)
 #
 # Build thất bại -> GitHub email người push + commit đánh dấu ❌.
+#
+# Sprint 35.0 — TRƯỚC ĐÓ CI chỉ build `apk --debug`. Nghĩa là mọi hành
+# vi CHỈ XẢY RA Ở BẢN RELEASE đều vô hình với CI: R8 xoá nhầm một
+# class, resource shrinking loại nhầm một asset, hoặc cấu hình ký hỏng
+# — tất cả chỉ lộ ra khi con người tự build trên máy mình. Bản artifact
+# được kiểm thử phải là bản artifact được phát hành.
 # =============================================================
 
 name: CI
@@ -20,6 +28,9 @@ name: CI
 on:
   push:
     branches: [main, develop]
+    # Tag phát hành (v1.0.0-rc1, v1.0.0...) cũng chạy toàn bộ pipeline
+    # và để lại AAB + mapping.txt làm artifact của chính tag đó.
+    tags: ['v*']
   pull_request:
 
 concurrency:
@@ -84,7 +95,13 @@ jobs:
         uses: actions/cache@v4
         with:
           path: assets/database/quran.sqlite
-          key: quran-db-v1-${{ hashFiles('tool/build_quran_db.py') }}
+          # Khoá cache PHẢI phủ mọi đầu vào của database. Trước
+          # Sprint 35.0 nó chỉ băm build_quran_db.py, nên đổi
+          # tool/data/tafsir_*.json mà không đụng script sẽ khiến
+          # CI phục vụ lại database CŨ từ cache — data_version
+          # lệch hằng số Dart và test smoke đỏ vì một lý do không
+          # liên quan gì tới thay đổi thật.
+          key: quran-db-v2-${{ hashFiles('tool/build_quran_db.py', 'tool/fetch_tafsir.py', 'tool/data/*.json', 'tool/lexicon/**') }}
 
       - name: Build dữ liệu Qur'an (nếu chưa có cache)
         run: |
@@ -142,13 +159,13 @@ jobs:
           retention-days: 14
 
   # -----------------------------------------------------------
-  # 2) BUILD ANDROID (debug)
+  # 2) BUILD ANDROID — PR: APK debug · main/tag: AAB release
   # -----------------------------------------------------------
   build-android:
-    name: Build Android APK (debug)
+    name: Build Android (PR → APK debug · main/tag → AAB release)
     needs: quality
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 40
     steps:
       - uses: actions/checkout@v4
 
@@ -171,7 +188,13 @@ jobs:
         uses: actions/cache@v4
         with:
           path: assets/database/quran.sqlite
-          key: quran-db-v1-${{ hashFiles('tool/build_quran_db.py') }}
+          # Khoá cache PHẢI phủ mọi đầu vào của database. Trước
+          # Sprint 35.0 nó chỉ băm build_quran_db.py, nên đổi
+          # tool/data/tafsir_*.json mà không đụng script sẽ khiến
+          # CI phục vụ lại database CŨ từ cache — data_version
+          # lệch hằng số Dart và test smoke đỏ vì một lý do không
+          # liên quan gì tới thay đổi thật.
+          key: quran-db-v2-${{ hashFiles('tool/build_quran_db.py', 'tool/fetch_tafsir.py', 'tool/data/*.json', 'tool/lexicon/**') }}
 
       - name: Build dữ liệu Qur'an (nếu chưa có cache)
         run: |
@@ -182,20 +205,62 @@ jobs:
       - name: Sinh code (Drift, l10n)
         run: dart run build_runner build --delete-conflicting-outputs
 
-      - name: Build APK debug
+      # --- Pull request: chỉ cần biết Android còn compile được ---
+      - name: Build APK debug (chỉ trên pull request)
+        if: github.event_name == 'pull_request'
         run: flutter build apk --debug
 
       - name: Ghi kích thước APK vào summary
+        if: github.event_name == 'pull_request'
         run: |
           SIZE=$(du -h build/app/outputs/flutter-apk/app-debug.apk | cut -f1)
           echo "### 📦 APK debug: $SIZE" >> "$GITHUB_STEP_SUMMARY"
 
-      - name: Lưu APK để tải về kiểm tra
+      # --- main / tag: build ĐÚNG THỨ ĐƯỢC PHÁT HÀNH ---
+      #
+      # CI không có `android/key.properties` (bí mật chỉ nằm trên máy
+      # dev), nên build.gradle.kts tự rơi về ký debug. Điều đó KHÔNG
+      # làm mất giá trị của job này: mục đích là chạy R8, resource
+      # shrinking và đóng gói asset thật — tức chính những bước mà bản
+      # debug bỏ qua. Việc ký bằng key upload thật vẫn do người phát
+      # hành làm trên máy có keystore.
+      - name: Build AAB release (main hoặc tag)
+        if: github.event_name != 'pull_request'
+        run: flutter build appbundle --release
+
+      - name: Ghi kích thước AAB vào summary
+        if: github.event_name != 'pull_request'
+        run: |
+          AAB=build/app/outputs/bundle/release/app-release.aab
+          SIZE=$(du -h "$AAB" | cut -f1)
+          echo "### 📦 AAB release: $SIZE" >> "$GITHUB_STEP_SUMMARY"
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+          echo "Ký bằng khoá debug (CI không giữ keystore) — dùng để" \
+               "kiểm tra R8/đóng gói, KHÔNG phải bản nộp cửa hàng." \
+               >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Lưu AAB
+        if: github.event_name != 'pull_request'
         uses: actions/upload-artifact@v4
         with:
-          name: app-debug-apk
-          path: build/app/outputs/flutter-apk/app-debug.apk
-          retention-days: 7
+          name: app-release-aab
+          path: build/app/outputs/bundle/release/app-release.aab
+          retention-days: 90
+
+      # mapping.txt là thứ DUY NHẤT giải mã được stack trace của bản
+      # release đã bị R8 đổi tên. Mất nó = mọi báo cáo lỗi sau này của
+      # bản build ấy trở thành vô nghĩa vĩnh viễn. Giữ 90 ngày trên CI,
+      # và người phát hành phải lưu bản của tag phát hành lâu dài.
+      - name: Lưu mapping.txt (giải mã stack trace về sau)
+        if: github.event_name != 'pull_request'
+        uses: actions/upload-artifact@v4
+        with:
+          name: r8-mapping
+          path: |
+            build/app/outputs/mapping/release/mapping.txt
+            build/app/outputs/mapping/release/*.txt
+          retention-days: 90
+          if-no-files-found: error
 
   # -----------------------------------------------------------
   # 3) BUILD WEB (release)
@@ -221,7 +286,13 @@ jobs:
         uses: actions/cache@v4
         with:
           path: assets/database/quran.sqlite
-          key: quran-db-v1-${{ hashFiles('tool/build_quran_db.py') }}
+          # Khoá cache PHẢI phủ mọi đầu vào của database. Trước
+          # Sprint 35.0 nó chỉ băm build_quran_db.py, nên đổi
+          # tool/data/tafsir_*.json mà không đụng script sẽ khiến
+          # CI phục vụ lại database CŨ từ cache — data_version
+          # lệch hằng số Dart và test smoke đỏ vì một lý do không
+          # liên quan gì tới thay đổi thật.
+          key: quran-db-v2-${{ hashFiles('tool/build_quran_db.py', 'tool/fetch_tafsir.py', 'tool/data/*.json', 'tool/lexicon/**') }}
 
       - name: Build dữ liệu Qur'an (nếu chưa có cache)
         run: |
@@ -275,7 +346,13 @@ jobs:
         uses: actions/cache@v4
         with:
           path: assets/database/quran.sqlite
-          key: quran-db-v1-${{ hashFiles('tool/build_quran_db.py') }}
+          # Khoá cache PHẢI phủ mọi đầu vào của database. Trước
+          # Sprint 35.0 nó chỉ băm build_quran_db.py, nên đổi
+          # tool/data/tafsir_*.json mà không đụng script sẽ khiến
+          # CI phục vụ lại database CŨ từ cache — data_version
+          # lệch hằng số Dart và test smoke đỏ vì một lý do không
+          # liên quan gì tới thay đổi thật.
+          key: quran-db-v2-${{ hashFiles('tool/build_quran_db.py', 'tool/fetch_tafsir.py', 'tool/data/*.json', 'tool/lexicon/**') }}
 
       - name: Build dữ liệu Qur'an (nếu chưa có cache)
         run: |
