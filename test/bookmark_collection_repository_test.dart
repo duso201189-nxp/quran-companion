@@ -2,6 +2,7 @@ import 'package:drift/native.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'package:quran_companion/core/database/user/user_database.dart';
+import 'package:quran_companion/core/logging/console_logger.dart';
 import 'package:quran_companion/features/library/data/bookmark_collection_repository_impl.dart';
 
 void main() {
@@ -16,6 +17,7 @@ void main() {
     fakeNow = 1000;
     repo = BookmarkCollectionRepositoryImpl(
       db,
+      const ConsoleLogger(),
       newId: () => 'col-${++idCounter}',
       nowMs: () => fakeNow,
     );

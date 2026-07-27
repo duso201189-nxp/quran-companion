@@ -2,6 +2,7 @@ import 'package:drift/native.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'package:quran_companion/core/database/user/user_database.dart';
+import 'package:quran_companion/core/logging/console_logger.dart';
 import 'package:quran_companion/features/learning/data/scheduler_repository_impl.dart';
 import 'package:quran_companion/features/learning/domain/entities/srs_card.dart';
 import 'package:quran_companion/features/learning/domain/scheduling_algorithm.dart';
@@ -20,6 +21,7 @@ void main() {
     repo = SchedulerRepositoryImpl(
       db,
       const SM2SchedulingAlgorithm(),
+      const ConsoleLogger(),
       newId: () => 'card-${++idCounter}',
       nowMs: () => fakeNow,
     );

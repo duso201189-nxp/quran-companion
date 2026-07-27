@@ -1,7 +1,10 @@
+import 'package:drift/native.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import 'package:quran_companion/core/database/user/user_database.dart';
 import 'package:quran_companion/core/logging/logger.dart';
 import 'package:quran_companion/core/logging/repository_boundary_logging.dart';
+import 'package:quran_companion/features/library/data/bookmark_collection_repository_impl.dart';
 
 /// Fake ghi lại mọi lệnh gọi error() — dùng để CHỨNG MINH (Sprint 19
 /// Phase 2) withFailureLogging()/withFailureLoggingStream() ghi đúng 1
@@ -114,11 +117,29 @@ void main() {
     });
   });
 
-  // A third group existed here at d4976b0 ("Repository thật — end-to-end"),
-  // exercising withFailureLogging() through the real
-  // BookmarkCollectionRepositoryImpl. Deliberately omitted from this
-  // standalone extraction: that constructor only accepts a Logger once
-  // the reliability retrofit (G8 candidate P4) lands, which main does not
-  // yet have. Restore it verbatim from d4976b0 when P4 merges — see
-  // RELIABILITY_PR_REPORT.md.
+  group('Repository thật — end-to-end (Sprint 19 Phase 2 adoption)', () {
+    test(
+        'BookmarkCollectionRepositoryImpl.assignBookmark: ArgumentError của '
+        'validation (collection không tồn tại) vẫn ném ra nguyên vẹn, đồng '
+        'thời được ghi log qua Logger đã tiêm — chứng minh hành vi cũ giữ '
+        'nguyên, chỉ thêm log ("Only diagnostics improve")', () async {
+      final db = UserDatabase(NativeDatabase.memory());
+      final logger = _RecordingLogger();
+      final repo = BookmarkCollectionRepositoryImpl(db, logger);
+
+      Object? caught;
+      try {
+        await repo.assignBookmark(1, 'khong-ton-tai');
+      } catch (e) {
+        caught = e;
+      }
+
+      expect(caught, isA<ArgumentError>());
+      expect(logger.errorMessages, hasLength(1));
+      expect(logger.errorMessages.single, contains('assignBookmark'));
+      expect(logger.errorCauses.single, same(caught));
+
+      await db.close();
+    });
+  });
 }
