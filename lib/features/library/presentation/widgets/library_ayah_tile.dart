@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:quran_companion/l10n/app_localizations.dart';
 
 import '../../../../app/theme/app_theme.dart';
 import '../../../quran/presentation/annotations/ayah_actions_sheet.dart'
@@ -13,10 +14,15 @@ class LibraryAyahTile extends StatelessWidget {
     super.key,
     required this.item,
     required this.onTap,
+    this.onOrganize,
   });
 
   final LibraryItem item;
   final VoidCallback onTap;
+
+  /// Sắp xếp vào bộ sưu tập (Sprint 8, DR-2026-0003 mục C) — null =
+  /// ẩn nút, chỉ tab Bookmarks truyền giá trị này.
+  final VoidCallback? onOrganize;
 
   @override
   Widget build(BuildContext context) {
@@ -37,12 +43,27 @@ class LibraryAyahTile extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  '${ayah.surahNameLatin} · '
-                  '${ayah.surahId}:${ayah.ayahNumber}',
-                  style: textTheme.labelMedium?.copyWith(
-                    color: scheme.primary,
-                  ),
+                Row(
+                  children: [
+                    Expanded(
+                      child: Text(
+                        '${ayah.surahNameLatin} · '
+                        '${ayah.surahId}:${ayah.ayahNumber}',
+                        style: textTheme.labelMedium?.copyWith(
+                          color: scheme.primary,
+                        ),
+                      ),
+                    ),
+                    if (onOrganize != null)
+                      IconButton(
+                        icon: const Icon(Icons.create_new_folder_outlined),
+                        iconSize: 20,
+                        visualDensity: VisualDensity.compact,
+                        tooltip:
+                            AppLocalizations.of(context).libraryOrganizeTooltip,
+                        onPressed: onOrganize,
+                      ),
+                  ],
                 ),
                 const SizedBox(height: 8),
                 Text(

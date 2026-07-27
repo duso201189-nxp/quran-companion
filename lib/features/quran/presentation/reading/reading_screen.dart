@@ -12,6 +12,8 @@ import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 import '../../../../app/router.dart';
 import '../../../../app/theme/app_theme.dart';
 import '../../../stats/data/stats_store.dart';
+import '../../../stats/data/study_session_providers.dart';
+import '../../../stats/domain/repositories/study_session_repository.dart';
 import '../../data/user_content_providers.dart';
 import '../../domain/basmalah.dart';
 import '../../domain/entities/ayah_annotation.dart';
@@ -62,6 +64,7 @@ class _ReadingScreenState extends ConsumerState<ReadingScreen> {
   // thống kê phiên đọc (ngày + số phút)
   final Stopwatch _sessionWatch = Stopwatch();
   late final StatsStore _statsStore;
+  late final StudySessionRepository _studySessionRepository;
 
   @override
   void initState() {
@@ -70,6 +73,7 @@ class _ReadingScreenState extends ConsumerState<ReadingScreen> {
         ref.read(readingPositionStoreProvider).positionFor(widget.surahId) ?? 0;
     _positionsListener.itemPositions.addListener(_onPositionsChanged);
     _statsStore = ref.read(statsStoreProvider);
+    _studySessionRepository = ref.read(studySessionRepositoryProvider);
     unawaited(_statsStore.markToday());
     _sessionWatch.start();
   }
@@ -77,7 +81,25 @@ class _ReadingScreenState extends ConsumerState<ReadingScreen> {
   @override
   void dispose() {
     _positionsListener.itemPositions.removeListener(_onPositionsChanged);
-    unawaited(_statsStore.addSeconds(_sessionWatch.elapsed.inSeconds));
+    final seconds = _sessionWatch.elapsed.inSeconds;
+    unawaited(_statsStore.addSeconds(seconds));
+    // Sprint 8 (DR-2026-0003 mục A) — ghi song song vào
+    // study_sessions (Drift) để "Phiên đọc" (streak/tổng kết hôm
+    // nay) có dữ liệu thật; StatsStore/SharedPreferences vẫn là
+    // nguồn cho lưới chỉ số hiện có, không đụng tới. Cùng ngưỡng
+    // "< 5 giây bỏ qua" như StatsStore.addSeconds — lướt qua màn
+    // hình không tính là một phiên đọc.
+    if (seconds >= 5) {
+      unawaited(
+        _studySessionRepository.logSession(
+          date: StatsStore.dayKey(DateTime.now()),
+          surahId: widget.surahId,
+          ayahFrom: _initialAyahIndex,
+          ayahTo: _lastSavedIndex ?? _initialAyahIndex,
+          durationSec: seconds,
+        ),
+      );
+    }
     super.dispose();
   }
 

@@ -401,4 +401,85 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get libraryEmptyHighlights => 'لا آيات مظللة بعد.';
+
+  @override
+  String get statsSessionsTitle => 'جلسات القراءة';
+
+  @override
+  String get statsSessionsEmpty => 'لا توجد جلسات قراءة مسجلة بعد.';
+
+  @override
+  String get statsTodayTitle => 'اليوم';
+
+  @override
+  String statsTodayMinutes(int count) {
+    return '$count دقيقة';
+  }
+
+  @override
+  String statsTodaySessionsCount(int count) {
+    return '$count جلسة';
+  }
+
+  @override
+  String get khatmSectionTitle => 'ختمة نشطة';
+
+  @override
+  String get khatmEmpty => 'لا توجد ختمة نشطة.';
+
+  @override
+  String get khatmStart => 'ابدأ ختمة';
+
+  @override
+  String get khatmDefaultName => 'ختمتي';
+
+  @override
+  String get khatmProgressLabel => 'التقدم';
+
+  @override
+  String get khatmContinueReading => 'متابعة القراءة';
+
+  @override
+  String khatmAyahPosition(int current, int total) {
+    return 'الآية $current / $total';
+  }
+
+  @override
+  String get collectionsTitle => 'المجموعات';
+
+  @override
+  String get collectionsEmpty => 'لا توجد مجموعات بعد.';
+
+  @override
+  String get collectionsCreate => 'مجموعة جديدة';
+
+  @override
+  String get collectionsRename => 'إعادة تسمية';
+
+  @override
+  String get collectionsDelete => 'حذف';
+
+  @override
+  String get collectionsDeleteConfirmTitle => 'حذف المجموعة؟';
+
+  @override
+  String get collectionsDeleteConfirmBody =>
+      'تبقى الإشارات المرجعية، وتُحذف المجموعة فقط.';
+
+  @override
+  String get collectionNameHint => 'اسم المجموعة';
+
+  @override
+  String get collectionEmojiHint => 'رمز تعبيري (اختياري)';
+
+  @override
+  String collectionItemCount(int count) {
+    return '$count آية';
+  }
+
+  @override
+  String get collectionAssignTitle => 'إضافة إلى مجموعة';
+
+  @override
+  String get libraryOrganizeTooltip => 'تنظيم ضمن مجموعة';
 }

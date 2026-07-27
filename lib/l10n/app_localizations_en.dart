@@ -403,4 +403,85 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get libraryEmptyHighlights => 'No highlighted ayahs yet.';
+
+  @override
+  String get statsSessionsTitle => 'Reading Sessions';
+
+  @override
+  String get statsSessionsEmpty => 'No reading sessions logged yet.';
+
+  @override
+  String get statsTodayTitle => 'Today';
+
+  @override
+  String statsTodayMinutes(int count) {
+    return '$count min';
+  }
+
+  @override
+  String statsTodaySessionsCount(int count) {
+    return '$count sessions';
+  }
+
+  @override
+  String get khatmSectionTitle => 'Active Khatm';
+
+  @override
+  String get khatmEmpty => 'No active Khatm cycle.';
+
+  @override
+  String get khatmStart => 'Start Khatm';
+
+  @override
+  String get khatmDefaultName => 'My Khatm';
+
+  @override
+  String get khatmProgressLabel => 'Progress';
+
+  @override
+  String get khatmContinueReading => 'Continue reading';
+
+  @override
+  String khatmAyahPosition(int current, int total) {
+    return 'Ayah $current / $total';
+  }
+
+  @override
+  String get collectionsTitle => 'Collections';
+
+  @override
+  String get collectionsEmpty => 'No collections yet.';
+
+  @override
+  String get collectionsCreate => 'New collection';
+
+  @override
+  String get collectionsRename => 'Rename';
+
+  @override
+  String get collectionsDelete => 'Delete';
+
+  @override
+  String get collectionsDeleteConfirmTitle => 'Delete collection?';
+
+  @override
+  String get collectionsDeleteConfirmBody =>
+      'Bookmarks stay, only the collection is removed.';
+
+  @override
+  String get collectionNameHint => 'Collection name';
+
+  @override
+  String get collectionEmojiHint => 'Emoji (optional)';
+
+  @override
+  String collectionItemCount(int count) {
+    return '$count ayahs';
+  }
+
+  @override
+  String get collectionAssignTitle => 'Add to collection';
+
+  @override
+  String get libraryOrganizeTooltip => 'Organize into collection';
 }

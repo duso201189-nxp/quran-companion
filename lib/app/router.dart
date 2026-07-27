@@ -2,6 +2,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../features/home/presentation/home_screen.dart';
+import '../features/library/presentation/collections/collections_screen.dart';
 import '../features/library/presentation/library_screen.dart';
 import '../features/profile/presentation/profile_screen.dart';
 import '../features/quran/presentation/reading/reading_screen.dart';
@@ -21,6 +22,10 @@ abstract final class AppRoutes {
 
   /// Thư viện của tôi — màn hình push full-screen (không phải tab).
   static const String library = '/library';
+
+  /// Bộ sưu tập Bookmark (Sprint 8 — DR-2026-0003 mục C) — push
+  /// full-screen từ Thư viện của tôi, giống [library]/[search].
+  static const String collections = '/collections';
 
   /// Tìm kiếm — màn hình push full-screen (không phải tab), giống
   /// [library]. Xem DR-2026-0002 mục 1.
@@ -114,6 +119,11 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: AppRoutes.search,
         builder: (context, state) => const SearchScreen(),
+      ),
+
+      GoRoute(
+        path: AppRoutes.collections,
+        builder: (context, state) => const CollectionsScreen(),
       ),
 
       // Trang đọc full-screen (nhảy từ Thư viện của tôi / ngoài shell).
