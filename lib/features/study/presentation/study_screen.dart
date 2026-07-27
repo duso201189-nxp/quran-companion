@@ -1,9 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:quran_companion/l10n/app_localizations.dart';
 
+import '../../../app/router.dart';
+
 /// Màn hình Học — bốn công cụ (Flashcard, Lặp lại ngắt quãng,
-/// Trắc nghiệm, Ôn tập hằng ngày). UI sẵn sàng, logic học sẽ
-/// nối vào ở bước sau (chưa cần backend).
+/// Trắc nghiệm, Ôn tập hằng ngày). Chỉ "Ôn tập hằng ngày" đã nối
+/// thật (Sprint 9 — DR-2026-0004 mục 3); ba công cụ còn lại vẫn
+/// chờ logic học (Bước 9).
 class StudyScreen extends StatelessWidget {
   const StudyScreen({super.key});
 
@@ -15,26 +19,31 @@ class StudyScreen extends StatelessWidget {
       IconData icon,
       String title,
       String subtitle,
+      VoidCallback? onTap,
     })>[
       (
         icon: Icons.style_rounded,
         title: l10n.studyFlashcards,
         subtitle: l10n.studyFlashcardsDesc,
+        onTap: null,
       ),
       (
         icon: Icons.update_rounded,
         title: l10n.studySpaced,
         subtitle: l10n.studySpacedDesc,
+        onTap: null,
       ),
       (
         icon: Icons.quiz_rounded,
         title: l10n.studyQuiz,
         subtitle: l10n.studyQuizDesc,
+        onTap: null,
       ),
       (
         icon: Icons.today_rounded,
         title: l10n.studyDailyReview,
         subtitle: l10n.studyDailyReviewDesc,
+        onTap: () => context.push(AppRoutes.revisionQueue),
       ),
     ];
 
@@ -60,6 +69,7 @@ class StudyScreen extends StatelessWidget {
                     title: t.title,
                     subtitle: t.subtitle,
                     comingSoonLabel: l10n.comingSoon,
+                    onTap: t.onTap,
                   ),
               ],
             );
@@ -76,12 +86,16 @@ class _StudyToolCard extends StatelessWidget {
     required this.title,
     required this.subtitle,
     required this.comingSoonLabel,
+    required this.onTap,
   });
 
   final IconData icon;
   final String title;
   final String subtitle;
   final String comingSoonLabel;
+
+  /// null = công cụ chưa nối logic thật, hiện chip "Sắp ra mắt".
+  final VoidCallback? onTap;
 
   @override
   Widget build(BuildContext context) {
@@ -93,7 +107,7 @@ class _StudyToolCard extends StatelessWidget {
       borderRadius: BorderRadius.circular(16),
       child: InkWell(
         borderRadius: BorderRadius.circular(16),
-        onTap: null, // sẽ mở công cụ khi logic học hoàn thiện
+        onTap: onTap,
         child: Padding(
           padding: const EdgeInsets.all(16),
           child: Row(
@@ -132,22 +146,28 @@ class _StudyToolCard extends StatelessWidget {
                   ],
                 ),
               ),
-              const SizedBox(width: 10),
-              Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 10,
-                  vertical: 5,
+              if (onTap == null) ...[
+                const SizedBox(width: 10),
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 10,
+                    vertical: 5,
+                  ),
+                  decoration: BoxDecoration(
+                    color: scheme.secondaryContainer,
+                    borderRadius: BorderRadius.circular(999),
+                  ),
+                  child: Text(
+                    comingSoonLabel,
+                    style: textTheme.labelSmall
+                        ?.copyWith(color: scheme.onSecondaryContainer),
+                  ),
                 ),
-                decoration: BoxDecoration(
-                  color: scheme.secondaryContainer,
-                  borderRadius: BorderRadius.circular(999),
+              ] else
+                Icon(
+                  Icons.chevron_right_rounded,
+                  color: scheme.onSurfaceVariant,
                 ),
-                child: Text(
-                  comingSoonLabel,
-                  style: textTheme.labelSmall
-                      ?.copyWith(color: scheme.onSecondaryContainer),
-                ),
-              ),
             ],
           ),
         ),

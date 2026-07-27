@@ -215,5 +215,20 @@
     }
   },
   "collectionAssignTitle": "إضافة إلى مجموعة",
-  "libraryOrganizeTooltip": "تنظيم ضمن مجموعة"
+  "libraryOrganizeTooltip": "تنظيم ضمن مجموعة",
+  "revisionQueueEmpty": "لا توجد آيات بحاجة للمراجعة بعد.",
+  "dailyGoalMinutesHint": "دقائق في اليوم",
+  "dailyGoalAyahsHint": "آيات في اليوم",
+  "dailyGoalNotSet": "لم يتم تعيين هدف بعد — اضغط للتعيين.",
+  "dailyGoalMinutesProgress": "{current} / {target} دقيقة اليوم",
+  "@dailyGoalMinutesProgress": {
+    "placeholders": {
+      "current": {
+        "type": "int"
+      },
+      "target": {
+        "type": "int"
+      }
+    }
+  }
 }
