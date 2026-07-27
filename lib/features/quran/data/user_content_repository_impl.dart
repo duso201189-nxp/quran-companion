@@ -5,21 +5,32 @@ import 'package:uuid/uuid.dart';
 
 import '../../../core/database/user/user_database.dart';
 import '../../../core/database/user/user_tables.dart';
+import '../../../core/logging/logger.dart';
+import '../../../core/logging/repository_boundary_logging.dart';
 import '../domain/entities/ayah_annotation.dart';
 import '../domain/repositories/user_content_repository.dart';
 
 /// Triển khai UserContentRepository trên UserDatabase (Drift).
 ///
 /// [newId] và [nowMs] tiêm được để test có kết quả xác định.
+///
+/// Sprint 19 Phase 2 — mọi phương thức công khai được bọc bằng
+/// withFailureLogging()/withFailureLoggingStream()
+/// (core/logging/repository_boundary_logging.dart): lỗi được map qua
+/// mapToAppFailure() và ghi log (Logger, TIÊM QUA constructor — KHÔNG
+/// bao giờ tự dựng ConsoleLogger ở đây), rồi LUÔN rethrow nguyên vẹn
+/// lỗi gốc — hành vi giữ NGUYÊN so với trước, chỉ thêm log khi có lỗi.
 class UserContentRepositoryImpl implements UserContentRepository {
   UserContentRepositoryImpl(
-    this._db, {
+    this._db,
+    this._logger, {
     String Function()? newId,
     int Function()? nowMs,
   })  : _newId = newId ?? const Uuid().v4,
         _nowMs = nowMs ?? _epochNow;
 
   final UserDatabase _db;
+  final Logger _logger;
   final String Function() _newId;
   final int Function() _nowMs;
 
@@ -49,8 +60,9 @@ class UserContentRepositoryImpl implements UserContentRepository {
           ..where((t) => t.ayahId.isIn(ayahIds) & alive(t)))
         .watch();
 
-    return _combineLatest5(bookmarks, highlights, notes, statuses, favorites,
-        (bm, hl, nt, st, fv) {
+    final combined =
+        _combineLatest5(bookmarks, highlights, notes, statuses, favorites,
+            (bm, hl, nt, st, fv) {
       final map = <int, _MutableAnnotation>{};
       _MutableAnnotation of(int id) =>
           map.putIfAbsent(id, _MutableAnnotation.new);
@@ -75,6 +87,11 @@ class UserContentRepositoryImpl implements UserContentRepository {
         for (final e in map.entries) e.key: e.value.build(),
       };
     });
+    return withFailureLoggingStream(
+      _logger,
+      'watchAnnotationsForAyahs',
+      combined,
+    );
   }
 
   // ------------------- Thư viện của tôi (xem tất cả) -------------------
@@ -84,11 +101,12 @@ class UserContentRepositoryImpl implements UserContentRepository {
     final q = _db.select(_db.bookmarks)
       ..where((t) => t.deletedAt.isNull())
       ..orderBy([(t) => OrderingTerm.desc(t.createdAt)]);
-    return q.watch().map(
+    final stream = q.watch().map(
           (rows) => [
             for (final r in rows) (ayahId: r.ayahId, savedAt: r.createdAt),
           ],
         );
+    return withFailureLoggingStream(_logger, 'watchAllBookmarks', stream);
   }
 
   @override
@@ -96,11 +114,12 @@ class UserContentRepositoryImpl implements UserContentRepository {
     final q = _db.select(_db.favorites)
       ..where((t) => t.deletedAt.isNull())
       ..orderBy([(t) => OrderingTerm.desc(t.createdAt)]);
-    return q.watch().map(
+    final stream = q.watch().map(
           (rows) => [
             for (final r in rows) (ayahId: r.ayahId, savedAt: r.createdAt),
           ],
         );
+    return withFailureLoggingStream(_logger, 'watchAllFavorites', stream);
   }
 
   @override
@@ -108,12 +127,13 @@ class UserContentRepositoryImpl implements UserContentRepository {
     final q = _db.select(_db.notes)
       ..where((t) => t.deletedAt.isNull())
       ..orderBy([(t) => OrderingTerm.desc(t.updatedAt)]);
-    return q.watch().map(
+    final stream = q.watch().map(
           (rows) => [
             for (final r in rows)
               (ayahId: r.ayahId, note: r.content, savedAt: r.updatedAt),
           ],
         );
+    return withFailureLoggingStream(_logger, 'watchAllNotes', stream);
   }
 
   @override
@@ -122,7 +142,7 @@ class UserContentRepositoryImpl implements UserContentRepository {
     final q = _db.select(_db.highlights)
       ..where((t) => t.deletedAt.isNull())
       ..orderBy([(t) => OrderingTerm.desc(t.updatedAt)]);
-    return q.watch().map((rows) {
+    final stream = q.watch().map((rows) {
       // rows đã sắp mới nhất trước -> Ayah xuất hiện lần đầu giữ
       // savedAt mới nhất; thứ tự chèn = thứ tự hiển thị mới→cũ.
       final byAyah = <int, ({Set<String> colors, int savedAt})>{};
@@ -139,6 +159,7 @@ class UserContentRepositoryImpl implements UserContentRepository {
           (ayahId: e.key, colors: e.value.colors, savedAt: e.value.savedAt),
       ];
     });
+    return withFailureLoggingStream(_logger, 'watchAllHighlights', stream);
   }
 
   @override
@@ -148,188 +169,201 @@ class UserContentRepositoryImpl implements UserContentRepository {
         (t) => t.status.equals('review') & t.deletedAt.isNull(),
       )
       ..orderBy([(t) => OrderingTerm.desc(t.updatedAt)]);
-    return q.watch().map(
+    final stream = q.watch().map(
           (rows) => [
             for (final r in rows) (ayahId: r.ayahId, savedAt: r.updatedAt),
           ],
         );
+    return withFailureLoggingStream(_logger, 'watchAllReviewAyahs', stream);
   }
 
   // ------------------------- write -------------------------
 
   @override
-  Future<void> toggleBookmark(int ayahId) async {
-    final now = _nowMs();
-    final existing = await (_db.select(_db.bookmarks)
-          ..where((t) => t.ayahId.equals(ayahId)))
-        .getSingleOrNull();
+  Future<void> toggleBookmark(int ayahId) {
+    return withFailureLogging(_logger, 'toggleBookmark', () async {
+      final now = _nowMs();
+      final existing = await (_db.select(_db.bookmarks)
+            ..where((t) => t.ayahId.equals(ayahId)))
+          .getSingleOrNull();
 
-    if (existing == null) {
-      await _db.into(_db.bookmarks).insert(
-            BookmarksCompanion.insert(
-              id: _newId(),
-              ayahId: ayahId,
-              createdAt: now,
-              updatedAt: now,
-            ),
-          );
-      return;
-    }
-    // Đảo trạng thái sống/xóa của bản ghi hiện có (giữ nguyên UUID
-    // để bản sync là update, không phải delete+insert).
-    await (_db.update(_db.bookmarks)..where((t) => t.id.equals(existing.id)))
-        .write(
-      BookmarksCompanion(
-        deletedAt: Value(existing.deletedAt == null ? now : null),
-        updatedAt: Value(now),
-        isDirty: const Value(true),
-      ),
-    );
-  }
-
-  @override
-  Future<void> toggleFavorite(int ayahId) async {
-    final now = _nowMs();
-    final existing = await (_db.select(_db.favorites)
-          ..where((t) => t.ayahId.equals(ayahId)))
-        .getSingleOrNull();
-
-    if (existing == null) {
-      await _db.into(_db.favorites).insert(
-            FavoritesCompanion.insert(
-              id: _newId(),
-              ayahId: ayahId,
-              createdAt: now,
-              updatedAt: now,
-            ),
-          );
-      return;
-    }
-    await (_db.update(_db.favorites)..where((t) => t.id.equals(existing.id)))
-        .write(
-      FavoritesCompanion(
-        deletedAt: Value(existing.deletedAt == null ? now : null),
-        updatedAt: Value(now),
-        isDirty: const Value(true),
-      ),
-    );
-  }
-
-  @override
-  Future<void> toggleHighlight(int ayahId, String colorName) async {
-    final now = _nowMs();
-    final existing = await (_db.select(_db.highlights)
-          ..where(
-            (t) => t.ayahId.equals(ayahId) & t.color.equals(colorName),
-          ))
-        .getSingleOrNull();
-
-    if (existing == null) {
-      await _db.into(_db.highlights).insert(
-            HighlightsCompanion.insert(
-              id: _newId(),
-              ayahId: ayahId,
-              color: colorName,
-              updatedAt: now,
-            ),
-          );
-      return;
-    }
-    await (_db.update(_db.highlights)..where((t) => t.id.equals(existing.id)))
-        .write(
-      HighlightsCompanion(
-        deletedAt: Value(existing.deletedAt == null ? now : null),
-        updatedAt: Value(now),
-        isDirty: const Value(true),
-      ),
-    );
-  }
-
-  @override
-  Future<void> saveNote(int ayahId, String content) async {
-    final now = _nowMs();
-    final trimmed = content.trim();
-    final existing = await (_db.select(_db.notes)
-          ..where((t) => t.ayahId.equals(ayahId)))
-        .getSingleOrNull();
-
-    if (trimmed.isEmpty) {
-      if (existing != null && existing.deletedAt == null) {
-        await (_db.update(_db.notes)..where((t) => t.id.equals(existing.id)))
-            .write(
-          NotesCompanion(
-            deletedAt: Value(now),
-            updatedAt: Value(now),
-            isDirty: const Value(true),
-          ),
-        );
+      if (existing == null) {
+        await _db.into(_db.bookmarks).insert(
+              BookmarksCompanion.insert(
+                id: _newId(),
+                ayahId: ayahId,
+                createdAt: now,
+                updatedAt: now,
+              ),
+            );
+        return;
       }
-      return;
-    }
-
-    if (existing == null) {
-      await _db.into(_db.notes).insert(
-            NotesCompanion.insert(
-              id: _newId(),
-              ayahId: ayahId,
-              content: trimmed,
-              updatedAt: now,
-            ),
-          );
-      return;
-    }
-    await (_db.update(_db.notes)..where((t) => t.id.equals(existing.id))).write(
-      NotesCompanion(
-        content: Value(trimmed),
-        deletedAt: const Value(null),
-        updatedAt: Value(now),
-        isDirty: const Value(true),
-      ),
-    );
+      // Đảo trạng thái sống/xóa của bản ghi hiện có (giữ nguyên UUID
+      // để bản sync là update, không phải delete+insert).
+      await (_db.update(_db.bookmarks)..where((t) => t.id.equals(existing.id)))
+          .write(
+        BookmarksCompanion(
+          deletedAt: Value(existing.deletedAt == null ? now : null),
+          updatedAt: Value(now),
+          isDirty: const Value(true),
+        ),
+      );
+    });
   }
 
   @override
-  Future<void> setStatus(int ayahId, AyahStatus status) async {
-    final now = _nowMs();
-    final existing = await (_db.select(_db.ayahStatuses)
-          ..where((t) => t.ayahId.equals(ayahId)))
-        .getSingleOrNull();
+  Future<void> toggleFavorite(int ayahId) {
+    return withFailureLogging(_logger, 'toggleFavorite', () async {
+      final now = _nowMs();
+      final existing = await (_db.select(_db.favorites)
+            ..where((t) => t.ayahId.equals(ayahId)))
+          .getSingleOrNull();
 
-    if (status == AyahStatus.none) {
-      if (existing != null && existing.deletedAt == null) {
-        await (_db.update(_db.ayahStatuses)
-              ..where((t) => t.id.equals(existing.id)))
-            .write(
-          AyahStatusesCompanion(
-            deletedAt: Value(now),
-            updatedAt: Value(now),
-            isDirty: const Value(true),
-          ),
-        );
+      if (existing == null) {
+        await _db.into(_db.favorites).insert(
+              FavoritesCompanion.insert(
+                id: _newId(),
+                ayahId: ayahId,
+                createdAt: now,
+                updatedAt: now,
+              ),
+            );
+        return;
       }
-      return;
-    }
+      await (_db.update(_db.favorites)..where((t) => t.id.equals(existing.id)))
+          .write(
+        FavoritesCompanion(
+          deletedAt: Value(existing.deletedAt == null ? now : null),
+          updatedAt: Value(now),
+          isDirty: const Value(true),
+        ),
+      );
+    });
+  }
 
-    if (existing == null) {
-      await _db.into(_db.ayahStatuses).insert(
-            AyahStatusesCompanion.insert(
-              id: _newId(),
-              ayahId: ayahId,
-              status: status.name,
-              updatedAt: now,
+  @override
+  Future<void> toggleHighlight(int ayahId, String colorName) {
+    return withFailureLogging(_logger, 'toggleHighlight', () async {
+      final now = _nowMs();
+      final existing = await (_db.select(_db.highlights)
+            ..where(
+              (t) => t.ayahId.equals(ayahId) & t.color.equals(colorName),
+            ))
+          .getSingleOrNull();
+
+      if (existing == null) {
+        await _db.into(_db.highlights).insert(
+              HighlightsCompanion.insert(
+                id: _newId(),
+                ayahId: ayahId,
+                color: colorName,
+                updatedAt: now,
+              ),
+            );
+        return;
+      }
+      await (_db.update(_db.highlights)..where((t) => t.id.equals(existing.id)))
+          .write(
+        HighlightsCompanion(
+          deletedAt: Value(existing.deletedAt == null ? now : null),
+          updatedAt: Value(now),
+          isDirty: const Value(true),
+        ),
+      );
+    });
+  }
+
+  @override
+  Future<void> saveNote(int ayahId, String content) {
+    return withFailureLogging(_logger, 'saveNote', () async {
+      final now = _nowMs();
+      final trimmed = content.trim();
+      final existing = await (_db.select(_db.notes)
+            ..where((t) => t.ayahId.equals(ayahId)))
+          .getSingleOrNull();
+
+      if (trimmed.isEmpty) {
+        if (existing != null && existing.deletedAt == null) {
+          await (_db.update(_db.notes)..where((t) => t.id.equals(existing.id)))
+              .write(
+            NotesCompanion(
+              deletedAt: Value(now),
+              updatedAt: Value(now),
+              isDirty: const Value(true),
             ),
           );
-      return;
-    }
-    await (_db.update(_db.ayahStatuses)..where((t) => t.id.equals(existing.id)))
-        .write(
-      AyahStatusesCompanion(
-        status: Value(status.name),
-        deletedAt: const Value(null),
-        updatedAt: Value(now),
-        isDirty: const Value(true),
-      ),
-    );
+        }
+        return;
+      }
+
+      if (existing == null) {
+        await _db.into(_db.notes).insert(
+              NotesCompanion.insert(
+                id: _newId(),
+                ayahId: ayahId,
+                content: trimmed,
+                updatedAt: now,
+              ),
+            );
+        return;
+      }
+      await (_db.update(_db.notes)..where((t) => t.id.equals(existing.id)))
+          .write(
+        NotesCompanion(
+          content: Value(trimmed),
+          deletedAt: const Value(null),
+          updatedAt: Value(now),
+          isDirty: const Value(true),
+        ),
+      );
+    });
+  }
+
+  @override
+  Future<void> setStatus(int ayahId, AyahStatus status) {
+    return withFailureLogging(_logger, 'setStatus', () async {
+      final now = _nowMs();
+      final existing = await (_db.select(_db.ayahStatuses)
+            ..where((t) => t.ayahId.equals(ayahId)))
+          .getSingleOrNull();
+
+      if (status == AyahStatus.none) {
+        if (existing != null && existing.deletedAt == null) {
+          await (_db.update(_db.ayahStatuses)
+                ..where((t) => t.id.equals(existing.id)))
+              .write(
+            AyahStatusesCompanion(
+              deletedAt: Value(now),
+              updatedAt: Value(now),
+              isDirty: const Value(true),
+            ),
+          );
+        }
+        return;
+      }
+
+      if (existing == null) {
+        await _db.into(_db.ayahStatuses).insert(
+              AyahStatusesCompanion.insert(
+                id: _newId(),
+                ayahId: ayahId,
+                status: status.name,
+                updatedAt: now,
+              ),
+            );
+        return;
+      }
+      await (_db.update(_db.ayahStatuses)
+            ..where((t) => t.id.equals(existing.id)))
+          .write(
+        AyahStatusesCompanion(
+          status: Value(status.name),
+          deletedAt: const Value(null),
+          updatedAt: Value(now),
+          isDirty: const Value(true),
+        ),
+      );
+    });
   }
 }
 

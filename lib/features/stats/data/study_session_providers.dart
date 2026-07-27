@@ -1,12 +1,16 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/database/user/user_database_providers.dart';
+import '../../../core/logging/logging_providers.dart';
 import '../domain/repositories/study_session_repository.dart';
 import 'stats_store.dart';
 import 'study_session_repository_impl.dart';
 
 final studySessionRepositoryProvider = Provider<StudySessionRepository>(
-  (ref) => StudySessionRepositoryImpl(ref.watch(userDatabaseProvider)),
+  (ref) => StudySessionRepositoryImpl(
+    ref.watch(userDatabaseProvider),
+    ref.watch(loggerProvider),
+  ),
 );
 
 /// Chuỗi ngày đọc liên tiếp hiện tại — tính trên truy vấn từ

@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/database/user/user_database_providers.dart';
+import '../../../core/logging/logging_providers.dart';
 import '../../quran/data/quran_providers.dart';
 import '../domain/entities/quiz_content_pool.dart';
 import '../domain/entities/quiz_question.dart';
@@ -11,7 +12,10 @@ import '../domain/repositories/quiz_repository.dart';
 import 'quiz_repository_impl.dart';
 
 final quizRepositoryProvider = Provider<QuizRepository>(
-  (ref) => QuizRepositoryImpl(ref.watch(userDatabaseProvider)),
+  (ref) => QuizRepositoryImpl(
+    ref.watch(userDatabaseProvider),
+    ref.watch(loggerProvider),
+  ),
 );
 
 /// Bộ sinh câu hỏi mặc định (4 loại — DR-2026-0005 mục 5). Provider

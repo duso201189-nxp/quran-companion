@@ -2,6 +2,7 @@ import 'package:drift/native.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'package:quran_companion/core/database/user/user_database.dart';
+import 'package:quran_companion/core/logging/console_logger.dart';
 import 'package:quran_companion/features/quran/data/user_content_repository_impl.dart';
 import 'package:quran_companion/features/quran/domain/entities/ayah_annotation.dart';
 
@@ -17,6 +18,7 @@ void main() {
     fakeNow = 1000;
     repo = UserContentRepositoryImpl(
       db,
+      const ConsoleLogger(),
       newId: () => 'uuid-${++idCounter}',
       nowMs: () => fakeNow,
     );
