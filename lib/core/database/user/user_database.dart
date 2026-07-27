@@ -19,13 +19,15 @@ part 'user_database.g.dart';
     BookmarkCollections,
     SrsCards,
     QuizResults,
+    FlashcardDecks,
+    Flashcards,
   ],
 )
 class UserDatabase extends _$UserDatabase {
   UserDatabase(super.executor);
 
   @override
-  int get schemaVersion => 5;
+  int get schemaVersion => 6;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -61,6 +63,15 @@ class UserDatabase extends _$UserDatabase {
           // từ nhóm A mỗi phiên).
           if (from < 5) {
             await m.createTable(quizResults);
+          }
+          // v6: Sprint 13 Phase 2 — flashcard_decks, flashcards. Trỏ
+          // vào Lexicon (nhóm A) qua lexicon_entry_type/lexicon_entry_id,
+          // không sao chép nội dung. Không backfill gì (Flashcard là
+          // hành động người dùng chủ động, không có dữ liệu "trước đó"
+          // để suy ra).
+          if (from < 6) {
+            await m.createTable(flashcardDecks);
+            await m.createTable(flashcards);
           }
         },
         beforeOpen: (details) async {
