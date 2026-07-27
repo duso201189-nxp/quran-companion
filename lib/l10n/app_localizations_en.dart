@@ -738,4 +738,139 @@ class AppLocalizationsEn extends AppLocalizations {
   String smartDeckVerbFormLabel(String form) {
     return 'Form $form';
   }
+
+  @override
+  String get studyProgress => 'Progress';
+
+  @override
+  String get studyProgressDesc => 'Stats, history, and improvement tips';
+
+  @override
+  String get progressDashboardTitle => 'Progress';
+
+  @override
+  String get progressDashboardEmpty =>
+      'No flashcards studied yet — stats will show up once you start learning.';
+
+  @override
+  String get progressDashboardHistory => 'Activity history';
+
+  @override
+  String get progressDashboardHistoryEmpty =>
+      'No reading activity in this period yet.';
+
+  @override
+  String get progressDashboardInsights => 'Improvement tips';
+
+  @override
+  String get progressDashboardOverview => 'Overview';
+
+  @override
+  String get progressDashboardLoading => 'Loading progress data…';
+
+  @override
+  String get statCardsStudied => 'Cards studied';
+
+  @override
+  String get statReviewsToday => 'Reviews today';
+
+  @override
+  String get statAccuracy => 'Accuracy';
+
+  @override
+  String get statAverageEase => 'Average ease';
+
+  @override
+  String get statAverageInterval => 'Average interval (days)';
+
+  @override
+  String get historyDaily => 'Day';
+
+  @override
+  String get historyWeekly => 'Week';
+
+  @override
+  String get historyMonthly => 'Month';
+
+  @override
+  String get insightsWeakRoots => 'Weak roots';
+
+  @override
+  String get insightsDifficultLemmas => 'Most difficult';
+
+  @override
+  String get insightsFrequentlyForgotten => 'Frequently forgotten';
+
+  @override
+  String get insightsFastestImproving => 'Fastest improving';
+
+  @override
+  String get insightsEmpty => 'No data for this yet.';
+
+  @override
+  String get progressDashboardGoals => 'Goals';
+
+  @override
+  String get progressDashboardAchievements => 'Achievements';
+
+  @override
+  String get goalDailyStudyLabel => 'Daily study';
+
+  @override
+  String get goalDailyReviewsLabel => 'Daily reviews';
+
+  @override
+  String get goalWeeklyStudyLabel => 'Weekly study';
+
+  @override
+  String goalReviewsProgress(int current, int target) {
+    return '$current / $target reviews today';
+  }
+
+  @override
+  String goalWeeklyMinutesProgress(int current, int target) {
+    return '$current / $target min this week';
+  }
+
+  @override
+  String get goalAchieved => 'Achieved';
+
+  @override
+  String get achievementFirstStudyTitle => 'First study';
+
+  @override
+  String get achievementTenCardsTitle => '10 cards studied';
+
+  @override
+  String get achievementHundredCardsTitle => '100 cards studied';
+
+  @override
+  String get achievementSevenDayStreakTitle => '7-day streak';
+
+  @override
+  String get achievementThirtyDayStreakTitle => '30-day streak';
+
+  @override
+  String get achievementSharpMemoryTitle => 'Sharp memory';
+
+  @override
+  String achievementProgressCards(int current, int target) {
+    return '$current / $target cards';
+  }
+
+  @override
+  String achievementProgressDays(int current, int target) {
+    return '$current / $target days';
+  }
+
+  @override
+  String achievementProgressPercent(int current, int target) {
+    return '$current% / $target% accuracy';
+  }
+
+  @override
+  String get achievementUnlocked => 'Unlocked';
+
+  @override
+  String get achievementLocked => 'Locked';
 }

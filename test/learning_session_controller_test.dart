@@ -22,6 +22,7 @@ SrsCard _dummyCard(int i) => SrsCard(
       repetitions: 0,
       dueDate: 0,
       state: SrsCardState.review,
+      updatedAtMs: 0,
     );
 
 QuizQuestion _dummyQuestion() => const QuizQuestion(

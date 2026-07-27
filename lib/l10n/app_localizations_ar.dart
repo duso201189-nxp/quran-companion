@@ -734,4 +734,139 @@ class AppLocalizationsAr extends AppLocalizations {
   String smartDeckVerbFormLabel(String form) {
     return 'الوزن $form';
   }
+
+  @override
+  String get studyProgress => 'التقدم';
+
+  @override
+  String get studyProgressDesc => 'إحصاءات وسجل ونصائح للتحسين';
+
+  @override
+  String get progressDashboardTitle => 'التقدم';
+
+  @override
+  String get progressDashboardEmpty =>
+      'لم تتم مراجعة أي بطاقة بعد — ستظهر الإحصاءات عند بدء التعلم.';
+
+  @override
+  String get progressDashboardHistory => 'سجل النشاط';
+
+  @override
+  String get progressDashboardHistoryEmpty =>
+      'لا يوجد نشاط قراءة في هذه الفترة بعد.';
+
+  @override
+  String get progressDashboardInsights => 'نصائح للتحسين';
+
+  @override
+  String get progressDashboardOverview => 'نظرة عامة';
+
+  @override
+  String get progressDashboardLoading => 'جارٍ تحميل بيانات التقدم…';
+
+  @override
+  String get statCardsStudied => 'بطاقات تمت دراستها';
+
+  @override
+  String get statReviewsToday => 'مراجعات اليوم';
+
+  @override
+  String get statAccuracy => 'الدقة';
+
+  @override
+  String get statAverageEase => 'متوسط السهولة';
+
+  @override
+  String get statAverageInterval => 'متوسط الفاصل (أيام)';
+
+  @override
+  String get historyDaily => 'يوم';
+
+  @override
+  String get historyWeekly => 'أسبوع';
+
+  @override
+  String get historyMonthly => 'شهر';
+
+  @override
+  String get insightsWeakRoots => 'الجذور الضعيفة';
+
+  @override
+  String get insightsDifficultLemmas => 'الأصعب';
+
+  @override
+  String get insightsFrequentlyForgotten => 'يُنسى كثيرًا';
+
+  @override
+  String get insightsFastestImproving => 'الأسرع تحسنًا';
+
+  @override
+  String get insightsEmpty => 'لا توجد بيانات لهذا القسم بعد.';
+
+  @override
+  String get progressDashboardGoals => 'الأهداف';
+
+  @override
+  String get progressDashboardAchievements => 'الإنجازات';
+
+  @override
+  String get goalDailyStudyLabel => 'الدراسة اليومية';
+
+  @override
+  String get goalDailyReviewsLabel => 'المراجعة اليومية';
+
+  @override
+  String get goalWeeklyStudyLabel => 'الدراسة الأسبوعية';
+
+  @override
+  String goalReviewsProgress(int current, int target) {
+    return '$current / $target مراجعات اليوم';
+  }
+
+  @override
+  String goalWeeklyMinutesProgress(int current, int target) {
+    return '$current / $target دقيقة هذا الأسبوع';
+  }
+
+  @override
+  String get goalAchieved => 'تم تحقيقه';
+
+  @override
+  String get achievementFirstStudyTitle => 'أول جلسة دراسة';
+
+  @override
+  String get achievementTenCardsTitle => '10 بطاقات تمت دراستها';
+
+  @override
+  String get achievementHundredCardsTitle => '100 بطاقة تمت دراستها';
+
+  @override
+  String get achievementSevenDayStreakTitle => 'سلسلة 7 أيام';
+
+  @override
+  String get achievementThirtyDayStreakTitle => 'سلسلة 30 يومًا';
+
+  @override
+  String get achievementSharpMemoryTitle => 'ذاكرة حادة';
+
+  @override
+  String achievementProgressCards(int current, int target) {
+    return '$current / $target بطاقات';
+  }
+
+  @override
+  String achievementProgressDays(int current, int target) {
+    return '$current / $target أيام';
+  }
+
+  @override
+  String achievementProgressPercent(int current, int target) {
+    return 'الدقة $current% / $target%';
+  }
+
+  @override
+  String get achievementUnlocked => 'مفتوح';
+
+  @override
+  String get achievementLocked => 'مقفل';
 }

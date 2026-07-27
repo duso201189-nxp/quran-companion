@@ -151,6 +151,7 @@ void main() {
           repetitions: 1,
           dueDate: 0,
           state: SrsCardState.review,
+          updatedAtMs: 0,
         ),
         2: const SrsCard(
           id: 'c2',
@@ -161,6 +162,7 @@ void main() {
           repetitions: 0,
           dueDate: 0,
           state: SrsCardState.learning,
+          updatedAtMs: 0,
         ),
       };
       final result = filterFlashcards(

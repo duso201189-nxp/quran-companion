@@ -31,6 +31,7 @@ SrsCard _card(
       repetitions: repetitions,
       dueDate: 0,
       state: state,
+      updatedAtMs: 0,
     );
 
 void main() {

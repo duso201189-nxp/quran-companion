@@ -351,5 +351,96 @@
         "type": "String"
       }
     }
-  }
+  },
+  "studyProgress": "التقدم",
+  "studyProgressDesc": "إحصاءات وسجل ونصائح للتحسين",
+  "progressDashboardTitle": "التقدم",
+  "progressDashboardEmpty": "لم تتم مراجعة أي بطاقة بعد — ستظهر الإحصاءات عند بدء التعلم.",
+  "progressDashboardHistory": "سجل النشاط",
+  "progressDashboardHistoryEmpty": "لا يوجد نشاط قراءة في هذه الفترة بعد.",
+  "progressDashboardInsights": "نصائح للتحسين",
+  "progressDashboardOverview": "نظرة عامة",
+  "progressDashboardLoading": "جارٍ تحميل بيانات التقدم…",
+  "statCardsStudied": "بطاقات تمت دراستها",
+  "statReviewsToday": "مراجعات اليوم",
+  "statAccuracy": "الدقة",
+  "statAverageEase": "متوسط السهولة",
+  "statAverageInterval": "متوسط الفاصل (أيام)",
+  "historyDaily": "يوم",
+  "historyWeekly": "أسبوع",
+  "historyMonthly": "شهر",
+  "insightsWeakRoots": "الجذور الضعيفة",
+  "insightsDifficultLemmas": "الأصعب",
+  "insightsFrequentlyForgotten": "يُنسى كثيرًا",
+  "insightsFastestImproving": "الأسرع تحسنًا",
+  "insightsEmpty": "لا توجد بيانات لهذا القسم بعد.",
+  "progressDashboardGoals": "الأهداف",
+  "progressDashboardAchievements": "الإنجازات",
+  "goalDailyStudyLabel": "الدراسة اليومية",
+  "goalDailyReviewsLabel": "المراجعة اليومية",
+  "goalWeeklyStudyLabel": "الدراسة الأسبوعية",
+  "goalReviewsProgress": "{current} / {target} مراجعات اليوم",
+  "@goalReviewsProgress": {
+    "placeholders": {
+      "current": {
+        "type": "int"
+      },
+      "target": {
+        "type": "int"
+      }
+    }
+  },
+  "goalWeeklyMinutesProgress": "{current} / {target} دقيقة هذا الأسبوع",
+  "@goalWeeklyMinutesProgress": {
+    "placeholders": {
+      "current": {
+        "type": "int"
+      },
+      "target": {
+        "type": "int"
+      }
+    }
+  },
+  "goalAchieved": "تم تحقيقه",
+  "achievementFirstStudyTitle": "أول جلسة دراسة",
+  "achievementTenCardsTitle": "10 بطاقات تمت دراستها",
+  "achievementHundredCardsTitle": "100 بطاقة تمت دراستها",
+  "achievementSevenDayStreakTitle": "سلسلة 7 أيام",
+  "achievementThirtyDayStreakTitle": "سلسلة 30 يومًا",
+  "achievementSharpMemoryTitle": "ذاكرة حادة",
+  "achievementProgressCards": "{current} / {target} بطاقات",
+  "@achievementProgressCards": {
+    "placeholders": {
+      "current": {
+        "type": "int"
+      },
+      "target": {
+        "type": "int"
+      }
+    }
+  },
+  "achievementProgressDays": "{current} / {target} أيام",
+  "@achievementProgressDays": {
+    "placeholders": {
+      "current": {
+        "type": "int"
+      },
+      "target": {
+        "type": "int"
+      }
+    }
+  },
+  "achievementProgressPercent": "الدقة {current}% / {target}%",
+  "@achievementProgressPercent": {
+    "placeholders": {
+      "current": {
+        "type": "int"
+      },
+      "target": {
+        "type": "int"
+      }
+    }
+  },
+  "achievementUnlocked": "مفتوح",
+  "achievementLocked": "مقفل"
 }

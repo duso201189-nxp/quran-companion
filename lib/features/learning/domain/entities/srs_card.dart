@@ -37,6 +37,7 @@ class SrsCard {
     required this.repetitions,
     required this.dueDate,
     required this.state,
+    required this.updatedAtMs,
   });
 
   final String id;
@@ -49,4 +50,12 @@ class SrsCard {
   /// Epoch ms UTC — thời điểm đến hạn ôn tập.
   final int dueDate;
   final SrsCardState state;
+
+  /// Epoch ms UTC — lần ghi cuối cùng (tạo mới HOẶC applyReview ghi
+  /// đè). Thêm ở Sprint 14 Phase 1 (Learning Analytics) — cột đã có
+  /// sẵn trên bảng (SyncColumns.updatedAt), chỉ mới lộ ra tầng domain.
+  /// KHÔNG phải lịch sử — mỗi lần ôn GHI ĐÈ giá trị cũ, không cộng dồn
+  /// (xem LearningStatistics.reviewsToday để biết giới hạn khi dùng
+  /// trường này cho thống kê).
+  final int updatedAtMs;
 }

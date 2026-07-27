@@ -351,5 +351,96 @@
         "type": "String"
       }
     }
-  }
+  },
+  "studyProgress": "Progress",
+  "studyProgressDesc": "Stats, history, and improvement tips",
+  "progressDashboardTitle": "Progress",
+  "progressDashboardEmpty": "No flashcards studied yet — stats will show up once you start learning.",
+  "progressDashboardHistory": "Activity history",
+  "progressDashboardHistoryEmpty": "No reading activity in this period yet.",
+  "progressDashboardInsights": "Improvement tips",
+  "progressDashboardOverview": "Overview",
+  "progressDashboardLoading": "Loading progress data…",
+  "statCardsStudied": "Cards studied",
+  "statReviewsToday": "Reviews today",
+  "statAccuracy": "Accuracy",
+  "statAverageEase": "Average ease",
+  "statAverageInterval": "Average interval (days)",
+  "historyDaily": "Day",
+  "historyWeekly": "Week",
+  "historyMonthly": "Month",
+  "insightsWeakRoots": "Weak roots",
+  "insightsDifficultLemmas": "Most difficult",
+  "insightsFrequentlyForgotten": "Frequently forgotten",
+  "insightsFastestImproving": "Fastest improving",
+  "insightsEmpty": "No data for this yet.",
+  "progressDashboardGoals": "Goals",
+  "progressDashboardAchievements": "Achievements",
+  "goalDailyStudyLabel": "Daily study",
+  "goalDailyReviewsLabel": "Daily reviews",
+  "goalWeeklyStudyLabel": "Weekly study",
+  "goalReviewsProgress": "{current} / {target} reviews today",
+  "@goalReviewsProgress": {
+    "placeholders": {
+      "current": {
+        "type": "int"
+      },
+      "target": {
+        "type": "int"
+      }
+    }
+  },
+  "goalWeeklyMinutesProgress": "{current} / {target} min this week",
+  "@goalWeeklyMinutesProgress": {
+    "placeholders": {
+      "current": {
+        "type": "int"
+      },
+      "target": {
+        "type": "int"
+      }
+    }
+  },
+  "goalAchieved": "Achieved",
+  "achievementFirstStudyTitle": "First study",
+  "achievementTenCardsTitle": "10 cards studied",
+  "achievementHundredCardsTitle": "100 cards studied",
+  "achievementSevenDayStreakTitle": "7-day streak",
+  "achievementThirtyDayStreakTitle": "30-day streak",
+  "achievementSharpMemoryTitle": "Sharp memory",
+  "achievementProgressCards": "{current} / {target} cards",
+  "@achievementProgressCards": {
+    "placeholders": {
+      "current": {
+        "type": "int"
+      },
+      "target": {
+        "type": "int"
+      }
+    }
+  },
+  "achievementProgressDays": "{current} / {target} days",
+  "@achievementProgressDays": {
+    "placeholders": {
+      "current": {
+        "type": "int"
+      },
+      "target": {
+        "type": "int"
+      }
+    }
+  },
+  "achievementProgressPercent": "{current}% / {target}% accuracy",
+  "@achievementProgressPercent": {
+    "placeholders": {
+      "current": {
+        "type": "int"
+      },
+      "target": {
+        "type": "int"
+      }
+    }
+  },
+  "achievementUnlocked": "Unlocked",
+  "achievementLocked": "Locked"
 }

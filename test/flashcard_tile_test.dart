@@ -29,6 +29,7 @@ SrsCard _cardWith(SrsCardState state) => SrsCard(
       repetitions: 0,
       dueDate: 0,
       state: state,
+      updatedAtMs: 0,
     );
 
 /// Sprint 20 Phase 2, Task 6 — chấm màu trạng thái SM-2 trước đây

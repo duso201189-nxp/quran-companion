@@ -46,6 +46,7 @@ class SchedulerRepositoryImpl implements SchedulerRepository {
         repetitions: row.repetitions,
         dueDate: row.dueDate,
         state: srsCardStateFromDbValue(row.state),
+        updatedAtMs: row.updatedAt,
       );
 
   @override

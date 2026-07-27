@@ -50,6 +50,12 @@ class StudyScreen extends StatelessWidget {
         subtitle: l10n.studyDailyReviewDesc,
         onTap: () => context.push(AppRoutes.revisionQueue),
       ),
+      (
+        icon: Icons.insights_rounded,
+        title: l10n.studyProgress,
+        subtitle: l10n.studyProgressDesc,
+        onTap: () => context.push(AppRoutes.progressDashboard),
+      ),
     ];
 
     return Scaffold(

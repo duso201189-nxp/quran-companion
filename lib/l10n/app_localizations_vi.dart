@@ -735,4 +735,139 @@ class AppLocalizationsVi extends AppLocalizations {
   String smartDeckVerbFormLabel(String form) {
     return 'Thể $form';
   }
+
+  @override
+  String get studyProgress => 'Tiến độ học tập';
+
+  @override
+  String get studyProgressDesc => 'Số liệu, lịch sử và gợi ý cải thiện';
+
+  @override
+  String get progressDashboardTitle => 'Tiến độ học tập';
+
+  @override
+  String get progressDashboardEmpty =>
+      'Chưa có Flashcard nào được ôn — số liệu sẽ hiện ra khi bạn bắt đầu học.';
+
+  @override
+  String get progressDashboardHistory => 'Lịch sử hoạt động';
+
+  @override
+  String get progressDashboardHistoryEmpty =>
+      'Chưa có hoạt động đọc trong khoảng thời gian này.';
+
+  @override
+  String get progressDashboardInsights => 'Gợi ý cải thiện';
+
+  @override
+  String get progressDashboardOverview => 'Tổng quan';
+
+  @override
+  String get progressDashboardLoading => 'Đang tải số liệu tiến độ…';
+
+  @override
+  String get statCardsStudied => 'Thẻ đã học';
+
+  @override
+  String get statReviewsToday => 'Lượt ôn hôm nay';
+
+  @override
+  String get statAccuracy => 'Độ chính xác';
+
+  @override
+  String get statAverageEase => 'Độ dễ trung bình';
+
+  @override
+  String get statAverageInterval => 'Chu kỳ trung bình (ngày)';
+
+  @override
+  String get historyDaily => 'Ngày';
+
+  @override
+  String get historyWeekly => 'Tuần';
+
+  @override
+  String get historyMonthly => 'Tháng';
+
+  @override
+  String get insightsWeakRoots => 'Gốc từ yếu';
+
+  @override
+  String get insightsDifficultLemmas => 'Từ khó nhất';
+
+  @override
+  String get insightsFrequentlyForgotten => 'Hay quên';
+
+  @override
+  String get insightsFastestImproving => 'Tiến bộ nhanh nhất';
+
+  @override
+  String get insightsEmpty => 'Chưa có dữ liệu cho mục này.';
+
+  @override
+  String get progressDashboardGoals => 'Mục tiêu';
+
+  @override
+  String get progressDashboardAchievements => 'Thành tựu';
+
+  @override
+  String get goalDailyStudyLabel => 'Học mỗi ngày';
+
+  @override
+  String get goalDailyReviewsLabel => 'Ôn mỗi ngày';
+
+  @override
+  String get goalWeeklyStudyLabel => 'Học mỗi tuần';
+
+  @override
+  String goalReviewsProgress(int current, int target) {
+    return '$current / $target lượt ôn hôm nay';
+  }
+
+  @override
+  String goalWeeklyMinutesProgress(int current, int target) {
+    return '$current / $target phút tuần này';
+  }
+
+  @override
+  String get goalAchieved => 'Đã đạt';
+
+  @override
+  String get achievementFirstStudyTitle => 'Buổi học đầu tiên';
+
+  @override
+  String get achievementTenCardsTitle => '10 thẻ đã học';
+
+  @override
+  String get achievementHundredCardsTitle => '100 thẻ đã học';
+
+  @override
+  String get achievementSevenDayStreakTitle => 'Chuỗi 7 ngày';
+
+  @override
+  String get achievementThirtyDayStreakTitle => 'Chuỗi 30 ngày';
+
+  @override
+  String get achievementSharpMemoryTitle => 'Trí nhớ sắc bén';
+
+  @override
+  String achievementProgressCards(int current, int target) {
+    return '$current / $target thẻ';
+  }
+
+  @override
+  String achievementProgressDays(int current, int target) {
+    return '$current / $target ngày';
+  }
+
+  @override
+  String achievementProgressPercent(int current, int target) {
+    return 'Độ chính xác $current% / $target%';
+  }
+
+  @override
+  String get achievementUnlocked => 'Đã mở khoá';
+
+  @override
+  String get achievementLocked => 'Chưa mở khoá';
 }

@@ -25,6 +25,7 @@ SrsCard _card({
       repetitions: 1,
       dueDate: dueDate,
       state: SrsCardState.review,
+      updatedAtMs: 0,
     );
 
 /// Chờ đến khi [check] thoả [satisfies], polling với delay 0 (chỉ

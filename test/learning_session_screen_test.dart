@@ -138,6 +138,7 @@ SrsCard _dueCard(int itemId) => SrsCard(
       repetitions: 0,
       dueDate: 0,
       state: SrsCardState.newCard,
+      updatedAtMs: 0,
     );
 
 void main() {

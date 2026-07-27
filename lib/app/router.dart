@@ -1,6 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../features/analytics/presentation/progress_dashboard_screen.dart';
 import '../features/flashcards/domain/entities/smart_deck_type.dart';
 import '../features/flashcards/presentation/add_flashcard_screen.dart';
 import '../features/flashcards/presentation/flashcard_browse_screen.dart';
@@ -87,6 +88,10 @@ abstract final class AppRoutes {
   /// Learning Session). Dùng cho Onboarding "ôn thử ngay" và lối tắt
   /// từ [flashcards].
   static const String flashcardReview = '/flashcard-review';
+
+  /// Bảng điều khiển Tiến độ học tập (Sprint 14 Phase 1) — push
+  /// full-screen từ tab Học, cùng mẫu [flashcards]/[revisionQueue].
+  static const String progressDashboard = '/progress-dashboard';
 
   /// Trang đọc trong tab Qur'an (giữ thanh điều hướng): /quran/surah/2
   static String surahReading(int surahId) => '/quran/surah/$surahId';
@@ -207,6 +212,11 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: AppRoutes.flashcardReview,
         builder: (context, state) => const FlashcardReviewScreen(),
+      ),
+
+      GoRoute(
+        path: AppRoutes.progressDashboard,
+        builder: (context, state) => const ProgressDashboardScreen(),
       ),
 
       GoRoute(

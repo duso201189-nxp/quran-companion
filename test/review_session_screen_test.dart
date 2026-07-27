@@ -30,6 +30,7 @@ SrsCard _card(String id, int ayahId) => SrsCard(
       repetitions: 0,
       dueDate: 0,
       state: SrsCardState.newCard,
+      updatedAtMs: 0,
     );
 
 /// Nội dung Ayah giả — chỉ getAyahsByIds được ReviewSessionScreen gọi
