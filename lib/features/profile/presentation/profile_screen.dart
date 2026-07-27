@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:quran_companion/l10n/app_localizations.dart';
 
 import '../../../app/locale/locale_controller.dart';
+import '../../../app/router.dart';
 import '../../../app/theme/theme_controller.dart';
 
 /// Phiên bản app — đọc từ metadata build (pubspec.yaml), không
@@ -86,6 +88,13 @@ class ProfileScreen extends ConsumerWidget {
                     .setLanguage(selection.first);
               },
             ),
+          ),
+          const Divider(height: 32),
+          ListTile(
+            leading: const Icon(Icons.collections_bookmark_outlined),
+            title: Text(l10n.libraryTitle),
+            trailing: const Icon(Icons.chevron_right),
+            onTap: () => context.push(AppRoutes.library),
           ),
           const Divider(height: 32),
           ListTile(

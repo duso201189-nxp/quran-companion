@@ -2,6 +2,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../features/home/presentation/home_screen.dart';
+import '../features/library/presentation/library_screen.dart';
 import '../features/profile/presentation/profile_screen.dart';
 import '../features/quran/presentation/reading/reading_screen.dart';
 import '../features/quran/presentation/surah_list_screen.dart';
@@ -17,9 +18,21 @@ abstract final class AppRoutes {
   static const String stats = '/stats';
   static const String profile = '/profile';
 
-  /// Trang đọc: /quran/surah/2
+  /// Thư viện của tôi — màn hình push full-screen (không phải tab).
+  static const String library = '/library';
+
+  /// Trang đọc trong tab Qur'an (giữ thanh điều hướng): /quran/surah/2
   static String surahReading(int surahId) => '/quran/surah/$surahId';
+
+  /// Trang đọc full-screen cho nơi gọi NGOÀI vỏ tab (vd Thư viện của
+  /// tôi): /read/2. Không dùng nhánh shell nên tránh xung đột khi
+  /// push chồng route top-level.
+  static String read(int surahId) => '/read/$surahId';
 }
+
+/// Parse surahId an toàn từ path ('abc'/'0' -> 0 -> SurahNotFound).
+int _surahIdFrom(GoRouterState state) =>
+    int.tryParse(state.pathParameters['id'] ?? '') ?? 0;
 
 final routerProvider = Provider<GoRouter>((ref) {
   return GoRouter(
@@ -84,6 +97,20 @@ final routerProvider = Provider<GoRouter>((ref) {
             ],
           ),
         ],
+      ),
+
+      // Thư viện của tôi: route top-level, push đè lên vỏ 5 tab
+      // (full-screen kèm nút quay lại) — không thêm tab thứ 6.
+      GoRoute(
+        path: AppRoutes.library,
+        builder: (context, state) => const LibraryScreen(),
+      ),
+
+      // Trang đọc full-screen (nhảy từ Thư viện của tôi / ngoài shell).
+      GoRoute(
+        path: '/read/:id',
+        builder: (context, state) =>
+            ReadingScreen(surahId: _surahIdFrom(state)),
       ),
     ],
   );

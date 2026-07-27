@@ -343,4 +343,31 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get searchNoAyahResults => 'لا توجد آيات مطابقة.';
+
+  @override
+  String get libraryTitle => 'مكتبتي';
+
+  @override
+  String get libraryBookmarks => 'المحفوظة';
+
+  @override
+  String get libraryFavorites => 'المفضلة';
+
+  @override
+  String get libraryNotes => 'الملاحظات';
+
+  @override
+  String get libraryHighlights => 'التظليل';
+
+  @override
+  String get libraryEmptyBookmarks => 'لا آيات محفوظة بعد.';
+
+  @override
+  String get libraryEmptyFavorites => 'لا آيات مفضلة بعد.';
+
+  @override
+  String get libraryEmptyNotes => 'لا ملاحظات بعد.';
+
+  @override
+  String get libraryEmptyHighlights => 'لا آيات مظللة بعد.';
 }

@@ -741,6 +741,60 @@ abstract class AppLocalizations {
   /// In vi, this message translates to:
   /// **'Không tìm thấy Ayah nào phù hợp.'**
   String get searchNoAyahResults;
+
+  /// No description provided for @libraryTitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Thư viện của tôi'**
+  String get libraryTitle;
+
+  /// No description provided for @libraryBookmarks.
+  ///
+  /// In vi, this message translates to:
+  /// **'Đã lưu'**
+  String get libraryBookmarks;
+
+  /// No description provided for @libraryFavorites.
+  ///
+  /// In vi, this message translates to:
+  /// **'Yêu thích'**
+  String get libraryFavorites;
+
+  /// No description provided for @libraryNotes.
+  ///
+  /// In vi, this message translates to:
+  /// **'Ghi chú'**
+  String get libraryNotes;
+
+  /// No description provided for @libraryHighlights.
+  ///
+  /// In vi, this message translates to:
+  /// **'Tô màu'**
+  String get libraryHighlights;
+
+  /// No description provided for @libraryEmptyBookmarks.
+  ///
+  /// In vi, this message translates to:
+  /// **'Chưa có Ayah nào được lưu.'**
+  String get libraryEmptyBookmarks;
+
+  /// No description provided for @libraryEmptyFavorites.
+  ///
+  /// In vi, this message translates to:
+  /// **'Chưa có Ayah yêu thích nào.'**
+  String get libraryEmptyFavorites;
+
+  /// No description provided for @libraryEmptyNotes.
+  ///
+  /// In vi, this message translates to:
+  /// **'Chưa có ghi chú nào.'**
+  String get libraryEmptyNotes;
+
+  /// No description provided for @libraryEmptyHighlights.
+  ///
+  /// In vi, this message translates to:
+  /// **'Chưa tô màu Ayah nào.'**
+  String get libraryEmptyHighlights;
 }
 
 class _AppLocalizationsDelegate
