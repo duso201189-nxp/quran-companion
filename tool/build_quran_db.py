@@ -33,6 +33,9 @@ import urllib.request
 from datetime import date
 from pathlib import Path
 
+sys.path.insert(0, str(Path(__file__).parent))
+from lexicon.sqlite_writer import LEXICON_SCHEMA  # noqa: E402
+
 # Console Windows mặc định cp1252 không in được tiếng Việt —
 # ép UTF-8 để script không crash vì UnicodeEncodeError.
 for _stream in (sys.stdout, sys.stderr):
@@ -357,6 +360,17 @@ CREATE VIRTUAL TABLE search_index USING fts5(
   ayah_id UNINDEXED, source_code UNINDEXED, content
 );
 """
+
+# Lexicon (Sprint 12 — Phase 2.7/3). Schema khai báo TRƯỚC dữ liệu
+# thật, cùng tình trạng lemmas/word_instances từ Sprint 9 (xem
+# DATABASE.md, lib/core/database/tables/content_tables.dart). CHƯA có
+# bước insert dữ liệu thật nối vào build này — nguồn hình thái học
+# (QAC) vướng mâu thuẫn giấy phép CHƯA giải quyết (xem
+# tool/fetch_morphology.py, Return Sprint 12 Phase 3). Build này chỉ
+# tạo 8 bảng RỖNG, khớp 100% lib/core/database/tables/content_tables.dart
+# và tool/lexicon/sqlite_writer.py — không phải quyết định thiết kế
+# mới, chỉ mirror schema đã đóng băng.
+SCHEMA += LEXICON_SCHEMA
 
 RECITERS_SEED = [
     # (code, name, name_arabic, url_template, bitrate, license, source_url)
