@@ -1,7 +1,7 @@
-/// Loại mục được lên lịch ôn tập. Tổng quát hoá cho tương lai (từ
-/// vựng/lemma) — Sprint 10 chỉ ghi 'ayah' (Flashcard hoãn lại, xem
-/// DR-2026-0005 mục Flashcard deferral).
-enum LearningItemType { ayah }
+/// Loại mục được lên lịch ôn tập. [ayah] — Sprint 10 (Revision Queue).
+/// [lemma] — Sprint 13 Phase 2 (Flashcard, itemId = Lemma.id trực
+/// tiếp, xem lib/features/lexicon/domain/entities/lemma.dart).
+enum LearningItemType { ayah, lemma }
 
 /// Trạng thái thẻ SRS, mô hình Anki-style (new/learning/review/lapsed).
 /// 'new' là từ khoá dành riêng của Dart nên dùng [newCard] — ánh xạ
@@ -37,6 +37,7 @@ class SrsCard {
     required this.repetitions,
     required this.dueDate,
     required this.state,
+    required this.updatedAtMs,
   });
 
   final String id;
@@ -49,4 +50,12 @@ class SrsCard {
   /// Epoch ms UTC — thời điểm đến hạn ôn tập.
   final int dueDate;
   final SrsCardState state;
+
+  /// Epoch ms UTC — lần ghi cuối cùng (tạo mới HOẶC applyReview ghi
+  /// đè). Thêm ở Sprint 14 Phase 1 (Learning Analytics) — cột đã có
+  /// sẵn trên bảng (SyncColumns.updatedAt), chỉ mới lộ ra tầng domain.
+  /// KHÔNG phải lịch sử — mỗi lần ôn GHI ĐÈ giá trị cũ, không cộng dồn
+  /// (xem LearningStatistics.reviewsToday để biết giới hạn khi dùng
+  /// trường này cho thống kê).
+  final int updatedAtMs;
 }

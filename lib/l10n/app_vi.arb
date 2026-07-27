@@ -115,7 +115,7 @@
   "minutesLabel": "Phút học",
   "myBookmarks": "Bookmark của tôi",
   "studyFlashcards": "Flashcard",
-  "studyFlashcardsDesc": "Ghi nhớ Ayah bằng thẻ hai mặt",
+  "studyFlashcardsDesc": "Ghi nhớ từ vựng Qur'an bằng thẻ hai mặt",
   "studySpaced": "Lặp lại ngắt quãng",
   "studySpacedDesc": "Ôn đúng lúc sắp quên — nhớ lâu hơn",
   "studyQuiz": "Trắc nghiệm",
@@ -288,5 +288,159 @@
   "learningSummaryDone": "Xong",
   "learningSummaryStatusCompleted": "Hoàn thành",
   "learningSummaryActivitiesTitle": "Hoạt động đã hoàn thành",
-  "learningSummaryNotCompleted": "Chưa hoàn thành"
+  "learningSummaryNotCompleted": "Chưa hoàn thành",
+  "flashcardReviewTitle": "Flashcard",
+  "flashcardReviewComplete": "Đã ôn xong Flashcard!",
+  "flashcardReviewCompleteSubtitle": "Không còn từ vựng nào đến hạn ôn tập lúc này.",
+  "flashcardsTitle": "Flashcard",
+  "flashcardSearchHint": "Tìm theo chữ Ả Rập, phiên âm hoặc nghĩa",
+  "flashcardAdd": "Thêm",
+  "flashcardContentUnavailable": "Không có nội dung",
+  "flashcardMoveToDeck": "Chuyển sang deck",
+  "flashcardRemove": "Gỡ Flashcard",
+  "flashcardNoDeck": "Không deck",
+  "flashcardEmptyDeck": "Deck này chưa có Flashcard nào.",
+  "flashcardNoResults": "Không tìm thấy Flashcard phù hợp.",
+  "flashcardFilterAllDecks": "Mọi deck",
+  "flashcardFilterAllTypes": "Mọi loại",
+  "flashcardFilterAllStatus": "Mọi trạng thái",
+  "flashcardFilterDue": "Đến hạn",
+  "flashcardFilterNew": "Mới",
+  "flashcardFilterLearning": "Đang học",
+  "flashcardFilterReview": "Đang ôn",
+  "flashcardFilterLapsed": "Quên",
+  "flashcardOnboardingTitle": "Chưa có Flashcard nào",
+  "flashcardOnboardingBody": "Thêm từ vựng đầu tiên để bắt đầu ghi nhớ theo phương pháp lặp lại ngắt quãng.",
+  "flashcardOnboardingCta": "Thêm Flashcard đầu tiên",
+  "flashcardOnboardingReviewNudge": "Đã thêm Flashcard đầu tiên! Ôn thử ngay?",
+  "flashcardOnboardingReviewCta": "Ôn ngay",
+  "flashcardDecksTitle": "Deck Flashcard",
+  "flashcardDecksEmpty": "Chưa có deck nào.",
+  "flashcardDecksCreate": "Tạo deck",
+  "flashcardDecksRename": "Đổi tên",
+  "flashcardDecksDelete": "Xoá",
+  "flashcardDecksDeleteConfirmTitle": "Xoá deck?",
+  "flashcardDecksDeleteConfirmBody": "Flashcard trong deck này sẽ chuyển về \"Không deck\", không bị xoá.",
+  "flashcardDeckNameHint": "Tên deck",
+  "flashcardDeckItemCount": "{count, plural, =0{Chưa có thẻ} =1{1 thẻ} other{{count} thẻ}}",
+  "@flashcardDeckItemCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "addFlashcardTitle": "Thêm Flashcard",
+  "addFlashcardSourceLemma": "Từ điển",
+  "addFlashcardSourceRoot": "Gốc từ",
+  "addFlashcardSourcePhrase": "Cụm từ",
+  "addFlashcardSourceNotAvailable": "Chưa có dữ liệu để duyệt/tìm cho loại này.",
+  "addFlashcardSearchHint": "Tìm kiếm...",
+  "addFlashcardNoResults": "Không tìm thấy kết quả.",
+  "addFlashcardAdd": "Thêm vào Flashcard",
+  "smartDeckTodaysReview": "Ôn hôm nay",
+  "smartDeckMostDifficult": "Khó nhất",
+  "smartDeckRecentlyLearned": "Mới học xong",
+  "smartDeckWeakRoots": "Gốc từ yếu",
+  "smartDeckVerbForms": "Theo thể động từ",
+  "smartDeckEmpty": "Chưa có Flashcard nào trong Smart Deck này.",
+  "smartDeckVerbFormLabel": "Thể {form}",
+  "@smartDeckVerbFormLabel": {
+    "placeholders": {
+      "form": {
+        "type": "String"
+      }
+    }
+  },
+  "studyProgress": "Tiến độ học tập",
+  "studyProgressDesc": "Số liệu, lịch sử và gợi ý cải thiện",
+  "progressDashboardTitle": "Tiến độ học tập",
+  "progressDashboardEmpty": "Chưa có Flashcard nào được ôn — số liệu sẽ hiện ra khi bạn bắt đầu học.",
+  "progressDashboardHistory": "Lịch sử hoạt động",
+  "progressDashboardHistoryEmpty": "Chưa có hoạt động đọc trong khoảng thời gian này.",
+  "progressDashboardInsights": "Gợi ý cải thiện",
+  "progressDashboardOverview": "Tổng quan",
+  "progressDashboardLoading": "Đang tải số liệu tiến độ…",
+  "statCardsStudied": "Thẻ đã học",
+  "statReviewsToday": "Lượt ôn hôm nay",
+  "statAccuracy": "Độ chính xác",
+  "statAverageEase": "Độ dễ trung bình",
+  "statAverageInterval": "Chu kỳ trung bình (ngày)",
+  "historyDaily": "Ngày",
+  "historyWeekly": "Tuần",
+  "historyMonthly": "Tháng",
+  "insightsWeakRoots": "Gốc từ yếu",
+  "insightsDifficultLemmas": "Từ khó nhất",
+  "insightsFrequentlyForgotten": "Hay quên",
+  "insightsFastestImproving": "Tiến bộ nhanh nhất",
+  "insightsEmpty": "Chưa có dữ liệu cho mục này.",
+  "progressDashboardGoals": "Mục tiêu",
+  "progressDashboardAchievements": "Thành tựu",
+  "goalDailyStudyLabel": "Học mỗi ngày",
+  "goalDailyReviewsLabel": "Ôn mỗi ngày",
+  "goalWeeklyStudyLabel": "Học mỗi tuần",
+  "goalReviewsProgress": "{current} / {target} lượt ôn hôm nay",
+  "@goalReviewsProgress": {
+    "placeholders": {
+      "current": {
+        "type": "int"
+      },
+      "target": {
+        "type": "int"
+      }
+    }
+  },
+  "goalWeeklyMinutesProgress": "{current} / {target} phút tuần này",
+  "@goalWeeklyMinutesProgress": {
+    "placeholders": {
+      "current": {
+        "type": "int"
+      },
+      "target": {
+        "type": "int"
+      }
+    }
+  },
+  "goalAchieved": "Đã đạt",
+  "achievementFirstStudyTitle": "Buổi học đầu tiên",
+  "achievementTenCardsTitle": "10 thẻ đã học",
+  "achievementHundredCardsTitle": "100 thẻ đã học",
+  "achievementSevenDayStreakTitle": "Chuỗi 7 ngày",
+  "achievementThirtyDayStreakTitle": "Chuỗi 30 ngày",
+  "achievementSharpMemoryTitle": "Trí nhớ sắc bén",
+  "achievementProgressCards": "{current} / {target} thẻ",
+  "@achievementProgressCards": {
+    "placeholders": {
+      "current": {
+        "type": "int"
+      },
+      "target": {
+        "type": "int"
+      }
+    }
+  },
+  "achievementProgressDays": "{current} / {target} ngày",
+  "@achievementProgressDays": {
+    "placeholders": {
+      "current": {
+        "type": "int"
+      },
+      "target": {
+        "type": "int"
+      }
+    }
+  },
+  "achievementProgressPercent": "Độ chính xác {current}% / {target}%",
+  "@achievementProgressPercent": {
+    "placeholders": {
+      "current": {
+        "type": "int"
+      },
+      "target": {
+        "type": "int"
+      }
+    }
+  },
+  "achievementUnlocked": "Đã mở khoá",
+  "achievementLocked": "Chưa mở khoá"
 }

@@ -583,7 +583,7 @@ abstract class AppLocalizations {
   /// No description provided for @studyFlashcardsDesc.
   ///
   /// In vi, this message translates to:
-  /// **'Ghi nhớ Ayah bằng thẻ hai mặt'**
+  /// **'Ghi nhớ từ vựng Qur\'an bằng thẻ hai mặt'**
   String get studyFlashcardsDesc;
 
   /// No description provided for @studySpaced.
@@ -1155,6 +1155,546 @@ abstract class AppLocalizations {
   /// In vi, this message translates to:
   /// **'Chưa hoàn thành'**
   String get learningSummaryNotCompleted;
+
+  /// No description provided for @flashcardReviewTitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Flashcard'**
+  String get flashcardReviewTitle;
+
+  /// No description provided for @flashcardReviewComplete.
+  ///
+  /// In vi, this message translates to:
+  /// **'Đã ôn xong Flashcard!'**
+  String get flashcardReviewComplete;
+
+  /// No description provided for @flashcardReviewCompleteSubtitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Không còn từ vựng nào đến hạn ôn tập lúc này.'**
+  String get flashcardReviewCompleteSubtitle;
+
+  /// No description provided for @flashcardsTitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Flashcard'**
+  String get flashcardsTitle;
+
+  /// No description provided for @flashcardSearchHint.
+  ///
+  /// In vi, this message translates to:
+  /// **'Tìm theo chữ Ả Rập, phiên âm hoặc nghĩa'**
+  String get flashcardSearchHint;
+
+  /// No description provided for @flashcardAdd.
+  ///
+  /// In vi, this message translates to:
+  /// **'Thêm'**
+  String get flashcardAdd;
+
+  /// No description provided for @flashcardContentUnavailable.
+  ///
+  /// In vi, this message translates to:
+  /// **'Không có nội dung'**
+  String get flashcardContentUnavailable;
+
+  /// No description provided for @flashcardMoveToDeck.
+  ///
+  /// In vi, this message translates to:
+  /// **'Chuyển sang deck'**
+  String get flashcardMoveToDeck;
+
+  /// No description provided for @flashcardRemove.
+  ///
+  /// In vi, this message translates to:
+  /// **'Gỡ Flashcard'**
+  String get flashcardRemove;
+
+  /// No description provided for @flashcardNoDeck.
+  ///
+  /// In vi, this message translates to:
+  /// **'Không deck'**
+  String get flashcardNoDeck;
+
+  /// No description provided for @flashcardEmptyDeck.
+  ///
+  /// In vi, this message translates to:
+  /// **'Deck này chưa có Flashcard nào.'**
+  String get flashcardEmptyDeck;
+
+  /// No description provided for @flashcardNoResults.
+  ///
+  /// In vi, this message translates to:
+  /// **'Không tìm thấy Flashcard phù hợp.'**
+  String get flashcardNoResults;
+
+  /// No description provided for @flashcardFilterAllDecks.
+  ///
+  /// In vi, this message translates to:
+  /// **'Mọi deck'**
+  String get flashcardFilterAllDecks;
+
+  /// No description provided for @flashcardFilterAllTypes.
+  ///
+  /// In vi, this message translates to:
+  /// **'Mọi loại'**
+  String get flashcardFilterAllTypes;
+
+  /// No description provided for @flashcardFilterAllStatus.
+  ///
+  /// In vi, this message translates to:
+  /// **'Mọi trạng thái'**
+  String get flashcardFilterAllStatus;
+
+  /// No description provided for @flashcardFilterDue.
+  ///
+  /// In vi, this message translates to:
+  /// **'Đến hạn'**
+  String get flashcardFilterDue;
+
+  /// No description provided for @flashcardFilterNew.
+  ///
+  /// In vi, this message translates to:
+  /// **'Mới'**
+  String get flashcardFilterNew;
+
+  /// No description provided for @flashcardFilterLearning.
+  ///
+  /// In vi, this message translates to:
+  /// **'Đang học'**
+  String get flashcardFilterLearning;
+
+  /// No description provided for @flashcardFilterReview.
+  ///
+  /// In vi, this message translates to:
+  /// **'Đang ôn'**
+  String get flashcardFilterReview;
+
+  /// No description provided for @flashcardFilterLapsed.
+  ///
+  /// In vi, this message translates to:
+  /// **'Quên'**
+  String get flashcardFilterLapsed;
+
+  /// No description provided for @flashcardOnboardingTitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Chưa có Flashcard nào'**
+  String get flashcardOnboardingTitle;
+
+  /// No description provided for @flashcardOnboardingBody.
+  ///
+  /// In vi, this message translates to:
+  /// **'Thêm từ vựng đầu tiên để bắt đầu ghi nhớ theo phương pháp lặp lại ngắt quãng.'**
+  String get flashcardOnboardingBody;
+
+  /// No description provided for @flashcardOnboardingCta.
+  ///
+  /// In vi, this message translates to:
+  /// **'Thêm Flashcard đầu tiên'**
+  String get flashcardOnboardingCta;
+
+  /// No description provided for @flashcardOnboardingReviewNudge.
+  ///
+  /// In vi, this message translates to:
+  /// **'Đã thêm Flashcard đầu tiên! Ôn thử ngay?'**
+  String get flashcardOnboardingReviewNudge;
+
+  /// No description provided for @flashcardOnboardingReviewCta.
+  ///
+  /// In vi, this message translates to:
+  /// **'Ôn ngay'**
+  String get flashcardOnboardingReviewCta;
+
+  /// No description provided for @flashcardDecksTitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Deck Flashcard'**
+  String get flashcardDecksTitle;
+
+  /// No description provided for @flashcardDecksEmpty.
+  ///
+  /// In vi, this message translates to:
+  /// **'Chưa có deck nào.'**
+  String get flashcardDecksEmpty;
+
+  /// No description provided for @flashcardDecksCreate.
+  ///
+  /// In vi, this message translates to:
+  /// **'Tạo deck'**
+  String get flashcardDecksCreate;
+
+  /// No description provided for @flashcardDecksRename.
+  ///
+  /// In vi, this message translates to:
+  /// **'Đổi tên'**
+  String get flashcardDecksRename;
+
+  /// No description provided for @flashcardDecksDelete.
+  ///
+  /// In vi, this message translates to:
+  /// **'Xoá'**
+  String get flashcardDecksDelete;
+
+  /// No description provided for @flashcardDecksDeleteConfirmTitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Xoá deck?'**
+  String get flashcardDecksDeleteConfirmTitle;
+
+  /// No description provided for @flashcardDecksDeleteConfirmBody.
+  ///
+  /// In vi, this message translates to:
+  /// **'Flashcard trong deck này sẽ chuyển về \"Không deck\", không bị xoá.'**
+  String get flashcardDecksDeleteConfirmBody;
+
+  /// No description provided for @flashcardDeckNameHint.
+  ///
+  /// In vi, this message translates to:
+  /// **'Tên deck'**
+  String get flashcardDeckNameHint;
+
+  /// No description provided for @flashcardDeckItemCount.
+  ///
+  /// In vi, this message translates to:
+  /// **'{count, plural, =0{Chưa có thẻ} =1{1 thẻ} other{{count} thẻ}}'**
+  String flashcardDeckItemCount(int count);
+
+  /// No description provided for @addFlashcardTitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Thêm Flashcard'**
+  String get addFlashcardTitle;
+
+  /// No description provided for @addFlashcardSourceLemma.
+  ///
+  /// In vi, this message translates to:
+  /// **'Từ điển'**
+  String get addFlashcardSourceLemma;
+
+  /// No description provided for @addFlashcardSourceRoot.
+  ///
+  /// In vi, this message translates to:
+  /// **'Gốc từ'**
+  String get addFlashcardSourceRoot;
+
+  /// No description provided for @addFlashcardSourcePhrase.
+  ///
+  /// In vi, this message translates to:
+  /// **'Cụm từ'**
+  String get addFlashcardSourcePhrase;
+
+  /// No description provided for @addFlashcardSourceNotAvailable.
+  ///
+  /// In vi, this message translates to:
+  /// **'Chưa có dữ liệu để duyệt/tìm cho loại này.'**
+  String get addFlashcardSourceNotAvailable;
+
+  /// No description provided for @addFlashcardSearchHint.
+  ///
+  /// In vi, this message translates to:
+  /// **'Tìm kiếm...'**
+  String get addFlashcardSearchHint;
+
+  /// No description provided for @addFlashcardNoResults.
+  ///
+  /// In vi, this message translates to:
+  /// **'Không tìm thấy kết quả.'**
+  String get addFlashcardNoResults;
+
+  /// No description provided for @addFlashcardAdd.
+  ///
+  /// In vi, this message translates to:
+  /// **'Thêm vào Flashcard'**
+  String get addFlashcardAdd;
+
+  /// No description provided for @smartDeckTodaysReview.
+  ///
+  /// In vi, this message translates to:
+  /// **'Ôn hôm nay'**
+  String get smartDeckTodaysReview;
+
+  /// No description provided for @smartDeckMostDifficult.
+  ///
+  /// In vi, this message translates to:
+  /// **'Khó nhất'**
+  String get smartDeckMostDifficult;
+
+  /// No description provided for @smartDeckRecentlyLearned.
+  ///
+  /// In vi, this message translates to:
+  /// **'Mới học xong'**
+  String get smartDeckRecentlyLearned;
+
+  /// No description provided for @smartDeckWeakRoots.
+  ///
+  /// In vi, this message translates to:
+  /// **'Gốc từ yếu'**
+  String get smartDeckWeakRoots;
+
+  /// No description provided for @smartDeckVerbForms.
+  ///
+  /// In vi, this message translates to:
+  /// **'Theo thể động từ'**
+  String get smartDeckVerbForms;
+
+  /// No description provided for @smartDeckEmpty.
+  ///
+  /// In vi, this message translates to:
+  /// **'Chưa có Flashcard nào trong Smart Deck này.'**
+  String get smartDeckEmpty;
+
+  /// No description provided for @smartDeckVerbFormLabel.
+  ///
+  /// In vi, this message translates to:
+  /// **'Thể {form}'**
+  String smartDeckVerbFormLabel(String form);
+
+  /// No description provided for @studyProgress.
+  ///
+  /// In vi, this message translates to:
+  /// **'Tiến độ học tập'**
+  String get studyProgress;
+
+  /// No description provided for @studyProgressDesc.
+  ///
+  /// In vi, this message translates to:
+  /// **'Số liệu, lịch sử và gợi ý cải thiện'**
+  String get studyProgressDesc;
+
+  /// No description provided for @progressDashboardTitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Tiến độ học tập'**
+  String get progressDashboardTitle;
+
+  /// No description provided for @progressDashboardEmpty.
+  ///
+  /// In vi, this message translates to:
+  /// **'Chưa có Flashcard nào được ôn — số liệu sẽ hiện ra khi bạn bắt đầu học.'**
+  String get progressDashboardEmpty;
+
+  /// No description provided for @progressDashboardHistory.
+  ///
+  /// In vi, this message translates to:
+  /// **'Lịch sử hoạt động'**
+  String get progressDashboardHistory;
+
+  /// No description provided for @progressDashboardHistoryEmpty.
+  ///
+  /// In vi, this message translates to:
+  /// **'Chưa có hoạt động đọc trong khoảng thời gian này.'**
+  String get progressDashboardHistoryEmpty;
+
+  /// No description provided for @progressDashboardInsights.
+  ///
+  /// In vi, this message translates to:
+  /// **'Gợi ý cải thiện'**
+  String get progressDashboardInsights;
+
+  /// No description provided for @progressDashboardOverview.
+  ///
+  /// In vi, this message translates to:
+  /// **'Tổng quan'**
+  String get progressDashboardOverview;
+
+  /// No description provided for @progressDashboardLoading.
+  ///
+  /// In vi, this message translates to:
+  /// **'Đang tải số liệu tiến độ…'**
+  String get progressDashboardLoading;
+
+  /// No description provided for @statCardsStudied.
+  ///
+  /// In vi, this message translates to:
+  /// **'Thẻ đã học'**
+  String get statCardsStudied;
+
+  /// No description provided for @statReviewsToday.
+  ///
+  /// In vi, this message translates to:
+  /// **'Lượt ôn hôm nay'**
+  String get statReviewsToday;
+
+  /// No description provided for @statAccuracy.
+  ///
+  /// In vi, this message translates to:
+  /// **'Độ chính xác'**
+  String get statAccuracy;
+
+  /// No description provided for @statAverageEase.
+  ///
+  /// In vi, this message translates to:
+  /// **'Độ dễ trung bình'**
+  String get statAverageEase;
+
+  /// No description provided for @statAverageInterval.
+  ///
+  /// In vi, this message translates to:
+  /// **'Chu kỳ trung bình (ngày)'**
+  String get statAverageInterval;
+
+  /// No description provided for @historyDaily.
+  ///
+  /// In vi, this message translates to:
+  /// **'Ngày'**
+  String get historyDaily;
+
+  /// No description provided for @historyWeekly.
+  ///
+  /// In vi, this message translates to:
+  /// **'Tuần'**
+  String get historyWeekly;
+
+  /// No description provided for @historyMonthly.
+  ///
+  /// In vi, this message translates to:
+  /// **'Tháng'**
+  String get historyMonthly;
+
+  /// No description provided for @insightsWeakRoots.
+  ///
+  /// In vi, this message translates to:
+  /// **'Gốc từ yếu'**
+  String get insightsWeakRoots;
+
+  /// No description provided for @insightsDifficultLemmas.
+  ///
+  /// In vi, this message translates to:
+  /// **'Từ khó nhất'**
+  String get insightsDifficultLemmas;
+
+  /// No description provided for @insightsFrequentlyForgotten.
+  ///
+  /// In vi, this message translates to:
+  /// **'Hay quên'**
+  String get insightsFrequentlyForgotten;
+
+  /// No description provided for @insightsFastestImproving.
+  ///
+  /// In vi, this message translates to:
+  /// **'Tiến bộ nhanh nhất'**
+  String get insightsFastestImproving;
+
+  /// No description provided for @insightsEmpty.
+  ///
+  /// In vi, this message translates to:
+  /// **'Chưa có dữ liệu cho mục này.'**
+  String get insightsEmpty;
+
+  /// No description provided for @progressDashboardGoals.
+  ///
+  /// In vi, this message translates to:
+  /// **'Mục tiêu'**
+  String get progressDashboardGoals;
+
+  /// No description provided for @progressDashboardAchievements.
+  ///
+  /// In vi, this message translates to:
+  /// **'Thành tựu'**
+  String get progressDashboardAchievements;
+
+  /// No description provided for @goalDailyStudyLabel.
+  ///
+  /// In vi, this message translates to:
+  /// **'Học mỗi ngày'**
+  String get goalDailyStudyLabel;
+
+  /// No description provided for @goalDailyReviewsLabel.
+  ///
+  /// In vi, this message translates to:
+  /// **'Ôn mỗi ngày'**
+  String get goalDailyReviewsLabel;
+
+  /// No description provided for @goalWeeklyStudyLabel.
+  ///
+  /// In vi, this message translates to:
+  /// **'Học mỗi tuần'**
+  String get goalWeeklyStudyLabel;
+
+  /// No description provided for @goalReviewsProgress.
+  ///
+  /// In vi, this message translates to:
+  /// **'{current} / {target} lượt ôn hôm nay'**
+  String goalReviewsProgress(int current, int target);
+
+  /// No description provided for @goalWeeklyMinutesProgress.
+  ///
+  /// In vi, this message translates to:
+  /// **'{current} / {target} phút tuần này'**
+  String goalWeeklyMinutesProgress(int current, int target);
+
+  /// No description provided for @goalAchieved.
+  ///
+  /// In vi, this message translates to:
+  /// **'Đã đạt'**
+  String get goalAchieved;
+
+  /// No description provided for @achievementFirstStudyTitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Buổi học đầu tiên'**
+  String get achievementFirstStudyTitle;
+
+  /// No description provided for @achievementTenCardsTitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'10 thẻ đã học'**
+  String get achievementTenCardsTitle;
+
+  /// No description provided for @achievementHundredCardsTitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'100 thẻ đã học'**
+  String get achievementHundredCardsTitle;
+
+  /// No description provided for @achievementSevenDayStreakTitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Chuỗi 7 ngày'**
+  String get achievementSevenDayStreakTitle;
+
+  /// No description provided for @achievementThirtyDayStreakTitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Chuỗi 30 ngày'**
+  String get achievementThirtyDayStreakTitle;
+
+  /// No description provided for @achievementSharpMemoryTitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Trí nhớ sắc bén'**
+  String get achievementSharpMemoryTitle;
+
+  /// No description provided for @achievementProgressCards.
+  ///
+  /// In vi, this message translates to:
+  /// **'{current} / {target} thẻ'**
+  String achievementProgressCards(int current, int target);
+
+  /// No description provided for @achievementProgressDays.
+  ///
+  /// In vi, this message translates to:
+  /// **'{current} / {target} ngày'**
+  String achievementProgressDays(int current, int target);
+
+  /// No description provided for @achievementProgressPercent.
+  ///
+  /// In vi, this message translates to:
+  /// **'Độ chính xác {current}% / {target}%'**
+  String achievementProgressPercent(int current, int target);
+
+  /// No description provided for @achievementUnlocked.
+  ///
+  /// In vi, this message translates to:
+  /// **'Đã mở khoá'**
+  String get achievementUnlocked;
+
+  /// No description provided for @achievementLocked.
+  ///
+  /// In vi, this message translates to:
+  /// **'Chưa mở khoá'**
+  String get achievementLocked;
 }
 
 class _AppLocalizationsDelegate

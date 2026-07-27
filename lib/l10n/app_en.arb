@@ -115,7 +115,7 @@
   "minutesLabel": "Minutes",
   "myBookmarks": "My bookmarks",
   "studyFlashcards": "Flashcards",
-  "studyFlashcardsDesc": "Memorize ayahs with two-sided cards",
+  "studyFlashcardsDesc": "Memorize Qur'an vocabulary with two-sided cards",
   "studySpaced": "Spaced repetition",
   "studySpacedDesc": "Review right before you forget — remember longer",
   "studyQuiz": "Quiz",
@@ -288,5 +288,159 @@
   "learningSummaryDone": "Done",
   "learningSummaryStatusCompleted": "Completed",
   "learningSummaryActivitiesTitle": "Activities completed",
-  "learningSummaryNotCompleted": "Not completed"
+  "learningSummaryNotCompleted": "Not completed",
+  "flashcardReviewTitle": "Flashcards",
+  "flashcardReviewComplete": "Flashcards complete!",
+  "flashcardReviewCompleteSubtitle": "No vocabulary is due for review right now.",
+  "flashcardsTitle": "Flashcards",
+  "flashcardSearchHint": "Search Arabic, transliteration, or meaning",
+  "flashcardAdd": "Add",
+  "flashcardContentUnavailable": "Content unavailable",
+  "flashcardMoveToDeck": "Move to deck",
+  "flashcardRemove": "Remove flashcard",
+  "flashcardNoDeck": "No deck",
+  "flashcardEmptyDeck": "This deck has no flashcards yet.",
+  "flashcardNoResults": "No matching flashcards.",
+  "flashcardFilterAllDecks": "All decks",
+  "flashcardFilterAllTypes": "All types",
+  "flashcardFilterAllStatus": "All statuses",
+  "flashcardFilterDue": "Due",
+  "flashcardFilterNew": "New",
+  "flashcardFilterLearning": "Learning",
+  "flashcardFilterReview": "Review",
+  "flashcardFilterLapsed": "Lapsed",
+  "flashcardOnboardingTitle": "No flashcards yet",
+  "flashcardOnboardingBody": "Add your first vocabulary flashcard to start learning with spaced repetition.",
+  "flashcardOnboardingCta": "Add your first flashcard",
+  "flashcardOnboardingReviewNudge": "First flashcard added! Try reviewing it now?",
+  "flashcardOnboardingReviewCta": "Review now",
+  "flashcardDecksTitle": "Flashcard decks",
+  "flashcardDecksEmpty": "No decks yet.",
+  "flashcardDecksCreate": "Create deck",
+  "flashcardDecksRename": "Rename",
+  "flashcardDecksDelete": "Delete",
+  "flashcardDecksDeleteConfirmTitle": "Delete deck?",
+  "flashcardDecksDeleteConfirmBody": "Flashcards in this deck will move to \"No deck\" — they won't be deleted.",
+  "flashcardDeckNameHint": "Deck name",
+  "flashcardDeckItemCount": "{count, plural, =0{No cards yet} =1{1 card} other{{count} cards}}",
+  "@flashcardDeckItemCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "addFlashcardTitle": "Add flashcard",
+  "addFlashcardSourceLemma": "Lemma",
+  "addFlashcardSourceRoot": "Root",
+  "addFlashcardSourcePhrase": "Phrase",
+  "addFlashcardSourceNotAvailable": "No browsable data for this type yet.",
+  "addFlashcardSearchHint": "Search...",
+  "addFlashcardNoResults": "No results found.",
+  "addFlashcardAdd": "Add to flashcards",
+  "smartDeckTodaysReview": "Today's Review",
+  "smartDeckMostDifficult": "Most Difficult",
+  "smartDeckRecentlyLearned": "Recently Learned",
+  "smartDeckWeakRoots": "Weak Roots",
+  "smartDeckVerbForms": "Verb Forms",
+  "smartDeckEmpty": "No flashcards in this Smart Deck yet.",
+  "smartDeckVerbFormLabel": "Form {form}",
+  "@smartDeckVerbFormLabel": {
+    "placeholders": {
+      "form": {
+        "type": "String"
+      }
+    }
+  },
+  "studyProgress": "Progress",
+  "studyProgressDesc": "Stats, history, and improvement tips",
+  "progressDashboardTitle": "Progress",
+  "progressDashboardEmpty": "No flashcards studied yet — stats will show up once you start learning.",
+  "progressDashboardHistory": "Activity history",
+  "progressDashboardHistoryEmpty": "No reading activity in this period yet.",
+  "progressDashboardInsights": "Improvement tips",
+  "progressDashboardOverview": "Overview",
+  "progressDashboardLoading": "Loading progress data…",
+  "statCardsStudied": "Cards studied",
+  "statReviewsToday": "Reviews today",
+  "statAccuracy": "Accuracy",
+  "statAverageEase": "Average ease",
+  "statAverageInterval": "Average interval (days)",
+  "historyDaily": "Day",
+  "historyWeekly": "Week",
+  "historyMonthly": "Month",
+  "insightsWeakRoots": "Weak roots",
+  "insightsDifficultLemmas": "Most difficult",
+  "insightsFrequentlyForgotten": "Frequently forgotten",
+  "insightsFastestImproving": "Fastest improving",
+  "insightsEmpty": "No data for this yet.",
+  "progressDashboardGoals": "Goals",
+  "progressDashboardAchievements": "Achievements",
+  "goalDailyStudyLabel": "Daily study",
+  "goalDailyReviewsLabel": "Daily reviews",
+  "goalWeeklyStudyLabel": "Weekly study",
+  "goalReviewsProgress": "{current} / {target} reviews today",
+  "@goalReviewsProgress": {
+    "placeholders": {
+      "current": {
+        "type": "int"
+      },
+      "target": {
+        "type": "int"
+      }
+    }
+  },
+  "goalWeeklyMinutesProgress": "{current} / {target} min this week",
+  "@goalWeeklyMinutesProgress": {
+    "placeholders": {
+      "current": {
+        "type": "int"
+      },
+      "target": {
+        "type": "int"
+      }
+    }
+  },
+  "goalAchieved": "Achieved",
+  "achievementFirstStudyTitle": "First study",
+  "achievementTenCardsTitle": "10 cards studied",
+  "achievementHundredCardsTitle": "100 cards studied",
+  "achievementSevenDayStreakTitle": "7-day streak",
+  "achievementThirtyDayStreakTitle": "30-day streak",
+  "achievementSharpMemoryTitle": "Sharp memory",
+  "achievementProgressCards": "{current} / {target} cards",
+  "@achievementProgressCards": {
+    "placeholders": {
+      "current": {
+        "type": "int"
+      },
+      "target": {
+        "type": "int"
+      }
+    }
+  },
+  "achievementProgressDays": "{current} / {target} days",
+  "@achievementProgressDays": {
+    "placeholders": {
+      "current": {
+        "type": "int"
+      },
+      "target": {
+        "type": "int"
+      }
+    }
+  },
+  "achievementProgressPercent": "{current}% / {target}% accuracy",
+  "@achievementProgressPercent": {
+    "placeholders": {
+      "current": {
+        "type": "int"
+      },
+      "target": {
+        "type": "int"
+      }
+    }
+  },
+  "achievementUnlocked": "Unlocked",
+  "achievementLocked": "Locked"
 }

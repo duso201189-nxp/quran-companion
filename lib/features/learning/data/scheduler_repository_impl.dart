@@ -46,35 +46,43 @@ class SchedulerRepositoryImpl implements SchedulerRepository {
         repetitions: row.repetitions,
         dueDate: row.dueDate,
         state: srsCardStateFromDbValue(row.state),
+        updatedAtMs: row.updatedAt,
       );
 
   @override
-  Future<void> syncWithReviewQueue(List<int> currentReviewAyahIds) {
-    return withFailureLogging(_logger, 'syncWithReviewQueue', () async {
+  Future<void> syncWithReviewQueue(List<int> currentReviewAyahIds) =>
+      syncItemsForType(LearningItemType.ayah, currentReviewAyahIds);
+
+  @override
+  Future<void> syncItemsForType(
+    LearningItemType itemType,
+    List<int> currentItemIds,
+  ) {
+    return withFailureLogging(_logger, 'syncItemsForType', () async {
       final now = _nowMs();
       // Lấy CẢ thẻ đã xoá mềm — UNIQUE(item_type, item_id) không phân
-      // biệt theo deleted_at, nên Ayah quay lại Queue phải HỒI SINH thẻ
-      // cũ (update), không được insert thẻ mới trùng khoá — cùng mẫu
+      // biệt theo deleted_at, nên 1 mục quay lại phải HỒI SINH thẻ cũ
+      // (update), không được insert thẻ mới trùng khoá — cùng mẫu
       // toggle/upsert idempotent của Bookmarks/Favorites.
       final existing = await (_db.select(_db.srsCards)
-            ..where((t) => t.itemType.equals(LearningItemType.ayah.name)))
+            ..where((t) => t.itemType.equals(itemType.name)))
           .get();
-      final existingByAyahId = {for (final r in existing) r.itemId: r};
-      final currentSet = currentReviewAyahIds.toSet();
+      final existingByItemId = {for (final r in existing) r.itemId: r};
+      final currentSet = currentItemIds.toSet();
 
-      for (final ayahId in currentSet) {
-        final row = existingByAyahId[ayahId];
+      for (final itemId in currentSet) {
+        final row = existingByItemId[itemId];
         if (row != null && row.deletedAt == null) continue; // đã có, còn sống
 
         final initial = _algorithm.initialState();
         if (row == null) {
-          // Ayah mới vào Queue -> tạo thẻ với trạng thái khởi tạo do
-          // thuật toán quyết định (không hardcode ease factor SM-2 ở đây).
+          // Mục mới -> tạo thẻ với trạng thái khởi tạo do thuật toán
+          // quyết định (không hardcode ease factor SM-2 ở đây).
           await _db.into(_db.srsCards).insert(
                 SrsCardsCompanion.insert(
                   id: _newId(),
-                  itemType: LearningItemType.ayah.name,
-                  itemId: ayahId,
+                  itemType: itemType.name,
+                  itemId: itemId,
                   easeFactor: Value(initial.easeFactor),
                   intervalDays: Value(initial.intervalDays),
                   repetitions: Value(initial.repetitions),
@@ -84,8 +92,8 @@ class SchedulerRepositoryImpl implements SchedulerRepository {
                 ),
               );
         } else {
-          // Ayah quay lại Queue sau khi rời -> hồi sinh thẻ cũ (giữ
-          // nguyên id), reset về trạng thái khởi tạo.
+          // Mục quay lại sau khi rời -> hồi sinh thẻ cũ (giữ nguyên id),
+          // reset về trạng thái khởi tạo.
           await (_db.update(_db.srsCards)..where((t) => t.id.equals(row.id)))
               .write(
             SrsCardsCompanion(
@@ -102,9 +110,10 @@ class SchedulerRepositoryImpl implements SchedulerRepository {
         }
       }
 
-      // Ayah đã rời Queue -> xoá mềm thẻ tương ứng (Scheduler theo sau
-      // Queue theo cả hai chiều, không bao giờ ngược lại).
-      for (final entry in existingByAyahId.entries) {
+      // Mục đã rời danh sách hiện tại -> xoá mềm thẻ tương ứng
+      // (Scheduler theo sau nguồn thành viên theo cả hai chiều, không
+      // bao giờ ngược lại).
+      for (final entry in existingByItemId.entries) {
         if (currentSet.contains(entry.key)) continue;
         if (entry.value.deletedAt != null) continue; // đã xoá mềm rồi
         await (_db.update(_db.srsCards)
