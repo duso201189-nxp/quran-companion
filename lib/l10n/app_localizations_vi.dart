@@ -264,7 +264,7 @@ class AppLocalizationsVi extends AppLocalizations {
   String get studyFlashcards => 'Flashcard';
 
   @override
-  String get studyFlashcardsDesc => 'Ghi nhớ Ayah bằng thẻ hai mặt';
+  String get studyFlashcardsDesc => 'Ghi nhớ từ vựng Qur\'an bằng thẻ hai mặt';
 
   @override
   String get studySpaced => 'Lặp lại ngắt quãng';
@@ -572,4 +572,167 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get learningSummaryNotCompleted => 'Chưa hoàn thành';
+
+  @override
+  String get flashcardReviewTitle => 'Flashcard';
+
+  @override
+  String get flashcardReviewComplete => 'Đã ôn xong Flashcard!';
+
+  @override
+  String get flashcardReviewCompleteSubtitle =>
+      'Không còn từ vựng nào đến hạn ôn tập lúc này.';
+
+  @override
+  String get flashcardsTitle => 'Flashcard';
+
+  @override
+  String get flashcardSearchHint => 'Tìm theo chữ Ả Rập, phiên âm hoặc nghĩa';
+
+  @override
+  String get flashcardAdd => 'Thêm';
+
+  @override
+  String get flashcardContentUnavailable => 'Không có nội dung';
+
+  @override
+  String get flashcardMoveToDeck => 'Chuyển sang deck';
+
+  @override
+  String get flashcardRemove => 'Gỡ Flashcard';
+
+  @override
+  String get flashcardNoDeck => 'Không deck';
+
+  @override
+  String get flashcardEmptyDeck => 'Deck này chưa có Flashcard nào.';
+
+  @override
+  String get flashcardNoResults => 'Không tìm thấy Flashcard phù hợp.';
+
+  @override
+  String get flashcardFilterAllDecks => 'Mọi deck';
+
+  @override
+  String get flashcardFilterAllTypes => 'Mọi loại';
+
+  @override
+  String get flashcardFilterAllStatus => 'Mọi trạng thái';
+
+  @override
+  String get flashcardFilterDue => 'Đến hạn';
+
+  @override
+  String get flashcardFilterNew => 'Mới';
+
+  @override
+  String get flashcardFilterLearning => 'Đang học';
+
+  @override
+  String get flashcardFilterReview => 'Đang ôn';
+
+  @override
+  String get flashcardFilterLapsed => 'Quên';
+
+  @override
+  String get flashcardOnboardingTitle => 'Chưa có Flashcard nào';
+
+  @override
+  String get flashcardOnboardingBody =>
+      'Thêm từ vựng đầu tiên để bắt đầu ghi nhớ theo phương pháp lặp lại ngắt quãng.';
+
+  @override
+  String get flashcardOnboardingCta => 'Thêm Flashcard đầu tiên';
+
+  @override
+  String get flashcardOnboardingReviewNudge =>
+      'Đã thêm Flashcard đầu tiên! Ôn thử ngay?';
+
+  @override
+  String get flashcardOnboardingReviewCta => 'Ôn ngay';
+
+  @override
+  String get flashcardDecksTitle => 'Deck Flashcard';
+
+  @override
+  String get flashcardDecksEmpty => 'Chưa có deck nào.';
+
+  @override
+  String get flashcardDecksCreate => 'Tạo deck';
+
+  @override
+  String get flashcardDecksRename => 'Đổi tên';
+
+  @override
+  String get flashcardDecksDelete => 'Xoá';
+
+  @override
+  String get flashcardDecksDeleteConfirmTitle => 'Xoá deck?';
+
+  @override
+  String get flashcardDecksDeleteConfirmBody =>
+      'Flashcard trong deck này sẽ chuyển về \"Không deck\", không bị xoá.';
+
+  @override
+  String get flashcardDeckNameHint => 'Tên deck';
+
+  @override
+  String flashcardDeckItemCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count thẻ',
+      one: '1 thẻ',
+      zero: 'Chưa có thẻ',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get addFlashcardTitle => 'Thêm Flashcard';
+
+  @override
+  String get addFlashcardSourceLemma => 'Từ điển';
+
+  @override
+  String get addFlashcardSourceRoot => 'Gốc từ';
+
+  @override
+  String get addFlashcardSourcePhrase => 'Cụm từ';
+
+  @override
+  String get addFlashcardSourceNotAvailable =>
+      'Chưa có dữ liệu để duyệt/tìm cho loại này.';
+
+  @override
+  String get addFlashcardSearchHint => 'Tìm kiếm...';
+
+  @override
+  String get addFlashcardNoResults => 'Không tìm thấy kết quả.';
+
+  @override
+  String get addFlashcardAdd => 'Thêm vào Flashcard';
+
+  @override
+  String get smartDeckTodaysReview => 'Ôn hôm nay';
+
+  @override
+  String get smartDeckMostDifficult => 'Khó nhất';
+
+  @override
+  String get smartDeckRecentlyLearned => 'Mới học xong';
+
+  @override
+  String get smartDeckWeakRoots => 'Gốc từ yếu';
+
+  @override
+  String get smartDeckVerbForms => 'Theo thể động từ';
+
+  @override
+  String get smartDeckEmpty => 'Chưa có Flashcard nào trong Smart Deck này.';
+
+  @override
+  String smartDeckVerbFormLabel(String form) {
+    return 'Thể $form';
+  }
 }

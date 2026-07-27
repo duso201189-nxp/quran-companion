@@ -1,6 +1,12 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../features/flashcards/domain/entities/smart_deck_type.dart';
+import '../features/flashcards/presentation/add_flashcard_screen.dart';
+import '../features/flashcards/presentation/flashcard_browse_screen.dart';
+import '../features/flashcards/presentation/flashcard_decks_screen.dart';
+import '../features/flashcards/presentation/flashcard_review_screen.dart';
+import '../features/flashcards/presentation/smart_deck_screen.dart';
 import '../features/home/presentation/home_screen.dart';
 import '../features/learning/presentation/review_session_screen.dart';
 import '../features/learning_session/presentation/learning_session_screen.dart';
@@ -58,6 +64,29 @@ abstract final class AppRoutes {
   /// Tìm kiếm — màn hình push full-screen (không phải tab), giống
   /// [library]. Xem DR-2026-0002 mục 1.
   static const String search = '/search';
+
+  /// Duyệt Flashcard (Sprint 13 Phase 3) — push full-screen từ tab
+  /// Học, cùng mẫu [library]/[collections]. Điểm vào chính của UX
+  /// Flashcard (danh sách, tìm kiếm/lọc, Smart Deck, nút Thêm).
+  static const String flashcards = '/flashcards';
+
+  /// Thêm Flashcard (từ Lemma/Root/Phrase) — push từ [flashcards].
+  static const String addFlashcard = '/flashcards/add';
+
+  /// Quản lý Deck Flashcard — push từ [flashcards], cùng mẫu
+  /// [collections] (Bookmark) nhưng cho Flashcard.
+  static const String flashcardDecks = '/flashcard-decks';
+
+  /// Kết quả 1 Smart Deck (Sprint 13 Phase 3 mục 4) — push từ
+  /// [flashcards], nhận SmartDeckType qua `extra` (không mã hoá vào
+  /// path, tránh cần parse chuỗi -> enum ở nhiều nơi).
+  static const String smartDeck = '/flashcards/smart-deck';
+
+  /// Ôn Flashcard ĐỘC LẬP (không qua Learning Session) — cùng mẫu
+  /// [reviewSession] đã có song song 2 lối vào (độc lập + lồng trong
+  /// Learning Session). Dùng cho Onboarding "ôn thử ngay" và lối tắt
+  /// từ [flashcards].
+  static const String flashcardReview = '/flashcard-review';
 
   /// Trang đọc trong tab Qur'an (giữ thanh điều hướng): /quran/surah/2
   static String surahReading(int surahId) => '/quran/surah/$surahId';
@@ -152,6 +181,32 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: AppRoutes.collections,
         builder: (context, state) => const CollectionsScreen(),
+      ),
+
+      GoRoute(
+        path: AppRoutes.flashcards,
+        builder: (context, state) => const FlashcardBrowseScreen(),
+      ),
+
+      GoRoute(
+        path: AppRoutes.addFlashcard,
+        builder: (context, state) => const AddFlashcardScreen(),
+      ),
+
+      GoRoute(
+        path: AppRoutes.flashcardDecks,
+        builder: (context, state) => const FlashcardDecksScreen(),
+      ),
+
+      GoRoute(
+        path: AppRoutes.smartDeck,
+        builder: (context, state) =>
+            SmartDeckScreen(type: state.extra! as SmartDeckType),
+      ),
+
+      GoRoute(
+        path: AppRoutes.flashcardReview,
+        builder: (context, state) => const FlashcardReviewScreen(),
       ),
 
       GoRoute(

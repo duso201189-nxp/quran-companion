@@ -583,7 +583,7 @@ abstract class AppLocalizations {
   /// No description provided for @studyFlashcardsDesc.
   ///
   /// In vi, this message translates to:
-  /// **'Ghi nhớ Ayah bằng thẻ hai mặt'**
+  /// **'Ghi nhớ từ vựng Qur\'an bằng thẻ hai mặt'**
   String get studyFlashcardsDesc;
 
   /// No description provided for @studySpaced.
@@ -1155,6 +1155,300 @@ abstract class AppLocalizations {
   /// In vi, this message translates to:
   /// **'Chưa hoàn thành'**
   String get learningSummaryNotCompleted;
+
+  /// No description provided for @flashcardReviewTitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Flashcard'**
+  String get flashcardReviewTitle;
+
+  /// No description provided for @flashcardReviewComplete.
+  ///
+  /// In vi, this message translates to:
+  /// **'Đã ôn xong Flashcard!'**
+  String get flashcardReviewComplete;
+
+  /// No description provided for @flashcardReviewCompleteSubtitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Không còn từ vựng nào đến hạn ôn tập lúc này.'**
+  String get flashcardReviewCompleteSubtitle;
+
+  /// No description provided for @flashcardsTitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Flashcard'**
+  String get flashcardsTitle;
+
+  /// No description provided for @flashcardSearchHint.
+  ///
+  /// In vi, this message translates to:
+  /// **'Tìm theo chữ Ả Rập, phiên âm hoặc nghĩa'**
+  String get flashcardSearchHint;
+
+  /// No description provided for @flashcardAdd.
+  ///
+  /// In vi, this message translates to:
+  /// **'Thêm'**
+  String get flashcardAdd;
+
+  /// No description provided for @flashcardContentUnavailable.
+  ///
+  /// In vi, this message translates to:
+  /// **'Không có nội dung'**
+  String get flashcardContentUnavailable;
+
+  /// No description provided for @flashcardMoveToDeck.
+  ///
+  /// In vi, this message translates to:
+  /// **'Chuyển sang deck'**
+  String get flashcardMoveToDeck;
+
+  /// No description provided for @flashcardRemove.
+  ///
+  /// In vi, this message translates to:
+  /// **'Gỡ Flashcard'**
+  String get flashcardRemove;
+
+  /// No description provided for @flashcardNoDeck.
+  ///
+  /// In vi, this message translates to:
+  /// **'Không deck'**
+  String get flashcardNoDeck;
+
+  /// No description provided for @flashcardEmptyDeck.
+  ///
+  /// In vi, this message translates to:
+  /// **'Deck này chưa có Flashcard nào.'**
+  String get flashcardEmptyDeck;
+
+  /// No description provided for @flashcardNoResults.
+  ///
+  /// In vi, this message translates to:
+  /// **'Không tìm thấy Flashcard phù hợp.'**
+  String get flashcardNoResults;
+
+  /// No description provided for @flashcardFilterAllDecks.
+  ///
+  /// In vi, this message translates to:
+  /// **'Mọi deck'**
+  String get flashcardFilterAllDecks;
+
+  /// No description provided for @flashcardFilterAllTypes.
+  ///
+  /// In vi, this message translates to:
+  /// **'Mọi loại'**
+  String get flashcardFilterAllTypes;
+
+  /// No description provided for @flashcardFilterAllStatus.
+  ///
+  /// In vi, this message translates to:
+  /// **'Mọi trạng thái'**
+  String get flashcardFilterAllStatus;
+
+  /// No description provided for @flashcardFilterDue.
+  ///
+  /// In vi, this message translates to:
+  /// **'Đến hạn'**
+  String get flashcardFilterDue;
+
+  /// No description provided for @flashcardFilterNew.
+  ///
+  /// In vi, this message translates to:
+  /// **'Mới'**
+  String get flashcardFilterNew;
+
+  /// No description provided for @flashcardFilterLearning.
+  ///
+  /// In vi, this message translates to:
+  /// **'Đang học'**
+  String get flashcardFilterLearning;
+
+  /// No description provided for @flashcardFilterReview.
+  ///
+  /// In vi, this message translates to:
+  /// **'Đang ôn'**
+  String get flashcardFilterReview;
+
+  /// No description provided for @flashcardFilterLapsed.
+  ///
+  /// In vi, this message translates to:
+  /// **'Quên'**
+  String get flashcardFilterLapsed;
+
+  /// No description provided for @flashcardOnboardingTitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Chưa có Flashcard nào'**
+  String get flashcardOnboardingTitle;
+
+  /// No description provided for @flashcardOnboardingBody.
+  ///
+  /// In vi, this message translates to:
+  /// **'Thêm từ vựng đầu tiên để bắt đầu ghi nhớ theo phương pháp lặp lại ngắt quãng.'**
+  String get flashcardOnboardingBody;
+
+  /// No description provided for @flashcardOnboardingCta.
+  ///
+  /// In vi, this message translates to:
+  /// **'Thêm Flashcard đầu tiên'**
+  String get flashcardOnboardingCta;
+
+  /// No description provided for @flashcardOnboardingReviewNudge.
+  ///
+  /// In vi, this message translates to:
+  /// **'Đã thêm Flashcard đầu tiên! Ôn thử ngay?'**
+  String get flashcardOnboardingReviewNudge;
+
+  /// No description provided for @flashcardOnboardingReviewCta.
+  ///
+  /// In vi, this message translates to:
+  /// **'Ôn ngay'**
+  String get flashcardOnboardingReviewCta;
+
+  /// No description provided for @flashcardDecksTitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Deck Flashcard'**
+  String get flashcardDecksTitle;
+
+  /// No description provided for @flashcardDecksEmpty.
+  ///
+  /// In vi, this message translates to:
+  /// **'Chưa có deck nào.'**
+  String get flashcardDecksEmpty;
+
+  /// No description provided for @flashcardDecksCreate.
+  ///
+  /// In vi, this message translates to:
+  /// **'Tạo deck'**
+  String get flashcardDecksCreate;
+
+  /// No description provided for @flashcardDecksRename.
+  ///
+  /// In vi, this message translates to:
+  /// **'Đổi tên'**
+  String get flashcardDecksRename;
+
+  /// No description provided for @flashcardDecksDelete.
+  ///
+  /// In vi, this message translates to:
+  /// **'Xoá'**
+  String get flashcardDecksDelete;
+
+  /// No description provided for @flashcardDecksDeleteConfirmTitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Xoá deck?'**
+  String get flashcardDecksDeleteConfirmTitle;
+
+  /// No description provided for @flashcardDecksDeleteConfirmBody.
+  ///
+  /// In vi, this message translates to:
+  /// **'Flashcard trong deck này sẽ chuyển về \"Không deck\", không bị xoá.'**
+  String get flashcardDecksDeleteConfirmBody;
+
+  /// No description provided for @flashcardDeckNameHint.
+  ///
+  /// In vi, this message translates to:
+  /// **'Tên deck'**
+  String get flashcardDeckNameHint;
+
+  /// No description provided for @flashcardDeckItemCount.
+  ///
+  /// In vi, this message translates to:
+  /// **'{count, plural, =0{Chưa có thẻ} =1{1 thẻ} other{{count} thẻ}}'**
+  String flashcardDeckItemCount(int count);
+
+  /// No description provided for @addFlashcardTitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Thêm Flashcard'**
+  String get addFlashcardTitle;
+
+  /// No description provided for @addFlashcardSourceLemma.
+  ///
+  /// In vi, this message translates to:
+  /// **'Từ điển'**
+  String get addFlashcardSourceLemma;
+
+  /// No description provided for @addFlashcardSourceRoot.
+  ///
+  /// In vi, this message translates to:
+  /// **'Gốc từ'**
+  String get addFlashcardSourceRoot;
+
+  /// No description provided for @addFlashcardSourcePhrase.
+  ///
+  /// In vi, this message translates to:
+  /// **'Cụm từ'**
+  String get addFlashcardSourcePhrase;
+
+  /// No description provided for @addFlashcardSourceNotAvailable.
+  ///
+  /// In vi, this message translates to:
+  /// **'Chưa có dữ liệu để duyệt/tìm cho loại này.'**
+  String get addFlashcardSourceNotAvailable;
+
+  /// No description provided for @addFlashcardSearchHint.
+  ///
+  /// In vi, this message translates to:
+  /// **'Tìm kiếm...'**
+  String get addFlashcardSearchHint;
+
+  /// No description provided for @addFlashcardNoResults.
+  ///
+  /// In vi, this message translates to:
+  /// **'Không tìm thấy kết quả.'**
+  String get addFlashcardNoResults;
+
+  /// No description provided for @addFlashcardAdd.
+  ///
+  /// In vi, this message translates to:
+  /// **'Thêm vào Flashcard'**
+  String get addFlashcardAdd;
+
+  /// No description provided for @smartDeckTodaysReview.
+  ///
+  /// In vi, this message translates to:
+  /// **'Ôn hôm nay'**
+  String get smartDeckTodaysReview;
+
+  /// No description provided for @smartDeckMostDifficult.
+  ///
+  /// In vi, this message translates to:
+  /// **'Khó nhất'**
+  String get smartDeckMostDifficult;
+
+  /// No description provided for @smartDeckRecentlyLearned.
+  ///
+  /// In vi, this message translates to:
+  /// **'Mới học xong'**
+  String get smartDeckRecentlyLearned;
+
+  /// No description provided for @smartDeckWeakRoots.
+  ///
+  /// In vi, this message translates to:
+  /// **'Gốc từ yếu'**
+  String get smartDeckWeakRoots;
+
+  /// No description provided for @smartDeckVerbForms.
+  ///
+  /// In vi, this message translates to:
+  /// **'Theo thể động từ'**
+  String get smartDeckVerbForms;
+
+  /// No description provided for @smartDeckEmpty.
+  ///
+  /// In vi, this message translates to:
+  /// **'Chưa có Flashcard nào trong Smart Deck này.'**
+  String get smartDeckEmpty;
+
+  /// No description provided for @smartDeckVerbFormLabel.
+  ///
+  /// In vi, this message translates to:
+  /// **'Thể {form}'**
+  String smartDeckVerbFormLabel(String form);
 }
 
 class _AppLocalizationsDelegate

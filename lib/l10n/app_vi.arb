@@ -115,7 +115,7 @@
   "minutesLabel": "Phút học",
   "myBookmarks": "Bookmark của tôi",
   "studyFlashcards": "Flashcard",
-  "studyFlashcardsDesc": "Ghi nhớ Ayah bằng thẻ hai mặt",
+  "studyFlashcardsDesc": "Ghi nhớ từ vựng Qur'an bằng thẻ hai mặt",
   "studySpaced": "Lặp lại ngắt quãng",
   "studySpacedDesc": "Ôn đúng lúc sắp quên — nhớ lâu hơn",
   "studyQuiz": "Trắc nghiệm",
@@ -288,5 +288,68 @@
   "learningSummaryDone": "Xong",
   "learningSummaryStatusCompleted": "Hoàn thành",
   "learningSummaryActivitiesTitle": "Hoạt động đã hoàn thành",
-  "learningSummaryNotCompleted": "Chưa hoàn thành"
+  "learningSummaryNotCompleted": "Chưa hoàn thành",
+  "flashcardReviewTitle": "Flashcard",
+  "flashcardReviewComplete": "Đã ôn xong Flashcard!",
+  "flashcardReviewCompleteSubtitle": "Không còn từ vựng nào đến hạn ôn tập lúc này.",
+  "flashcardsTitle": "Flashcard",
+  "flashcardSearchHint": "Tìm theo chữ Ả Rập, phiên âm hoặc nghĩa",
+  "flashcardAdd": "Thêm",
+  "flashcardContentUnavailable": "Không có nội dung",
+  "flashcardMoveToDeck": "Chuyển sang deck",
+  "flashcardRemove": "Gỡ Flashcard",
+  "flashcardNoDeck": "Không deck",
+  "flashcardEmptyDeck": "Deck này chưa có Flashcard nào.",
+  "flashcardNoResults": "Không tìm thấy Flashcard phù hợp.",
+  "flashcardFilterAllDecks": "Mọi deck",
+  "flashcardFilterAllTypes": "Mọi loại",
+  "flashcardFilterAllStatus": "Mọi trạng thái",
+  "flashcardFilterDue": "Đến hạn",
+  "flashcardFilterNew": "Mới",
+  "flashcardFilterLearning": "Đang học",
+  "flashcardFilterReview": "Đang ôn",
+  "flashcardFilterLapsed": "Quên",
+  "flashcardOnboardingTitle": "Chưa có Flashcard nào",
+  "flashcardOnboardingBody": "Thêm từ vựng đầu tiên để bắt đầu ghi nhớ theo phương pháp lặp lại ngắt quãng.",
+  "flashcardOnboardingCta": "Thêm Flashcard đầu tiên",
+  "flashcardOnboardingReviewNudge": "Đã thêm Flashcard đầu tiên! Ôn thử ngay?",
+  "flashcardOnboardingReviewCta": "Ôn ngay",
+  "flashcardDecksTitle": "Deck Flashcard",
+  "flashcardDecksEmpty": "Chưa có deck nào.",
+  "flashcardDecksCreate": "Tạo deck",
+  "flashcardDecksRename": "Đổi tên",
+  "flashcardDecksDelete": "Xoá",
+  "flashcardDecksDeleteConfirmTitle": "Xoá deck?",
+  "flashcardDecksDeleteConfirmBody": "Flashcard trong deck này sẽ chuyển về \"Không deck\", không bị xoá.",
+  "flashcardDeckNameHint": "Tên deck",
+  "flashcardDeckItemCount": "{count, plural, =0{Chưa có thẻ} =1{1 thẻ} other{{count} thẻ}}",
+  "@flashcardDeckItemCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "addFlashcardTitle": "Thêm Flashcard",
+  "addFlashcardSourceLemma": "Từ điển",
+  "addFlashcardSourceRoot": "Gốc từ",
+  "addFlashcardSourcePhrase": "Cụm từ",
+  "addFlashcardSourceNotAvailable": "Chưa có dữ liệu để duyệt/tìm cho loại này.",
+  "addFlashcardSearchHint": "Tìm kiếm...",
+  "addFlashcardNoResults": "Không tìm thấy kết quả.",
+  "addFlashcardAdd": "Thêm vào Flashcard",
+  "smartDeckTodaysReview": "Ôn hôm nay",
+  "smartDeckMostDifficult": "Khó nhất",
+  "smartDeckRecentlyLearned": "Mới học xong",
+  "smartDeckWeakRoots": "Gốc từ yếu",
+  "smartDeckVerbForms": "Theo thể động từ",
+  "smartDeckEmpty": "Chưa có Flashcard nào trong Smart Deck này.",
+  "smartDeckVerbFormLabel": "Thể {form}",
+  "@smartDeckVerbFormLabel": {
+    "placeholders": {
+      "form": {
+        "type": "String"
+      }
+    }
+  }
 }

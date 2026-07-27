@@ -264,7 +264,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get studyFlashcards => 'Flashcards';
 
   @override
-  String get studyFlashcardsDesc => 'Memorize ayahs with two-sided cards';
+  String get studyFlashcardsDesc =>
+      'Memorize Qur\'an vocabulary with two-sided cards';
 
   @override
   String get studySpaced => 'Spaced repetition';
@@ -573,4 +574,168 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get learningSummaryNotCompleted => 'Not completed';
+
+  @override
+  String get flashcardReviewTitle => 'Flashcards';
+
+  @override
+  String get flashcardReviewComplete => 'Flashcards complete!';
+
+  @override
+  String get flashcardReviewCompleteSubtitle =>
+      'No vocabulary is due for review right now.';
+
+  @override
+  String get flashcardsTitle => 'Flashcards';
+
+  @override
+  String get flashcardSearchHint =>
+      'Search Arabic, transliteration, or meaning';
+
+  @override
+  String get flashcardAdd => 'Add';
+
+  @override
+  String get flashcardContentUnavailable => 'Content unavailable';
+
+  @override
+  String get flashcardMoveToDeck => 'Move to deck';
+
+  @override
+  String get flashcardRemove => 'Remove flashcard';
+
+  @override
+  String get flashcardNoDeck => 'No deck';
+
+  @override
+  String get flashcardEmptyDeck => 'This deck has no flashcards yet.';
+
+  @override
+  String get flashcardNoResults => 'No matching flashcards.';
+
+  @override
+  String get flashcardFilterAllDecks => 'All decks';
+
+  @override
+  String get flashcardFilterAllTypes => 'All types';
+
+  @override
+  String get flashcardFilterAllStatus => 'All statuses';
+
+  @override
+  String get flashcardFilterDue => 'Due';
+
+  @override
+  String get flashcardFilterNew => 'New';
+
+  @override
+  String get flashcardFilterLearning => 'Learning';
+
+  @override
+  String get flashcardFilterReview => 'Review';
+
+  @override
+  String get flashcardFilterLapsed => 'Lapsed';
+
+  @override
+  String get flashcardOnboardingTitle => 'No flashcards yet';
+
+  @override
+  String get flashcardOnboardingBody =>
+      'Add your first vocabulary flashcard to start learning with spaced repetition.';
+
+  @override
+  String get flashcardOnboardingCta => 'Add your first flashcard';
+
+  @override
+  String get flashcardOnboardingReviewNudge =>
+      'First flashcard added! Try reviewing it now?';
+
+  @override
+  String get flashcardOnboardingReviewCta => 'Review now';
+
+  @override
+  String get flashcardDecksTitle => 'Flashcard decks';
+
+  @override
+  String get flashcardDecksEmpty => 'No decks yet.';
+
+  @override
+  String get flashcardDecksCreate => 'Create deck';
+
+  @override
+  String get flashcardDecksRename => 'Rename';
+
+  @override
+  String get flashcardDecksDelete => 'Delete';
+
+  @override
+  String get flashcardDecksDeleteConfirmTitle => 'Delete deck?';
+
+  @override
+  String get flashcardDecksDeleteConfirmBody =>
+      'Flashcards in this deck will move to \"No deck\" — they won\'t be deleted.';
+
+  @override
+  String get flashcardDeckNameHint => 'Deck name';
+
+  @override
+  String flashcardDeckItemCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count cards',
+      one: '1 card',
+      zero: 'No cards yet',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get addFlashcardTitle => 'Add flashcard';
+
+  @override
+  String get addFlashcardSourceLemma => 'Lemma';
+
+  @override
+  String get addFlashcardSourceRoot => 'Root';
+
+  @override
+  String get addFlashcardSourcePhrase => 'Phrase';
+
+  @override
+  String get addFlashcardSourceNotAvailable =>
+      'No browsable data for this type yet.';
+
+  @override
+  String get addFlashcardSearchHint => 'Search...';
+
+  @override
+  String get addFlashcardNoResults => 'No results found.';
+
+  @override
+  String get addFlashcardAdd => 'Add to flashcards';
+
+  @override
+  String get smartDeckTodaysReview => 'Today\'s Review';
+
+  @override
+  String get smartDeckMostDifficult => 'Most Difficult';
+
+  @override
+  String get smartDeckRecentlyLearned => 'Recently Learned';
+
+  @override
+  String get smartDeckWeakRoots => 'Weak Roots';
+
+  @override
+  String get smartDeckVerbForms => 'Verb Forms';
+
+  @override
+  String get smartDeckEmpty => 'No flashcards in this Smart Deck yet.';
+
+  @override
+  String smartDeckVerbFormLabel(String form) {
+    return 'Form $form';
+  }
 }

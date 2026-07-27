@@ -132,6 +132,64 @@ void main() {
     });
   });
 
+  group('syncItemsForType (Sprint 13 Phase 2 — tổng quát hoá cho Flashcard)',
+      () {
+    test(
+        'itemType=lemma: tạo/hồi sinh/xoá mềm hệt syncWithReviewQueue, '
+        'độc lập với thẻ ayah', () async {
+      await repo.syncWithReviewQueue([10]); // ayah, không liên quan
+      await repo.syncItemsForType(LearningItemType.lemma, [100, 200]);
+
+      final lemmaCards = await repo.watchAllCards(LearningItemType.lemma).first;
+      expect(lemmaCards.map((c) => c.itemId).toSet(), {100, 200});
+      expect(
+        lemmaCards.every((c) => c.itemType == LearningItemType.lemma),
+        isTrue,
+      );
+
+      // Thẻ ayah không bị đụng tới.
+      final ayahCards = await repo.watchAllCards(LearningItemType.ayah).first;
+      expect(ayahCards.map((c) => c.itemId).toSet(), {10});
+    });
+
+    test('lemma rời danh sách -> thẻ tương ứng bị xoá mềm', () async {
+      await repo.syncItemsForType(LearningItemType.lemma, [100, 200]);
+      await repo.syncItemsForType(LearningItemType.lemma, [100]);
+
+      final cards = await repo.watchAllCards(LearningItemType.lemma).first;
+      expect(cards, hasLength(1));
+      expect(cards.single.itemId, 100);
+    });
+
+    test(
+        'lemma quay lại sau khi rời -> hồi sinh thẻ cũ (giữ nguyên id), '
+        'không insert trùng UNIQUE(item_type, item_id)', () async {
+      await repo.syncItemsForType(LearningItemType.lemma, [100]);
+      final originalId =
+          (await repo.watchAllCards(LearningItemType.lemma).first).single.id;
+
+      await repo.syncItemsForType(LearningItemType.lemma, []);
+      await repo.syncItemsForType(LearningItemType.lemma, [100]);
+
+      final cards = await repo.watchAllCards(LearningItemType.lemma).first;
+      expect(cards, hasLength(1));
+      expect(cards.single.id, originalId);
+    });
+
+    test('applyReview hoạt động bình thường trên thẻ lemma', () async {
+      await repo.syncItemsForType(LearningItemType.lemma, [100]);
+      final id =
+          (await repo.watchAllCards(LearningItemType.lemma).first).single.id;
+
+      await repo.applyReview(id, ReviewGrade.good);
+
+      final after =
+          (await repo.watchAllCards(LearningItemType.lemma).first).single;
+      expect(after.repetitions, 1);
+      expect(after.state, SrsCardState.review);
+    });
+  });
+
   group('watchAllCards', () {
     test('sắp theo hạn ôn gần nhất trước', () async {
       await repo.syncWithReviewQueue([10, 20]);

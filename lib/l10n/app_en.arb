@@ -115,7 +115,7 @@
   "minutesLabel": "Minutes",
   "myBookmarks": "My bookmarks",
   "studyFlashcards": "Flashcards",
-  "studyFlashcardsDesc": "Memorize ayahs with two-sided cards",
+  "studyFlashcardsDesc": "Memorize Qur'an vocabulary with two-sided cards",
   "studySpaced": "Spaced repetition",
   "studySpacedDesc": "Review right before you forget — remember longer",
   "studyQuiz": "Quiz",
@@ -288,5 +288,68 @@
   "learningSummaryDone": "Done",
   "learningSummaryStatusCompleted": "Completed",
   "learningSummaryActivitiesTitle": "Activities completed",
-  "learningSummaryNotCompleted": "Not completed"
+  "learningSummaryNotCompleted": "Not completed",
+  "flashcardReviewTitle": "Flashcards",
+  "flashcardReviewComplete": "Flashcards complete!",
+  "flashcardReviewCompleteSubtitle": "No vocabulary is due for review right now.",
+  "flashcardsTitle": "Flashcards",
+  "flashcardSearchHint": "Search Arabic, transliteration, or meaning",
+  "flashcardAdd": "Add",
+  "flashcardContentUnavailable": "Content unavailable",
+  "flashcardMoveToDeck": "Move to deck",
+  "flashcardRemove": "Remove flashcard",
+  "flashcardNoDeck": "No deck",
+  "flashcardEmptyDeck": "This deck has no flashcards yet.",
+  "flashcardNoResults": "No matching flashcards.",
+  "flashcardFilterAllDecks": "All decks",
+  "flashcardFilterAllTypes": "All types",
+  "flashcardFilterAllStatus": "All statuses",
+  "flashcardFilterDue": "Due",
+  "flashcardFilterNew": "New",
+  "flashcardFilterLearning": "Learning",
+  "flashcardFilterReview": "Review",
+  "flashcardFilterLapsed": "Lapsed",
+  "flashcardOnboardingTitle": "No flashcards yet",
+  "flashcardOnboardingBody": "Add your first vocabulary flashcard to start learning with spaced repetition.",
+  "flashcardOnboardingCta": "Add your first flashcard",
+  "flashcardOnboardingReviewNudge": "First flashcard added! Try reviewing it now?",
+  "flashcardOnboardingReviewCta": "Review now",
+  "flashcardDecksTitle": "Flashcard decks",
+  "flashcardDecksEmpty": "No decks yet.",
+  "flashcardDecksCreate": "Create deck",
+  "flashcardDecksRename": "Rename",
+  "flashcardDecksDelete": "Delete",
+  "flashcardDecksDeleteConfirmTitle": "Delete deck?",
+  "flashcardDecksDeleteConfirmBody": "Flashcards in this deck will move to \"No deck\" — they won't be deleted.",
+  "flashcardDeckNameHint": "Deck name",
+  "flashcardDeckItemCount": "{count, plural, =0{No cards yet} =1{1 card} other{{count} cards}}",
+  "@flashcardDeckItemCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "addFlashcardTitle": "Add flashcard",
+  "addFlashcardSourceLemma": "Lemma",
+  "addFlashcardSourceRoot": "Root",
+  "addFlashcardSourcePhrase": "Phrase",
+  "addFlashcardSourceNotAvailable": "No browsable data for this type yet.",
+  "addFlashcardSearchHint": "Search...",
+  "addFlashcardNoResults": "No results found.",
+  "addFlashcardAdd": "Add to flashcards",
+  "smartDeckTodaysReview": "Today's Review",
+  "smartDeckMostDifficult": "Most Difficult",
+  "smartDeckRecentlyLearned": "Recently Learned",
+  "smartDeckWeakRoots": "Weak Roots",
+  "smartDeckVerbForms": "Verb Forms",
+  "smartDeckEmpty": "No flashcards in this Smart Deck yet.",
+  "smartDeckVerbFormLabel": "Form {form}",
+  "@smartDeckVerbFormLabel": {
+    "placeholders": {
+      "form": {
+        "type": "String"
+      }
+    }
+  }
 }

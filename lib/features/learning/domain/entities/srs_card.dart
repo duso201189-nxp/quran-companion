@@ -1,7 +1,7 @@
-/// Loại mục được lên lịch ôn tập. Tổng quát hoá cho tương lai (từ
-/// vựng/lemma) — Sprint 10 chỉ ghi 'ayah' (Flashcard hoãn lại, xem
-/// DR-2026-0005 mục Flashcard deferral).
-enum LearningItemType { ayah }
+/// Loại mục được lên lịch ôn tập. [ayah] — Sprint 10 (Revision Queue).
+/// [lemma] — Sprint 13 Phase 2 (Flashcard, itemId = Lemma.id trực
+/// tiếp, xem lib/features/lexicon/domain/entities/lemma.dart).
+enum LearningItemType { ayah, lemma }
 
 /// Trạng thái thẻ SRS, mô hình Anki-style (new/learning/review/lapsed).
 /// 'new' là từ khoá dành riêng của Dart nên dùng [newCard] — ánh xạ

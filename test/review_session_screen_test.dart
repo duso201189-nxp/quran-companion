@@ -95,8 +95,9 @@ class _FakeSchedulerRepository implements SchedulerRepository {
 
   @override
   Stream<List<SrsCard>> watchAllCards(LearningItemType itemType) async* {
-    yield _cards;
-    yield* _controller.stream;
+    yield _cards.where((c) => c.itemType == itemType).toList();
+    yield* _controller.stream
+        .map((cards) => cards.where((c) => c.itemType == itemType).toList());
   }
 
   @override
@@ -113,6 +114,12 @@ class _FakeSchedulerRepository implements SchedulerRepository {
 
   @override
   Future<void> syncWithReviewQueue(List<int> currentReviewAyahIds) async {}
+
+  @override
+  Future<void> syncItemsForType(
+    LearningItemType itemType,
+    List<int> currentItemIds,
+  ) async {}
 }
 
 void main() {
