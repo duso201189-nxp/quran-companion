@@ -24,7 +24,16 @@ class SurahListScreen extends ConsumerWidget {
     final surahsAsync = ref.watch(filteredSurahsProvider);
 
     return Scaffold(
-      appBar: AppBar(title: Text(l10n.tabQuran)),
+      appBar: AppBar(
+        title: Text(l10n.tabQuran),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.search),
+            tooltip: l10n.searchLabel,
+            onPressed: () => context.push(AppRoutes.search),
+          ),
+        ],
+      ),
       body: Column(
         children: [
           _SearchAndFilterBar(l10n: l10n),

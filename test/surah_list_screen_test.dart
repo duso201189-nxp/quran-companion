@@ -159,6 +159,16 @@ void main() {
     expect(find.text('Al-Fatihah'), findsOneWidget);
   });
 
+  testWidgets('có nút tìm kiếm trên AppBar (Task 7.1.4)', (tester) async {
+    await tester.pumpWidget(_app(_FakeQuranRepository(_testSurahs)));
+    await tester.pumpAndSettle();
+
+    expect(
+      find.widgetWithIcon(IconButton, Icons.search),
+      findsOneWidget,
+    );
+  });
+
   testWidgets('layout không vỡ ở text scale 200% (accessibility)',
       (tester) async {
     tester.view.physicalSize = const Size(400, 800);
