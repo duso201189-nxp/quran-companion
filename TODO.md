@@ -6,6 +6,8 @@ Lộ trình: xem ROADMAP.md. Checklist phát hành: RELEASE_CHECKLIST.md.
 - [ ] Tên tiếng Việt chuẩn cho 114 Surah (hiện dùng tên Latin trong
       data; thay qua bản data mới, không sửa code)
 - [ ] Nguồn word-by-word tiếng Việt cho Bước 9 (lemmas/word_instances)
+      — vẫn là lý do Flashcard bị hoãn lại ở Sprint 10 (DR-2026-0005
+      mục 4: "không thiết kế giải pháp tạm").
 
 ## Kỹ thuật ngắn hạn
 - [ ] Nối IoCacheManager vào AudioController (ưu tiên file offline
@@ -77,6 +79,22 @@ Lộ trình: xem ROADMAP.md. Checklist phát hành: RELEASE_CHECKLIST.md.
       9) — **đã sửa ở Sprint 9 Phase 4**: `LibraryScreen._open` và
       `ActiveKhatmCard._continueReading` giờ gọi thẳng hàm dùng
       chung, hành vi không đổi (xác nhận: 305/305 test cũ vẫn qua).
+- [x] **Sprint 10 (Phase 1-4) — Learning Engine
+      ([DR-2026-0005](docs/adr/DR-2026-0005.md), 6 quyết định)**:
+      Scheduler SM-2 (`srs_cards`, schemaVersion 3->4) + màn hình
+      "Lặp lại ngắt quãng" (`/review-session`, đọc `dueReviewCardsProvider`,
+      4 mức đánh giá Again/Hard/Good/Easy qua `SchedulerRepository.applyReview`)
+      — Revision Queue (`ayah_statuses.status='review'`) giữ nguyên
+      độc lập, Scheduler chỉ TIÊU THỤ làm nguồn thành viên, không thay
+      thế (khác định hướng ban đầu ở `DR-2026-0003`). Quiz sinh động 4
+      loại câu hỏi (Surah identification/Ayah continuation/Translation
+      matching/Verse recognition, `QuestionGenerator` thuần Dart) +
+      màn hình "Trắc nghiệm" (`/quiz-session`) + `quiz_results`
+      (schemaVersion 4->5) — KHÔNG có Question Bank, câu hỏi sinh mỗi
+      phiên từ nhóm A rồi bỏ đi. Flashcard hoãn lại có chủ đích (xem
+      mục lemmas/word_instances phía trên); Hifz/"Nhật ký" chưa xây
+      (ngoài phạm vi 6 quyết định). +70 test (305 -> 375) — xem
+      CHANGELOG.
 - [ ] `docs/adr/DR-2026-0002-*.md` (Search, Sprint 7.1) vẫn chưa tồn
       tại trong repo — cùng vấn đề `DR-2026-0003` từng gặp, PHÁT HIỆN
       LẠI lúc backfill DR-2026-0003 (Sprint 9 Phase 0). 6 chỗ trong
@@ -84,7 +102,21 @@ Lộ trình: xem ROADMAP.md. Checklist phát hành: RELEASE_CHECKLIST.md.
       trống. Xem `docs/adr/README.md` mục "Known gap". Ngoài phạm vi
       Sprint 9 Phase 0 (chỉ backfill 0003 + tạo 0004) — cần một lượt
       backfill riêng.
+- [x] `docs/adr/DR-2026-0005.md` (Sprint 10 — Learning Engine:
+      Scheduler SM-2 + Quiz) — **tạo xong ở Sprint 10 Finalization**,
+      cùng cách backfill đã làm cho `DR-2026-0003` ở Sprint 9 Phase 0.
+      6 quyết định (kiến trúc Learning Engine, quan hệ Revision Queue
+      ↔ Scheduler, trừu tượng SchedulingAlgorithm, kiến trúc Quiz,
+      hoãn Flashcard, chiến lược test) ghi đầy đủ, khớp implementation
+      đã triển khai ở Phase 1-4. Tên file KHÔNG có slug mô tả (khác
+      quy ước `DR-2026-0003-*`/`DR-2026-0004-*`) — theo đúng yêu cầu
+      tường minh lúc tạo file. `DATABASE.md`/`ROADMAP.md`/`CHANGELOG.md`
+      đã cập nhật link Markdown trỏ đúng file thật.
 - [ ] Nâng MIN_COVERAGE trong ci.yml từ 70% dần về 80% (mục tiêu
       v1.0, ARCHITECTURE.md mục 9) khi Bước 7-9 landing kèm test đầy
       đủ — hạ tạm ở Bước 6 vì coverage thật ~74%, tránh CI đỏ thường
-      trực trong lúc chưa viết thêm test
+      trực trong lúc chưa viết thêm test. Sprint 10 (Phase 1-4) đã
+      thêm 70 test mới (305 -> 375) cho toàn bộ code mới — con số
+      coverage% thật chưa đo lại (`flutter test --coverage` không nằm
+      trong phạm vi Phase 5), chỉ xác nhận KHÔNG có code mới nào thiếu
+      test (khác với Sprint 9, xem CHANGELOG).

@@ -2,9 +2,12 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../features/home/presentation/home_screen.dart';
+import '../features/learning/presentation/review_session_screen.dart';
+import '../features/learning_session/presentation/learning_session_screen.dart';
 import '../features/library/presentation/collections/collections_screen.dart';
 import '../features/library/presentation/library_screen.dart';
 import '../features/profile/presentation/profile_screen.dart';
+import '../features/quiz/presentation/quiz_session_screen.dart';
 import '../features/quran/presentation/reading/reading_screen.dart';
 import '../features/quran/presentation/surah_list_screen.dart';
 import '../features/search/presentation/search_screen.dart';
@@ -32,6 +35,25 @@ abstract final class AppRoutes {
   /// 3) — push full-screen từ tab Học, giống [library]/[search]/
   /// [collections]. Không phải route lồng trong shell.
   static const String revisionQueue = '/revision-queue';
+
+  /// Phiên ôn tập SM-2 (Sprint 10 Phase 3 — DR-2026-0005) — push
+  /// full-screen từ tab Học, cùng mẫu với [revisionQueue]. Độc lập với
+  /// Revision Queue (Quyết định 1): đây là phiên ôn có lịch trình
+  /// (Scheduler), Revision Queue vẫn là danh sách phẳng không đổi.
+  static const String reviewSession = '/review-session';
+
+  /// Phiên Quiz (Sprint 10 Phase 4 — DR-2026-0005 mục 5) — push
+  /// full-screen từ tab Học, cùng mẫu với [revisionQueue]/
+  /// [reviewSession]. Câu hỏi sinh động mỗi phiên, không có route/màn
+  /// hình "ngân hàng câu hỏi" riêng.
+  static const String quizSession = '/quiz-session';
+
+  /// Learning Session (Sprint 11 Phase 3) — push full-screen từ tab
+  /// Học, MỘT route duy nhất cho toàn bộ phiên (LearningSessionScreen
+  /// tự đổi thân màn hình theo hoạt động hiện tại) — không có route
+  /// con nào cho từng hoạt động, đây là cách phiên không bao giờ đưa
+  /// người dùng quay lại StudyScreen giữa chừng.
+  static const String learningSession = '/learning-session';
 
   /// Tìm kiếm — màn hình push full-screen (không phải tab), giống
   /// [library]. Xem DR-2026-0002 mục 1.
@@ -135,6 +157,21 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: AppRoutes.revisionQueue,
         builder: (context, state) => const RevisionQueueScreen(),
+      ),
+
+      GoRoute(
+        path: AppRoutes.reviewSession,
+        builder: (context, state) => const ReviewSessionScreen(),
+      ),
+
+      GoRoute(
+        path: AppRoutes.quizSession,
+        builder: (context, state) => const QuizSessionScreen(),
+      ),
+
+      GoRoute(
+        path: AppRoutes.learningSession,
+        builder: (context, state) => const LearningSessionScreen(),
       ),
 
       // Trang đọc full-screen (nhảy từ Thư viện của tôi / ngoài shell).

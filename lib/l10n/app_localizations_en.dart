@@ -501,4 +501,76 @@ class AppLocalizationsEn extends AppLocalizations {
   String dailyGoalMinutesProgress(int current, int target) {
     return '$current / $target min today';
   }
+
+  @override
+  String get reviewGradeAgain => 'Again';
+
+  @override
+  String get reviewGradeHard => 'Hard';
+
+  @override
+  String get reviewGradeGood => 'Good';
+
+  @override
+  String get reviewGradeEasy => 'Easy';
+
+  @override
+  String get reviewOpenInReading => 'Open in Reading';
+
+  @override
+  String get reviewSessionComplete => 'Session complete!';
+
+  @override
+  String get reviewSessionCompleteSubtitle =>
+      'No cards are due for review right now.';
+
+  @override
+  String get quizCorrect => 'Correct!';
+
+  @override
+  String get quizIncorrect => 'Not quite.';
+
+  @override
+  String get quizEmpty => 'Not enough content to build a quiz.';
+
+  @override
+  String quizQuestionProgress(int current, int total) {
+    return 'Question $current/$total';
+  }
+
+  @override
+  String quizScoreResult(int score, int total) {
+    return 'You scored $score/$total';
+  }
+
+  @override
+  String get quizRetry => 'Retry';
+
+  @override
+  String get learningSessionStart => 'Start Learning Session';
+
+  @override
+  String get learningSummaryTitle => 'Session Summary';
+
+  @override
+  String learningSummaryReviewCount(int count) {
+    return 'Reviewed $count cards';
+  }
+
+  @override
+  String learningSummaryQuizScore(int score, int total) {
+    return 'Quiz: $score/$total';
+  }
+
+  @override
+  String get learningSummaryDone => 'Done';
+
+  @override
+  String get learningSummaryStatusCompleted => 'Completed';
+
+  @override
+  String get learningSummaryActivitiesTitle => 'Activities completed';
+
+  @override
+  String get learningSummaryNotCompleted => 'Not completed';
 }

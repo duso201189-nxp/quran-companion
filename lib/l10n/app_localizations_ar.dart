@@ -499,4 +499,76 @@ class AppLocalizationsAr extends AppLocalizations {
   String dailyGoalMinutesProgress(int current, int target) {
     return '$current / $target دقيقة اليوم';
   }
+
+  @override
+  String get reviewGradeAgain => 'إعادة';
+
+  @override
+  String get reviewGradeHard => 'صعب';
+
+  @override
+  String get reviewGradeGood => 'جيد';
+
+  @override
+  String get reviewGradeEasy => 'سهل';
+
+  @override
+  String get reviewOpenInReading => 'فتح في القراءة';
+
+  @override
+  String get reviewSessionComplete => 'اكتملت الجلسة!';
+
+  @override
+  String get reviewSessionCompleteSubtitle =>
+      'لا توجد بطاقات مستحقة للمراجعة الآن.';
+
+  @override
+  String get quizCorrect => 'إجابة صحيحة!';
+
+  @override
+  String get quizIncorrect => 'إجابة غير صحيحة.';
+
+  @override
+  String get quizEmpty => 'لا يوجد محتوى كافٍ لإنشاء اختبار.';
+
+  @override
+  String quizQuestionProgress(int current, int total) {
+    return 'سؤال $current/$total';
+  }
+
+  @override
+  String quizScoreResult(int score, int total) {
+    return 'نتيجتك $score/$total';
+  }
+
+  @override
+  String get quizRetry => 'إعادة المحاولة';
+
+  @override
+  String get learningSessionStart => 'ابدأ جلسة التعلم';
+
+  @override
+  String get learningSummaryTitle => 'ملخص الجلسة';
+
+  @override
+  String learningSummaryReviewCount(int count) {
+    return 'تمت مراجعة $count بطاقة';
+  }
+
+  @override
+  String learningSummaryQuizScore(int score, int total) {
+    return 'الاختبار: $score/$total';
+  }
+
+  @override
+  String get learningSummaryDone => 'تم';
+
+  @override
+  String get learningSummaryStatusCompleted => 'مكتمل';
+
+  @override
+  String get learningSummaryActivitiesTitle => 'الأنشطة المكتملة';
+
+  @override
+  String get learningSummaryNotCompleted => 'لم يكتمل';
 }
