@@ -869,4 +869,102 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get achievementLocked => 'مقفل';
+
+  @override
+  String get aiTutorTitle => 'المعلم الذكي';
+
+  @override
+  String get studyAiTutor => 'المعلم الذكي';
+
+  @override
+  String get studyAiTutorDesc => 'اقتراحات مخصّصة بناءً على تقدّمك';
+
+  @override
+  String get aiTutorSummaryTitle => 'نظرتك العامة';
+
+  @override
+  String get aiTutorSuggestionsTitle => 'اقتراحات';
+
+  @override
+  String get aiTutorInsightsTitle => 'ملاحظات';
+
+  @override
+  String get aiTutorSuggestionsEmpty =>
+      'أنت متابع لكل شيء — لا يوجد ما يستدعي انتباهك الآن.';
+
+  @override
+  String get aiTutorLoading => 'جارٍ تحميل معلمك…';
+
+  @override
+  String get aiTutorPriorityHigh => 'أولوية عالية';
+
+  @override
+  String get aiTutorPriorityMedium => 'أولوية متوسطة';
+
+  @override
+  String get aiTutorPriorityLow => 'أولوية منخفضة';
+
+  @override
+  String get aiTutorSuggestionReviewDueTitle => 'راجع بطاقاتك المستحقة';
+
+  @override
+  String aiTutorSuggestionReviewDueDetail(int count) {
+    return '$count بطاقة بانتظارك';
+  }
+
+  @override
+  String get aiTutorSuggestionDailyStudyTitle => 'أكمل هدف الدراسة اليومي';
+
+  @override
+  String aiTutorSuggestionDailyStudyDetail(int count) {
+    return 'تبقّى $count دقيقة اليوم';
+  }
+
+  @override
+  String get aiTutorSuggestionDailyReviewTitle => 'أكمل هدف المراجعة اليومي';
+
+  @override
+  String aiTutorSuggestionDailyReviewDetail(int count) {
+    return 'تبقّى $count مراجعة اليوم';
+  }
+
+  @override
+  String get aiTutorSuggestionWeakRootsTitle => 'قوِّ جذورك الضعيفة';
+
+  @override
+  String aiTutorSuggestionWeakRootsDetail(int count) {
+    return '$count جذر للمراجعة';
+  }
+
+  @override
+  String get aiTutorSuggestionForgottenTitle =>
+      'راجع البطاقات التي تُنسى كثيرًا';
+
+  @override
+  String aiTutorSuggestionForgottenDetail(int count) {
+    return '$count بطاقة للمراجعة';
+  }
+
+  @override
+  String get aiTutorSuggestionStreakTitle => 'حافظ على سلسلتك';
+
+  @override
+  String aiTutorSuggestionStreakDetail(int count) {
+    return 'سلسلة $count يوم';
+  }
+
+  @override
+  String get aiTutorInsightAchievementsUnlockedLabel => 'الإنجازات المفتوحة';
+
+  @override
+  String get aiTutorActionReviewNow => 'راجع الآن';
+
+  @override
+  String get aiTutorActionContinueLearning => 'متابعة التعلّم';
+
+  @override
+  String get aiTutorActionOpenWeakCards => 'فتح البطاقات الضعيفة';
+
+  @override
+  String get aiTutorActionOpenFlashcards => 'فتح البطاقات التعليمية';
 }

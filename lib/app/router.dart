@@ -1,6 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../features/ai_tutor/presentation/tutor_home_screen.dart';
 import '../features/analytics/presentation/progress_dashboard_screen.dart';
 import '../features/flashcards/domain/entities/smart_deck_type.dart';
 import '../features/flashcards/presentation/add_flashcard_screen.dart';
@@ -92,6 +93,11 @@ abstract final class AppRoutes {
   /// Bảng điều khiển Tiến độ học tập (Sprint 14 Phase 1) — push
   /// full-screen từ tab Học, cùng mẫu [flashcards]/[revisionQueue].
   static const String progressDashboard = '/progress-dashboard';
+
+  /// AI Tutor (Sprint 15 Phase 2) — push full-screen từ tab Học, cùng
+  /// mẫu [progressDashboard]. Chỉ trình bày, không AI/mạng thật (xem
+  /// AITutorRepositoryImpl, Sprint 15 Phase 1).
+  static const String aiTutor = '/ai-tutor';
 
   /// Trang đọc trong tab Qur'an (giữ thanh điều hướng): /quran/surah/2
   static String surahReading(int surahId) => '/quran/surah/$surahId';
@@ -217,6 +223,11 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: AppRoutes.progressDashboard,
         builder: (context, state) => const ProgressDashboardScreen(),
+      ),
+
+      GoRoute(
+        path: AppRoutes.aiTutor,
+        builder: (context, state) => const TutorHomeScreen(),
       ),
 
       GoRoute(

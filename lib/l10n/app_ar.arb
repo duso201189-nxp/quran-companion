@@ -442,5 +442,75 @@
     }
   },
   "achievementUnlocked": "مفتوح",
-  "achievementLocked": "مقفل"
+  "achievementLocked": "مقفل",
+  "aiTutorTitle": "المعلم الذكي",
+  "studyAiTutor": "المعلم الذكي",
+  "studyAiTutorDesc": "اقتراحات مخصّصة بناءً على تقدّمك",
+  "aiTutorSummaryTitle": "نظرتك العامة",
+  "aiTutorSuggestionsTitle": "اقتراحات",
+  "aiTutorInsightsTitle": "ملاحظات",
+  "aiTutorSuggestionsEmpty": "أنت متابع لكل شيء — لا يوجد ما يستدعي انتباهك الآن.",
+  "aiTutorLoading": "جارٍ تحميل معلمك…",
+  "aiTutorPriorityHigh": "أولوية عالية",
+  "aiTutorPriorityMedium": "أولوية متوسطة",
+  "aiTutorPriorityLow": "أولوية منخفضة",
+  "aiTutorSuggestionReviewDueTitle": "راجع بطاقاتك المستحقة",
+  "aiTutorSuggestionReviewDueDetail": "{count} بطاقة بانتظارك",
+  "@aiTutorSuggestionReviewDueDetail": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "aiTutorSuggestionDailyStudyTitle": "أكمل هدف الدراسة اليومي",
+  "aiTutorSuggestionDailyStudyDetail": "تبقّى {count} دقيقة اليوم",
+  "@aiTutorSuggestionDailyStudyDetail": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "aiTutorSuggestionDailyReviewTitle": "أكمل هدف المراجعة اليومي",
+  "aiTutorSuggestionDailyReviewDetail": "تبقّى {count} مراجعة اليوم",
+  "@aiTutorSuggestionDailyReviewDetail": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "aiTutorSuggestionWeakRootsTitle": "قوِّ جذورك الضعيفة",
+  "aiTutorSuggestionWeakRootsDetail": "{count} جذر للمراجعة",
+  "@aiTutorSuggestionWeakRootsDetail": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "aiTutorSuggestionForgottenTitle": "راجع البطاقات التي تُنسى كثيرًا",
+  "aiTutorSuggestionForgottenDetail": "{count} بطاقة للمراجعة",
+  "@aiTutorSuggestionForgottenDetail": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "aiTutorSuggestionStreakTitle": "حافظ على سلسلتك",
+  "aiTutorSuggestionStreakDetail": "سلسلة {count} يوم",
+  "@aiTutorSuggestionStreakDetail": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "aiTutorInsightAchievementsUnlockedLabel": "الإنجازات المفتوحة",
+  "aiTutorActionReviewNow": "راجع الآن",
+  "aiTutorActionContinueLearning": "متابعة التعلّم",
+  "aiTutorActionOpenWeakCards": "فتح البطاقات الضعيفة",
+  "aiTutorActionOpenFlashcards": "فتح البطاقات التعليمية"
 }
