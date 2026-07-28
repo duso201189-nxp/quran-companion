@@ -3,6 +3,7 @@ import 'dart:math';
 import '../entities/quiz_content_pool.dart';
 import '../entities/quiz_question.dart';
 import '../question_generator.dart';
+import 'shuffled_options.dart';
 
 /// "Ayah này thuộc Surah nào?" — hiện văn bản Ả Rập 1 Ayah, 4 lựa
 /// chọn là tên Surah (1 đúng + 3 Surah khác làm nhiễu).
@@ -25,14 +26,14 @@ class SurahIdentificationGenerator implements QuestionGenerator {
       for (final g in shuffledGroups.skip(1).take(3)) g.surahNameLatin,
     ];
 
-    final options = [correctGroup.surahNameLatin, ...decoyNames]
-      ..shuffle(random);
+    final built =
+        buildShuffledOptions(correctGroup.surahNameLatin, decoyNames, random);
     return QuizQuestion(
       type: type,
       promptText: promptAyah.arabic,
       promptIsArabic: true,
-      options: options,
-      correctOptionIndex: options.indexOf(correctGroup.surahNameLatin),
+      options: built.options,
+      correctOptionIndex: built.correctOptionIndex,
       optionsAreArabic: false,
     );
   }

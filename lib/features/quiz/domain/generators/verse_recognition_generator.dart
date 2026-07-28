@@ -3,6 +3,7 @@ import 'dart:math';
 import '../entities/quiz_content_pool.dart';
 import '../entities/quiz_question.dart';
 import '../question_generator.dart';
+import 'shuffled_options.dart';
 
 /// "Câu nào thuộc Surah X?" — nghịch đảo của SurahIdentification: đề
 /// bài là TÊN Surah, 4 lựa chọn là văn bản Ả Rập của các Ayah (1 đúng
@@ -27,16 +28,17 @@ class VerseRecognitionGenerator implements QuestionGenerator {
         g.ayahs[random.nextInt(g.ayahs.length)],
     ];
 
-    final options = [
+    final built = buildShuffledOptions(
       correctAyah.arabic,
-      ...decoyAyahs.map((a) => a.arabic),
-    ]..shuffle(random);
+      [for (final a in decoyAyahs) a.arabic],
+      random,
+    );
     return QuizQuestion(
       type: type,
       promptText: correctGroup.surahNameLatin,
       promptIsArabic: false,
-      options: options,
-      correctOptionIndex: options.indexOf(correctAyah.arabic),
+      options: built.options,
+      correctOptionIndex: built.correctOptionIndex,
       optionsAreArabic: true,
     );
   }

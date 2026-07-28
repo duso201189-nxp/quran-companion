@@ -3,6 +3,7 @@ import 'dart:math';
 import '../entities/quiz_content_pool.dart';
 import '../entities/quiz_question.dart';
 import '../question_generator.dart';
+import 'shuffled_options.dart';
 
 /// "Bản dịch nào khớp với Ayah này?" — hiện văn bản Ả Rập 1 Ayah, 4
 /// lựa chọn là bản dịch (1 đúng + 3 bản dịch của Ayah khác làm nhiễu).
@@ -25,13 +26,13 @@ class TranslationMatchingGenerator implements QuestionGenerator {
     final correct = shuffled.first;
     final decoys = shuffled.skip(1).take(3).map((a) => a.translation!).toList();
 
-    final options = [correct.translation!, ...decoys]..shuffle(random);
+    final built = buildShuffledOptions(correct.translation!, decoys, random);
     return QuizQuestion(
       type: type,
       promptText: correct.arabic,
       promptIsArabic: true,
-      options: options,
-      correctOptionIndex: options.indexOf(correct.translation!),
+      options: built.options,
+      correctOptionIndex: built.correctOptionIndex,
       optionsAreArabic: false,
     );
   }
