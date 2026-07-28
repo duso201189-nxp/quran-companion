@@ -1011,4 +1011,45 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get journeyEntrySmartLearningDesc => 'Gợi ý riêng cho ngay bây giờ';
+
+  @override
+  String get smartLearningTitle => 'Học thông minh';
+
+  @override
+  String get smartLearningHeaderTitle => 'Phiên học thông minh của bạn';
+
+  @override
+  String smartLearningRecommendationCountLabel(int count) {
+    return '$count đề xuất hôm nay';
+  }
+
+  @override
+  String get smartLearningRecommendedTitle => 'Phiên học được đề xuất';
+
+  @override
+  String get smartLearningOtherRecommendationsTitle => 'Đề xuất khác';
+
+  @override
+  String smartLearningRelatedStepsLabel(int count) {
+    return '$count bước liên quan';
+  }
+
+  @override
+  String get smartLearningEmpty =>
+      'Hiện chưa cần phiên học thông minh nào — bạn đã theo kịp mọi thứ!';
+
+  @override
+  String get smartLearningLoading => 'Đang tải phiên học thông minh của bạn…';
+
+  @override
+  String get smartLearningStrategyShortReview => 'Ôn nhanh';
+
+  @override
+  String get smartLearningStrategyDeepStudy => 'Học sâu';
+
+  @override
+  String get smartLearningStrategyMemorization => 'Ghi nhớ';
+
+  @override
+  String get smartLearningStrategyRecovery => 'Phục hồi';
 }

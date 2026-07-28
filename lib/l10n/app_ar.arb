@@ -538,5 +538,31 @@
     }
   },
   "journeyEntrySmartLearningTitle": "احصل على جلستك الذكية",
-  "journeyEntrySmartLearningDesc": "توصية مخصّصة للحظة الحالية"
+  "journeyEntrySmartLearningDesc": "توصية مخصّصة للحظة الحالية",
+  "smartLearningTitle": "التعلّم الذكي",
+  "smartLearningHeaderTitle": "جلستك الذكية",
+  "smartLearningRecommendationCountLabel": "{count} توصية اليوم",
+  "@smartLearningRecommendationCountLabel": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "smartLearningRecommendedTitle": "الجلسة الموصى بها",
+  "smartLearningOtherRecommendationsTitle": "توصيات أخرى",
+  "smartLearningRelatedStepsLabel": "{count} خطوة ذات صلة",
+  "@smartLearningRelatedStepsLabel": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "smartLearningEmpty": "لا حاجة إلى جلسة ذكية الآن — أنت متابع لكل شيء!",
+  "smartLearningLoading": "جارٍ تحميل جلستك الذكية…",
+  "smartLearningStrategyShortReview": "مراجعة سريعة",
+  "smartLearningStrategyDeepStudy": "دراسة معمّقة",
+  "smartLearningStrategyMemorization": "حفظ",
+  "smartLearningStrategyRecovery": "تعافٍ"
 }

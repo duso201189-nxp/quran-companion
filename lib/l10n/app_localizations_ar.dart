@@ -1008,4 +1008,45 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get journeyEntrySmartLearningDesc => 'توصية مخصّصة للحظة الحالية';
+
+  @override
+  String get smartLearningTitle => 'التعلّم الذكي';
+
+  @override
+  String get smartLearningHeaderTitle => 'جلستك الذكية';
+
+  @override
+  String smartLearningRecommendationCountLabel(int count) {
+    return '$count توصية اليوم';
+  }
+
+  @override
+  String get smartLearningRecommendedTitle => 'الجلسة الموصى بها';
+
+  @override
+  String get smartLearningOtherRecommendationsTitle => 'توصيات أخرى';
+
+  @override
+  String smartLearningRelatedStepsLabel(int count) {
+    return '$count خطوة ذات صلة';
+  }
+
+  @override
+  String get smartLearningEmpty =>
+      'لا حاجة إلى جلسة ذكية الآن — أنت متابع لكل شيء!';
+
+  @override
+  String get smartLearningLoading => 'جارٍ تحميل جلستك الذكية…';
+
+  @override
+  String get smartLearningStrategyShortReview => 'مراجعة سريعة';
+
+  @override
+  String get smartLearningStrategyDeepStudy => 'دراسة معمّقة';
+
+  @override
+  String get smartLearningStrategyMemorization => 'حفظ';
+
+  @override
+  String get smartLearningStrategyRecovery => 'تعافٍ';
 }

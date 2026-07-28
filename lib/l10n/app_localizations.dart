@@ -1935,6 +1935,78 @@ abstract class AppLocalizations {
   /// In vi, this message translates to:
   /// **'Gợi ý riêng cho ngay bây giờ'**
   String get journeyEntrySmartLearningDesc;
+
+  /// No description provided for @smartLearningTitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Học thông minh'**
+  String get smartLearningTitle;
+
+  /// No description provided for @smartLearningHeaderTitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Phiên học thông minh của bạn'**
+  String get smartLearningHeaderTitle;
+
+  /// No description provided for @smartLearningRecommendationCountLabel.
+  ///
+  /// In vi, this message translates to:
+  /// **'{count} đề xuất hôm nay'**
+  String smartLearningRecommendationCountLabel(int count);
+
+  /// No description provided for @smartLearningRecommendedTitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Phiên học được đề xuất'**
+  String get smartLearningRecommendedTitle;
+
+  /// No description provided for @smartLearningOtherRecommendationsTitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Đề xuất khác'**
+  String get smartLearningOtherRecommendationsTitle;
+
+  /// No description provided for @smartLearningRelatedStepsLabel.
+  ///
+  /// In vi, this message translates to:
+  /// **'{count} bước liên quan'**
+  String smartLearningRelatedStepsLabel(int count);
+
+  /// No description provided for @smartLearningEmpty.
+  ///
+  /// In vi, this message translates to:
+  /// **'Hiện chưa cần phiên học thông minh nào — bạn đã theo kịp mọi thứ!'**
+  String get smartLearningEmpty;
+
+  /// No description provided for @smartLearningLoading.
+  ///
+  /// In vi, this message translates to:
+  /// **'Đang tải phiên học thông minh của bạn…'**
+  String get smartLearningLoading;
+
+  /// No description provided for @smartLearningStrategyShortReview.
+  ///
+  /// In vi, this message translates to:
+  /// **'Ôn nhanh'**
+  String get smartLearningStrategyShortReview;
+
+  /// No description provided for @smartLearningStrategyDeepStudy.
+  ///
+  /// In vi, this message translates to:
+  /// **'Học sâu'**
+  String get smartLearningStrategyDeepStudy;
+
+  /// No description provided for @smartLearningStrategyMemorization.
+  ///
+  /// In vi, this message translates to:
+  /// **'Ghi nhớ'**
+  String get smartLearningStrategyMemorization;
+
+  /// No description provided for @smartLearningStrategyRecovery.
+  ///
+  /// In vi, this message translates to:
+  /// **'Phục hồi'**
+  String get smartLearningStrategyRecovery;
 }
 
 class _AppLocalizationsDelegate

@@ -538,5 +538,31 @@
     }
   },
   "journeyEntrySmartLearningTitle": "Nhận phiên học thông minh",
-  "journeyEntrySmartLearningDesc": "Gợi ý riêng cho ngay bây giờ"
+  "journeyEntrySmartLearningDesc": "Gợi ý riêng cho ngay bây giờ",
+  "smartLearningTitle": "Học thông minh",
+  "smartLearningHeaderTitle": "Phiên học thông minh của bạn",
+  "smartLearningRecommendationCountLabel": "{count} đề xuất hôm nay",
+  "@smartLearningRecommendationCountLabel": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "smartLearningRecommendedTitle": "Phiên học được đề xuất",
+  "smartLearningOtherRecommendationsTitle": "Đề xuất khác",
+  "smartLearningRelatedStepsLabel": "{count} bước liên quan",
+  "@smartLearningRelatedStepsLabel": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "smartLearningEmpty": "Hiện chưa cần phiên học thông minh nào — bạn đã theo kịp mọi thứ!",
+  "smartLearningLoading": "Đang tải phiên học thông minh của bạn…",
+  "smartLearningStrategyShortReview": "Ôn nhanh",
+  "smartLearningStrategyDeepStudy": "Học sâu",
+  "smartLearningStrategyMemorization": "Ghi nhớ",
+  "smartLearningStrategyRecovery": "Phục hồi"
 }

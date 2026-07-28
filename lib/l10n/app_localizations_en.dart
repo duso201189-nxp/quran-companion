@@ -1016,4 +1016,45 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get journeyEntrySmartLearningDesc =>
       'A personalized recommendation for right now';
+
+  @override
+  String get smartLearningTitle => 'Smart Learning';
+
+  @override
+  String get smartLearningHeaderTitle => 'Your smart session';
+
+  @override
+  String smartLearningRecommendationCountLabel(int count) {
+    return '$count recommendations today';
+  }
+
+  @override
+  String get smartLearningRecommendedTitle => 'Recommended session';
+
+  @override
+  String get smartLearningOtherRecommendationsTitle => 'Other recommendations';
+
+  @override
+  String smartLearningRelatedStepsLabel(int count) {
+    return '$count related steps';
+  }
+
+  @override
+  String get smartLearningEmpty =>
+      'No smart session needed right now — you\'re all caught up!';
+
+  @override
+  String get smartLearningLoading => 'Loading your smart session…';
+
+  @override
+  String get smartLearningStrategyShortReview => 'Short review';
+
+  @override
+  String get smartLearningStrategyDeepStudy => 'Deep study';
+
+  @override
+  String get smartLearningStrategyMemorization => 'Memorization';
+
+  @override
+  String get smartLearningStrategyRecovery => 'Recovery';
 }
