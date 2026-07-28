@@ -46,5 +46,6 @@ SmartLearningSession computeSmartLearningSession(
   return SmartLearningSession(
     date: DateTime(date.year, date.month, date.day),
     recommendations: recommendations,
+    journey: journey,
   );
 }
