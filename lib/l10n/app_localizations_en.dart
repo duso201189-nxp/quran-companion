@@ -551,6 +551,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get learningSessionStart => 'Start Learning Session';
 
   @override
+  String get learningSessionLoading => 'Preparing your learning session…';
+
+  @override
   String get learningSummaryTitle => 'Session Summary';
 
   @override

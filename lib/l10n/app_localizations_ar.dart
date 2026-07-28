@@ -548,6 +548,9 @@ class AppLocalizationsAr extends AppLocalizations {
   String get learningSessionStart => 'ابدأ جلسة التعلم';
 
   @override
+  String get learningSessionLoading => 'جارٍ تحضير جلستك التعليمية…';
+
+  @override
   String get learningSummaryTitle => 'ملخص الجلسة';
 
   @override

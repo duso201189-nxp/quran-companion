@@ -26,6 +26,7 @@ LearningSessionState _state({
         quizScore: quizScore,
         quizTotal: quizTotal,
       ),
+      error: null,
     );
 
 Widget wrap(LearningSessionState state, {Locale locale = const Locale('en')}) {

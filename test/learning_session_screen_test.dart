@@ -323,4 +323,58 @@ void main() {
     expect(find.text('Start Learning Session'), findsOneWidget);
     expect(find.text('Session Summary'), findsNothing);
   });
+
+  group('error handling (Sprint S2, D1)', () {
+    testWidgets(
+        'lỗi khi bắt đầu phiên -> hiện SearchErrorState (không phải '
+        'vòng xoay tải mãi mãi), có nút Retry accessible', (tester) async {
+      final router = GoRouter(
+        initialLocation: AppRoutes.study,
+        routes: [
+          GoRoute(
+            path: AppRoutes.study,
+            builder: (_, __) => const StudyScreen(),
+          ),
+          GoRoute(
+            path: AppRoutes.learningSession,
+            builder: (_, __) => const LearningSessionScreen(),
+          ),
+        ],
+      );
+      await tester.pumpWidget(
+        ProviderScope(
+          overrides: [
+            sharedPreferencesProvider.overrideWithValue(prefs),
+            userDatabaseProvider.overrideWithValue(db),
+            quranRepositoryProvider.overrideWithValue(_FakeQuranRepo()),
+            schedulerRepositoryProvider.overrideWithValue(fakeScheduler),
+            schedulerSyncProvider.overrideWith((ref) => const Stream.empty()),
+            dueReviewCardsProvider.overrideWith(
+              (ref) => Stream<List<SrsCard>>.error(Exception('boom')),
+            ),
+          ],
+          child: MaterialApp.router(
+            locale: const Locale('en'),
+            localizationsDelegates: AppLocalizations.localizationsDelegates,
+            supportedLocales: AppLocalizations.supportedLocales,
+            routerConfig: router,
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.text('Start Learning Session'));
+      await tester.pumpAndSettle();
+
+      // Trước fix D1: không có gì hiện ra ngoài CircularProgressIndicator
+      // mãi mãi, không có văn bản nào để tìm. Sau fix: SearchErrorState
+      // (dùng chung errorLoadData) + nút Retry.
+      expect(
+        find.text('Could not load data. Please try again.'),
+        findsOneWidget,
+      );
+      expect(find.text('Retry'), findsOneWidget);
+      expect(find.byType(CircularProgressIndicator), findsNothing);
+    });
+  });
 }

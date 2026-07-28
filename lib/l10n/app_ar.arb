@@ -265,6 +265,7 @@
   },
   "quizRetry": "إعادة المحاولة",
   "learningSessionStart": "ابدأ جلسة التعلم",
+  "learningSessionLoading": "جارٍ تحضير جلستك التعليمية…",
   "learningSummaryTitle": "ملخص الجلسة",
   "learningSummaryReviewCount": "تمت مراجعة {count} بطاقة",
   "@learningSummaryReviewCount": {

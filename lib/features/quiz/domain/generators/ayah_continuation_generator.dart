@@ -3,6 +3,7 @@ import 'dart:math';
 import '../entities/quiz_content_pool.dart';
 import '../entities/quiz_question.dart';
 import '../question_generator.dart';
+import 'shuffled_options.dart';
 
 /// "Ayah tiếp theo là gì?" — hiện 1 Ayah, 4 lựa chọn văn bản Ả Rập là
 /// Ayah kế tiếp thật (đúng) + 3 Ayah bất kỳ khác (nhiễu).
@@ -29,16 +30,17 @@ class AyahContinuationGenerator implements QuestionGenerator {
     ]..shuffle(random);
     if (decoyPool.length < 3) return null;
 
-    final options = [
+    final built = buildShuffledOptions(
       correct.arabic,
-      ...decoyPool.take(3).map((a) => a.arabic),
-    ]..shuffle(random);
+      [for (final a in decoyPool.take(3)) a.arabic],
+      random,
+    );
     return QuizQuestion(
       type: type,
       promptText: prompt.arabic,
       promptIsArabic: true,
-      options: options,
-      correctOptionIndex: options.indexOf(correct.arabic),
+      options: built.options,
+      correctOptionIndex: built.correctOptionIndex,
       optionsAreArabic: true,
     );
   }
