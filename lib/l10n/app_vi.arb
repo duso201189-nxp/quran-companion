@@ -442,5 +442,75 @@
     }
   },
   "achievementUnlocked": "Đã mở khoá",
-  "achievementLocked": "Chưa mở khoá"
+  "achievementLocked": "Chưa mở khoá",
+  "aiTutorTitle": "Gia sư AI",
+  "studyAiTutor": "Gia sư AI",
+  "studyAiTutorDesc": "Gợi ý riêng dựa trên tiến độ học tập của bạn",
+  "aiTutorSummaryTitle": "Tổng quan của bạn",
+  "aiTutorSuggestionsTitle": "Gợi ý",
+  "aiTutorInsightsTitle": "Nhận định",
+  "aiTutorSuggestionsEmpty": "Bạn đã theo kịp mọi thứ — hiện chưa có gì cần chú ý.",
+  "aiTutorLoading": "Đang tải gia sư của bạn…",
+  "aiTutorPriorityHigh": "Ưu tiên cao",
+  "aiTutorPriorityMedium": "Ưu tiên trung bình",
+  "aiTutorPriorityLow": "Ưu tiên thấp",
+  "aiTutorSuggestionReviewDueTitle": "Ôn các thẻ đến hạn",
+  "aiTutorSuggestionReviewDueDetail": "{count} thẻ đang chờ",
+  "@aiTutorSuggestionReviewDueDetail": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "aiTutorSuggestionDailyStudyTitle": "Hoàn thành mục tiêu học hôm nay",
+  "aiTutorSuggestionDailyStudyDetail": "Còn {count} phút hôm nay",
+  "@aiTutorSuggestionDailyStudyDetail": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "aiTutorSuggestionDailyReviewTitle": "Hoàn thành mục tiêu ôn hôm nay",
+  "aiTutorSuggestionDailyReviewDetail": "Còn {count} lượt ôn hôm nay",
+  "@aiTutorSuggestionDailyReviewDetail": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "aiTutorSuggestionWeakRootsTitle": "Củng cố gốc từ yếu",
+  "aiTutorSuggestionWeakRootsDetail": "{count} gốc từ cần ôn",
+  "@aiTutorSuggestionWeakRootsDetail": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "aiTutorSuggestionForgottenTitle": "Ôn lại các thẻ hay quên",
+  "aiTutorSuggestionForgottenDetail": "{count} thẻ cần xem lại",
+  "@aiTutorSuggestionForgottenDetail": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "aiTutorSuggestionStreakTitle": "Giữ chuỗi ngày đọc",
+  "aiTutorSuggestionStreakDetail": "Chuỗi {count} ngày",
+  "@aiTutorSuggestionStreakDetail": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "aiTutorInsightAchievementsUnlockedLabel": "Thành tựu đã mở khoá",
+  "aiTutorActionReviewNow": "Ôn ngay",
+  "aiTutorActionContinueLearning": "Tiếp tục học",
+  "aiTutorActionOpenWeakCards": "Mở thẻ yếu",
+  "aiTutorActionOpenFlashcards": "Mở Flashcard"
 }

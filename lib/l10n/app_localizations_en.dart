@@ -873,4 +873,104 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get achievementLocked => 'Locked';
+
+  @override
+  String get aiTutorTitle => 'AI Tutor';
+
+  @override
+  String get studyAiTutor => 'AI Tutor';
+
+  @override
+  String get studyAiTutorDesc =>
+      'Personalized suggestions based on your progress';
+
+  @override
+  String get aiTutorSummaryTitle => 'Your overview';
+
+  @override
+  String get aiTutorSuggestionsTitle => 'Suggestions';
+
+  @override
+  String get aiTutorInsightsTitle => 'Insights';
+
+  @override
+  String get aiTutorSuggestionsEmpty =>
+      'You\'re all caught up — nothing needs your attention right now.';
+
+  @override
+  String get aiTutorLoading => 'Loading your tutor…';
+
+  @override
+  String get aiTutorPriorityHigh => 'High priority';
+
+  @override
+  String get aiTutorPriorityMedium => 'Medium priority';
+
+  @override
+  String get aiTutorPriorityLow => 'Low priority';
+
+  @override
+  String get aiTutorSuggestionReviewDueTitle => 'Review your due cards';
+
+  @override
+  String aiTutorSuggestionReviewDueDetail(int count) {
+    return '$count cards waiting';
+  }
+
+  @override
+  String get aiTutorSuggestionDailyStudyTitle => 'Reach your daily study goal';
+
+  @override
+  String aiTutorSuggestionDailyStudyDetail(int count) {
+    return '$count min left today';
+  }
+
+  @override
+  String get aiTutorSuggestionDailyReviewTitle =>
+      'Reach your daily review goal';
+
+  @override
+  String aiTutorSuggestionDailyReviewDetail(int count) {
+    return '$count reviews left today';
+  }
+
+  @override
+  String get aiTutorSuggestionWeakRootsTitle => 'Strengthen your weak roots';
+
+  @override
+  String aiTutorSuggestionWeakRootsDetail(int count) {
+    return '$count roots to review';
+  }
+
+  @override
+  String get aiTutorSuggestionForgottenTitle =>
+      'Review frequently forgotten cards';
+
+  @override
+  String aiTutorSuggestionForgottenDetail(int count) {
+    return '$count cards to revisit';
+  }
+
+  @override
+  String get aiTutorSuggestionStreakTitle => 'Keep your streak alive';
+
+  @override
+  String aiTutorSuggestionStreakDetail(int count) {
+    return '$count-day streak';
+  }
+
+  @override
+  String get aiTutorInsightAchievementsUnlockedLabel => 'Achievements unlocked';
+
+  @override
+  String get aiTutorActionReviewNow => 'Review now';
+
+  @override
+  String get aiTutorActionContinueLearning => 'Continue learning';
+
+  @override
+  String get aiTutorActionOpenWeakCards => 'Open weak cards';
+
+  @override
+  String get aiTutorActionOpenFlashcards => 'Open flashcards';
 }

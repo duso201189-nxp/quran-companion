@@ -870,4 +870,103 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get achievementLocked => 'Chưa mở khoá';
+
+  @override
+  String get aiTutorTitle => 'Gia sư AI';
+
+  @override
+  String get studyAiTutor => 'Gia sư AI';
+
+  @override
+  String get studyAiTutorDesc => 'Gợi ý riêng dựa trên tiến độ học tập của bạn';
+
+  @override
+  String get aiTutorSummaryTitle => 'Tổng quan của bạn';
+
+  @override
+  String get aiTutorSuggestionsTitle => 'Gợi ý';
+
+  @override
+  String get aiTutorInsightsTitle => 'Nhận định';
+
+  @override
+  String get aiTutorSuggestionsEmpty =>
+      'Bạn đã theo kịp mọi thứ — hiện chưa có gì cần chú ý.';
+
+  @override
+  String get aiTutorLoading => 'Đang tải gia sư của bạn…';
+
+  @override
+  String get aiTutorPriorityHigh => 'Ưu tiên cao';
+
+  @override
+  String get aiTutorPriorityMedium => 'Ưu tiên trung bình';
+
+  @override
+  String get aiTutorPriorityLow => 'Ưu tiên thấp';
+
+  @override
+  String get aiTutorSuggestionReviewDueTitle => 'Ôn các thẻ đến hạn';
+
+  @override
+  String aiTutorSuggestionReviewDueDetail(int count) {
+    return '$count thẻ đang chờ';
+  }
+
+  @override
+  String get aiTutorSuggestionDailyStudyTitle =>
+      'Hoàn thành mục tiêu học hôm nay';
+
+  @override
+  String aiTutorSuggestionDailyStudyDetail(int count) {
+    return 'Còn $count phút hôm nay';
+  }
+
+  @override
+  String get aiTutorSuggestionDailyReviewTitle =>
+      'Hoàn thành mục tiêu ôn hôm nay';
+
+  @override
+  String aiTutorSuggestionDailyReviewDetail(int count) {
+    return 'Còn $count lượt ôn hôm nay';
+  }
+
+  @override
+  String get aiTutorSuggestionWeakRootsTitle => 'Củng cố gốc từ yếu';
+
+  @override
+  String aiTutorSuggestionWeakRootsDetail(int count) {
+    return '$count gốc từ cần ôn';
+  }
+
+  @override
+  String get aiTutorSuggestionForgottenTitle => 'Ôn lại các thẻ hay quên';
+
+  @override
+  String aiTutorSuggestionForgottenDetail(int count) {
+    return '$count thẻ cần xem lại';
+  }
+
+  @override
+  String get aiTutorSuggestionStreakTitle => 'Giữ chuỗi ngày đọc';
+
+  @override
+  String aiTutorSuggestionStreakDetail(int count) {
+    return 'Chuỗi $count ngày';
+  }
+
+  @override
+  String get aiTutorInsightAchievementsUnlockedLabel => 'Thành tựu đã mở khoá';
+
+  @override
+  String get aiTutorActionReviewNow => 'Ôn ngay';
+
+  @override
+  String get aiTutorActionContinueLearning => 'Tiếp tục học';
+
+  @override
+  String get aiTutorActionOpenWeakCards => 'Mở thẻ yếu';
+
+  @override
+  String get aiTutorActionOpenFlashcards => 'Mở Flashcard';
 }

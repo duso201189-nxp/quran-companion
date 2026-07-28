@@ -1695,6 +1695,174 @@ abstract class AppLocalizations {
   /// In vi, this message translates to:
   /// **'Chưa mở khoá'**
   String get achievementLocked;
+
+  /// No description provided for @aiTutorTitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Gia sư AI'**
+  String get aiTutorTitle;
+
+  /// No description provided for @studyAiTutor.
+  ///
+  /// In vi, this message translates to:
+  /// **'Gia sư AI'**
+  String get studyAiTutor;
+
+  /// No description provided for @studyAiTutorDesc.
+  ///
+  /// In vi, this message translates to:
+  /// **'Gợi ý riêng dựa trên tiến độ học tập của bạn'**
+  String get studyAiTutorDesc;
+
+  /// No description provided for @aiTutorSummaryTitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Tổng quan của bạn'**
+  String get aiTutorSummaryTitle;
+
+  /// No description provided for @aiTutorSuggestionsTitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Gợi ý'**
+  String get aiTutorSuggestionsTitle;
+
+  /// No description provided for @aiTutorInsightsTitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Nhận định'**
+  String get aiTutorInsightsTitle;
+
+  /// No description provided for @aiTutorSuggestionsEmpty.
+  ///
+  /// In vi, this message translates to:
+  /// **'Bạn đã theo kịp mọi thứ — hiện chưa có gì cần chú ý.'**
+  String get aiTutorSuggestionsEmpty;
+
+  /// No description provided for @aiTutorLoading.
+  ///
+  /// In vi, this message translates to:
+  /// **'Đang tải gia sư của bạn…'**
+  String get aiTutorLoading;
+
+  /// No description provided for @aiTutorPriorityHigh.
+  ///
+  /// In vi, this message translates to:
+  /// **'Ưu tiên cao'**
+  String get aiTutorPriorityHigh;
+
+  /// No description provided for @aiTutorPriorityMedium.
+  ///
+  /// In vi, this message translates to:
+  /// **'Ưu tiên trung bình'**
+  String get aiTutorPriorityMedium;
+
+  /// No description provided for @aiTutorPriorityLow.
+  ///
+  /// In vi, this message translates to:
+  /// **'Ưu tiên thấp'**
+  String get aiTutorPriorityLow;
+
+  /// No description provided for @aiTutorSuggestionReviewDueTitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Ôn các thẻ đến hạn'**
+  String get aiTutorSuggestionReviewDueTitle;
+
+  /// No description provided for @aiTutorSuggestionReviewDueDetail.
+  ///
+  /// In vi, this message translates to:
+  /// **'{count} thẻ đang chờ'**
+  String aiTutorSuggestionReviewDueDetail(int count);
+
+  /// No description provided for @aiTutorSuggestionDailyStudyTitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Hoàn thành mục tiêu học hôm nay'**
+  String get aiTutorSuggestionDailyStudyTitle;
+
+  /// No description provided for @aiTutorSuggestionDailyStudyDetail.
+  ///
+  /// In vi, this message translates to:
+  /// **'Còn {count} phút hôm nay'**
+  String aiTutorSuggestionDailyStudyDetail(int count);
+
+  /// No description provided for @aiTutorSuggestionDailyReviewTitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Hoàn thành mục tiêu ôn hôm nay'**
+  String get aiTutorSuggestionDailyReviewTitle;
+
+  /// No description provided for @aiTutorSuggestionDailyReviewDetail.
+  ///
+  /// In vi, this message translates to:
+  /// **'Còn {count} lượt ôn hôm nay'**
+  String aiTutorSuggestionDailyReviewDetail(int count);
+
+  /// No description provided for @aiTutorSuggestionWeakRootsTitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Củng cố gốc từ yếu'**
+  String get aiTutorSuggestionWeakRootsTitle;
+
+  /// No description provided for @aiTutorSuggestionWeakRootsDetail.
+  ///
+  /// In vi, this message translates to:
+  /// **'{count} gốc từ cần ôn'**
+  String aiTutorSuggestionWeakRootsDetail(int count);
+
+  /// No description provided for @aiTutorSuggestionForgottenTitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Ôn lại các thẻ hay quên'**
+  String get aiTutorSuggestionForgottenTitle;
+
+  /// No description provided for @aiTutorSuggestionForgottenDetail.
+  ///
+  /// In vi, this message translates to:
+  /// **'{count} thẻ cần xem lại'**
+  String aiTutorSuggestionForgottenDetail(int count);
+
+  /// No description provided for @aiTutorSuggestionStreakTitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Giữ chuỗi ngày đọc'**
+  String get aiTutorSuggestionStreakTitle;
+
+  /// No description provided for @aiTutorSuggestionStreakDetail.
+  ///
+  /// In vi, this message translates to:
+  /// **'Chuỗi {count} ngày'**
+  String aiTutorSuggestionStreakDetail(int count);
+
+  /// No description provided for @aiTutorInsightAchievementsUnlockedLabel.
+  ///
+  /// In vi, this message translates to:
+  /// **'Thành tựu đã mở khoá'**
+  String get aiTutorInsightAchievementsUnlockedLabel;
+
+  /// No description provided for @aiTutorActionReviewNow.
+  ///
+  /// In vi, this message translates to:
+  /// **'Ôn ngay'**
+  String get aiTutorActionReviewNow;
+
+  /// No description provided for @aiTutorActionContinueLearning.
+  ///
+  /// In vi, this message translates to:
+  /// **'Tiếp tục học'**
+  String get aiTutorActionContinueLearning;
+
+  /// No description provided for @aiTutorActionOpenWeakCards.
+  ///
+  /// In vi, this message translates to:
+  /// **'Mở thẻ yếu'**
+  String get aiTutorActionOpenWeakCards;
+
+  /// No description provided for @aiTutorActionOpenFlashcards.
+  ///
+  /// In vi, this message translates to:
+  /// **'Mở Flashcard'**
+  String get aiTutorActionOpenFlashcards;
 }
 
 class _AppLocalizationsDelegate

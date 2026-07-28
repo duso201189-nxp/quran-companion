@@ -442,5 +442,75 @@
     }
   },
   "achievementUnlocked": "Unlocked",
-  "achievementLocked": "Locked"
+  "achievementLocked": "Locked",
+  "aiTutorTitle": "AI Tutor",
+  "studyAiTutor": "AI Tutor",
+  "studyAiTutorDesc": "Personalized suggestions based on your progress",
+  "aiTutorSummaryTitle": "Your overview",
+  "aiTutorSuggestionsTitle": "Suggestions",
+  "aiTutorInsightsTitle": "Insights",
+  "aiTutorSuggestionsEmpty": "You're all caught up — nothing needs your attention right now.",
+  "aiTutorLoading": "Loading your tutor…",
+  "aiTutorPriorityHigh": "High priority",
+  "aiTutorPriorityMedium": "Medium priority",
+  "aiTutorPriorityLow": "Low priority",
+  "aiTutorSuggestionReviewDueTitle": "Review your due cards",
+  "aiTutorSuggestionReviewDueDetail": "{count} cards waiting",
+  "@aiTutorSuggestionReviewDueDetail": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "aiTutorSuggestionDailyStudyTitle": "Reach your daily study goal",
+  "aiTutorSuggestionDailyStudyDetail": "{count} min left today",
+  "@aiTutorSuggestionDailyStudyDetail": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "aiTutorSuggestionDailyReviewTitle": "Reach your daily review goal",
+  "aiTutorSuggestionDailyReviewDetail": "{count} reviews left today",
+  "@aiTutorSuggestionDailyReviewDetail": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "aiTutorSuggestionWeakRootsTitle": "Strengthen your weak roots",
+  "aiTutorSuggestionWeakRootsDetail": "{count} roots to review",
+  "@aiTutorSuggestionWeakRootsDetail": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "aiTutorSuggestionForgottenTitle": "Review frequently forgotten cards",
+  "aiTutorSuggestionForgottenDetail": "{count} cards to revisit",
+  "@aiTutorSuggestionForgottenDetail": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "aiTutorSuggestionStreakTitle": "Keep your streak alive",
+  "aiTutorSuggestionStreakDetail": "{count}-day streak",
+  "@aiTutorSuggestionStreakDetail": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "aiTutorInsightAchievementsUnlockedLabel": "Achievements unlocked",
+  "aiTutorActionReviewNow": "Review now",
+  "aiTutorActionContinueLearning": "Continue learning",
+  "aiTutorActionOpenWeakCards": "Open weak cards",
+  "aiTutorActionOpenFlashcards": "Open flashcards"
 }

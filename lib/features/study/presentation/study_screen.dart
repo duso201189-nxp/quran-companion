@@ -56,6 +56,12 @@ class StudyScreen extends StatelessWidget {
         subtitle: l10n.studyProgressDesc,
         onTap: () => context.push(AppRoutes.progressDashboard),
       ),
+      (
+        icon: Icons.auto_awesome_rounded,
+        title: l10n.studyAiTutor,
+        subtitle: l10n.studyAiTutorDesc,
+        onTap: () => context.push(AppRoutes.aiTutor),
+      ),
     ];
 
     return Scaffold(
