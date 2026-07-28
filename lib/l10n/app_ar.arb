@@ -564,5 +564,13 @@
   "smartLearningStrategyShortReview": "مراجعة سريعة",
   "smartLearningStrategyDeepStudy": "دراسة معمّقة",
   "smartLearningStrategyMemorization": "حفظ",
-  "smartLearningStrategyRecovery": "تعافٍ"
+  "smartLearningStrategyRecovery": "تعافٍ",
+  "learningSummaryFlashcardCount": "تمت مراجعة {count} كلمة",
+  "@learningSummaryFlashcardCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  }
 }
