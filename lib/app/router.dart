@@ -11,6 +11,7 @@ import '../features/flashcards/presentation/flashcard_review_screen.dart';
 import '../features/flashcards/presentation/smart_deck_screen.dart';
 import '../features/home/presentation/home_screen.dart';
 import '../features/learning/presentation/review_session_screen.dart';
+import '../features/learning_journey/presentation/learning_journey_screen.dart';
 import '../features/learning_session/presentation/learning_session_screen.dart';
 import '../features/library/presentation/collections/collections_screen.dart';
 import '../features/library/presentation/library_screen.dart';
@@ -98,6 +99,11 @@ abstract final class AppRoutes {
   /// mẫu [progressDashboard]. Chỉ trình bày, không AI/mạng thật (xem
   /// AITutorRepositoryImpl, Sprint 15 Phase 1).
   static const String aiTutor = '/ai-tutor';
+
+  /// Learning Journey (Sprint 16 Phase 2) — push từ [aiTutor] (lối
+  /// vào duy nhất ở phase này, xem TutorHomeScreen._JourneyEntryCard),
+  /// cùng mẫu [progressDashboard]/[aiTutor].
+  static const String learningJourney = '/learning-journey';
 
   /// Trang đọc trong tab Qur'an (giữ thanh điều hướng): /quran/surah/2
   static String surahReading(int surahId) => '/quran/surah/$surahId';
@@ -228,6 +234,11 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: AppRoutes.aiTutor,
         builder: (context, state) => const TutorHomeScreen(),
+      ),
+
+      GoRoute(
+        path: AppRoutes.learningJourney,
+        builder: (context, state) => const LearningJourneyScreen(),
       ),
 
       GoRoute(

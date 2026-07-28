@@ -512,5 +512,31 @@
   "aiTutorActionReviewNow": "Review now",
   "aiTutorActionContinueLearning": "Continue learning",
   "aiTutorActionOpenWeakCards": "Open weak cards",
-  "aiTutorActionOpenFlashcards": "Open flashcards"
+  "aiTutorActionOpenFlashcards": "Open flashcards",
+  "aiTutorJourneyEntryTitle": "View your Learning Journey",
+  "aiTutorJourneyEntryDesc": "See today's plan, ordered step by step",
+  "learningJourneyTitle": "Learning Journey",
+  "journeyHeaderTitle": "Today's plan",
+  "journeyStepCountLabel": "{count} steps planned",
+  "@journeyStepCountLabel": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "journeyProgressTitle": "Your progress",
+  "journeyStepsTitle": "Steps",
+  "learningJourneyEmpty": "Nothing planned for today — you're all caught up!",
+  "learningJourneyLoading": "Loading your learning journey…",
+  "journeyStepNumber": "Step {number}",
+  "@journeyStepNumber": {
+    "placeholders": {
+      "number": {
+        "type": "int"
+      }
+    }
+  },
+  "journeyEntrySmartLearningTitle": "Get your Smart Session",
+  "journeyEntrySmartLearningDesc": "A personalized recommendation for right now"
 }

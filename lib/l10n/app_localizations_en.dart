@@ -973,4 +973,47 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get aiTutorActionOpenFlashcards => 'Open flashcards';
+
+  @override
+  String get aiTutorJourneyEntryTitle => 'View your Learning Journey';
+
+  @override
+  String get aiTutorJourneyEntryDesc =>
+      'See today\'s plan, ordered step by step';
+
+  @override
+  String get learningJourneyTitle => 'Learning Journey';
+
+  @override
+  String get journeyHeaderTitle => 'Today\'s plan';
+
+  @override
+  String journeyStepCountLabel(int count) {
+    return '$count steps planned';
+  }
+
+  @override
+  String get journeyProgressTitle => 'Your progress';
+
+  @override
+  String get journeyStepsTitle => 'Steps';
+
+  @override
+  String get learningJourneyEmpty =>
+      'Nothing planned for today — you\'re all caught up!';
+
+  @override
+  String get learningJourneyLoading => 'Loading your learning journey…';
+
+  @override
+  String journeyStepNumber(int number) {
+    return 'Step $number';
+  }
+
+  @override
+  String get journeyEntrySmartLearningTitle => 'Get your Smart Session';
+
+  @override
+  String get journeyEntrySmartLearningDesc =>
+      'A personalized recommendation for right now';
 }

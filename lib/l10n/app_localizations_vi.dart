@@ -969,4 +969,46 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get aiTutorActionOpenFlashcards => 'Mở Flashcard';
+
+  @override
+  String get aiTutorJourneyEntryTitle => 'Xem Hành trình học tập';
+
+  @override
+  String get aiTutorJourneyEntryDesc =>
+      'Xem kế hoạch hôm nay, từng bước theo thứ tự';
+
+  @override
+  String get learningJourneyTitle => 'Hành trình học tập';
+
+  @override
+  String get journeyHeaderTitle => 'Kế hoạch hôm nay';
+
+  @override
+  String journeyStepCountLabel(int count) {
+    return '$count bước đã lên kế hoạch';
+  }
+
+  @override
+  String get journeyProgressTitle => 'Tiến độ của bạn';
+
+  @override
+  String get journeyStepsTitle => 'Các bước';
+
+  @override
+  String get learningJourneyEmpty =>
+      'Chưa có gì cho hôm nay — bạn đã theo kịp mọi thứ!';
+
+  @override
+  String get learningJourneyLoading => 'Đang tải hành trình học tập của bạn…';
+
+  @override
+  String journeyStepNumber(int number) {
+    return 'Bước $number';
+  }
+
+  @override
+  String get journeyEntrySmartLearningTitle => 'Nhận phiên học thông minh';
+
+  @override
+  String get journeyEntrySmartLearningDesc => 'Gợi ý riêng cho ngay bây giờ';
 }

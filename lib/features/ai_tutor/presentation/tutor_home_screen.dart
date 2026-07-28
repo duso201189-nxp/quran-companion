@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:quran_companion/l10n/app_localizations.dart';
 
+import '../../../app/router.dart';
 import '../../../shared/widgets/empty_state_banner.dart';
 import '../../../shared/widgets/loading_state.dart';
 import '../../../shared/widgets/section_header.dart';
@@ -15,13 +17,16 @@ import 'widgets/tutor_insight_card.dart';
 import 'widgets/tutor_suggestion_card.dart';
 
 /// Màn hình chính AI Tutor (Sprint 15 Phase 2, thêm hành động điều
-/// hướng ở Phase 3 mục 4) — CHỈ tiêu thụ aiTutorProviders
+/// hướng ở Phase 3 mục 4, thêm lối vào Learning Journey ở Sprint 16
+/// Phase 2 mục 5) — CHỈ tiêu thụ aiTutorProviders
 /// (tutorContextProvider/tutorSuggestionsProvider/tutorInsightsProvider
 /// — Sprint 15 Phase 1), KHÔNG bao giờ đọc
 /// analyticsRepositoryProvider/AnalyticsRepository/SchedulerRepository/
-/// FlashcardRepository trực tiếp — đúng yêu cầu "Do not access
-/// AnalyticsRepository directly from UI. Only consume AITutorRepository
-/// providers." / "No direct repository access."
+/// FlashcardRepository/LearningJourneyRepository trực tiếp — đúng yêu
+/// cầu "Do not access AnalyticsRepository directly from UI. Only
+/// consume AITutorRepository providers." / "No direct repository
+/// access." (Learning Journey nhận đường dẫn qua router, KHÔNG qua
+/// provider của nó ở màn hình này).
 ///
 /// KHÔNG tính toán/định dạng gì ngoài chuyển đổi kiểu hiển thị thuần
 /// tuý (vd '${(value*100).round()}%', ánh xạ TutorSuggestionKind/
@@ -31,9 +36,10 @@ import 'widgets/tutor_suggestion_card.dart';
 /// chỉ trình bày lại.
 ///
 /// Ánh xạ icon/chuỗi (suggestionPresentation/insightPresentation) và
-/// thực thi điều hướng (executeTutorAction) sống ở
-/// tutor_presentation.dart/tutor_action_navigator.dart, tách khỏi màn
-/// hình để không lặp logic khi có nơi khác cần dùng lại.
+/// thực thi điều hướng (executeTutorAction) đã CHUYỂN sang
+/// tutor_presentation.dart/tutor_action_navigator.dart (Sprint 16
+/// Phase 2) — LearningJourneyScreen (màn hình mới, Sprint 16 Phase 2)
+/// dùng LẠI đúng các hàm này, KHÔNG có bản sao riêng.
 class TutorHomeScreen extends ConsumerWidget {
   const TutorHomeScreen({super.key});
 
@@ -61,6 +67,8 @@ class TutorHomeScreen extends ConsumerWidget {
                 padding: EdgeInsets.fromLTRB(horizontal, 12, horizontal, 24),
                 children: const [
                   _TutorSummarySection(),
+                  SizedBox(height: 20),
+                  _JourneyEntryCard(),
                   SizedBox(height: 20),
                   _TutorSuggestionsSection(),
                   SizedBox(height: 20),
@@ -110,6 +118,64 @@ class _TutorSummarySection extends ConsumerWidget {
           ],
         );
       },
+    );
+  }
+}
+
+/// Lối vào Learning Journey (Sprint 16 Phase 2 mục 5) — banner CTA
+/// tĩnh, KHÔNG đọc provider nào (không cần dữ liệu để hiển thị lời
+/// mời bấm), chỉ push route — cùng mẫu "thẻ CTA" đã có (vd
+/// _StudyToolCard trong StudyScreen), không phát minh kiểu điều hướng
+/// mới.
+class _JourneyEntryCard extends StatelessWidget {
+  const _JourneyEntryCard();
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    final scheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
+
+    return Material(
+      color: scheme.secondaryContainer.withValues(alpha: 0.6),
+      borderRadius: BorderRadius.circular(16),
+      child: InkWell(
+        borderRadius: BorderRadius.circular(16),
+        onTap: () => context.push(AppRoutes.learningJourney),
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Row(
+            children: [
+              Icon(Icons.map_rounded, color: scheme.onSecondaryContainer),
+              const SizedBox(width: 14),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      l10n.aiTutorJourneyEntryTitle,
+                      style: textTheme.titleMedium?.copyWith(
+                        fontWeight: FontWeight.w700,
+                        color: scheme.onSecondaryContainer,
+                      ),
+                    ),
+                    const SizedBox(height: 2),
+                    Text(
+                      l10n.aiTutorJourneyEntryDesc,
+                      style: textTheme.bodySmall
+                          ?.copyWith(color: scheme.onSecondaryContainer),
+                    ),
+                  ],
+                ),
+              ),
+              Icon(
+                Icons.chevron_right_rounded,
+                color: scheme.onSecondaryContainer,
+              ),
+            ],
+          ),
+        ),
+      ),
     );
   }
 }
