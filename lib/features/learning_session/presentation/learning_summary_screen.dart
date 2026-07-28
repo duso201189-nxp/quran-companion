@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 import 'package:quran_companion/l10n/app_localizations.dart';
 
 import '../../../app/router.dart';
+import '../../../shared/widgets/section_header.dart';
 import '../domain/learning_planner.dart';
 import '../domain/learning_session_state.dart';
 import '../domain/learning_session_summary.dart';
@@ -155,6 +156,12 @@ class _SummaryStatsCard extends StatelessWidget {
   }
 }
 
+/// Sprint S2 (Quality & Polish, D1) — bọc `Semantics(label: label)` +
+/// `ExcludeSemantics` gộp icon+text thành MỘT node duy nhất, cùng mẫu
+/// đã áp dụng cho GoalCard/AchievementCard (audit phát hiện màn hình
+/// này là ngoại lệ duy nhất trong các feature F4-F7 chưa làm việc
+/// này). Icon ở đây thuần trang trí (label đã tự đủ nghĩa), nên không
+/// cần label riêng cho icon.
 class _StatRow extends StatelessWidget {
   const _StatRow({required this.icon, required this.label});
 
@@ -164,14 +171,19 @@ class _StatRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
-    return Row(
-      children: [
-        Icon(icon, size: 20, color: scheme.primary),
-        const SizedBox(width: 10),
-        Expanded(
-          child: Text(label, style: Theme.of(context).textTheme.bodyLarge),
+    return Semantics(
+      label: label,
+      child: ExcludeSemantics(
+        child: Row(
+          children: [
+            Icon(icon, size: 20, color: scheme.primary),
+            const SizedBox(width: 10),
+            Expanded(
+              child: Text(label, style: Theme.of(context).textTheme.bodyLarge),
+            ),
+          ],
         ),
-      ],
+      ),
     );
   }
 }
@@ -185,7 +197,6 @@ class _ActivitiesCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
-    final textTheme = Theme.of(context).textTheme;
     final activities = [
       (type: LearningActivityType.review, label: l10n.studySpaced),
       (type: LearningActivityType.quiz, label: l10n.studyQuiz),
@@ -202,10 +213,10 @@ class _ActivitiesCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            l10n.learningSummaryActivitiesTitle,
-            style: textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w700),
-          ),
+          // Sprint S2, D1 — SectionHeader render CÙNG style
+          // (titleSmall/w700) widget này đã dùng, chỉ thêm
+          // Semantics(header: true); zero thay đổi hình ảnh.
+          SectionHeader(text: l10n.learningSummaryActivitiesTitle),
           const SizedBox(height: 12),
           for (var i = 0; i < activities.length; i++) ...[
             _ActivityRow(
@@ -221,6 +232,11 @@ class _ActivitiesCard extends StatelessWidget {
   }
 }
 
+/// Sprint S2 (Quality & Polish, D1) — bọc Semantics gộp icon + nhãn
+/// hoạt động + trạng thái hoàn thành thành MỘT node, cùng lý do
+/// [_StatRow]. Nhãn gộp tái dùng 2 chuỗi l10n đã có sẵn
+/// (`learningSummaryStatusCompleted`/`learningSummaryNotCompleted`,
+/// dòng "Completed"/"Not completed" hiện tại) — không thêm chuỗi mới.
 class _ActivityRow extends StatelessWidget {
   const _ActivityRow({
     required this.label,
@@ -236,33 +252,41 @@ class _ActivityRow extends StatelessWidget {
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
     final textTheme = Theme.of(context).textTheme;
+    final statusText = done
+        ? l10n.learningSummaryStatusCompleted
+        : l10n.learningSummaryNotCompleted;
 
-    return Row(
-      children: [
-        Icon(
-          done
-              ? Icons.check_circle_rounded
-              : Icons.radio_button_unchecked_rounded,
-          size: 20,
-          color: done ? scheme.primary : scheme.outlineVariant,
-        ),
-        const SizedBox(width: 10),
-        Expanded(
-          child: Text(
-            label,
-            style: textTheme.bodyMedium?.copyWith(
-              color: done ? scheme.onSurface : scheme.onSurfaceVariant,
+    return Semantics(
+      label: '$label, $statusText',
+      child: ExcludeSemantics(
+        child: Row(
+          children: [
+            Icon(
+              done
+                  ? Icons.check_circle_rounded
+                  : Icons.radio_button_unchecked_rounded,
+              size: 20,
+              color: done ? scheme.primary : scheme.outlineVariant,
             ),
-          ),
-        ),
-        if (!done)
-          Text(
-            l10n.learningSummaryNotCompleted,
-            style: textTheme.labelSmall?.copyWith(
-              color: scheme.onSurfaceVariant,
+            const SizedBox(width: 10),
+            Expanded(
+              child: Text(
+                label,
+                style: textTheme.bodyMedium?.copyWith(
+                  color: done ? scheme.onSurface : scheme.onSurfaceVariant,
+                ),
+              ),
             ),
-          ),
-      ],
+            if (!done)
+              Text(
+                l10n.learningSummaryNotCompleted,
+                style: textTheme.labelSmall?.copyWith(
+                  color: scheme.onSurfaceVariant,
+                ),
+              ),
+          ],
+        ),
+      ),
     );
   }
 }

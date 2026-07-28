@@ -265,6 +265,7 @@
   },
   "quizRetry": "Retry",
   "learningSessionStart": "Start Learning Session",
+  "learningSessionLoading": "Preparing your learning session…",
   "learningSummaryTitle": "Session Summary",
   "learningSummaryReviewCount": "Reviewed {count} cards",
   "@learningSummaryReviewCount": {

@@ -549,6 +549,9 @@ class AppLocalizationsVi extends AppLocalizations {
   String get learningSessionStart => 'Bắt đầu buổi học';
 
   @override
+  String get learningSessionLoading => 'Đang chuẩn bị phiên học của bạn…';
+
+  @override
   String get learningSummaryTitle => 'Tóm tắt buổi học';
 
   @override

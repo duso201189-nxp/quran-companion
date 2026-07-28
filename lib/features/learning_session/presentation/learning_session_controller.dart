@@ -27,6 +27,7 @@ class LearningSessionController extends Notifier<LearningSessionState> {
         currentActivity: null,
         completedActivities: const {},
         summary: const LearningSessionSummary(),
+        error: null,
       );
 
   /// Snapshot dueReviewCount tại thời điểm Review trở thành hoạt động
@@ -45,46 +46,96 @@ class LearningSessionController extends Notifier<LearningSessionState> {
   /// Bắt đầu phiên: dựng LearningPlanContext từ trạng thái hiện có
   /// của từng module (chỉ đọc), hỏi LearningPlanner hoạt động đầu
   /// tiên.
+  ///
+  /// Bọc try/catch (Sprint S2, D1) — trước đây một lỗi ở bất kỳ await
+  /// nào bên trong (đọc dueReviewCardsProvider/dueFlashcardCardsProvider
+  /// lần đầu) sẽ trôi ra ngoài không ai bắt, vì [Notifier] không tự
+  /// gói async work bằng AsyncValue như [AsyncNotifier]. Không đổi
+  /// sang AsyncNotifier ở đây — vẫn phải giữ nguyên state là chính
+  /// LearningSessionState (Phase 2's "restrictions"), chỉ thêm nhánh
+  /// lỗi bằng status/error field của chính state đó.
   Future<void> start() async {
-    final context = await _buildContext(const {});
-    final planner = ref.read(learningPlannerProvider);
-    final next = planner.next(context);
-    _trackActivityStart(next, context);
+    try {
+      final context = await _buildContext(const {});
+      final planner = ref.read(learningPlannerProvider);
+      final next = planner.next(context);
+      _trackActivityStart(next, context);
 
-    state = (
-      status: next == null
-          ? LearningSessionStatus.completed
-          : LearningSessionStatus.inProgress,
-      currentActivity: next,
-      completedActivities: const {},
-      summary: const LearningSessionSummary(),
-    );
+      state = (
+        status: next == null
+            ? LearningSessionStatus.completed
+            : LearningSessionStatus.inProgress,
+        currentActivity: next,
+        completedActivities: const {},
+        summary: const LearningSessionSummary(),
+        error: null,
+      );
+    } catch (e) {
+      state = (
+        status: LearningSessionStatus.failed,
+        currentActivity: null,
+        completedActivities: const {},
+        summary: const LearningSessionSummary(),
+        error: e,
+      );
+    }
   }
 
   /// Đánh dấu hoạt động hiện tại đã hoàn thành, tích luỹ tóm tắt từ
   /// module tương ứng, hỏi LearningPlanner hoạt động kế tiếp. No-op
   /// nếu chưa bắt đầu hoặc phiên đã kết thúc.
+  ///
+  /// Cùng lý do bọc try/catch như [start] (Sprint S2, D1). Khi lỗi,
+  /// GIỮ NGUYÊN currentActivity/completedActivities/summary hiện có
+  /// (không có gì trong try-block từng ghi vào [state] trước khi lỗi
+  /// xảy ra — updatedCompleted/contextAfter/updatedSummary chỉ là
+  /// biến cục bộ) — nhờ vậy [retry] gọi lại đúng activity đang dang dở
+  /// mà không mất tiến trình đã tích luỹ trước đó.
   Future<void> completeCurrentActivity() async {
     final current = state.currentActivity;
     if (current == null) return;
 
-    final updatedCompleted = {...state.completedActivities, current};
-    final contextAfter = await _buildContext(updatedCompleted);
-    final updatedSummary =
-        await _accumulate(current, state.summary, contextAfter);
+    try {
+      final updatedCompleted = {...state.completedActivities, current};
+      final contextAfter = await _buildContext(updatedCompleted);
+      final updatedSummary =
+          await _accumulate(current, state.summary, contextAfter);
 
-    final planner = ref.read(learningPlannerProvider);
-    final next = planner.next(contextAfter);
-    _trackActivityStart(next, contextAfter);
+      final planner = ref.read(learningPlannerProvider);
+      final next = planner.next(contextAfter);
+      _trackActivityStart(next, contextAfter);
 
-    state = (
-      status: next == null
-          ? LearningSessionStatus.completed
-          : LearningSessionStatus.inProgress,
-      currentActivity: next,
-      completedActivities: updatedCompleted,
-      summary: updatedSummary,
-    );
+      state = (
+        status: next == null
+            ? LearningSessionStatus.completed
+            : LearningSessionStatus.inProgress,
+        currentActivity: next,
+        completedActivities: updatedCompleted,
+        summary: updatedSummary,
+        error: null,
+      );
+    } catch (e) {
+      state = (
+        status: LearningSessionStatus.failed,
+        currentActivity: current,
+        completedActivities: state.completedActivities,
+        summary: state.summary,
+        error: e,
+      );
+    }
+  }
+
+  /// Thử lại sau khi `status == failed` (Sprint S2, D1) — gọi lại
+  /// đúng thao tác đã lỗi: [start] nếu lỗi xảy ra trước khi có
+  /// currentActivity nào (start() chưa từng thành công), ngược lại
+  /// [completeCurrentActivity] (currentActivity vẫn còn nguyên từ lần
+  /// thử trước, xem ghi chú ở đó).
+  Future<void> retry() async {
+    if (state.currentActivity == null) {
+      await start();
+    } else {
+      await completeCurrentActivity();
+    }
   }
 
   void _trackActivityStart(

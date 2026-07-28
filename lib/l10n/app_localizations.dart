@@ -1114,6 +1114,12 @@ abstract class AppLocalizations {
   /// **'Bắt đầu buổi học'**
   String get learningSessionStart;
 
+  /// No description provided for @learningSessionLoading.
+  ///
+  /// In vi, this message translates to:
+  /// **'Đang chuẩn bị phiên học của bạn…'**
+  String get learningSessionLoading;
+
   /// No description provided for @learningSummaryTitle.
   ///
   /// In vi, this message translates to:

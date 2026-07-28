@@ -1,12 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:quran_companion/l10n/app_localizations.dart';
 
+import '../../../shared/widgets/loading_state.dart';
 import '../../flashcards/data/flashcard_providers.dart';
 import '../../flashcards/presentation/flashcard_review_screen.dart';
 import '../../learning/data/scheduler_providers.dart';
 import '../../learning/presentation/review_session_screen.dart';
 import '../../quiz/data/quiz_providers.dart';
 import '../../quiz/presentation/quiz_session_screen.dart';
+import '../../search/presentation/widgets/search_error_state.dart';
 import '../domain/learning_planner.dart';
 import '../domain/learning_session_state.dart';
 import 'learning_session_controller.dart';
@@ -103,6 +106,10 @@ class _LearningSessionScreenState extends ConsumerState<LearningSessionScreen> {
     return switch (session.status) {
       LearningSessionStatus.notStarted => const _LearningSessionLoading(),
       LearningSessionStatus.completed => LearningSummaryScreen(state: session),
+      LearningSessionStatus.failed => _LearningSessionError(
+          onRetry: () =>
+              ref.read(learningSessionControllerProvider.notifier).retry(),
+        ),
       LearningSessionStatus.inProgress => switch (session.currentActivity!) {
           LearningActivityType.review => const ReviewSessionScreen(),
           LearningActivityType.quiz => const QuizSessionScreen(),
@@ -112,13 +119,42 @@ class _LearningSessionScreenState extends ConsumerState<LearningSessionScreen> {
   }
 }
 
+/// Trạng thái tải (Sprint S2, D1 — trước đó chỉ có
+/// `CircularProgressIndicator` trần, không có `Semantics`/`liveRegion`
+/// nào, không nhất quán với mọi màn hình F4-F7 khác đều dùng
+/// [LoadingState]). Không có AppBar — cùng lý do
+/// [LearningSessionScreen]'s doc comment: cả màn hình này chỉ có ĐÚNG 1
+/// lần push, không có route nào để "back" tới giữa các hoạt động.
 class _LearningSessionLoading extends StatelessWidget {
   const _LearningSessionLoading();
 
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(
-      body: Center(child: CircularProgressIndicator()),
+    final l10n = AppLocalizations.of(context);
+    return Scaffold(
+      body: Center(
+        child: LoadingState(semanticsLabel: l10n.learningSessionLoading),
+      ),
+    );
+  }
+}
+
+/// Trạng thái lỗi (Sprint S2, D1) — trước đó KHÔNG TỒN TẠI: một lỗi ở
+/// [LearningSessionController.start]/[completeCurrentActivity] trôi ra
+/// ngoài không ai bắt, màn hình đứng yên ở vòng xoay tải mãi mãi.
+/// Dùng lại nguyên [SearchErrorState] (cùng widget mọi màn hình
+/// F4-F7 khác dùng cho lỗi tải dữ liệu) thay vì dựng UI lỗi mới — giữ
+/// ngôn ngữ hình ảnh nhất quán trong toàn ứng dụng. Không có AppBar,
+/// cùng lý do [_LearningSessionLoading].
+class _LearningSessionError extends StatelessWidget {
+  const _LearningSessionError({required this.onRetry});
+
+  final VoidCallback onRetry;
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: SafeArea(child: SearchErrorState(onRetry: onRetry)),
     );
   }
 }

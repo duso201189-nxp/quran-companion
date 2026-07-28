@@ -265,6 +265,7 @@
   },
   "quizRetry": "Làm lại",
   "learningSessionStart": "Bắt đầu buổi học",
+  "learningSessionLoading": "Đang chuẩn bị phiên học của bạn…",
   "learningSummaryTitle": "Tóm tắt buổi học",
   "learningSummaryReviewCount": "Đã ôn {count} thẻ",
   "@learningSummaryReviewCount": {

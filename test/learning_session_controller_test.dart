@@ -459,4 +459,128 @@ void main() {
       );
     });
   });
+
+  group('error handling (Sprint S2, D1)', () {
+    test(
+        'start() lỗi khi đọc dueReviewCardsProvider -> status failed, '
+        'error khác null, không ném lỗi ra ngoài', () async {
+      final container = ProviderContainer(
+        overrides: [
+          dueReviewCardsProvider.overrideWith(
+            (ref) => Stream<List<SrsCard>>.error(Exception('boom')),
+          ),
+          dueFlashcardCardsProvider.overrideWith((ref) => const Stream.empty()),
+        ],
+      );
+      addTearDown(container.dispose);
+
+      // Không được ném ra ngoài — trước fix này, exception sẽ trôi ra
+      // khỏi await và làm hỏng test bằng lỗi chưa bắt (unhandled).
+      await container.read(learningSessionControllerProvider.notifier).start();
+
+      final state = container.read(learningSessionControllerProvider);
+      expect(state.status, LearningSessionStatus.failed);
+      expect(state.currentActivity, isNull);
+      expect(state.error, isNotNull);
+    });
+
+    test(
+        'completeCurrentActivity() lỗi (planner ném lỗi ở bước kế '
+        'tiếp) -> status failed, GIỮ NGUYÊN currentActivity/'
+        'completedActivities/summary hiện có (không mất tiến trình đã '
+        'tích luỹ)', () async {
+      final throwsOnSecondCall =
+          _ThrowsOnNthCallPlanner(const SequentialLearningPlanner(), n: 2);
+      final container = makeContainer(
+        initialDueReview: 3,
+        planner: throwsOnSecondCall,
+      );
+      addTearDown(container.dispose);
+      final notifier =
+          container.read(learningSessionControllerProvider.notifier);
+
+      await notifier.start(); // gọi planner lần 1 -> thành công
+      final beforeFailure = container.read(learningSessionControllerProvider);
+      expect(beforeFailure.currentActivity, LearningActivityType.review);
+      expect(beforeFailure.status, LearningSessionStatus.inProgress);
+
+      reviewQueue.emit(0);
+      await Future<void>.delayed(Duration.zero);
+      await notifier.completeCurrentActivity(); // gọi planner lần 2 -> ném lỗi
+
+      final state = container.read(learningSessionControllerProvider);
+      expect(state.status, LearningSessionStatus.failed);
+      expect(state.error, isNotNull);
+      // Bất biến quan trọng nhất: KHÔNG mất currentActivity/tiến
+      // trình đã có — vẫn còn "review" làm hoạt động hiện tại (chưa
+      // ghi nhận đã hoàn thành, vì state chỉ được ghi SAU khi cả khối
+      // try thành công), completedActivities vẫn rỗng như trước lỗi.
+      expect(state.currentActivity, LearningActivityType.review);
+      expect(state.completedActivities, isEmpty);
+    });
+
+    test(
+        'retry() khi currentActivity null hoạt động giống hệt start() '
+        '(cùng kết quả cho cùng trạng thái nguồn)', () async {
+      final container = makeContainer(initialDueReview: 0);
+      addTearDown(container.dispose);
+      final notifier =
+          container.read(learningSessionControllerProvider.notifier);
+
+      expect(
+        container.read(learningSessionControllerProvider).currentActivity,
+        isNull,
+      );
+      await notifier.retry();
+
+      final state = container.read(learningSessionControllerProvider);
+      expect(state.status, LearningSessionStatus.inProgress);
+      expect(state.currentActivity, LearningActivityType.quiz);
+    });
+
+    test(
+        'retry() khi currentActivity khác null hoạt động giống hệt '
+        'completeCurrentActivity() (cùng kết quả cho cùng trạng thái)',
+        () async {
+      final container = makeContainer(initialDueReview: 3);
+      addTearDown(container.dispose);
+      final notifier =
+          container.read(learningSessionControllerProvider.notifier);
+
+      await notifier.start();
+      expect(
+        container.read(learningSessionControllerProvider).currentActivity,
+        LearningActivityType.review,
+      );
+
+      reviewQueue.emit(0);
+      await Future<void>.delayed(Duration.zero);
+      await notifier.retry(); // thay vì completeCurrentActivity() trực tiếp
+
+      final state = container.read(learningSessionControllerProvider);
+      expect(state.completedActivities, contains(LearningActivityType.review));
+      expect(state.summary.reviewCardsCompleted, 3);
+      expect(state.currentActivity, LearningActivityType.quiz);
+    });
+  });
+}
+
+/// Planner ném lỗi từ lần gọi thứ [n] trở đi — mô phỏng lỗi xảy ra ở
+/// bước completeCurrentActivity() thứ hai trong khi start() (lần gọi
+/// đầu) vẫn thành công bình thường (Sprint S2, D1's error-handling
+/// tests cần vào được trạng thái inProgress THẬT trước khi lỗi).
+class _ThrowsOnNthCallPlanner implements LearningPlanner {
+  _ThrowsOnNthCallPlanner(this._inner, {required this.n});
+  final LearningPlanner _inner;
+  final int n;
+  int _calls = 0;
+
+  @override
+  LearningActivityType? next(LearningPlanContext context) {
+    _calls++;
+    if (_calls >= n) {
+      throw Exception('planner boom (Sprint S2 D1 test)');
+    }
+    return _inner.next(context);
+  }
 }
