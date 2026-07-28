@@ -538,5 +538,31 @@
     }
   },
   "journeyEntrySmartLearningTitle": "Get your Smart Session",
-  "journeyEntrySmartLearningDesc": "A personalized recommendation for right now"
+  "journeyEntrySmartLearningDesc": "A personalized recommendation for right now",
+  "smartLearningTitle": "Smart Learning",
+  "smartLearningHeaderTitle": "Your smart session",
+  "smartLearningRecommendationCountLabel": "{count} recommendations today",
+  "@smartLearningRecommendationCountLabel": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "smartLearningRecommendedTitle": "Recommended session",
+  "smartLearningOtherRecommendationsTitle": "Other recommendations",
+  "smartLearningRelatedStepsLabel": "{count} related steps",
+  "@smartLearningRelatedStepsLabel": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "smartLearningEmpty": "No smart session needed right now — you're all caught up!",
+  "smartLearningLoading": "Loading your smart session…",
+  "smartLearningStrategyShortReview": "Short review",
+  "smartLearningStrategyDeepStudy": "Deep study",
+  "smartLearningStrategyMemorization": "Memorization",
+  "smartLearningStrategyRecovery": "Recovery"
 }

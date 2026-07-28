@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:quran_companion/l10n/app_localizations.dart';
 
+import '../../../app/router.dart';
 import '../../../shared/widgets/empty_state_banner.dart';
 import '../../../shared/widgets/loading_state.dart';
 import '../../../shared/widgets/section_header.dart';
@@ -96,6 +98,8 @@ class _JourneyContent extends StatelessWidget {
           stepCountLabel: l10n.journeyStepCountLabel(plan.steps.length),
         ),
         const SizedBox(height: 20),
+        const _SmartLearningEntryCard(),
+        const SizedBox(height: 20),
         JourneyProgressCard(
           title: l10n.journeyProgressTitle,
           stats: [
@@ -138,6 +142,63 @@ class _JourneyContent extends StatelessWidget {
               ),
             ),
       ],
+    );
+  }
+}
+
+/// Lối vào Smart Learning (Sprint 17 Phase 2 mục 5) — banner CTA
+/// tĩnh, KHÔNG đọc provider nào, chỉ push route — cùng mẫu
+/// TutorHomeScreen._JourneyEntryCard (Sprint 16 Phase 2), không phát
+/// minh kiểu điều hướng mới.
+class _SmartLearningEntryCard extends StatelessWidget {
+  const _SmartLearningEntryCard();
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    final scheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
+
+    return Material(
+      color: scheme.secondaryContainer.withValues(alpha: 0.6),
+      borderRadius: BorderRadius.circular(16),
+      child: InkWell(
+        borderRadius: BorderRadius.circular(16),
+        onTap: () => context.push(AppRoutes.smartLearning),
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Row(
+            children: [
+              Icon(Icons.bolt_rounded, color: scheme.onSecondaryContainer),
+              const SizedBox(width: 14),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      l10n.journeyEntrySmartLearningTitle,
+                      style: textTheme.titleMedium?.copyWith(
+                        fontWeight: FontWeight.w700,
+                        color: scheme.onSecondaryContainer,
+                      ),
+                    ),
+                    const SizedBox(height: 2),
+                    Text(
+                      l10n.journeyEntrySmartLearningDesc,
+                      style: textTheme.bodySmall
+                          ?.copyWith(color: scheme.onSecondaryContainer),
+                    ),
+                  ],
+                ),
+              ),
+              Icon(
+                Icons.chevron_right_rounded,
+                color: scheme.onSecondaryContainer,
+              ),
+            ],
+          ),
+        ),
+      ),
     );
   }
 }
