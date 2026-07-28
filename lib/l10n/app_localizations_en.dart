@@ -1057,4 +1057,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get smartLearningStrategyRecovery => 'Recovery';
+
+  @override
+  String learningSummaryFlashcardCount(int count) {
+    return 'Reviewed $count words';
+  }
 }

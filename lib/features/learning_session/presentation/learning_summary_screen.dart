@@ -130,6 +130,15 @@ class _SummaryStatsCard extends StatelessWidget {
               summary.reviewCardsCompleted,
             ),
           ),
+          if (summary.flashcardsCompleted > 0) ...[
+            const SizedBox(height: 10),
+            _StatRow(
+              icon: Icons.style_rounded,
+              label: l10n.learningSummaryFlashcardCount(
+                summary.flashcardsCompleted,
+              ),
+            ),
+          ],
           if (hasQuiz) ...[
             const SizedBox(height: 10),
             _StatRow(

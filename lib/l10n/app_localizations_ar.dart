@@ -1049,4 +1049,9 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get smartLearningStrategyRecovery => 'تعافٍ';
+
+  @override
+  String learningSummaryFlashcardCount(int count) {
+    return 'تمت مراجعة $count كلمة';
+  }
 }

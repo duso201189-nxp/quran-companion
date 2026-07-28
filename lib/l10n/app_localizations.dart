@@ -2007,6 +2007,12 @@ abstract class AppLocalizations {
   /// In vi, this message translates to:
   /// **'Phục hồi'**
   String get smartLearningStrategyRecovery;
+
+  /// No description provided for @learningSummaryFlashcardCount.
+  ///
+  /// In vi, this message translates to:
+  /// **'Đã ôn {count} từ vựng'**
+  String learningSummaryFlashcardCount(int count);
 }
 
 class _AppLocalizationsDelegate

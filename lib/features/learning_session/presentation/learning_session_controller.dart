@@ -1,5 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../flashcards/data/flashcard_providers.dart';
 import '../../learning/data/scheduler_providers.dart';
 import '../../learning/domain/entities/srs_card.dart';
 import '../../quiz/data/quiz_providers.dart';
@@ -35,6 +36,11 @@ class LearningSessionController extends Notifier<LearningSessionState> {
   /// — không ảnh hưởng quyết định của LearningPlanner (vẫn thuần,
   /// tất định), chỉ ảnh hưởng số liệu tóm tắt.
   int? _reviewCountAtActivityStart;
+
+  /// Cùng vai trò [_reviewCountAtActivityStart] nhưng cho Flashcard
+  /// (Sprint 13 Phase 2) — FlashcardReviewScreen cũng không tự đếm,
+  /// cùng lý do.
+  int? _flashcardCountAtActivityStart;
 
   /// Bắt đầu phiên: dựng LearningPlanContext từ trạng thái hiện có
   /// của từng module (chỉ đọc), hỏi LearningPlanner hoạt động đầu
@@ -87,6 +93,9 @@ class LearningSessionController extends Notifier<LearningSessionState> {
   ) {
     _reviewCountAtActivityStart =
         activity == LearningActivityType.review ? context.dueReviewCount : null;
+    _flashcardCountAtActivityStart = activity == LearningActivityType.flashcard
+        ? context.dueFlashcardCount
+        : null;
   }
 
   /// Dựng LearningPlanContext từ trạng thái ĐỌC ĐƯỢC của từng module,
@@ -109,6 +118,17 @@ class LearningSessionController extends Notifier<LearningSessionState> {
     } else {
       dueReview = await ref.read(dueReviewCardsProvider.future);
     }
+
+    // Cùng mẫu đọc dueReviewCardsProvider ở trên (ưu tiên cache đồng
+    // bộ, chỉ await .future khi chưa có cache nào).
+    final cachedFlashcards = ref.read(dueFlashcardCardsProvider).valueOrNull;
+    final List<SrsCard> dueFlashcards;
+    if (cachedFlashcards != null) {
+      dueFlashcards = cachedFlashcards;
+    } else {
+      dueFlashcards = await ref.read(dueFlashcardCardsProvider.future);
+    }
+
     return (
       dueReviewCount: dueReview.length,
       // Quiz sinh động từ nhóm A (luôn có nội dung Qur'an) — không có
@@ -119,9 +139,11 @@ class LearningSessionController extends Notifier<LearningSessionState> {
       // provider đó trong [_accumulate], sau khi Quiz đã là hoạt
       // động và đã hoàn thành.
       quizAvailable: true,
-      // Flashcard chưa cài ở Sprint 11 (kiến trúc Phase 0 Revision) —
-      // null = "module không tồn tại", LearningPlanner luôn bỏ qua.
-      dueFlashcardCount: null,
+      // Flashcard hiện thực ở Sprint 13 Phase 2 — không còn null
+      // (Sprint 11: "module không tồn tại"). 0 = module tồn tại
+      // nhưng không có Flashcard nào đến hạn — LearningPlanner phân
+      // biệt đúng 2 trường hợp này (xem learning_planner.dart).
+      dueFlashcardCount: dueFlashcards.length,
       completedThisSession: completed,
     );
   }
@@ -149,7 +171,14 @@ class LearningSessionController extends Notifier<LearningSessionState> {
           quizTotal: quizState.questions.length,
         );
       case LearningActivityType.flashcard:
-        return previous; // Chưa xây (Sprint 11) — không có gì để đọc.
+        // Cùng cách tính reviewCardsCompleted ở trên (chênh lệch
+        // trước/sau) — FlashcardReviewScreen cũng không tự đếm.
+        final remaining = contextAfter.dueFlashcardCount ?? 0;
+        final before = _flashcardCountAtActivityStart ?? remaining;
+        final completedCount = (before - remaining).clamp(0, before);
+        return previous.copyWith(
+          flashcardsCompleted: previous.flashcardsCompleted + completedCount,
+        );
     }
   }
 }

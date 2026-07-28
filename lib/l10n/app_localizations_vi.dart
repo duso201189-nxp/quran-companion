@@ -1052,4 +1052,9 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get smartLearningStrategyRecovery => 'Phục hồi';
+
+  @override
+  String learningSummaryFlashcardCount(int count) {
+    return 'Đã ôn $count từ vựng';
+  }
 }
