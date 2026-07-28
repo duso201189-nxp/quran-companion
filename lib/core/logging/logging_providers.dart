@@ -17,10 +17,15 @@ import 'noop_crash_reporter.dart';
 /// Logger/CrashReporter, không phụ thuộc ConsoleLogger/NoopCrashReporter
 /// trực tiếp.
 ///
-/// CHƯA có nơi nào trong app watch 2 provider này ("No write path",
-/// "No business logic changes" — phase này chỉ dựng hạ tầng, chưa nối
-/// dây vào Repository/UI nào).
-final loggerProvider = Provider<Logger>((ref) => const ConsoleLogger());
+/// Sprint S2, D2: [loggerProvider] giờ tiêm [crashReporterProvider]
+/// vào ConsoleLogger — mọi lỗi log qua Logger.error() (tức mọi lỗi đi
+/// qua withFailureLogging/withFailureLoggingStream, "DUY NHẤT chỗ áp
+/// dụng... cho mọi Repository") giờ cũng tới CrashReporter, xem
+/// console_logger.dart. Không có gì khác đổi — vẫn KHÔNG business
+/// logic nào phụ thuộc trực tiếp vào 2 provider này.
+final loggerProvider = Provider<Logger>(
+  (ref) => ConsoleLogger(crashReporter: ref.watch(crashReporterProvider)),
+);
 
 final crashReporterProvider =
     Provider<CrashReporter>((ref) => const NoopCrashReporter());

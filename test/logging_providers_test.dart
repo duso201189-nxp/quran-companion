@@ -66,4 +66,33 @@ void main() {
 
     expect(fakeReporter.failures, [failure]);
   });
+
+  test(
+      'Sprint S2 D2: loggerProvider tiêm crashReporterProvider — '
+      'logger.error() với error khác null chuyển tiếp tới CrashReporter '
+      'thật sự đang override, không chỉ NoopCrashReporter mặc định', () {
+    final fakeReporter = _FakeCrashReporter();
+    container = ProviderContainer(
+      overrides: [
+        crashReporterProvider.overrideWithValue(fakeReporter),
+      ],
+    );
+
+    final logger = container.read(loggerProvider);
+    final cause = Exception('boom');
+    logger.error('lỗi thật', error: cause, stackTrace: StackTrace.current);
+
+    expect(fakeReporter.failures, hasLength(1));
+    expect(fakeReporter.failures.single.cause, same(cause));
+
+    // debug/info/warning/error(không kèm error) KHÔNG ghi nhận gì —
+    // đúng phạm vi đã nêu ở console_logger.dart (chỉ .error() kèm
+    // error gốc mới đủ dữ liệu để mapToAppFailure()).
+    logger.debug('d');
+    logger.info('i');
+    logger.warning('w');
+    logger.error('e không kèm error object');
+
+    expect(fakeReporter.failures, hasLength(1));
+  });
 }
