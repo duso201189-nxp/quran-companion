@@ -512,5 +512,31 @@
   "aiTutorActionReviewNow": "Ôn ngay",
   "aiTutorActionContinueLearning": "Tiếp tục học",
   "aiTutorActionOpenWeakCards": "Mở thẻ yếu",
-  "aiTutorActionOpenFlashcards": "Mở Flashcard"
+  "aiTutorActionOpenFlashcards": "Mở Flashcard",
+  "aiTutorJourneyEntryTitle": "Xem Hành trình học tập",
+  "aiTutorJourneyEntryDesc": "Xem kế hoạch hôm nay, từng bước theo thứ tự",
+  "learningJourneyTitle": "Hành trình học tập",
+  "journeyHeaderTitle": "Kế hoạch hôm nay",
+  "journeyStepCountLabel": "{count} bước đã lên kế hoạch",
+  "@journeyStepCountLabel": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "journeyProgressTitle": "Tiến độ của bạn",
+  "journeyStepsTitle": "Các bước",
+  "learningJourneyEmpty": "Chưa có gì cho hôm nay — bạn đã theo kịp mọi thứ!",
+  "learningJourneyLoading": "Đang tải hành trình học tập của bạn…",
+  "journeyStepNumber": "Bước {number}",
+  "@journeyStepNumber": {
+    "placeholders": {
+      "number": {
+        "type": "int"
+      }
+    }
+  },
+  "journeyEntrySmartLearningTitle": "Nhận phiên học thông minh",
+  "journeyEntrySmartLearningDesc": "Gợi ý riêng cho ngay bây giờ"
 }

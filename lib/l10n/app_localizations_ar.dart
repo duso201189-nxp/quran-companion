@@ -967,4 +967,45 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get aiTutorActionOpenFlashcards => 'فتح البطاقات التعليمية';
+
+  @override
+  String get aiTutorJourneyEntryTitle => 'عرض رحلة التعلم الخاصة بك';
+
+  @override
+  String get aiTutorJourneyEntryDesc => 'اطّلع على خطة اليوم، خطوة بخطوة';
+
+  @override
+  String get learningJourneyTitle => 'رحلة التعلم';
+
+  @override
+  String get journeyHeaderTitle => 'خطة اليوم';
+
+  @override
+  String journeyStepCountLabel(int count) {
+    return '$count خطوة مخطَّطة';
+  }
+
+  @override
+  String get journeyProgressTitle => 'تقدّمك';
+
+  @override
+  String get journeyStepsTitle => 'الخطوات';
+
+  @override
+  String get learningJourneyEmpty =>
+      'لا يوجد شيء مخطَّط لليوم — أنت متابع لكل شيء!';
+
+  @override
+  String get learningJourneyLoading => 'جارٍ تحميل رحلة التعلم الخاصة بك…';
+
+  @override
+  String journeyStepNumber(int number) {
+    return 'الخطوة $number';
+  }
+
+  @override
+  String get journeyEntrySmartLearningTitle => 'احصل على جلستك الذكية';
+
+  @override
+  String get journeyEntrySmartLearningDesc => 'توصية مخصّصة للحظة الحالية';
 }

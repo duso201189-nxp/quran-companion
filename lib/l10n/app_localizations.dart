@@ -1863,6 +1863,78 @@ abstract class AppLocalizations {
   /// In vi, this message translates to:
   /// **'Mở Flashcard'**
   String get aiTutorActionOpenFlashcards;
+
+  /// No description provided for @aiTutorJourneyEntryTitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Xem Hành trình học tập'**
+  String get aiTutorJourneyEntryTitle;
+
+  /// No description provided for @aiTutorJourneyEntryDesc.
+  ///
+  /// In vi, this message translates to:
+  /// **'Xem kế hoạch hôm nay, từng bước theo thứ tự'**
+  String get aiTutorJourneyEntryDesc;
+
+  /// No description provided for @learningJourneyTitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Hành trình học tập'**
+  String get learningJourneyTitle;
+
+  /// No description provided for @journeyHeaderTitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Kế hoạch hôm nay'**
+  String get journeyHeaderTitle;
+
+  /// No description provided for @journeyStepCountLabel.
+  ///
+  /// In vi, this message translates to:
+  /// **'{count} bước đã lên kế hoạch'**
+  String journeyStepCountLabel(int count);
+
+  /// No description provided for @journeyProgressTitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Tiến độ của bạn'**
+  String get journeyProgressTitle;
+
+  /// No description provided for @journeyStepsTitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Các bước'**
+  String get journeyStepsTitle;
+
+  /// No description provided for @learningJourneyEmpty.
+  ///
+  /// In vi, this message translates to:
+  /// **'Chưa có gì cho hôm nay — bạn đã theo kịp mọi thứ!'**
+  String get learningJourneyEmpty;
+
+  /// No description provided for @learningJourneyLoading.
+  ///
+  /// In vi, this message translates to:
+  /// **'Đang tải hành trình học tập của bạn…'**
+  String get learningJourneyLoading;
+
+  /// No description provided for @journeyStepNumber.
+  ///
+  /// In vi, this message translates to:
+  /// **'Bước {number}'**
+  String journeyStepNumber(int number);
+
+  /// No description provided for @journeyEntrySmartLearningTitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Nhận phiên học thông minh'**
+  String get journeyEntrySmartLearningTitle;
+
+  /// No description provided for @journeyEntrySmartLearningDesc.
+  ///
+  /// In vi, this message translates to:
+  /// **'Gợi ý riêng cho ngay bây giờ'**
+  String get journeyEntrySmartLearningDesc;
 }
 
 class _AppLocalizationsDelegate

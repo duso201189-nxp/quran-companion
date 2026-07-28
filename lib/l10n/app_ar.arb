@@ -512,5 +512,31 @@
   "aiTutorActionReviewNow": "راجع الآن",
   "aiTutorActionContinueLearning": "متابعة التعلّم",
   "aiTutorActionOpenWeakCards": "فتح البطاقات الضعيفة",
-  "aiTutorActionOpenFlashcards": "فتح البطاقات التعليمية"
+  "aiTutorActionOpenFlashcards": "فتح البطاقات التعليمية",
+  "aiTutorJourneyEntryTitle": "عرض رحلة التعلم الخاصة بك",
+  "aiTutorJourneyEntryDesc": "اطّلع على خطة اليوم، خطوة بخطوة",
+  "learningJourneyTitle": "رحلة التعلم",
+  "journeyHeaderTitle": "خطة اليوم",
+  "journeyStepCountLabel": "{count} خطوة مخطَّطة",
+  "@journeyStepCountLabel": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "journeyProgressTitle": "تقدّمك",
+  "journeyStepsTitle": "الخطوات",
+  "learningJourneyEmpty": "لا يوجد شيء مخطَّط لليوم — أنت متابع لكل شيء!",
+  "learningJourneyLoading": "جارٍ تحميل رحلة التعلم الخاصة بك…",
+  "journeyStepNumber": "الخطوة {number}",
+  "@journeyStepNumber": {
+    "placeholders": {
+      "number": {
+        "type": "int"
+      }
+    }
+  },
+  "journeyEntrySmartLearningTitle": "احصل على جلستك الذكية",
+  "journeyEntrySmartLearningDesc": "توصية مخصّصة للحظة الحالية"
 }
