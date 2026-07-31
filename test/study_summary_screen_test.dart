@@ -49,7 +49,8 @@ class _FakeSmartLearningRepository implements SmartLearningRepository {
 /// microtask, `pump()` đơn lẻ đã đủ trôi qua, không bắt được khung
 /// loading) — cùng kỹ thuật `TESTING_GUIDE.md` §1.3 mô tả cho
 /// `daily_goal_providers_test.dart`.
-class _NeverResolvingSmartLearningRepository implements SmartLearningRepository {
+class _NeverResolvingSmartLearningRepository
+    implements SmartLearningRepository {
   @override
   Future<SmartLearningSession> getSmartLearningSession() {
     return Completer<SmartLearningSession>().future;
