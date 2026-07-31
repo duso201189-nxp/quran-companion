@@ -48,6 +48,9 @@ class _RepoWithReciters implements QuranRepository {
     int limit = 40,
   }) async =>
       const [];
+
+  @override
+  Future<List<AyahSearchResult>> getAyahsByIds(List<int> ids) async => const [];
 }
 
 List<Ayah> _ayahs(int count) => [

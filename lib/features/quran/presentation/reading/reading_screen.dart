@@ -12,7 +12,10 @@ import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 import '../../../../app/router.dart';
 import '../../../../app/theme/app_theme.dart';
 import '../../../stats/data/stats_store.dart';
+import '../../../stats/data/study_session_providers.dart';
+import '../../../stats/domain/repositories/study_session_repository.dart';
 import '../../data/user_content_providers.dart';
+import '../../domain/basmalah.dart';
 import '../../domain/entities/ayah_annotation.dart';
 import '../../domain/entities/ayah_content.dart';
 import '../../domain/entities/surah.dart';
@@ -61,6 +64,7 @@ class _ReadingScreenState extends ConsumerState<ReadingScreen> {
   // thống kê phiên đọc (ngày + số phút)
   final Stopwatch _sessionWatch = Stopwatch();
   late final StatsStore _statsStore;
+  late final StudySessionRepository _studySessionRepository;
 
   @override
   void initState() {
@@ -69,6 +73,7 @@ class _ReadingScreenState extends ConsumerState<ReadingScreen> {
         ref.read(readingPositionStoreProvider).positionFor(widget.surahId) ?? 0;
     _positionsListener.itemPositions.addListener(_onPositionsChanged);
     _statsStore = ref.read(statsStoreProvider);
+    _studySessionRepository = ref.read(studySessionRepositoryProvider);
     unawaited(_statsStore.markToday());
     _sessionWatch.start();
   }
@@ -76,7 +81,25 @@ class _ReadingScreenState extends ConsumerState<ReadingScreen> {
   @override
   void dispose() {
     _positionsListener.itemPositions.removeListener(_onPositionsChanged);
-    unawaited(_statsStore.addSeconds(_sessionWatch.elapsed.inSeconds));
+    final seconds = _sessionWatch.elapsed.inSeconds;
+    unawaited(_statsStore.addSeconds(seconds));
+    // Sprint 8 (DR-2026-0003 mục A) — ghi song song vào
+    // study_sessions (Drift) để "Phiên đọc" (streak/tổng kết hôm
+    // nay) có dữ liệu thật; StatsStore/SharedPreferences vẫn là
+    // nguồn cho lưới chỉ số hiện có, không đụng tới. Cùng ngưỡng
+    // "< 5 giây bỏ qua" như StatsStore.addSeconds — lướt qua màn
+    // hình không tính là một phiên đọc.
+    if (seconds >= 5) {
+      unawaited(
+        _studySessionRepository.logSession(
+          date: StatsStore.dayKey(DateTime.now()),
+          surahId: widget.surahId,
+          ayahFrom: _initialAyahIndex,
+          ayahTo: _lastSavedIndex ?? _initialAyahIndex,
+          durationSec: seconds,
+        ),
+      );
+    }
     super.dispose();
   }
 
@@ -349,8 +372,12 @@ class _AyahListView extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     return LayoutBuilder(
       builder: (context, constraints) {
-        final horizontal = constraints.maxWidth > 740
-            ? (constraints.maxWidth - 700) / 2
+        // Điện thoại (< 760): giữ lề 20 như cũ. Tablet/Desktop: căn
+        // giữa nội dung ở bề rộng đọc tối đa 720 (dễ đọc, không dàn
+        // chữ quá rộng).
+        const maxContentWidth = 720.0;
+        final horizontal = constraints.maxWidth > maxContentWidth + 40
+            ? (constraints.maxWidth - maxContentWidth) / 2
             : 20.0;
         return ScrollablePositionedList.builder(
           initialScrollIndex: initialScrollIndex,
@@ -363,9 +390,15 @@ class _AyahListView extends ConsumerWidget {
           itemCount: ayahs.length + 1,
           itemBuilder: (context, index) {
             if (index == 0) {
+              // Basmalah trang trí = 4 từ đầu của Ayah 1 (lấy TỪ DỮ
+              // LIỆU), chỉ với Surah có Basmalah dẫn đầu (≠ 1, 9).
+              final basmalah = surahHasLeadingBasmalah(surahId) &&
+                      ayahs.isNotEmpty
+                  ? splitLeadingBasmalah(ayahs.first.ayah.textUthmani).basmalah
+                  : null;
               return focus
                   ? const SizedBox.shrink()
-                  : _SurahHeader(surah: surah);
+                  : _SurahHeader(surah: surah, basmalah: basmalah);
             }
             return AyahCard(
               content: ayahs[index - 1],
@@ -476,56 +509,134 @@ class _MushafViewState extends State<_MushafView> {
 // ==================== THÀNH PHẦN CHUNG ====================
 
 class _SurahHeader extends StatelessWidget {
-  const _SurahHeader({required this.surah});
+  const _SurahHeader({required this.surah, this.basmalah});
 
   final Surah surah;
+
+  /// Basmalah trang trí (lấy TỪ DỮ LIỆU Ayah 1) — hiển thị bên dưới
+  /// thẻ tên Surah, thuần hình ảnh: không đánh số, không chọn /
+  /// bookmark / yêu thích / highlight / chia sẻ. null = không hiển
+  /// thị (Surah 1 & 9).
+  final String? basmalah;
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     final scheme = Theme.of(context).colorScheme;
     final textTheme = Theme.of(context).textTheme;
-    final placeLabel = surah.revelationPlace == RevelationPlace.mecca
-        ? l10n.revelationMecca
-        : l10n.revelationMadinah;
+    final isMecca = surah.revelationPlace == RevelationPlace.mecca;
+    final placeLabel = isMecca ? l10n.revelationMecca : l10n.revelationMadinah;
 
-    return Container(
-      margin: const EdgeInsets.only(bottom: 24),
-      padding: const EdgeInsets.symmetric(vertical: 28, horizontal: 24),
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topCenter,
-          end: Alignment.bottomCenter,
-          colors: [
-            scheme.primaryContainer.withValues(alpha: 0.55),
-            scheme.primaryContainer.withValues(alpha: 0.25),
-          ],
+    return Column(
+      children: [
+        Container(
+          margin: const EdgeInsets.only(top: 4),
+          padding: const EdgeInsets.symmetric(vertical: 30, horizontal: 24),
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+              colors: [
+                scheme.primaryContainer.withValues(alpha: 0.55),
+                scheme.primaryContainer.withValues(alpha: 0.18),
+              ],
+            ),
+            borderRadius: BorderRadius.circular(24),
+            border: Border.all(
+              color: scheme.primary.withValues(alpha: 0.15),
+            ),
+          ),
+          child: Column(
+            children: [
+              Text(
+                surah.nameArabic,
+                textDirection: TextDirection.rtl,
+                textAlign: TextAlign.center,
+                style: arabicTitleStyle(fontSize: 44, color: scheme.primary),
+              ),
+              const SizedBox(height: 10),
+              Text(
+                surah.nameLatin,
+                textAlign: TextAlign.center,
+                style: textTheme.titleMedium?.copyWith(
+                  fontWeight: FontWeight.w700,
+                  letterSpacing: 1.0,
+                  color: scheme.onSurface,
+                ),
+              ),
+              const SizedBox(height: 16),
+              // Wrap (không Row): cỡ chữ lớn / màn hẹp -> chip tự
+              // xuống dòng thay vì tràn ngang.
+              Wrap(
+                alignment: WrapAlignment.center,
+                spacing: 10,
+                runSpacing: 8,
+                children: [
+                  _HeaderChip(
+                    icon: isMecca
+                        ? Icons.brightness_2_outlined
+                        : Icons.location_city_outlined,
+                    label: placeLabel,
+                  ),
+                  _HeaderChip(
+                    icon: Icons.menu_book_outlined,
+                    label: l10n.surahAyahCount(surah.ayahCount),
+                  ),
+                ],
+              ),
+            ],
+          ),
         ),
-        borderRadius: BorderRadius.circular(20),
+
+        // Basmalah trang trí (thuần hình ảnh) — đúng luật Mushaf.
+        // Lấy từ dữ liệu Ayah 1 (tách sẵn); null với Surah 1 & 9.
+        if (basmalah != null)
+          Padding(
+            padding: const EdgeInsets.only(top: 22, bottom: 4),
+            child: Text(
+              basmalah!,
+              textDirection: TextDirection.rtl,
+              textAlign: TextAlign.center,
+              style: quranTextStyle(
+                fontSize: 28,
+                color: scheme.onSurface.withValues(alpha: 0.85),
+                height: 1.8,
+              ),
+            ),
+          ),
+        const SizedBox(height: 18),
+      ],
+    );
+  }
+}
+
+/// Chip nhỏ trong header Surah (nơi mặc khải, số câu).
+class _HeaderChip extends StatelessWidget {
+  const _HeaderChip({required this.icon, required this.label});
+
+  final IconData icon;
+  final String label;
+
+  @override
+  Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+      decoration: BoxDecoration(
+        color: scheme.surface.withValues(alpha: 0.55),
+        borderRadius: BorderRadius.circular(999),
       ),
-      child: Column(
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
         children: [
+          Icon(icon, size: 15, color: scheme.onSurfaceVariant),
+          const SizedBox(width: 6),
           Text(
-            surah.nameArabic,
-            textDirection: TextDirection.rtl,
-            style: arabicTitleStyle(
-              fontSize: 40,
-              color: scheme.primary,
+            label,
+            style: textTheme.labelMedium?.copyWith(
+              color: scheme.onSurfaceVariant,
             ),
-          ),
-          const SizedBox(height: 6),
-          Text(
-            surah.nameLatin,
-            style: textTheme.titleLarge?.copyWith(
-              fontWeight: FontWeight.w700,
-              letterSpacing: 0.2,
-            ),
-          ),
-          const SizedBox(height: 4),
-          Text(
-            '${l10n.surahAyahCount(surah.ayahCount)} · $placeLabel',
-            style:
-                textTheme.bodyMedium?.copyWith(color: scheme.onSurfaceVariant),
           ),
         ],
       ),
@@ -595,6 +706,14 @@ class AyahCard extends ConsumerWidget {
         ),
       );
     }
+
+    // Chế độ Danh sách: Ayah 1 của Surah có Basmalah dẫn đầu bỏ phần
+    // Basmalah (đã đưa lên header trang trí) -> chỉ một Basmalah.
+    final displayArabic = ayahDisplayText(
+      surahId: content.ayah.surahId,
+      ayahNumber: content.ayah.ayahNumber,
+      textUthmani: content.ayah.textUthmani,
+    );
 
     final translit = content.texts['translit_latin'];
     final vi = content.texts['vi_main'];
@@ -763,48 +882,66 @@ class AyahCard extends ConsumerWidget {
                       ),
                     ],
                   ),
-                  const SizedBox(height: 18),
+                  const SizedBox(height: 20),
 
-                  // ---- Văn bản Qur'an ----
-                  Text(
-                    content.ayah.textUthmani,
-                    textDirection: TextDirection.rtl,
-                    textAlign: TextAlign.right,
-                    style: arabicStyle,
+                  // ---- Văn bản Qur'an (căn giữa, nhiều khoảng thở) ----
+                  Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 6),
+                    child: Text(
+                      displayArabic,
+                      textDirection: TextDirection.rtl,
+                      textAlign: TextAlign.center,
+                      style: arabicStyle,
+                    ),
                   ),
-                  const SizedBox(height: 16),
 
-                  // ---- Phiên âm ----
+                  // Ngăn cách kinh văn với các lớp hỗ trợ đọc.
+                  if ((settings.showTransliteration && translit != null) ||
+                      (settings.showVietnamese && vi != null) ||
+                      (settings.showEnglish && en != null)) ...[
+                    const SizedBox(height: 18),
+                    Divider(
+                      height: 1,
+                      color: scheme.outlineVariant.withValues(alpha: 0.6),
+                    ),
+                    const SizedBox(height: 18),
+                  ],
+
+                  // ---- Phiên âm (nhỏ hơn, kiểu phụ) ----
                   if (settings.showTransliteration && translit != null) ...[
                     Text(
                       translit,
+                      textDirection: TextDirection.ltr,
                       style: TextStyle(
                         fontFamily: AppTheme.latinFont,
                         fontStyle: FontStyle.italic,
-                        fontSize: 18,
-                        height: 1.6,
-                        color: scheme.onSurfaceVariant.withValues(alpha: 0.85),
+                        fontSize: 15,
+                        height: 1.55,
+                        letterSpacing: 0.2,
+                        color: scheme.onSurfaceVariant.withValues(alpha: 0.7),
                       ),
                     ),
-                    const SizedBox(height: 12),
+                    const SizedBox(height: 14),
                   ],
 
-                  // ---- Bản dịch ----
+                  // ---- Bản dịch (LTR, dễ đọc) ----
                   if (settings.showVietnamese && vi != null) ...[
                     Text(
                       vi,
+                      textDirection: TextDirection.ltr,
                       style: TextStyle(
                         fontFamily: AppTheme.latinFont,
                         fontSize: 18,
-                        height: 1.65,
+                        height: 1.7,
                         color: scheme.onSurface,
                       ),
                     ),
-                    const SizedBox(height: 12),
+                    const SizedBox(height: 14),
                   ],
                   if (settings.showEnglish && en != null) ...[
                     Text(
                       en,
+                      textDirection: TextDirection.ltr,
                       style: TextStyle(
                         fontFamily: AppTheme.latinFont,
                         fontSize: 16,
@@ -812,7 +949,7 @@ class AyahCard extends ConsumerWidget {
                         color: scheme.onSurfaceVariant,
                       ),
                     ),
-                    const SizedBox(height: 12),
+                    const SizedBox(height: 14),
                   ],
 
                   // ---- Ghi chú người dùng ----
@@ -847,7 +984,12 @@ class AyahCard extends ConsumerWidget {
         surahId: content.ayah.surahId,
         ayahId: content.ayah.id,
         ayahNumber: content.ayah.ayahNumber,
-        arabicText: content.ayah.textUthmani,
+        // Nhất quán với phần hiển thị: Ayah 1 không kèm Basmalah.
+        arabicText: ayahDisplayText(
+          surahId: content.ayah.surahId,
+          ayahNumber: content.ayah.ayahNumber,
+          textUthmani: content.ayah.textUthmani,
+        ),
         translationText: content.texts['vi_main'] ?? content.texts['en_sahih'],
       ),
     );
@@ -861,7 +1003,14 @@ class AyahCard extends ConsumerWidget {
     bool forShare = false,
   }) async {
     final messenger = ScaffoldMessenger.of(context);
-    final buf = StringBuffer(content.ayah.textUthmani);
+    // Nhất quán với phần hiển thị: Ayah 1 không kèm Basmalah.
+    final buf = StringBuffer(
+      ayahDisplayText(
+        surahId: content.ayah.surahId,
+        ayahNumber: content.ayah.ayahNumber,
+        textUthmani: content.ayah.textUthmani,
+      ),
+    );
     for (final text in [
       content.texts['translit_latin'],
       content.texts['vi_main'],

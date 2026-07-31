@@ -5,14 +5,71 @@ Nền tảng: **Android · iOS · iPad · Web · Desktop (tương lai)**.
 
 ![CI](https://github.com/<tài-khoản>/quran_companion/actions/workflows/ci.yml/badge.svg)
 
+## Kiến trúc tổng quan
+
+Flutter, tổ chức theo tính năng (`lib/features/<tên>/`), mỗi tính năng
+tự chia 3 lớp `domain/` (entity + interface repository, thuần Dart,
+không import Flutter/Riverpod/Drift) → `data/` (implementation +
+provider Riverpod) → `presentation/` (màn hình, widget, controller).
+Hai database SQLite (Drift) tách biệt hoàn toàn: `AppDatabase` (nội
+dung Qur'an tĩnh, chỉ đọc, đóng gói sẵn) và `UserDatabase` (dữ liệu
+người dùng, chuẩn bị sẵn cho đồng bộ đám mây sau này). Riverpod vừa
+quản lý state vừa làm dependency injection — mỗi repository có đúng 1
+provider dựng nó từ các dependency của nó.
+
+Chi tiết đầy đủ, đã xác minh trực tiếp từ code hiện tại (không suy
+đoán): xem **[docs/architecture/MASTER_ARCHITECTURE.md](docs/architecture/MASTER_ARCHITECTURE.md)**.
+
 ## Tài liệu
+
+**Điểm vào chính: [PROJECT_INDEX.md](PROJECT_INDEX.md)** — bản đồ đầy
+đủ mọi tài liệu trong repo này, thứ tự đọc khuyến nghị, và tài liệu nào
+là "nguồn sự thật" cho từng chủ đề (một số tài liệu cũ đã lỗi thời so
+với code hiện tại — `PROJECT_INDEX.md` nói rõ cái nào còn đúng, cái nào
+chỉ còn giá trị lịch sử).
 
 | File | Nội dung |
 |---|---|
-| [ARCHITECTURE.md](ARCHITECTURE.md) | Kiến trúc hệ thống, quyết định kỹ thuật |
-| [DATABASE.md](DATABASE.md) | Sơ đồ cơ sở dữ liệu đầy đủ |
+| [PROJECT_INDEX.md](PROJECT_INDEX.md) | **Bắt đầu từ đây** — bản đồ toàn bộ tài liệu |
+| [docs/architecture/](docs/architecture/) | Kiến trúc hiện tại: tổng quan, danh mục tính năng, schema database, provider map, luồng dữ liệu, quyết định kiến trúc |
+| [docs/testing/TESTING_GUIDE.md](docs/testing/TESTING_GUIDE.md) | Chiến lược kiểm thử, quy ước, ví dụ thật |
+| [docs/release/](docs/release/) | Kế hoạch v1.0, nợ kỹ thuật đang mở, lộ trình sản phẩm |
+| [CONTRIBUTING.md](CONTRIBUTING.md) | Chuẩn code, quy ước commit, checklist PR |
+| [ARCHITECTURE.md](ARCHITECTURE.md) | Tài liệu kiến trúc gốc (lịch sử — xem `docs/architecture/` cho trạng thái hiện tại) |
+| [DATABASE.md](DATABASE.md) | Sơ đồ cơ sở dữ liệu gốc + lý do thiết kế (lịch sử — xem `docs/architecture/DATABASE_REFERENCE.md` cho schema hiện tại) |
 | [CHANGELOG.md](CHANGELOG.md) | Lịch sử thay đổi theo phiên bản |
-| [TODO.md](TODO.md) | Lộ trình 12 bước + checklist phát hành |
+| [ROADMAP.md](ROADMAP.md) | Lộ trình 12 bước gốc (lịch sử — xem `docs/release/PRODUCT_ROADMAP.md` cho lộ trình hiện tại) |
+| [TODO.md](TODO.md) | Việc treo tới Sprint 10 (lịch sử — xem `docs/release/RELEASE_PLAN_V1.md` cho việc còn mở hiện tại) |
+
+## Onboarding cho lập trình viên mới
+
+1. Đọc [PROJECT_INDEX.md](PROJECT_INDEX.md) rồi
+   [docs/architecture/MASTER_ARCHITECTURE.md](docs/architecture/MASTER_ARCHITECTURE.md).
+2. Làm theo "Cài đặt lần đầu" và "Chạy ứng dụng" bên dưới.
+3. Đọc [docs/architecture/MODULE_CATALOG.md](docs/architecture/MODULE_CATALOG.md)
+   để biết tính năng mình sắp đụng vào phụ thuộc gì, ai phụ thuộc nó.
+4. Đọc [CONTRIBUTING.md](CONTRIBUTING.md) trước khi mở PR đầu tiên.
+5. Chạy được `flutter test` xanh toàn bộ trước khi sửa bất cứ gì — xem
+   mục "Kiểm tra chất lượng" bên dưới.
+
+## Cấu trúc thư mục
+
+```
+lib/
+├─ main.dart              # điểm khởi động — chỉ 2 provider cần override thủ công
+├─ app/                   # MaterialApp.router, go_router, theme, locale
+├─ core/                  # hạ tầng dùng chung — không chứa logic nghiệp vụ
+│  ├─ database/           # AppDatabase (nhóm A) + database/user/ (UserDatabase, nhóm B)
+│  ├─ error/, logging/    # AppFailure/Logger/CrashReporter — xem docs/architecture/ARCHITECTURE_DECISIONS.md mục 8
+│  ├─ storage/, audio/, cache/, env/
+├─ features/<tên>/        # 18 tính năng, mỗi cái tự có presentation/domain/data
+├─ shared/widgets/, shared/utils/  # widget/helper dùng chung nhiều tính năng
+└─ l10n/                  # app_vi.arb (mặc định) / app_en.arb / app_ar.arb (RTL)
+test/                     # ~104 file test — xem docs/testing/TESTING_GUIDE.md
+docs/                     # tài liệu hiện tại + lịch sử — xem PROJECT_INDEX.md
+```
+
+Chi tiết đầy đủ từng tính năng: [docs/architecture/MODULE_CATALOG.md](docs/architecture/MODULE_CATALOG.md).
 
 ## Cài đặt lần đầu
 

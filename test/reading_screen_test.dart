@@ -16,10 +16,59 @@ import 'package:quran_companion/features/quran/domain/entities/surah.dart';
 import 'package:quran_companion/features/quran/domain/entities/translation_source.dart';
 import 'package:quran_companion/features/quran/domain/repositories/quran_repository.dart';
 import 'package:quran_companion/features/quran/presentation/reading/reading_screen.dart';
+import 'package:quran_companion/features/stats/data/study_session_providers.dart';
+import 'package:quran_companion/features/stats/domain/entities/study_session.dart';
+import 'package:quran_companion/features/stats/domain/repositories/study_session_repository.dart';
 import 'package:quran_companion/l10n/app_localizations.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'fixtures/fake_audio_player.dart';
+
+/// Ghi lại mọi lời gọi logSession — dùng để xác nhận Sprint 8 Phase
+/// 5 (tích hợp) gọi đúng repository với đúng tham số khi kết thúc
+/// phiên đọc, không cần chạm tới database thật.
+class _SpyStudySessionRepository implements StudySessionRepository {
+  final List<StudySession> logged = [];
+
+  @override
+  Future<String> logSession({
+    required String date,
+    required int surahId,
+    required int ayahFrom,
+    required int ayahTo,
+    required int durationSec,
+    String? note,
+  }) async {
+    final id = 'spy-${logged.length}';
+    logged.add(
+      StudySession(
+        id: id,
+        date: date,
+        surahId: surahId,
+        ayahFrom: ayahFrom,
+        ayahTo: ayahTo,
+        durationSec: durationSec,
+        note: note,
+        createdAt: 0,
+      ),
+    );
+    return id;
+  }
+
+  @override
+  Stream<List<StudySession>> watchAllSessions() => throw UnimplementedError();
+  @override
+  Stream<List<StudySession>> watchSessionsOnDate(String date) =>
+      throw UnimplementedError();
+  @override
+  Future<int> totalDurationOnDate(String date) => throw UnimplementedError();
+  @override
+  Future<Set<String>> distinctReadingDates() => throw UnimplementedError();
+  @override
+  Future<int> currentStreak({DateTime? today}) => throw UnimplementedError();
+  @override
+  Future<int> longestStreak() => throw UnimplementedError();
+}
 
 const _surah = Surah(
   id: 1,
@@ -97,13 +146,20 @@ class _FakeRepo implements QuranRepository {
     int limit = 40,
   }) async =>
       const [];
+
+  @override
+  Future<List<AyahSearchResult>> getAyahsByIds(List<int> ids) async => const [];
 }
 
 /// UserDatabase của lần gọi [_app] gần nhất — [_testReading] đóng lại
 /// ngay trong thân test (xem lý do bên dưới).
 UserDatabase? _lastUserDb;
 
-Future<Widget> _app(QuranRepository repo, {int surahId = 1}) async {
+Future<Widget> _app(
+  QuranRepository repo, {
+  int surahId = 1,
+  List<Override> extraOverrides = const [],
+}) async {
   SharedPreferences.setMockInitialValues({});
   final sp = await SharedPreferences.getInstance();
   // Mỗi test tạo UserDatabase riêng (cô lập dữ liệu) — phải đóng lại
@@ -123,6 +179,7 @@ Future<Widget> _app(QuranRepository repo, {int surahId = 1}) async {
       sharedPreferencesProvider.overrideWithValue(sp),
       ayahAudioPlayerProvider.overrideWithValue(FakeAyahAudioPlayer()),
       userDatabaseProvider.overrideWithValue(userDb),
+      ...extraOverrides,
     ],
     child: MaterialApp(
       locale: const Locale('vi'),
@@ -225,6 +282,13 @@ void main() {
   });
 
   _testReading('ayah sajdah có biểu tượng riêng', (tester) async {
+    // Bố cục thẻ cao hơn (Phase 12 polish) -> viewport cao để cả Ayah
+    // 2 (có sajdah) nằm trong khung nhìn, khỏi phải cuộn.
+    tester.view.physicalSize = const Size(800, 1600);
+    tester.view.devicePixelRatio = 1.0;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+
     await tester.pumpWidget(await _app(_FakeRepo()));
     await tester.pumpAndSettle();
 
@@ -428,5 +492,60 @@ void main() {
 
     expect(tester.takeException(), isNull);
     expect(find.text('نص عربي ١'), findsOneWidget);
+  });
+
+  group('Sprint 8 Phase 5 — tích hợp study_sessions', () {
+    _testReading(
+        'rời trang đọc rất nhanh (< 5 giây) -> KHÔNG ghi study_sessions '
+        '(cùng ngưỡng StatsStore.addSeconds)', (tester) async {
+      final spy = _SpyStudySessionRepository();
+      await tester.pumpWidget(
+        await _app(
+          _FakeRepo(),
+          extraOverrides: [
+            studySessionRepositoryProvider.overrideWithValue(spy),
+          ],
+        ),
+      );
+      await tester.pumpAndSettle();
+      // _testReading tự dispose cây widget ngay sau khi thân test
+      // (hàm callback này) return — phiên đọc chỉ kéo dài vài mili-
+      // giây, chắc chắn dưới ngưỡng 5 giây.
+
+      expect(spy.logged, isEmpty);
+    });
+
+    _testReading('phiên đọc >= 5 giây -> ghi 1 study_session đúng surahId/ngày',
+        (tester) async {
+      final spy = _SpyStudySessionRepository();
+      await tester.pumpWidget(
+        await _app(
+          _FakeRepo(),
+          extraOverrides: [
+            studySessionRepositoryProvider.overrideWithValue(spy),
+          ],
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      // Stopwatch dùng đồng hồ thật (không phải fake clock của
+      // tester.pump) — đợi thật hơn 5 giây qua runAsync.
+      await tester.runAsync(
+        () => Future<void>.delayed(const Duration(milliseconds: 5200)),
+      );
+
+      // Dispose NGAY TRONG thân test (không đợi _testReading tự dọn
+      // sau khi callback return) để assert được sau khi dispose() đã
+      // chạy xong và gọi logSession.
+      await tester.pumpWidget(const SizedBox.shrink());
+      await tester.pump();
+
+      expect(spy.logged, hasLength(1));
+      final session = spy.logged.single;
+      expect(session.surahId, 1);
+      expect(session.date, isNotEmpty);
+      expect(session.durationSec, greaterThanOrEqualTo(5));
+      expect(session.ayahFrom, 0);
+    });
   });
 }

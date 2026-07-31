@@ -52,9 +52,23 @@ class $BookmarksTable extends Bookmarks
   late final GeneratedColumn<int> createdAt = GeneratedColumn<int>(
       'created_at', aliasedName, false,
       type: DriftSqlType.int, requiredDuringInsert: true);
+  static const VerificationMeta _collectionIdMeta =
+      const VerificationMeta('collectionId');
   @override
-  List<GeneratedColumn> get $columns =>
-      [id, userId, updatedAt, deletedAt, isDirty, ayahId, createdAt];
+  late final GeneratedColumn<String> collectionId = GeneratedColumn<String>(
+      'collection_id', aliasedName, true,
+      type: DriftSqlType.string, requiredDuringInsert: false);
+  @override
+  List<GeneratedColumn> get $columns => [
+        id,
+        userId,
+        updatedAt,
+        deletedAt,
+        isDirty,
+        ayahId,
+        createdAt,
+        collectionId
+      ];
   @override
   String get aliasedName => _alias ?? actualTableName;
   @override
@@ -100,6 +114,12 @@ class $BookmarksTable extends Bookmarks
     } else if (isInserting) {
       context.missing(_createdAtMeta);
     }
+    if (data.containsKey('collection_id')) {
+      context.handle(
+          _collectionIdMeta,
+          collectionId.isAcceptableOrUnknown(
+              data['collection_id']!, _collectionIdMeta));
+    }
     return context;
   }
 
@@ -127,6 +147,8 @@ class $BookmarksTable extends Bookmarks
           .read(DriftSqlType.int, data['${effectivePrefix}ayah_id'])!,
       createdAt: attachedDatabase.typeMapping
           .read(DriftSqlType.int, data['${effectivePrefix}created_at'])!,
+      collectionId: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}collection_id']),
     );
   }
 
@@ -144,6 +166,12 @@ class BookmarkRow extends DataClass implements Insertable<BookmarkRow> {
   final bool isDirty;
   final int ayahId;
   final int createdAt;
+
+  /// NULL = chưa phân loại vào bộ sưu tập nào — trạng thái hợp lệ
+  /// vĩnh viễn, không phải tạm thời chờ migrate. Không khai báo FK
+  /// Drift-level (không có tiền lệ trong file này); tính toàn vẹn do
+  /// tầng repository đảm nhiệm, giống cách ayah_id được xử lý.
+  final String? collectionId;
   const BookmarkRow(
       {required this.id,
       this.userId,
@@ -151,7 +179,8 @@ class BookmarkRow extends DataClass implements Insertable<BookmarkRow> {
       this.deletedAt,
       required this.isDirty,
       required this.ayahId,
-      required this.createdAt});
+      required this.createdAt,
+      this.collectionId});
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
@@ -166,6 +195,9 @@ class BookmarkRow extends DataClass implements Insertable<BookmarkRow> {
     map['is_dirty'] = Variable<bool>(isDirty);
     map['ayah_id'] = Variable<int>(ayahId);
     map['created_at'] = Variable<int>(createdAt);
+    if (!nullToAbsent || collectionId != null) {
+      map['collection_id'] = Variable<String>(collectionId);
+    }
     return map;
   }
 
@@ -181,6 +213,9 @@ class BookmarkRow extends DataClass implements Insertable<BookmarkRow> {
       isDirty: Value(isDirty),
       ayahId: Value(ayahId),
       createdAt: Value(createdAt),
+      collectionId: collectionId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(collectionId),
     );
   }
 
@@ -195,6 +230,7 @@ class BookmarkRow extends DataClass implements Insertable<BookmarkRow> {
       isDirty: serializer.fromJson<bool>(json['isDirty']),
       ayahId: serializer.fromJson<int>(json['ayahId']),
       createdAt: serializer.fromJson<int>(json['createdAt']),
+      collectionId: serializer.fromJson<String?>(json['collectionId']),
     );
   }
   @override
@@ -208,6 +244,7 @@ class BookmarkRow extends DataClass implements Insertable<BookmarkRow> {
       'isDirty': serializer.toJson<bool>(isDirty),
       'ayahId': serializer.toJson<int>(ayahId),
       'createdAt': serializer.toJson<int>(createdAt),
+      'collectionId': serializer.toJson<String?>(collectionId),
     };
   }
 
@@ -218,7 +255,8 @@ class BookmarkRow extends DataClass implements Insertable<BookmarkRow> {
           Value<int?> deletedAt = const Value.absent(),
           bool? isDirty,
           int? ayahId,
-          int? createdAt}) =>
+          int? createdAt,
+          Value<String?> collectionId = const Value.absent()}) =>
       BookmarkRow(
         id: id ?? this.id,
         userId: userId.present ? userId.value : this.userId,
@@ -227,6 +265,8 @@ class BookmarkRow extends DataClass implements Insertable<BookmarkRow> {
         isDirty: isDirty ?? this.isDirty,
         ayahId: ayahId ?? this.ayahId,
         createdAt: createdAt ?? this.createdAt,
+        collectionId:
+            collectionId.present ? collectionId.value : this.collectionId,
       );
   BookmarkRow copyWithCompanion(BookmarksCompanion data) {
     return BookmarkRow(
@@ -237,6 +277,9 @@ class BookmarkRow extends DataClass implements Insertable<BookmarkRow> {
       isDirty: data.isDirty.present ? data.isDirty.value : this.isDirty,
       ayahId: data.ayahId.present ? data.ayahId.value : this.ayahId,
       createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
+      collectionId: data.collectionId.present
+          ? data.collectionId.value
+          : this.collectionId,
     );
   }
 
@@ -249,14 +292,15 @@ class BookmarkRow extends DataClass implements Insertable<BookmarkRow> {
           ..write('deletedAt: $deletedAt, ')
           ..write('isDirty: $isDirty, ')
           ..write('ayahId: $ayahId, ')
-          ..write('createdAt: $createdAt')
+          ..write('createdAt: $createdAt, ')
+          ..write('collectionId: $collectionId')
           ..write(')'))
         .toString();
   }
 
   @override
-  int get hashCode =>
-      Object.hash(id, userId, updatedAt, deletedAt, isDirty, ayahId, createdAt);
+  int get hashCode => Object.hash(id, userId, updatedAt, deletedAt, isDirty,
+      ayahId, createdAt, collectionId);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -267,7 +311,8 @@ class BookmarkRow extends DataClass implements Insertable<BookmarkRow> {
           other.deletedAt == this.deletedAt &&
           other.isDirty == this.isDirty &&
           other.ayahId == this.ayahId &&
-          other.createdAt == this.createdAt);
+          other.createdAt == this.createdAt &&
+          other.collectionId == this.collectionId);
 }
 
 class BookmarksCompanion extends UpdateCompanion<BookmarkRow> {
@@ -278,6 +323,7 @@ class BookmarksCompanion extends UpdateCompanion<BookmarkRow> {
   final Value<bool> isDirty;
   final Value<int> ayahId;
   final Value<int> createdAt;
+  final Value<String?> collectionId;
   final Value<int> rowid;
   const BookmarksCompanion({
     this.id = const Value.absent(),
@@ -287,6 +333,7 @@ class BookmarksCompanion extends UpdateCompanion<BookmarkRow> {
     this.isDirty = const Value.absent(),
     this.ayahId = const Value.absent(),
     this.createdAt = const Value.absent(),
+    this.collectionId = const Value.absent(),
     this.rowid = const Value.absent(),
   });
   BookmarksCompanion.insert({
@@ -297,6 +344,7 @@ class BookmarksCompanion extends UpdateCompanion<BookmarkRow> {
     this.isDirty = const Value.absent(),
     required int ayahId,
     required int createdAt,
+    this.collectionId = const Value.absent(),
     this.rowid = const Value.absent(),
   })  : id = Value(id),
         updatedAt = Value(updatedAt),
@@ -310,6 +358,7 @@ class BookmarksCompanion extends UpdateCompanion<BookmarkRow> {
     Expression<bool>? isDirty,
     Expression<int>? ayahId,
     Expression<int>? createdAt,
+    Expression<String>? collectionId,
     Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
@@ -320,6 +369,7 @@ class BookmarksCompanion extends UpdateCompanion<BookmarkRow> {
       if (isDirty != null) 'is_dirty': isDirty,
       if (ayahId != null) 'ayah_id': ayahId,
       if (createdAt != null) 'created_at': createdAt,
+      if (collectionId != null) 'collection_id': collectionId,
       if (rowid != null) 'rowid': rowid,
     });
   }
@@ -332,6 +382,7 @@ class BookmarksCompanion extends UpdateCompanion<BookmarkRow> {
       Value<bool>? isDirty,
       Value<int>? ayahId,
       Value<int>? createdAt,
+      Value<String?>? collectionId,
       Value<int>? rowid}) {
     return BookmarksCompanion(
       id: id ?? this.id,
@@ -341,6 +392,7 @@ class BookmarksCompanion extends UpdateCompanion<BookmarkRow> {
       isDirty: isDirty ?? this.isDirty,
       ayahId: ayahId ?? this.ayahId,
       createdAt: createdAt ?? this.createdAt,
+      collectionId: collectionId ?? this.collectionId,
       rowid: rowid ?? this.rowid,
     );
   }
@@ -369,6 +421,9 @@ class BookmarksCompanion extends UpdateCompanion<BookmarkRow> {
     if (createdAt.present) {
       map['created_at'] = Variable<int>(createdAt.value);
     }
+    if (collectionId.present) {
+      map['collection_id'] = Variable<String>(collectionId.value);
+    }
     if (rowid.present) {
       map['rowid'] = Variable<int>(rowid.value);
     }
@@ -385,6 +440,7 @@ class BookmarksCompanion extends UpdateCompanion<BookmarkRow> {
           ..write('isDirty: $isDirty, ')
           ..write('ayahId: $ayahId, ')
           ..write('createdAt: $createdAt, ')
+          ..write('collectionId: $collectionId, ')
           ..write('rowid: $rowid')
           ..write(')'))
         .toString();
@@ -1946,6 +2002,3590 @@ class AyahStatusesCompanion extends UpdateCompanion<AyahStatusRow> {
   }
 }
 
+class $StudySessionsTable extends StudySessions
+    with TableInfo<$StudySessionsTable, StudySessionRow> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $StudySessionsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+      'id', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  static const VerificationMeta _userIdMeta = const VerificationMeta('userId');
+  @override
+  late final GeneratedColumn<String> userId = GeneratedColumn<String>(
+      'user_id', aliasedName, true,
+      type: DriftSqlType.string, requiredDuringInsert: false);
+  static const VerificationMeta _updatedAtMeta =
+      const VerificationMeta('updatedAt');
+  @override
+  late final GeneratedColumn<int> updatedAt = GeneratedColumn<int>(
+      'updated_at', aliasedName, false,
+      type: DriftSqlType.int, requiredDuringInsert: true);
+  static const VerificationMeta _deletedAtMeta =
+      const VerificationMeta('deletedAt');
+  @override
+  late final GeneratedColumn<int> deletedAt = GeneratedColumn<int>(
+      'deleted_at', aliasedName, true,
+      type: DriftSqlType.int, requiredDuringInsert: false);
+  static const VerificationMeta _isDirtyMeta =
+      const VerificationMeta('isDirty');
+  @override
+  late final GeneratedColumn<bool> isDirty = GeneratedColumn<bool>(
+      'is_dirty', aliasedName, false,
+      type: DriftSqlType.bool,
+      requiredDuringInsert: false,
+      defaultConstraints:
+          GeneratedColumn.constraintIsAlways('CHECK ("is_dirty" IN (0, 1))'),
+      defaultValue: const Constant(true));
+  static const VerificationMeta _dateMeta = const VerificationMeta('date');
+  @override
+  late final GeneratedColumn<String> date = GeneratedColumn<String>(
+      'date', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  static const VerificationMeta _surahIdMeta =
+      const VerificationMeta('surahId');
+  @override
+  late final GeneratedColumn<int> surahId = GeneratedColumn<int>(
+      'surah_id', aliasedName, false,
+      type: DriftSqlType.int, requiredDuringInsert: true);
+  static const VerificationMeta _ayahFromMeta =
+      const VerificationMeta('ayahFrom');
+  @override
+  late final GeneratedColumn<int> ayahFrom = GeneratedColumn<int>(
+      'ayah_from', aliasedName, false,
+      type: DriftSqlType.int, requiredDuringInsert: true);
+  static const VerificationMeta _ayahToMeta = const VerificationMeta('ayahTo');
+  @override
+  late final GeneratedColumn<int> ayahTo = GeneratedColumn<int>(
+      'ayah_to', aliasedName, false,
+      type: DriftSqlType.int, requiredDuringInsert: true);
+  static const VerificationMeta _durationSecMeta =
+      const VerificationMeta('durationSec');
+  @override
+  late final GeneratedColumn<int> durationSec = GeneratedColumn<int>(
+      'duration_sec', aliasedName, false,
+      type: DriftSqlType.int, requiredDuringInsert: true);
+  static const VerificationMeta _noteMeta = const VerificationMeta('note');
+  @override
+  late final GeneratedColumn<String> note = GeneratedColumn<String>(
+      'note', aliasedName, true,
+      type: DriftSqlType.string, requiredDuringInsert: false);
+  static const VerificationMeta _createdAtMeta =
+      const VerificationMeta('createdAt');
+  @override
+  late final GeneratedColumn<int> createdAt = GeneratedColumn<int>(
+      'created_at', aliasedName, false,
+      type: DriftSqlType.int, requiredDuringInsert: true);
+  @override
+  List<GeneratedColumn> get $columns => [
+        id,
+        userId,
+        updatedAt,
+        deletedAt,
+        isDirty,
+        date,
+        surahId,
+        ayahFrom,
+        ayahTo,
+        durationSec,
+        note,
+        createdAt
+      ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'study_sessions';
+  @override
+  VerificationContext validateIntegrity(Insertable<StudySessionRow> instance,
+      {bool isInserting = false}) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    } else if (isInserting) {
+      context.missing(_idMeta);
+    }
+    if (data.containsKey('user_id')) {
+      context.handle(_userIdMeta,
+          userId.isAcceptableOrUnknown(data['user_id']!, _userIdMeta));
+    }
+    if (data.containsKey('updated_at')) {
+      context.handle(_updatedAtMeta,
+          updatedAt.isAcceptableOrUnknown(data['updated_at']!, _updatedAtMeta));
+    } else if (isInserting) {
+      context.missing(_updatedAtMeta);
+    }
+    if (data.containsKey('deleted_at')) {
+      context.handle(_deletedAtMeta,
+          deletedAt.isAcceptableOrUnknown(data['deleted_at']!, _deletedAtMeta));
+    }
+    if (data.containsKey('is_dirty')) {
+      context.handle(_isDirtyMeta,
+          isDirty.isAcceptableOrUnknown(data['is_dirty']!, _isDirtyMeta));
+    }
+    if (data.containsKey('date')) {
+      context.handle(
+          _dateMeta, date.isAcceptableOrUnknown(data['date']!, _dateMeta));
+    } else if (isInserting) {
+      context.missing(_dateMeta);
+    }
+    if (data.containsKey('surah_id')) {
+      context.handle(_surahIdMeta,
+          surahId.isAcceptableOrUnknown(data['surah_id']!, _surahIdMeta));
+    } else if (isInserting) {
+      context.missing(_surahIdMeta);
+    }
+    if (data.containsKey('ayah_from')) {
+      context.handle(_ayahFromMeta,
+          ayahFrom.isAcceptableOrUnknown(data['ayah_from']!, _ayahFromMeta));
+    } else if (isInserting) {
+      context.missing(_ayahFromMeta);
+    }
+    if (data.containsKey('ayah_to')) {
+      context.handle(_ayahToMeta,
+          ayahTo.isAcceptableOrUnknown(data['ayah_to']!, _ayahToMeta));
+    } else if (isInserting) {
+      context.missing(_ayahToMeta);
+    }
+    if (data.containsKey('duration_sec')) {
+      context.handle(
+          _durationSecMeta,
+          durationSec.isAcceptableOrUnknown(
+              data['duration_sec']!, _durationSecMeta));
+    } else if (isInserting) {
+      context.missing(_durationSecMeta);
+    }
+    if (data.containsKey('note')) {
+      context.handle(
+          _noteMeta, note.isAcceptableOrUnknown(data['note']!, _noteMeta));
+    }
+    if (data.containsKey('created_at')) {
+      context.handle(_createdAtMeta,
+          createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta));
+    } else if (isInserting) {
+      context.missing(_createdAtMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  StudySessionRow map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return StudySessionRow(
+      id: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}id'])!,
+      userId: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}user_id']),
+      updatedAt: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}updated_at'])!,
+      deletedAt: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}deleted_at']),
+      isDirty: attachedDatabase.typeMapping
+          .read(DriftSqlType.bool, data['${effectivePrefix}is_dirty'])!,
+      date: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}date'])!,
+      surahId: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}surah_id'])!,
+      ayahFrom: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}ayah_from'])!,
+      ayahTo: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}ayah_to'])!,
+      durationSec: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}duration_sec'])!,
+      note: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}note']),
+      createdAt: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}created_at'])!,
+    );
+  }
+
+  @override
+  $StudySessionsTable createAlias(String alias) {
+    return $StudySessionsTable(attachedDatabase, alias);
+  }
+}
+
+class StudySessionRow extends DataClass implements Insertable<StudySessionRow> {
+  final String id;
+  final String? userId;
+  final int updatedAt;
+  final int? deletedAt;
+  final bool isDirty;
+
+  /// Ngày đọc, dạng 'yyyy-MM-dd' — khớp định dạng StatsStore.dayKey
+  /// hiện có (SharedPreferences), để không cần quy đổi epoch↔ngày
+  /// khi đối chiếu hai nguồn dữ liệu trong giai đoạn chuyển tiếp.
+  final String date;
+  final int surahId;
+
+  /// Chỉ số Ayah 0-based trong Surah — khớp ReadingPositionStore.
+  final int ayahFrom;
+  final int ayahTo;
+  final int durationSec;
+  final String? note;
+  final int createdAt;
+  const StudySessionRow(
+      {required this.id,
+      this.userId,
+      required this.updatedAt,
+      this.deletedAt,
+      required this.isDirty,
+      required this.date,
+      required this.surahId,
+      required this.ayahFrom,
+      required this.ayahTo,
+      required this.durationSec,
+      this.note,
+      required this.createdAt});
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<String>(id);
+    if (!nullToAbsent || userId != null) {
+      map['user_id'] = Variable<String>(userId);
+    }
+    map['updated_at'] = Variable<int>(updatedAt);
+    if (!nullToAbsent || deletedAt != null) {
+      map['deleted_at'] = Variable<int>(deletedAt);
+    }
+    map['is_dirty'] = Variable<bool>(isDirty);
+    map['date'] = Variable<String>(date);
+    map['surah_id'] = Variable<int>(surahId);
+    map['ayah_from'] = Variable<int>(ayahFrom);
+    map['ayah_to'] = Variable<int>(ayahTo);
+    map['duration_sec'] = Variable<int>(durationSec);
+    if (!nullToAbsent || note != null) {
+      map['note'] = Variable<String>(note);
+    }
+    map['created_at'] = Variable<int>(createdAt);
+    return map;
+  }
+
+  StudySessionsCompanion toCompanion(bool nullToAbsent) {
+    return StudySessionsCompanion(
+      id: Value(id),
+      userId:
+          userId == null && nullToAbsent ? const Value.absent() : Value(userId),
+      updatedAt: Value(updatedAt),
+      deletedAt: deletedAt == null && nullToAbsent
+          ? const Value.absent()
+          : Value(deletedAt),
+      isDirty: Value(isDirty),
+      date: Value(date),
+      surahId: Value(surahId),
+      ayahFrom: Value(ayahFrom),
+      ayahTo: Value(ayahTo),
+      durationSec: Value(durationSec),
+      note: note == null && nullToAbsent ? const Value.absent() : Value(note),
+      createdAt: Value(createdAt),
+    );
+  }
+
+  factory StudySessionRow.fromJson(Map<String, dynamic> json,
+      {ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return StudySessionRow(
+      id: serializer.fromJson<String>(json['id']),
+      userId: serializer.fromJson<String?>(json['userId']),
+      updatedAt: serializer.fromJson<int>(json['updatedAt']),
+      deletedAt: serializer.fromJson<int?>(json['deletedAt']),
+      isDirty: serializer.fromJson<bool>(json['isDirty']),
+      date: serializer.fromJson<String>(json['date']),
+      surahId: serializer.fromJson<int>(json['surahId']),
+      ayahFrom: serializer.fromJson<int>(json['ayahFrom']),
+      ayahTo: serializer.fromJson<int>(json['ayahTo']),
+      durationSec: serializer.fromJson<int>(json['durationSec']),
+      note: serializer.fromJson<String?>(json['note']),
+      createdAt: serializer.fromJson<int>(json['createdAt']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<String>(id),
+      'userId': serializer.toJson<String?>(userId),
+      'updatedAt': serializer.toJson<int>(updatedAt),
+      'deletedAt': serializer.toJson<int?>(deletedAt),
+      'isDirty': serializer.toJson<bool>(isDirty),
+      'date': serializer.toJson<String>(date),
+      'surahId': serializer.toJson<int>(surahId),
+      'ayahFrom': serializer.toJson<int>(ayahFrom),
+      'ayahTo': serializer.toJson<int>(ayahTo),
+      'durationSec': serializer.toJson<int>(durationSec),
+      'note': serializer.toJson<String?>(note),
+      'createdAt': serializer.toJson<int>(createdAt),
+    };
+  }
+
+  StudySessionRow copyWith(
+          {String? id,
+          Value<String?> userId = const Value.absent(),
+          int? updatedAt,
+          Value<int?> deletedAt = const Value.absent(),
+          bool? isDirty,
+          String? date,
+          int? surahId,
+          int? ayahFrom,
+          int? ayahTo,
+          int? durationSec,
+          Value<String?> note = const Value.absent(),
+          int? createdAt}) =>
+      StudySessionRow(
+        id: id ?? this.id,
+        userId: userId.present ? userId.value : this.userId,
+        updatedAt: updatedAt ?? this.updatedAt,
+        deletedAt: deletedAt.present ? deletedAt.value : this.deletedAt,
+        isDirty: isDirty ?? this.isDirty,
+        date: date ?? this.date,
+        surahId: surahId ?? this.surahId,
+        ayahFrom: ayahFrom ?? this.ayahFrom,
+        ayahTo: ayahTo ?? this.ayahTo,
+        durationSec: durationSec ?? this.durationSec,
+        note: note.present ? note.value : this.note,
+        createdAt: createdAt ?? this.createdAt,
+      );
+  StudySessionRow copyWithCompanion(StudySessionsCompanion data) {
+    return StudySessionRow(
+      id: data.id.present ? data.id.value : this.id,
+      userId: data.userId.present ? data.userId.value : this.userId,
+      updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
+      deletedAt: data.deletedAt.present ? data.deletedAt.value : this.deletedAt,
+      isDirty: data.isDirty.present ? data.isDirty.value : this.isDirty,
+      date: data.date.present ? data.date.value : this.date,
+      surahId: data.surahId.present ? data.surahId.value : this.surahId,
+      ayahFrom: data.ayahFrom.present ? data.ayahFrom.value : this.ayahFrom,
+      ayahTo: data.ayahTo.present ? data.ayahTo.value : this.ayahTo,
+      durationSec:
+          data.durationSec.present ? data.durationSec.value : this.durationSec,
+      note: data.note.present ? data.note.value : this.note,
+      createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('StudySessionRow(')
+          ..write('id: $id, ')
+          ..write('userId: $userId, ')
+          ..write('updatedAt: $updatedAt, ')
+          ..write('deletedAt: $deletedAt, ')
+          ..write('isDirty: $isDirty, ')
+          ..write('date: $date, ')
+          ..write('surahId: $surahId, ')
+          ..write('ayahFrom: $ayahFrom, ')
+          ..write('ayahTo: $ayahTo, ')
+          ..write('durationSec: $durationSec, ')
+          ..write('note: $note, ')
+          ..write('createdAt: $createdAt')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(id, userId, updatedAt, deletedAt, isDirty,
+      date, surahId, ayahFrom, ayahTo, durationSec, note, createdAt);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is StudySessionRow &&
+          other.id == this.id &&
+          other.userId == this.userId &&
+          other.updatedAt == this.updatedAt &&
+          other.deletedAt == this.deletedAt &&
+          other.isDirty == this.isDirty &&
+          other.date == this.date &&
+          other.surahId == this.surahId &&
+          other.ayahFrom == this.ayahFrom &&
+          other.ayahTo == this.ayahTo &&
+          other.durationSec == this.durationSec &&
+          other.note == this.note &&
+          other.createdAt == this.createdAt);
+}
+
+class StudySessionsCompanion extends UpdateCompanion<StudySessionRow> {
+  final Value<String> id;
+  final Value<String?> userId;
+  final Value<int> updatedAt;
+  final Value<int?> deletedAt;
+  final Value<bool> isDirty;
+  final Value<String> date;
+  final Value<int> surahId;
+  final Value<int> ayahFrom;
+  final Value<int> ayahTo;
+  final Value<int> durationSec;
+  final Value<String?> note;
+  final Value<int> createdAt;
+  final Value<int> rowid;
+  const StudySessionsCompanion({
+    this.id = const Value.absent(),
+    this.userId = const Value.absent(),
+    this.updatedAt = const Value.absent(),
+    this.deletedAt = const Value.absent(),
+    this.isDirty = const Value.absent(),
+    this.date = const Value.absent(),
+    this.surahId = const Value.absent(),
+    this.ayahFrom = const Value.absent(),
+    this.ayahTo = const Value.absent(),
+    this.durationSec = const Value.absent(),
+    this.note = const Value.absent(),
+    this.createdAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  StudySessionsCompanion.insert({
+    required String id,
+    this.userId = const Value.absent(),
+    required int updatedAt,
+    this.deletedAt = const Value.absent(),
+    this.isDirty = const Value.absent(),
+    required String date,
+    required int surahId,
+    required int ayahFrom,
+    required int ayahTo,
+    required int durationSec,
+    this.note = const Value.absent(),
+    required int createdAt,
+    this.rowid = const Value.absent(),
+  })  : id = Value(id),
+        updatedAt = Value(updatedAt),
+        date = Value(date),
+        surahId = Value(surahId),
+        ayahFrom = Value(ayahFrom),
+        ayahTo = Value(ayahTo),
+        durationSec = Value(durationSec),
+        createdAt = Value(createdAt);
+  static Insertable<StudySessionRow> custom({
+    Expression<String>? id,
+    Expression<String>? userId,
+    Expression<int>? updatedAt,
+    Expression<int>? deletedAt,
+    Expression<bool>? isDirty,
+    Expression<String>? date,
+    Expression<int>? surahId,
+    Expression<int>? ayahFrom,
+    Expression<int>? ayahTo,
+    Expression<int>? durationSec,
+    Expression<String>? note,
+    Expression<int>? createdAt,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (userId != null) 'user_id': userId,
+      if (updatedAt != null) 'updated_at': updatedAt,
+      if (deletedAt != null) 'deleted_at': deletedAt,
+      if (isDirty != null) 'is_dirty': isDirty,
+      if (date != null) 'date': date,
+      if (surahId != null) 'surah_id': surahId,
+      if (ayahFrom != null) 'ayah_from': ayahFrom,
+      if (ayahTo != null) 'ayah_to': ayahTo,
+      if (durationSec != null) 'duration_sec': durationSec,
+      if (note != null) 'note': note,
+      if (createdAt != null) 'created_at': createdAt,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  StudySessionsCompanion copyWith(
+      {Value<String>? id,
+      Value<String?>? userId,
+      Value<int>? updatedAt,
+      Value<int?>? deletedAt,
+      Value<bool>? isDirty,
+      Value<String>? date,
+      Value<int>? surahId,
+      Value<int>? ayahFrom,
+      Value<int>? ayahTo,
+      Value<int>? durationSec,
+      Value<String?>? note,
+      Value<int>? createdAt,
+      Value<int>? rowid}) {
+    return StudySessionsCompanion(
+      id: id ?? this.id,
+      userId: userId ?? this.userId,
+      updatedAt: updatedAt ?? this.updatedAt,
+      deletedAt: deletedAt ?? this.deletedAt,
+      isDirty: isDirty ?? this.isDirty,
+      date: date ?? this.date,
+      surahId: surahId ?? this.surahId,
+      ayahFrom: ayahFrom ?? this.ayahFrom,
+      ayahTo: ayahTo ?? this.ayahTo,
+      durationSec: durationSec ?? this.durationSec,
+      note: note ?? this.note,
+      createdAt: createdAt ?? this.createdAt,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (userId.present) {
+      map['user_id'] = Variable<String>(userId.value);
+    }
+    if (updatedAt.present) {
+      map['updated_at'] = Variable<int>(updatedAt.value);
+    }
+    if (deletedAt.present) {
+      map['deleted_at'] = Variable<int>(deletedAt.value);
+    }
+    if (isDirty.present) {
+      map['is_dirty'] = Variable<bool>(isDirty.value);
+    }
+    if (date.present) {
+      map['date'] = Variable<String>(date.value);
+    }
+    if (surahId.present) {
+      map['surah_id'] = Variable<int>(surahId.value);
+    }
+    if (ayahFrom.present) {
+      map['ayah_from'] = Variable<int>(ayahFrom.value);
+    }
+    if (ayahTo.present) {
+      map['ayah_to'] = Variable<int>(ayahTo.value);
+    }
+    if (durationSec.present) {
+      map['duration_sec'] = Variable<int>(durationSec.value);
+    }
+    if (note.present) {
+      map['note'] = Variable<String>(note.value);
+    }
+    if (createdAt.present) {
+      map['created_at'] = Variable<int>(createdAt.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('StudySessionsCompanion(')
+          ..write('id: $id, ')
+          ..write('userId: $userId, ')
+          ..write('updatedAt: $updatedAt, ')
+          ..write('deletedAt: $deletedAt, ')
+          ..write('isDirty: $isDirty, ')
+          ..write('date: $date, ')
+          ..write('surahId: $surahId, ')
+          ..write('ayahFrom: $ayahFrom, ')
+          ..write('ayahTo: $ayahTo, ')
+          ..write('durationSec: $durationSec, ')
+          ..write('note: $note, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $KhatmCyclesTable extends KhatmCycles
+    with TableInfo<$KhatmCyclesTable, KhatmCycleRow> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $KhatmCyclesTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+      'id', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  static const VerificationMeta _userIdMeta = const VerificationMeta('userId');
+  @override
+  late final GeneratedColumn<String> userId = GeneratedColumn<String>(
+      'user_id', aliasedName, true,
+      type: DriftSqlType.string, requiredDuringInsert: false);
+  static const VerificationMeta _updatedAtMeta =
+      const VerificationMeta('updatedAt');
+  @override
+  late final GeneratedColumn<int> updatedAt = GeneratedColumn<int>(
+      'updated_at', aliasedName, false,
+      type: DriftSqlType.int, requiredDuringInsert: true);
+  static const VerificationMeta _deletedAtMeta =
+      const VerificationMeta('deletedAt');
+  @override
+  late final GeneratedColumn<int> deletedAt = GeneratedColumn<int>(
+      'deleted_at', aliasedName, true,
+      type: DriftSqlType.int, requiredDuringInsert: false);
+  static const VerificationMeta _isDirtyMeta =
+      const VerificationMeta('isDirty');
+  @override
+  late final GeneratedColumn<bool> isDirty = GeneratedColumn<bool>(
+      'is_dirty', aliasedName, false,
+      type: DriftSqlType.bool,
+      requiredDuringInsert: false,
+      defaultConstraints:
+          GeneratedColumn.constraintIsAlways('CHECK ("is_dirty" IN (0, 1))'),
+      defaultValue: const Constant(true));
+  static const VerificationMeta _nameMeta = const VerificationMeta('name');
+  @override
+  late final GeneratedColumn<String> name = GeneratedColumn<String>(
+      'name', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  static const VerificationMeta _startedAtMeta =
+      const VerificationMeta('startedAt');
+  @override
+  late final GeneratedColumn<int> startedAt = GeneratedColumn<int>(
+      'started_at', aliasedName, false,
+      type: DriftSqlType.int, requiredDuringInsert: true);
+  static const VerificationMeta _targetDateMeta =
+      const VerificationMeta('targetDate');
+  @override
+  late final GeneratedColumn<String> targetDate = GeneratedColumn<String>(
+      'target_date', aliasedName, true,
+      type: DriftSqlType.string, requiredDuringInsert: false);
+  static const VerificationMeta _completedAtMeta =
+      const VerificationMeta('completedAt');
+  @override
+  late final GeneratedColumn<int> completedAt = GeneratedColumn<int>(
+      'completed_at', aliasedName, true,
+      type: DriftSqlType.int, requiredDuringInsert: false);
+  static const VerificationMeta _currentAyahIdMeta =
+      const VerificationMeta('currentAyahId');
+  @override
+  late final GeneratedColumn<int> currentAyahId = GeneratedColumn<int>(
+      'current_ayah_id', aliasedName, false,
+      type: DriftSqlType.int,
+      requiredDuringInsert: false,
+      defaultValue: const Constant(1));
+  @override
+  List<GeneratedColumn> get $columns => [
+        id,
+        userId,
+        updatedAt,
+        deletedAt,
+        isDirty,
+        name,
+        startedAt,
+        targetDate,
+        completedAt,
+        currentAyahId
+      ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'khatm_cycles';
+  @override
+  VerificationContext validateIntegrity(Insertable<KhatmCycleRow> instance,
+      {bool isInserting = false}) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    } else if (isInserting) {
+      context.missing(_idMeta);
+    }
+    if (data.containsKey('user_id')) {
+      context.handle(_userIdMeta,
+          userId.isAcceptableOrUnknown(data['user_id']!, _userIdMeta));
+    }
+    if (data.containsKey('updated_at')) {
+      context.handle(_updatedAtMeta,
+          updatedAt.isAcceptableOrUnknown(data['updated_at']!, _updatedAtMeta));
+    } else if (isInserting) {
+      context.missing(_updatedAtMeta);
+    }
+    if (data.containsKey('deleted_at')) {
+      context.handle(_deletedAtMeta,
+          deletedAt.isAcceptableOrUnknown(data['deleted_at']!, _deletedAtMeta));
+    }
+    if (data.containsKey('is_dirty')) {
+      context.handle(_isDirtyMeta,
+          isDirty.isAcceptableOrUnknown(data['is_dirty']!, _isDirtyMeta));
+    }
+    if (data.containsKey('name')) {
+      context.handle(
+          _nameMeta, name.isAcceptableOrUnknown(data['name']!, _nameMeta));
+    } else if (isInserting) {
+      context.missing(_nameMeta);
+    }
+    if (data.containsKey('started_at')) {
+      context.handle(_startedAtMeta,
+          startedAt.isAcceptableOrUnknown(data['started_at']!, _startedAtMeta));
+    } else if (isInserting) {
+      context.missing(_startedAtMeta);
+    }
+    if (data.containsKey('target_date')) {
+      context.handle(
+          _targetDateMeta,
+          targetDate.isAcceptableOrUnknown(
+              data['target_date']!, _targetDateMeta));
+    }
+    if (data.containsKey('completed_at')) {
+      context.handle(
+          _completedAtMeta,
+          completedAt.isAcceptableOrUnknown(
+              data['completed_at']!, _completedAtMeta));
+    }
+    if (data.containsKey('current_ayah_id')) {
+      context.handle(
+          _currentAyahIdMeta,
+          currentAyahId.isAcceptableOrUnknown(
+              data['current_ayah_id']!, _currentAyahIdMeta));
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  KhatmCycleRow map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return KhatmCycleRow(
+      id: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}id'])!,
+      userId: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}user_id']),
+      updatedAt: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}updated_at'])!,
+      deletedAt: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}deleted_at']),
+      isDirty: attachedDatabase.typeMapping
+          .read(DriftSqlType.bool, data['${effectivePrefix}is_dirty'])!,
+      name: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}name'])!,
+      startedAt: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}started_at'])!,
+      targetDate: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}target_date']),
+      completedAt: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}completed_at']),
+      currentAyahId: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}current_ayah_id'])!,
+    );
+  }
+
+  @override
+  $KhatmCyclesTable createAlias(String alias) {
+    return $KhatmCyclesTable(attachedDatabase, alias);
+  }
+}
+
+class KhatmCycleRow extends DataClass implements Insertable<KhatmCycleRow> {
+  final String id;
+  final String? userId;
+  final int updatedAt;
+  final int? deletedAt;
+  final bool isDirty;
+  final String name;
+  final int startedAt;
+
+  /// Ngày mục tiêu hoàn thành, dạng 'yyyy-MM-dd' — tuỳ chọn.
+  final String? targetDate;
+
+  /// NULL = đang đọc (chu kỳ chưa hoàn thành).
+  final int? completedAt;
+
+  /// Ayah ID 1..6236 — vị trí hiện tại trong chu kỳ.
+  final int currentAyahId;
+  const KhatmCycleRow(
+      {required this.id,
+      this.userId,
+      required this.updatedAt,
+      this.deletedAt,
+      required this.isDirty,
+      required this.name,
+      required this.startedAt,
+      this.targetDate,
+      this.completedAt,
+      required this.currentAyahId});
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<String>(id);
+    if (!nullToAbsent || userId != null) {
+      map['user_id'] = Variable<String>(userId);
+    }
+    map['updated_at'] = Variable<int>(updatedAt);
+    if (!nullToAbsent || deletedAt != null) {
+      map['deleted_at'] = Variable<int>(deletedAt);
+    }
+    map['is_dirty'] = Variable<bool>(isDirty);
+    map['name'] = Variable<String>(name);
+    map['started_at'] = Variable<int>(startedAt);
+    if (!nullToAbsent || targetDate != null) {
+      map['target_date'] = Variable<String>(targetDate);
+    }
+    if (!nullToAbsent || completedAt != null) {
+      map['completed_at'] = Variable<int>(completedAt);
+    }
+    map['current_ayah_id'] = Variable<int>(currentAyahId);
+    return map;
+  }
+
+  KhatmCyclesCompanion toCompanion(bool nullToAbsent) {
+    return KhatmCyclesCompanion(
+      id: Value(id),
+      userId:
+          userId == null && nullToAbsent ? const Value.absent() : Value(userId),
+      updatedAt: Value(updatedAt),
+      deletedAt: deletedAt == null && nullToAbsent
+          ? const Value.absent()
+          : Value(deletedAt),
+      isDirty: Value(isDirty),
+      name: Value(name),
+      startedAt: Value(startedAt),
+      targetDate: targetDate == null && nullToAbsent
+          ? const Value.absent()
+          : Value(targetDate),
+      completedAt: completedAt == null && nullToAbsent
+          ? const Value.absent()
+          : Value(completedAt),
+      currentAyahId: Value(currentAyahId),
+    );
+  }
+
+  factory KhatmCycleRow.fromJson(Map<String, dynamic> json,
+      {ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return KhatmCycleRow(
+      id: serializer.fromJson<String>(json['id']),
+      userId: serializer.fromJson<String?>(json['userId']),
+      updatedAt: serializer.fromJson<int>(json['updatedAt']),
+      deletedAt: serializer.fromJson<int?>(json['deletedAt']),
+      isDirty: serializer.fromJson<bool>(json['isDirty']),
+      name: serializer.fromJson<String>(json['name']),
+      startedAt: serializer.fromJson<int>(json['startedAt']),
+      targetDate: serializer.fromJson<String?>(json['targetDate']),
+      completedAt: serializer.fromJson<int?>(json['completedAt']),
+      currentAyahId: serializer.fromJson<int>(json['currentAyahId']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<String>(id),
+      'userId': serializer.toJson<String?>(userId),
+      'updatedAt': serializer.toJson<int>(updatedAt),
+      'deletedAt': serializer.toJson<int?>(deletedAt),
+      'isDirty': serializer.toJson<bool>(isDirty),
+      'name': serializer.toJson<String>(name),
+      'startedAt': serializer.toJson<int>(startedAt),
+      'targetDate': serializer.toJson<String?>(targetDate),
+      'completedAt': serializer.toJson<int?>(completedAt),
+      'currentAyahId': serializer.toJson<int>(currentAyahId),
+    };
+  }
+
+  KhatmCycleRow copyWith(
+          {String? id,
+          Value<String?> userId = const Value.absent(),
+          int? updatedAt,
+          Value<int?> deletedAt = const Value.absent(),
+          bool? isDirty,
+          String? name,
+          int? startedAt,
+          Value<String?> targetDate = const Value.absent(),
+          Value<int?> completedAt = const Value.absent(),
+          int? currentAyahId}) =>
+      KhatmCycleRow(
+        id: id ?? this.id,
+        userId: userId.present ? userId.value : this.userId,
+        updatedAt: updatedAt ?? this.updatedAt,
+        deletedAt: deletedAt.present ? deletedAt.value : this.deletedAt,
+        isDirty: isDirty ?? this.isDirty,
+        name: name ?? this.name,
+        startedAt: startedAt ?? this.startedAt,
+        targetDate: targetDate.present ? targetDate.value : this.targetDate,
+        completedAt: completedAt.present ? completedAt.value : this.completedAt,
+        currentAyahId: currentAyahId ?? this.currentAyahId,
+      );
+  KhatmCycleRow copyWithCompanion(KhatmCyclesCompanion data) {
+    return KhatmCycleRow(
+      id: data.id.present ? data.id.value : this.id,
+      userId: data.userId.present ? data.userId.value : this.userId,
+      updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
+      deletedAt: data.deletedAt.present ? data.deletedAt.value : this.deletedAt,
+      isDirty: data.isDirty.present ? data.isDirty.value : this.isDirty,
+      name: data.name.present ? data.name.value : this.name,
+      startedAt: data.startedAt.present ? data.startedAt.value : this.startedAt,
+      targetDate:
+          data.targetDate.present ? data.targetDate.value : this.targetDate,
+      completedAt:
+          data.completedAt.present ? data.completedAt.value : this.completedAt,
+      currentAyahId: data.currentAyahId.present
+          ? data.currentAyahId.value
+          : this.currentAyahId,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('KhatmCycleRow(')
+          ..write('id: $id, ')
+          ..write('userId: $userId, ')
+          ..write('updatedAt: $updatedAt, ')
+          ..write('deletedAt: $deletedAt, ')
+          ..write('isDirty: $isDirty, ')
+          ..write('name: $name, ')
+          ..write('startedAt: $startedAt, ')
+          ..write('targetDate: $targetDate, ')
+          ..write('completedAt: $completedAt, ')
+          ..write('currentAyahId: $currentAyahId')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(id, userId, updatedAt, deletedAt, isDirty,
+      name, startedAt, targetDate, completedAt, currentAyahId);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is KhatmCycleRow &&
+          other.id == this.id &&
+          other.userId == this.userId &&
+          other.updatedAt == this.updatedAt &&
+          other.deletedAt == this.deletedAt &&
+          other.isDirty == this.isDirty &&
+          other.name == this.name &&
+          other.startedAt == this.startedAt &&
+          other.targetDate == this.targetDate &&
+          other.completedAt == this.completedAt &&
+          other.currentAyahId == this.currentAyahId);
+}
+
+class KhatmCyclesCompanion extends UpdateCompanion<KhatmCycleRow> {
+  final Value<String> id;
+  final Value<String?> userId;
+  final Value<int> updatedAt;
+  final Value<int?> deletedAt;
+  final Value<bool> isDirty;
+  final Value<String> name;
+  final Value<int> startedAt;
+  final Value<String?> targetDate;
+  final Value<int?> completedAt;
+  final Value<int> currentAyahId;
+  final Value<int> rowid;
+  const KhatmCyclesCompanion({
+    this.id = const Value.absent(),
+    this.userId = const Value.absent(),
+    this.updatedAt = const Value.absent(),
+    this.deletedAt = const Value.absent(),
+    this.isDirty = const Value.absent(),
+    this.name = const Value.absent(),
+    this.startedAt = const Value.absent(),
+    this.targetDate = const Value.absent(),
+    this.completedAt = const Value.absent(),
+    this.currentAyahId = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  KhatmCyclesCompanion.insert({
+    required String id,
+    this.userId = const Value.absent(),
+    required int updatedAt,
+    this.deletedAt = const Value.absent(),
+    this.isDirty = const Value.absent(),
+    required String name,
+    required int startedAt,
+    this.targetDate = const Value.absent(),
+    this.completedAt = const Value.absent(),
+    this.currentAyahId = const Value.absent(),
+    this.rowid = const Value.absent(),
+  })  : id = Value(id),
+        updatedAt = Value(updatedAt),
+        name = Value(name),
+        startedAt = Value(startedAt);
+  static Insertable<KhatmCycleRow> custom({
+    Expression<String>? id,
+    Expression<String>? userId,
+    Expression<int>? updatedAt,
+    Expression<int>? deletedAt,
+    Expression<bool>? isDirty,
+    Expression<String>? name,
+    Expression<int>? startedAt,
+    Expression<String>? targetDate,
+    Expression<int>? completedAt,
+    Expression<int>? currentAyahId,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (userId != null) 'user_id': userId,
+      if (updatedAt != null) 'updated_at': updatedAt,
+      if (deletedAt != null) 'deleted_at': deletedAt,
+      if (isDirty != null) 'is_dirty': isDirty,
+      if (name != null) 'name': name,
+      if (startedAt != null) 'started_at': startedAt,
+      if (targetDate != null) 'target_date': targetDate,
+      if (completedAt != null) 'completed_at': completedAt,
+      if (currentAyahId != null) 'current_ayah_id': currentAyahId,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  KhatmCyclesCompanion copyWith(
+      {Value<String>? id,
+      Value<String?>? userId,
+      Value<int>? updatedAt,
+      Value<int?>? deletedAt,
+      Value<bool>? isDirty,
+      Value<String>? name,
+      Value<int>? startedAt,
+      Value<String?>? targetDate,
+      Value<int?>? completedAt,
+      Value<int>? currentAyahId,
+      Value<int>? rowid}) {
+    return KhatmCyclesCompanion(
+      id: id ?? this.id,
+      userId: userId ?? this.userId,
+      updatedAt: updatedAt ?? this.updatedAt,
+      deletedAt: deletedAt ?? this.deletedAt,
+      isDirty: isDirty ?? this.isDirty,
+      name: name ?? this.name,
+      startedAt: startedAt ?? this.startedAt,
+      targetDate: targetDate ?? this.targetDate,
+      completedAt: completedAt ?? this.completedAt,
+      currentAyahId: currentAyahId ?? this.currentAyahId,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (userId.present) {
+      map['user_id'] = Variable<String>(userId.value);
+    }
+    if (updatedAt.present) {
+      map['updated_at'] = Variable<int>(updatedAt.value);
+    }
+    if (deletedAt.present) {
+      map['deleted_at'] = Variable<int>(deletedAt.value);
+    }
+    if (isDirty.present) {
+      map['is_dirty'] = Variable<bool>(isDirty.value);
+    }
+    if (name.present) {
+      map['name'] = Variable<String>(name.value);
+    }
+    if (startedAt.present) {
+      map['started_at'] = Variable<int>(startedAt.value);
+    }
+    if (targetDate.present) {
+      map['target_date'] = Variable<String>(targetDate.value);
+    }
+    if (completedAt.present) {
+      map['completed_at'] = Variable<int>(completedAt.value);
+    }
+    if (currentAyahId.present) {
+      map['current_ayah_id'] = Variable<int>(currentAyahId.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('KhatmCyclesCompanion(')
+          ..write('id: $id, ')
+          ..write('userId: $userId, ')
+          ..write('updatedAt: $updatedAt, ')
+          ..write('deletedAt: $deletedAt, ')
+          ..write('isDirty: $isDirty, ')
+          ..write('name: $name, ')
+          ..write('startedAt: $startedAt, ')
+          ..write('targetDate: $targetDate, ')
+          ..write('completedAt: $completedAt, ')
+          ..write('currentAyahId: $currentAyahId, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $BookmarkCollectionsTable extends BookmarkCollections
+    with TableInfo<$BookmarkCollectionsTable, BookmarkCollectionRow> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $BookmarkCollectionsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+      'id', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  static const VerificationMeta _userIdMeta = const VerificationMeta('userId');
+  @override
+  late final GeneratedColumn<String> userId = GeneratedColumn<String>(
+      'user_id', aliasedName, true,
+      type: DriftSqlType.string, requiredDuringInsert: false);
+  static const VerificationMeta _updatedAtMeta =
+      const VerificationMeta('updatedAt');
+  @override
+  late final GeneratedColumn<int> updatedAt = GeneratedColumn<int>(
+      'updated_at', aliasedName, false,
+      type: DriftSqlType.int, requiredDuringInsert: true);
+  static const VerificationMeta _deletedAtMeta =
+      const VerificationMeta('deletedAt');
+  @override
+  late final GeneratedColumn<int> deletedAt = GeneratedColumn<int>(
+      'deleted_at', aliasedName, true,
+      type: DriftSqlType.int, requiredDuringInsert: false);
+  static const VerificationMeta _isDirtyMeta =
+      const VerificationMeta('isDirty');
+  @override
+  late final GeneratedColumn<bool> isDirty = GeneratedColumn<bool>(
+      'is_dirty', aliasedName, false,
+      type: DriftSqlType.bool,
+      requiredDuringInsert: false,
+      defaultConstraints:
+          GeneratedColumn.constraintIsAlways('CHECK ("is_dirty" IN (0, 1))'),
+      defaultValue: const Constant(true));
+  static const VerificationMeta _nameMeta = const VerificationMeta('name');
+  @override
+  late final GeneratedColumn<String> name = GeneratedColumn<String>(
+      'name', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  static const VerificationMeta _emojiMeta = const VerificationMeta('emoji');
+  @override
+  late final GeneratedColumn<String> emoji = GeneratedColumn<String>(
+      'emoji', aliasedName, true,
+      type: DriftSqlType.string, requiredDuringInsert: false);
+  static const VerificationMeta _displayOrderMeta =
+      const VerificationMeta('displayOrder');
+  @override
+  late final GeneratedColumn<int> displayOrder = GeneratedColumn<int>(
+      'display_order', aliasedName, false,
+      type: DriftSqlType.int,
+      requiredDuringInsert: false,
+      defaultValue: const Constant(0));
+  @override
+  List<GeneratedColumn> get $columns =>
+      [id, userId, updatedAt, deletedAt, isDirty, name, emoji, displayOrder];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'bookmark_collections';
+  @override
+  VerificationContext validateIntegrity(
+      Insertable<BookmarkCollectionRow> instance,
+      {bool isInserting = false}) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    } else if (isInserting) {
+      context.missing(_idMeta);
+    }
+    if (data.containsKey('user_id')) {
+      context.handle(_userIdMeta,
+          userId.isAcceptableOrUnknown(data['user_id']!, _userIdMeta));
+    }
+    if (data.containsKey('updated_at')) {
+      context.handle(_updatedAtMeta,
+          updatedAt.isAcceptableOrUnknown(data['updated_at']!, _updatedAtMeta));
+    } else if (isInserting) {
+      context.missing(_updatedAtMeta);
+    }
+    if (data.containsKey('deleted_at')) {
+      context.handle(_deletedAtMeta,
+          deletedAt.isAcceptableOrUnknown(data['deleted_at']!, _deletedAtMeta));
+    }
+    if (data.containsKey('is_dirty')) {
+      context.handle(_isDirtyMeta,
+          isDirty.isAcceptableOrUnknown(data['is_dirty']!, _isDirtyMeta));
+    }
+    if (data.containsKey('name')) {
+      context.handle(
+          _nameMeta, name.isAcceptableOrUnknown(data['name']!, _nameMeta));
+    } else if (isInserting) {
+      context.missing(_nameMeta);
+    }
+    if (data.containsKey('emoji')) {
+      context.handle(
+          _emojiMeta, emoji.isAcceptableOrUnknown(data['emoji']!, _emojiMeta));
+    }
+    if (data.containsKey('display_order')) {
+      context.handle(
+          _displayOrderMeta,
+          displayOrder.isAcceptableOrUnknown(
+              data['display_order']!, _displayOrderMeta));
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  BookmarkCollectionRow map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return BookmarkCollectionRow(
+      id: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}id'])!,
+      userId: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}user_id']),
+      updatedAt: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}updated_at'])!,
+      deletedAt: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}deleted_at']),
+      isDirty: attachedDatabase.typeMapping
+          .read(DriftSqlType.bool, data['${effectivePrefix}is_dirty'])!,
+      name: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}name'])!,
+      emoji: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}emoji']),
+      displayOrder: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}display_order'])!,
+    );
+  }
+
+  @override
+  $BookmarkCollectionsTable createAlias(String alias) {
+    return $BookmarkCollectionsTable(attachedDatabase, alias);
+  }
+}
+
+class BookmarkCollectionRow extends DataClass
+    implements Insertable<BookmarkCollectionRow> {
+  final String id;
+  final String? userId;
+  final int updatedAt;
+  final int? deletedAt;
+  final bool isDirty;
+  final String name;
+  final String? emoji;
+  final int displayOrder;
+  const BookmarkCollectionRow(
+      {required this.id,
+      this.userId,
+      required this.updatedAt,
+      this.deletedAt,
+      required this.isDirty,
+      required this.name,
+      this.emoji,
+      required this.displayOrder});
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<String>(id);
+    if (!nullToAbsent || userId != null) {
+      map['user_id'] = Variable<String>(userId);
+    }
+    map['updated_at'] = Variable<int>(updatedAt);
+    if (!nullToAbsent || deletedAt != null) {
+      map['deleted_at'] = Variable<int>(deletedAt);
+    }
+    map['is_dirty'] = Variable<bool>(isDirty);
+    map['name'] = Variable<String>(name);
+    if (!nullToAbsent || emoji != null) {
+      map['emoji'] = Variable<String>(emoji);
+    }
+    map['display_order'] = Variable<int>(displayOrder);
+    return map;
+  }
+
+  BookmarkCollectionsCompanion toCompanion(bool nullToAbsent) {
+    return BookmarkCollectionsCompanion(
+      id: Value(id),
+      userId:
+          userId == null && nullToAbsent ? const Value.absent() : Value(userId),
+      updatedAt: Value(updatedAt),
+      deletedAt: deletedAt == null && nullToAbsent
+          ? const Value.absent()
+          : Value(deletedAt),
+      isDirty: Value(isDirty),
+      name: Value(name),
+      emoji:
+          emoji == null && nullToAbsent ? const Value.absent() : Value(emoji),
+      displayOrder: Value(displayOrder),
+    );
+  }
+
+  factory BookmarkCollectionRow.fromJson(Map<String, dynamic> json,
+      {ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return BookmarkCollectionRow(
+      id: serializer.fromJson<String>(json['id']),
+      userId: serializer.fromJson<String?>(json['userId']),
+      updatedAt: serializer.fromJson<int>(json['updatedAt']),
+      deletedAt: serializer.fromJson<int?>(json['deletedAt']),
+      isDirty: serializer.fromJson<bool>(json['isDirty']),
+      name: serializer.fromJson<String>(json['name']),
+      emoji: serializer.fromJson<String?>(json['emoji']),
+      displayOrder: serializer.fromJson<int>(json['displayOrder']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<String>(id),
+      'userId': serializer.toJson<String?>(userId),
+      'updatedAt': serializer.toJson<int>(updatedAt),
+      'deletedAt': serializer.toJson<int?>(deletedAt),
+      'isDirty': serializer.toJson<bool>(isDirty),
+      'name': serializer.toJson<String>(name),
+      'emoji': serializer.toJson<String?>(emoji),
+      'displayOrder': serializer.toJson<int>(displayOrder),
+    };
+  }
+
+  BookmarkCollectionRow copyWith(
+          {String? id,
+          Value<String?> userId = const Value.absent(),
+          int? updatedAt,
+          Value<int?> deletedAt = const Value.absent(),
+          bool? isDirty,
+          String? name,
+          Value<String?> emoji = const Value.absent(),
+          int? displayOrder}) =>
+      BookmarkCollectionRow(
+        id: id ?? this.id,
+        userId: userId.present ? userId.value : this.userId,
+        updatedAt: updatedAt ?? this.updatedAt,
+        deletedAt: deletedAt.present ? deletedAt.value : this.deletedAt,
+        isDirty: isDirty ?? this.isDirty,
+        name: name ?? this.name,
+        emoji: emoji.present ? emoji.value : this.emoji,
+        displayOrder: displayOrder ?? this.displayOrder,
+      );
+  BookmarkCollectionRow copyWithCompanion(BookmarkCollectionsCompanion data) {
+    return BookmarkCollectionRow(
+      id: data.id.present ? data.id.value : this.id,
+      userId: data.userId.present ? data.userId.value : this.userId,
+      updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
+      deletedAt: data.deletedAt.present ? data.deletedAt.value : this.deletedAt,
+      isDirty: data.isDirty.present ? data.isDirty.value : this.isDirty,
+      name: data.name.present ? data.name.value : this.name,
+      emoji: data.emoji.present ? data.emoji.value : this.emoji,
+      displayOrder: data.displayOrder.present
+          ? data.displayOrder.value
+          : this.displayOrder,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('BookmarkCollectionRow(')
+          ..write('id: $id, ')
+          ..write('userId: $userId, ')
+          ..write('updatedAt: $updatedAt, ')
+          ..write('deletedAt: $deletedAt, ')
+          ..write('isDirty: $isDirty, ')
+          ..write('name: $name, ')
+          ..write('emoji: $emoji, ')
+          ..write('displayOrder: $displayOrder')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+      id, userId, updatedAt, deletedAt, isDirty, name, emoji, displayOrder);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is BookmarkCollectionRow &&
+          other.id == this.id &&
+          other.userId == this.userId &&
+          other.updatedAt == this.updatedAt &&
+          other.deletedAt == this.deletedAt &&
+          other.isDirty == this.isDirty &&
+          other.name == this.name &&
+          other.emoji == this.emoji &&
+          other.displayOrder == this.displayOrder);
+}
+
+class BookmarkCollectionsCompanion
+    extends UpdateCompanion<BookmarkCollectionRow> {
+  final Value<String> id;
+  final Value<String?> userId;
+  final Value<int> updatedAt;
+  final Value<int?> deletedAt;
+  final Value<bool> isDirty;
+  final Value<String> name;
+  final Value<String?> emoji;
+  final Value<int> displayOrder;
+  final Value<int> rowid;
+  const BookmarkCollectionsCompanion({
+    this.id = const Value.absent(),
+    this.userId = const Value.absent(),
+    this.updatedAt = const Value.absent(),
+    this.deletedAt = const Value.absent(),
+    this.isDirty = const Value.absent(),
+    this.name = const Value.absent(),
+    this.emoji = const Value.absent(),
+    this.displayOrder = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  BookmarkCollectionsCompanion.insert({
+    required String id,
+    this.userId = const Value.absent(),
+    required int updatedAt,
+    this.deletedAt = const Value.absent(),
+    this.isDirty = const Value.absent(),
+    required String name,
+    this.emoji = const Value.absent(),
+    this.displayOrder = const Value.absent(),
+    this.rowid = const Value.absent(),
+  })  : id = Value(id),
+        updatedAt = Value(updatedAt),
+        name = Value(name);
+  static Insertable<BookmarkCollectionRow> custom({
+    Expression<String>? id,
+    Expression<String>? userId,
+    Expression<int>? updatedAt,
+    Expression<int>? deletedAt,
+    Expression<bool>? isDirty,
+    Expression<String>? name,
+    Expression<String>? emoji,
+    Expression<int>? displayOrder,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (userId != null) 'user_id': userId,
+      if (updatedAt != null) 'updated_at': updatedAt,
+      if (deletedAt != null) 'deleted_at': deletedAt,
+      if (isDirty != null) 'is_dirty': isDirty,
+      if (name != null) 'name': name,
+      if (emoji != null) 'emoji': emoji,
+      if (displayOrder != null) 'display_order': displayOrder,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  BookmarkCollectionsCompanion copyWith(
+      {Value<String>? id,
+      Value<String?>? userId,
+      Value<int>? updatedAt,
+      Value<int?>? deletedAt,
+      Value<bool>? isDirty,
+      Value<String>? name,
+      Value<String?>? emoji,
+      Value<int>? displayOrder,
+      Value<int>? rowid}) {
+    return BookmarkCollectionsCompanion(
+      id: id ?? this.id,
+      userId: userId ?? this.userId,
+      updatedAt: updatedAt ?? this.updatedAt,
+      deletedAt: deletedAt ?? this.deletedAt,
+      isDirty: isDirty ?? this.isDirty,
+      name: name ?? this.name,
+      emoji: emoji ?? this.emoji,
+      displayOrder: displayOrder ?? this.displayOrder,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (userId.present) {
+      map['user_id'] = Variable<String>(userId.value);
+    }
+    if (updatedAt.present) {
+      map['updated_at'] = Variable<int>(updatedAt.value);
+    }
+    if (deletedAt.present) {
+      map['deleted_at'] = Variable<int>(deletedAt.value);
+    }
+    if (isDirty.present) {
+      map['is_dirty'] = Variable<bool>(isDirty.value);
+    }
+    if (name.present) {
+      map['name'] = Variable<String>(name.value);
+    }
+    if (emoji.present) {
+      map['emoji'] = Variable<String>(emoji.value);
+    }
+    if (displayOrder.present) {
+      map['display_order'] = Variable<int>(displayOrder.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('BookmarkCollectionsCompanion(')
+          ..write('id: $id, ')
+          ..write('userId: $userId, ')
+          ..write('updatedAt: $updatedAt, ')
+          ..write('deletedAt: $deletedAt, ')
+          ..write('isDirty: $isDirty, ')
+          ..write('name: $name, ')
+          ..write('emoji: $emoji, ')
+          ..write('displayOrder: $displayOrder, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $SrsCardsTable extends SrsCards
+    with TableInfo<$SrsCardsTable, SrsCardRow> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $SrsCardsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+      'id', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  static const VerificationMeta _userIdMeta = const VerificationMeta('userId');
+  @override
+  late final GeneratedColumn<String> userId = GeneratedColumn<String>(
+      'user_id', aliasedName, true,
+      type: DriftSqlType.string, requiredDuringInsert: false);
+  static const VerificationMeta _updatedAtMeta =
+      const VerificationMeta('updatedAt');
+  @override
+  late final GeneratedColumn<int> updatedAt = GeneratedColumn<int>(
+      'updated_at', aliasedName, false,
+      type: DriftSqlType.int, requiredDuringInsert: true);
+  static const VerificationMeta _deletedAtMeta =
+      const VerificationMeta('deletedAt');
+  @override
+  late final GeneratedColumn<int> deletedAt = GeneratedColumn<int>(
+      'deleted_at', aliasedName, true,
+      type: DriftSqlType.int, requiredDuringInsert: false);
+  static const VerificationMeta _isDirtyMeta =
+      const VerificationMeta('isDirty');
+  @override
+  late final GeneratedColumn<bool> isDirty = GeneratedColumn<bool>(
+      'is_dirty', aliasedName, false,
+      type: DriftSqlType.bool,
+      requiredDuringInsert: false,
+      defaultConstraints:
+          GeneratedColumn.constraintIsAlways('CHECK ("is_dirty" IN (0, 1))'),
+      defaultValue: const Constant(true));
+  static const VerificationMeta _itemTypeMeta =
+      const VerificationMeta('itemType');
+  @override
+  late final GeneratedColumn<String> itemType = GeneratedColumn<String>(
+      'item_type', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  static const VerificationMeta _itemIdMeta = const VerificationMeta('itemId');
+  @override
+  late final GeneratedColumn<int> itemId = GeneratedColumn<int>(
+      'item_id', aliasedName, false,
+      type: DriftSqlType.int, requiredDuringInsert: true);
+  static const VerificationMeta _easeFactorMeta =
+      const VerificationMeta('easeFactor');
+  @override
+  late final GeneratedColumn<double> easeFactor = GeneratedColumn<double>(
+      'ease_factor', aliasedName, false,
+      type: DriftSqlType.double,
+      requiredDuringInsert: false,
+      defaultValue: const Constant(2.5));
+  static const VerificationMeta _intervalDaysMeta =
+      const VerificationMeta('intervalDays');
+  @override
+  late final GeneratedColumn<int> intervalDays = GeneratedColumn<int>(
+      'interval_days', aliasedName, false,
+      type: DriftSqlType.int,
+      requiredDuringInsert: false,
+      defaultValue: const Constant(0));
+  static const VerificationMeta _repetitionsMeta =
+      const VerificationMeta('repetitions');
+  @override
+  late final GeneratedColumn<int> repetitions = GeneratedColumn<int>(
+      'repetitions', aliasedName, false,
+      type: DriftSqlType.int,
+      requiredDuringInsert: false,
+      defaultValue: const Constant(0));
+  static const VerificationMeta _dueDateMeta =
+      const VerificationMeta('dueDate');
+  @override
+  late final GeneratedColumn<int> dueDate = GeneratedColumn<int>(
+      'due_date', aliasedName, false,
+      type: DriftSqlType.int, requiredDuringInsert: true);
+  static const VerificationMeta _stateMeta = const VerificationMeta('state');
+  @override
+  late final GeneratedColumn<String> state = GeneratedColumn<String>(
+      'state', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  @override
+  List<GeneratedColumn> get $columns => [
+        id,
+        userId,
+        updatedAt,
+        deletedAt,
+        isDirty,
+        itemType,
+        itemId,
+        easeFactor,
+        intervalDays,
+        repetitions,
+        dueDate,
+        state
+      ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'srs_cards';
+  @override
+  VerificationContext validateIntegrity(Insertable<SrsCardRow> instance,
+      {bool isInserting = false}) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    } else if (isInserting) {
+      context.missing(_idMeta);
+    }
+    if (data.containsKey('user_id')) {
+      context.handle(_userIdMeta,
+          userId.isAcceptableOrUnknown(data['user_id']!, _userIdMeta));
+    }
+    if (data.containsKey('updated_at')) {
+      context.handle(_updatedAtMeta,
+          updatedAt.isAcceptableOrUnknown(data['updated_at']!, _updatedAtMeta));
+    } else if (isInserting) {
+      context.missing(_updatedAtMeta);
+    }
+    if (data.containsKey('deleted_at')) {
+      context.handle(_deletedAtMeta,
+          deletedAt.isAcceptableOrUnknown(data['deleted_at']!, _deletedAtMeta));
+    }
+    if (data.containsKey('is_dirty')) {
+      context.handle(_isDirtyMeta,
+          isDirty.isAcceptableOrUnknown(data['is_dirty']!, _isDirtyMeta));
+    }
+    if (data.containsKey('item_type')) {
+      context.handle(_itemTypeMeta,
+          itemType.isAcceptableOrUnknown(data['item_type']!, _itemTypeMeta));
+    } else if (isInserting) {
+      context.missing(_itemTypeMeta);
+    }
+    if (data.containsKey('item_id')) {
+      context.handle(_itemIdMeta,
+          itemId.isAcceptableOrUnknown(data['item_id']!, _itemIdMeta));
+    } else if (isInserting) {
+      context.missing(_itemIdMeta);
+    }
+    if (data.containsKey('ease_factor')) {
+      context.handle(
+          _easeFactorMeta,
+          easeFactor.isAcceptableOrUnknown(
+              data['ease_factor']!, _easeFactorMeta));
+    }
+    if (data.containsKey('interval_days')) {
+      context.handle(
+          _intervalDaysMeta,
+          intervalDays.isAcceptableOrUnknown(
+              data['interval_days']!, _intervalDaysMeta));
+    }
+    if (data.containsKey('repetitions')) {
+      context.handle(
+          _repetitionsMeta,
+          repetitions.isAcceptableOrUnknown(
+              data['repetitions']!, _repetitionsMeta));
+    }
+    if (data.containsKey('due_date')) {
+      context.handle(_dueDateMeta,
+          dueDate.isAcceptableOrUnknown(data['due_date']!, _dueDateMeta));
+    } else if (isInserting) {
+      context.missing(_dueDateMeta);
+    }
+    if (data.containsKey('state')) {
+      context.handle(
+          _stateMeta, state.isAcceptableOrUnknown(data['state']!, _stateMeta));
+    } else if (isInserting) {
+      context.missing(_stateMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  List<Set<GeneratedColumn>> get uniqueKeys => [
+        {itemType, itemId},
+      ];
+  @override
+  SrsCardRow map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return SrsCardRow(
+      id: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}id'])!,
+      userId: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}user_id']),
+      updatedAt: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}updated_at'])!,
+      deletedAt: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}deleted_at']),
+      isDirty: attachedDatabase.typeMapping
+          .read(DriftSqlType.bool, data['${effectivePrefix}is_dirty'])!,
+      itemType: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}item_type'])!,
+      itemId: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}item_id'])!,
+      easeFactor: attachedDatabase.typeMapping
+          .read(DriftSqlType.double, data['${effectivePrefix}ease_factor'])!,
+      intervalDays: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}interval_days'])!,
+      repetitions: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}repetitions'])!,
+      dueDate: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}due_date'])!,
+      state: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}state'])!,
+    );
+  }
+
+  @override
+  $SrsCardsTable createAlias(String alias) {
+    return $SrsCardsTable(attachedDatabase, alias);
+  }
+}
+
+class SrsCardRow extends DataClass implements Insertable<SrsCardRow> {
+  final String id;
+  final String? userId;
+  final int updatedAt;
+  final int? deletedAt;
+  final bool isDirty;
+
+  /// 'ayah' | 'lemma'.
+  final String itemType;
+
+  /// ayah_id hoặc lemma_id tùy [itemType].
+  final int itemId;
+  final double easeFactor;
+  final int intervalDays;
+  final int repetitions;
+
+  /// Epoch ms UTC — thời điểm đến hạn ôn tập.
+  final int dueDate;
+
+  /// 'new' | 'learning' | 'review' | 'lapsed'.
+  final String state;
+  const SrsCardRow(
+      {required this.id,
+      this.userId,
+      required this.updatedAt,
+      this.deletedAt,
+      required this.isDirty,
+      required this.itemType,
+      required this.itemId,
+      required this.easeFactor,
+      required this.intervalDays,
+      required this.repetitions,
+      required this.dueDate,
+      required this.state});
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<String>(id);
+    if (!nullToAbsent || userId != null) {
+      map['user_id'] = Variable<String>(userId);
+    }
+    map['updated_at'] = Variable<int>(updatedAt);
+    if (!nullToAbsent || deletedAt != null) {
+      map['deleted_at'] = Variable<int>(deletedAt);
+    }
+    map['is_dirty'] = Variable<bool>(isDirty);
+    map['item_type'] = Variable<String>(itemType);
+    map['item_id'] = Variable<int>(itemId);
+    map['ease_factor'] = Variable<double>(easeFactor);
+    map['interval_days'] = Variable<int>(intervalDays);
+    map['repetitions'] = Variable<int>(repetitions);
+    map['due_date'] = Variable<int>(dueDate);
+    map['state'] = Variable<String>(state);
+    return map;
+  }
+
+  SrsCardsCompanion toCompanion(bool nullToAbsent) {
+    return SrsCardsCompanion(
+      id: Value(id),
+      userId:
+          userId == null && nullToAbsent ? const Value.absent() : Value(userId),
+      updatedAt: Value(updatedAt),
+      deletedAt: deletedAt == null && nullToAbsent
+          ? const Value.absent()
+          : Value(deletedAt),
+      isDirty: Value(isDirty),
+      itemType: Value(itemType),
+      itemId: Value(itemId),
+      easeFactor: Value(easeFactor),
+      intervalDays: Value(intervalDays),
+      repetitions: Value(repetitions),
+      dueDate: Value(dueDate),
+      state: Value(state),
+    );
+  }
+
+  factory SrsCardRow.fromJson(Map<String, dynamic> json,
+      {ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return SrsCardRow(
+      id: serializer.fromJson<String>(json['id']),
+      userId: serializer.fromJson<String?>(json['userId']),
+      updatedAt: serializer.fromJson<int>(json['updatedAt']),
+      deletedAt: serializer.fromJson<int?>(json['deletedAt']),
+      isDirty: serializer.fromJson<bool>(json['isDirty']),
+      itemType: serializer.fromJson<String>(json['itemType']),
+      itemId: serializer.fromJson<int>(json['itemId']),
+      easeFactor: serializer.fromJson<double>(json['easeFactor']),
+      intervalDays: serializer.fromJson<int>(json['intervalDays']),
+      repetitions: serializer.fromJson<int>(json['repetitions']),
+      dueDate: serializer.fromJson<int>(json['dueDate']),
+      state: serializer.fromJson<String>(json['state']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<String>(id),
+      'userId': serializer.toJson<String?>(userId),
+      'updatedAt': serializer.toJson<int>(updatedAt),
+      'deletedAt': serializer.toJson<int?>(deletedAt),
+      'isDirty': serializer.toJson<bool>(isDirty),
+      'itemType': serializer.toJson<String>(itemType),
+      'itemId': serializer.toJson<int>(itemId),
+      'easeFactor': serializer.toJson<double>(easeFactor),
+      'intervalDays': serializer.toJson<int>(intervalDays),
+      'repetitions': serializer.toJson<int>(repetitions),
+      'dueDate': serializer.toJson<int>(dueDate),
+      'state': serializer.toJson<String>(state),
+    };
+  }
+
+  SrsCardRow copyWith(
+          {String? id,
+          Value<String?> userId = const Value.absent(),
+          int? updatedAt,
+          Value<int?> deletedAt = const Value.absent(),
+          bool? isDirty,
+          String? itemType,
+          int? itemId,
+          double? easeFactor,
+          int? intervalDays,
+          int? repetitions,
+          int? dueDate,
+          String? state}) =>
+      SrsCardRow(
+        id: id ?? this.id,
+        userId: userId.present ? userId.value : this.userId,
+        updatedAt: updatedAt ?? this.updatedAt,
+        deletedAt: deletedAt.present ? deletedAt.value : this.deletedAt,
+        isDirty: isDirty ?? this.isDirty,
+        itemType: itemType ?? this.itemType,
+        itemId: itemId ?? this.itemId,
+        easeFactor: easeFactor ?? this.easeFactor,
+        intervalDays: intervalDays ?? this.intervalDays,
+        repetitions: repetitions ?? this.repetitions,
+        dueDate: dueDate ?? this.dueDate,
+        state: state ?? this.state,
+      );
+  SrsCardRow copyWithCompanion(SrsCardsCompanion data) {
+    return SrsCardRow(
+      id: data.id.present ? data.id.value : this.id,
+      userId: data.userId.present ? data.userId.value : this.userId,
+      updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
+      deletedAt: data.deletedAt.present ? data.deletedAt.value : this.deletedAt,
+      isDirty: data.isDirty.present ? data.isDirty.value : this.isDirty,
+      itemType: data.itemType.present ? data.itemType.value : this.itemType,
+      itemId: data.itemId.present ? data.itemId.value : this.itemId,
+      easeFactor:
+          data.easeFactor.present ? data.easeFactor.value : this.easeFactor,
+      intervalDays: data.intervalDays.present
+          ? data.intervalDays.value
+          : this.intervalDays,
+      repetitions:
+          data.repetitions.present ? data.repetitions.value : this.repetitions,
+      dueDate: data.dueDate.present ? data.dueDate.value : this.dueDate,
+      state: data.state.present ? data.state.value : this.state,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('SrsCardRow(')
+          ..write('id: $id, ')
+          ..write('userId: $userId, ')
+          ..write('updatedAt: $updatedAt, ')
+          ..write('deletedAt: $deletedAt, ')
+          ..write('isDirty: $isDirty, ')
+          ..write('itemType: $itemType, ')
+          ..write('itemId: $itemId, ')
+          ..write('easeFactor: $easeFactor, ')
+          ..write('intervalDays: $intervalDays, ')
+          ..write('repetitions: $repetitions, ')
+          ..write('dueDate: $dueDate, ')
+          ..write('state: $state')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(id, userId, updatedAt, deletedAt, isDirty,
+      itemType, itemId, easeFactor, intervalDays, repetitions, dueDate, state);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is SrsCardRow &&
+          other.id == this.id &&
+          other.userId == this.userId &&
+          other.updatedAt == this.updatedAt &&
+          other.deletedAt == this.deletedAt &&
+          other.isDirty == this.isDirty &&
+          other.itemType == this.itemType &&
+          other.itemId == this.itemId &&
+          other.easeFactor == this.easeFactor &&
+          other.intervalDays == this.intervalDays &&
+          other.repetitions == this.repetitions &&
+          other.dueDate == this.dueDate &&
+          other.state == this.state);
+}
+
+class SrsCardsCompanion extends UpdateCompanion<SrsCardRow> {
+  final Value<String> id;
+  final Value<String?> userId;
+  final Value<int> updatedAt;
+  final Value<int?> deletedAt;
+  final Value<bool> isDirty;
+  final Value<String> itemType;
+  final Value<int> itemId;
+  final Value<double> easeFactor;
+  final Value<int> intervalDays;
+  final Value<int> repetitions;
+  final Value<int> dueDate;
+  final Value<String> state;
+  final Value<int> rowid;
+  const SrsCardsCompanion({
+    this.id = const Value.absent(),
+    this.userId = const Value.absent(),
+    this.updatedAt = const Value.absent(),
+    this.deletedAt = const Value.absent(),
+    this.isDirty = const Value.absent(),
+    this.itemType = const Value.absent(),
+    this.itemId = const Value.absent(),
+    this.easeFactor = const Value.absent(),
+    this.intervalDays = const Value.absent(),
+    this.repetitions = const Value.absent(),
+    this.dueDate = const Value.absent(),
+    this.state = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  SrsCardsCompanion.insert({
+    required String id,
+    this.userId = const Value.absent(),
+    required int updatedAt,
+    this.deletedAt = const Value.absent(),
+    this.isDirty = const Value.absent(),
+    required String itemType,
+    required int itemId,
+    this.easeFactor = const Value.absent(),
+    this.intervalDays = const Value.absent(),
+    this.repetitions = const Value.absent(),
+    required int dueDate,
+    required String state,
+    this.rowid = const Value.absent(),
+  })  : id = Value(id),
+        updatedAt = Value(updatedAt),
+        itemType = Value(itemType),
+        itemId = Value(itemId),
+        dueDate = Value(dueDate),
+        state = Value(state);
+  static Insertable<SrsCardRow> custom({
+    Expression<String>? id,
+    Expression<String>? userId,
+    Expression<int>? updatedAt,
+    Expression<int>? deletedAt,
+    Expression<bool>? isDirty,
+    Expression<String>? itemType,
+    Expression<int>? itemId,
+    Expression<double>? easeFactor,
+    Expression<int>? intervalDays,
+    Expression<int>? repetitions,
+    Expression<int>? dueDate,
+    Expression<String>? state,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (userId != null) 'user_id': userId,
+      if (updatedAt != null) 'updated_at': updatedAt,
+      if (deletedAt != null) 'deleted_at': deletedAt,
+      if (isDirty != null) 'is_dirty': isDirty,
+      if (itemType != null) 'item_type': itemType,
+      if (itemId != null) 'item_id': itemId,
+      if (easeFactor != null) 'ease_factor': easeFactor,
+      if (intervalDays != null) 'interval_days': intervalDays,
+      if (repetitions != null) 'repetitions': repetitions,
+      if (dueDate != null) 'due_date': dueDate,
+      if (state != null) 'state': state,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  SrsCardsCompanion copyWith(
+      {Value<String>? id,
+      Value<String?>? userId,
+      Value<int>? updatedAt,
+      Value<int?>? deletedAt,
+      Value<bool>? isDirty,
+      Value<String>? itemType,
+      Value<int>? itemId,
+      Value<double>? easeFactor,
+      Value<int>? intervalDays,
+      Value<int>? repetitions,
+      Value<int>? dueDate,
+      Value<String>? state,
+      Value<int>? rowid}) {
+    return SrsCardsCompanion(
+      id: id ?? this.id,
+      userId: userId ?? this.userId,
+      updatedAt: updatedAt ?? this.updatedAt,
+      deletedAt: deletedAt ?? this.deletedAt,
+      isDirty: isDirty ?? this.isDirty,
+      itemType: itemType ?? this.itemType,
+      itemId: itemId ?? this.itemId,
+      easeFactor: easeFactor ?? this.easeFactor,
+      intervalDays: intervalDays ?? this.intervalDays,
+      repetitions: repetitions ?? this.repetitions,
+      dueDate: dueDate ?? this.dueDate,
+      state: state ?? this.state,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (userId.present) {
+      map['user_id'] = Variable<String>(userId.value);
+    }
+    if (updatedAt.present) {
+      map['updated_at'] = Variable<int>(updatedAt.value);
+    }
+    if (deletedAt.present) {
+      map['deleted_at'] = Variable<int>(deletedAt.value);
+    }
+    if (isDirty.present) {
+      map['is_dirty'] = Variable<bool>(isDirty.value);
+    }
+    if (itemType.present) {
+      map['item_type'] = Variable<String>(itemType.value);
+    }
+    if (itemId.present) {
+      map['item_id'] = Variable<int>(itemId.value);
+    }
+    if (easeFactor.present) {
+      map['ease_factor'] = Variable<double>(easeFactor.value);
+    }
+    if (intervalDays.present) {
+      map['interval_days'] = Variable<int>(intervalDays.value);
+    }
+    if (repetitions.present) {
+      map['repetitions'] = Variable<int>(repetitions.value);
+    }
+    if (dueDate.present) {
+      map['due_date'] = Variable<int>(dueDate.value);
+    }
+    if (state.present) {
+      map['state'] = Variable<String>(state.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('SrsCardsCompanion(')
+          ..write('id: $id, ')
+          ..write('userId: $userId, ')
+          ..write('updatedAt: $updatedAt, ')
+          ..write('deletedAt: $deletedAt, ')
+          ..write('isDirty: $isDirty, ')
+          ..write('itemType: $itemType, ')
+          ..write('itemId: $itemId, ')
+          ..write('easeFactor: $easeFactor, ')
+          ..write('intervalDays: $intervalDays, ')
+          ..write('repetitions: $repetitions, ')
+          ..write('dueDate: $dueDate, ')
+          ..write('state: $state, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $QuizResultsTable extends QuizResults
+    with TableInfo<$QuizResultsTable, QuizResultRow> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $QuizResultsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+      'id', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  static const VerificationMeta _userIdMeta = const VerificationMeta('userId');
+  @override
+  late final GeneratedColumn<String> userId = GeneratedColumn<String>(
+      'user_id', aliasedName, true,
+      type: DriftSqlType.string, requiredDuringInsert: false);
+  static const VerificationMeta _updatedAtMeta =
+      const VerificationMeta('updatedAt');
+  @override
+  late final GeneratedColumn<int> updatedAt = GeneratedColumn<int>(
+      'updated_at', aliasedName, false,
+      type: DriftSqlType.int, requiredDuringInsert: true);
+  static const VerificationMeta _deletedAtMeta =
+      const VerificationMeta('deletedAt');
+  @override
+  late final GeneratedColumn<int> deletedAt = GeneratedColumn<int>(
+      'deleted_at', aliasedName, true,
+      type: DriftSqlType.int, requiredDuringInsert: false);
+  static const VerificationMeta _isDirtyMeta =
+      const VerificationMeta('isDirty');
+  @override
+  late final GeneratedColumn<bool> isDirty = GeneratedColumn<bool>(
+      'is_dirty', aliasedName, false,
+      type: DriftSqlType.bool,
+      requiredDuringInsert: false,
+      defaultConstraints:
+          GeneratedColumn.constraintIsAlways('CHECK ("is_dirty" IN (0, 1))'),
+      defaultValue: const Constant(true));
+  static const VerificationMeta _quizTypeMeta =
+      const VerificationMeta('quizType');
+  @override
+  late final GeneratedColumn<String> quizType = GeneratedColumn<String>(
+      'quiz_type', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  static const VerificationMeta _surahIdMeta =
+      const VerificationMeta('surahId');
+  @override
+  late final GeneratedColumn<int> surahId = GeneratedColumn<int>(
+      'surah_id', aliasedName, true,
+      type: DriftSqlType.int, requiredDuringInsert: false);
+  static const VerificationMeta _scoreMeta = const VerificationMeta('score');
+  @override
+  late final GeneratedColumn<int> score = GeneratedColumn<int>(
+      'score', aliasedName, false,
+      type: DriftSqlType.int, requiredDuringInsert: true);
+  static const VerificationMeta _totalMeta = const VerificationMeta('total');
+  @override
+  late final GeneratedColumn<int> total = GeneratedColumn<int>(
+      'total', aliasedName, false,
+      type: DriftSqlType.int, requiredDuringInsert: true);
+  static const VerificationMeta _takenAtMeta =
+      const VerificationMeta('takenAt');
+  @override
+  late final GeneratedColumn<int> takenAt = GeneratedColumn<int>(
+      'taken_at', aliasedName, false,
+      type: DriftSqlType.int, requiredDuringInsert: true);
+  @override
+  List<GeneratedColumn> get $columns => [
+        id,
+        userId,
+        updatedAt,
+        deletedAt,
+        isDirty,
+        quizType,
+        surahId,
+        score,
+        total,
+        takenAt
+      ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'quiz_results';
+  @override
+  VerificationContext validateIntegrity(Insertable<QuizResultRow> instance,
+      {bool isInserting = false}) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    } else if (isInserting) {
+      context.missing(_idMeta);
+    }
+    if (data.containsKey('user_id')) {
+      context.handle(_userIdMeta,
+          userId.isAcceptableOrUnknown(data['user_id']!, _userIdMeta));
+    }
+    if (data.containsKey('updated_at')) {
+      context.handle(_updatedAtMeta,
+          updatedAt.isAcceptableOrUnknown(data['updated_at']!, _updatedAtMeta));
+    } else if (isInserting) {
+      context.missing(_updatedAtMeta);
+    }
+    if (data.containsKey('deleted_at')) {
+      context.handle(_deletedAtMeta,
+          deletedAt.isAcceptableOrUnknown(data['deleted_at']!, _deletedAtMeta));
+    }
+    if (data.containsKey('is_dirty')) {
+      context.handle(_isDirtyMeta,
+          isDirty.isAcceptableOrUnknown(data['is_dirty']!, _isDirtyMeta));
+    }
+    if (data.containsKey('quiz_type')) {
+      context.handle(_quizTypeMeta,
+          quizType.isAcceptableOrUnknown(data['quiz_type']!, _quizTypeMeta));
+    } else if (isInserting) {
+      context.missing(_quizTypeMeta);
+    }
+    if (data.containsKey('surah_id')) {
+      context.handle(_surahIdMeta,
+          surahId.isAcceptableOrUnknown(data['surah_id']!, _surahIdMeta));
+    }
+    if (data.containsKey('score')) {
+      context.handle(
+          _scoreMeta, score.isAcceptableOrUnknown(data['score']!, _scoreMeta));
+    } else if (isInserting) {
+      context.missing(_scoreMeta);
+    }
+    if (data.containsKey('total')) {
+      context.handle(
+          _totalMeta, total.isAcceptableOrUnknown(data['total']!, _totalMeta));
+    } else if (isInserting) {
+      context.missing(_totalMeta);
+    }
+    if (data.containsKey('taken_at')) {
+      context.handle(_takenAtMeta,
+          takenAt.isAcceptableOrUnknown(data['taken_at']!, _takenAtMeta));
+    } else if (isInserting) {
+      context.missing(_takenAtMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  QuizResultRow map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return QuizResultRow(
+      id: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}id'])!,
+      userId: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}user_id']),
+      updatedAt: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}updated_at'])!,
+      deletedAt: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}deleted_at']),
+      isDirty: attachedDatabase.typeMapping
+          .read(DriftSqlType.bool, data['${effectivePrefix}is_dirty'])!,
+      quizType: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}quiz_type'])!,
+      surahId: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}surah_id']),
+      score: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}score'])!,
+      total: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}total'])!,
+      takenAt: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}taken_at'])!,
+    );
+  }
+
+  @override
+  $QuizResultsTable createAlias(String alias) {
+    return $QuizResultsTable(attachedDatabase, alias);
+  }
+}
+
+class QuizResultRow extends DataClass implements Insertable<QuizResultRow> {
+  final String id;
+  final String? userId;
+  final int updatedAt;
+  final int? deletedAt;
+  final bool isDirty;
+
+  /// 'mixed' — duy nhất loại hiện có (Sprint 10). Để dành cho các chế
+  /// độ quiz tương lai (vd. theo 1 Surah) tái dùng cùng cột.
+  final String quizType;
+  final int? surahId;
+  final int score;
+  final int total;
+  final int takenAt;
+  const QuizResultRow(
+      {required this.id,
+      this.userId,
+      required this.updatedAt,
+      this.deletedAt,
+      required this.isDirty,
+      required this.quizType,
+      this.surahId,
+      required this.score,
+      required this.total,
+      required this.takenAt});
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<String>(id);
+    if (!nullToAbsent || userId != null) {
+      map['user_id'] = Variable<String>(userId);
+    }
+    map['updated_at'] = Variable<int>(updatedAt);
+    if (!nullToAbsent || deletedAt != null) {
+      map['deleted_at'] = Variable<int>(deletedAt);
+    }
+    map['is_dirty'] = Variable<bool>(isDirty);
+    map['quiz_type'] = Variable<String>(quizType);
+    if (!nullToAbsent || surahId != null) {
+      map['surah_id'] = Variable<int>(surahId);
+    }
+    map['score'] = Variable<int>(score);
+    map['total'] = Variable<int>(total);
+    map['taken_at'] = Variable<int>(takenAt);
+    return map;
+  }
+
+  QuizResultsCompanion toCompanion(bool nullToAbsent) {
+    return QuizResultsCompanion(
+      id: Value(id),
+      userId:
+          userId == null && nullToAbsent ? const Value.absent() : Value(userId),
+      updatedAt: Value(updatedAt),
+      deletedAt: deletedAt == null && nullToAbsent
+          ? const Value.absent()
+          : Value(deletedAt),
+      isDirty: Value(isDirty),
+      quizType: Value(quizType),
+      surahId: surahId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(surahId),
+      score: Value(score),
+      total: Value(total),
+      takenAt: Value(takenAt),
+    );
+  }
+
+  factory QuizResultRow.fromJson(Map<String, dynamic> json,
+      {ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return QuizResultRow(
+      id: serializer.fromJson<String>(json['id']),
+      userId: serializer.fromJson<String?>(json['userId']),
+      updatedAt: serializer.fromJson<int>(json['updatedAt']),
+      deletedAt: serializer.fromJson<int?>(json['deletedAt']),
+      isDirty: serializer.fromJson<bool>(json['isDirty']),
+      quizType: serializer.fromJson<String>(json['quizType']),
+      surahId: serializer.fromJson<int?>(json['surahId']),
+      score: serializer.fromJson<int>(json['score']),
+      total: serializer.fromJson<int>(json['total']),
+      takenAt: serializer.fromJson<int>(json['takenAt']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<String>(id),
+      'userId': serializer.toJson<String?>(userId),
+      'updatedAt': serializer.toJson<int>(updatedAt),
+      'deletedAt': serializer.toJson<int?>(deletedAt),
+      'isDirty': serializer.toJson<bool>(isDirty),
+      'quizType': serializer.toJson<String>(quizType),
+      'surahId': serializer.toJson<int?>(surahId),
+      'score': serializer.toJson<int>(score),
+      'total': serializer.toJson<int>(total),
+      'takenAt': serializer.toJson<int>(takenAt),
+    };
+  }
+
+  QuizResultRow copyWith(
+          {String? id,
+          Value<String?> userId = const Value.absent(),
+          int? updatedAt,
+          Value<int?> deletedAt = const Value.absent(),
+          bool? isDirty,
+          String? quizType,
+          Value<int?> surahId = const Value.absent(),
+          int? score,
+          int? total,
+          int? takenAt}) =>
+      QuizResultRow(
+        id: id ?? this.id,
+        userId: userId.present ? userId.value : this.userId,
+        updatedAt: updatedAt ?? this.updatedAt,
+        deletedAt: deletedAt.present ? deletedAt.value : this.deletedAt,
+        isDirty: isDirty ?? this.isDirty,
+        quizType: quizType ?? this.quizType,
+        surahId: surahId.present ? surahId.value : this.surahId,
+        score: score ?? this.score,
+        total: total ?? this.total,
+        takenAt: takenAt ?? this.takenAt,
+      );
+  QuizResultRow copyWithCompanion(QuizResultsCompanion data) {
+    return QuizResultRow(
+      id: data.id.present ? data.id.value : this.id,
+      userId: data.userId.present ? data.userId.value : this.userId,
+      updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
+      deletedAt: data.deletedAt.present ? data.deletedAt.value : this.deletedAt,
+      isDirty: data.isDirty.present ? data.isDirty.value : this.isDirty,
+      quizType: data.quizType.present ? data.quizType.value : this.quizType,
+      surahId: data.surahId.present ? data.surahId.value : this.surahId,
+      score: data.score.present ? data.score.value : this.score,
+      total: data.total.present ? data.total.value : this.total,
+      takenAt: data.takenAt.present ? data.takenAt.value : this.takenAt,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('QuizResultRow(')
+          ..write('id: $id, ')
+          ..write('userId: $userId, ')
+          ..write('updatedAt: $updatedAt, ')
+          ..write('deletedAt: $deletedAt, ')
+          ..write('isDirty: $isDirty, ')
+          ..write('quizType: $quizType, ')
+          ..write('surahId: $surahId, ')
+          ..write('score: $score, ')
+          ..write('total: $total, ')
+          ..write('takenAt: $takenAt')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(id, userId, updatedAt, deletedAt, isDirty,
+      quizType, surahId, score, total, takenAt);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is QuizResultRow &&
+          other.id == this.id &&
+          other.userId == this.userId &&
+          other.updatedAt == this.updatedAt &&
+          other.deletedAt == this.deletedAt &&
+          other.isDirty == this.isDirty &&
+          other.quizType == this.quizType &&
+          other.surahId == this.surahId &&
+          other.score == this.score &&
+          other.total == this.total &&
+          other.takenAt == this.takenAt);
+}
+
+class QuizResultsCompanion extends UpdateCompanion<QuizResultRow> {
+  final Value<String> id;
+  final Value<String?> userId;
+  final Value<int> updatedAt;
+  final Value<int?> deletedAt;
+  final Value<bool> isDirty;
+  final Value<String> quizType;
+  final Value<int?> surahId;
+  final Value<int> score;
+  final Value<int> total;
+  final Value<int> takenAt;
+  final Value<int> rowid;
+  const QuizResultsCompanion({
+    this.id = const Value.absent(),
+    this.userId = const Value.absent(),
+    this.updatedAt = const Value.absent(),
+    this.deletedAt = const Value.absent(),
+    this.isDirty = const Value.absent(),
+    this.quizType = const Value.absent(),
+    this.surahId = const Value.absent(),
+    this.score = const Value.absent(),
+    this.total = const Value.absent(),
+    this.takenAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  QuizResultsCompanion.insert({
+    required String id,
+    this.userId = const Value.absent(),
+    required int updatedAt,
+    this.deletedAt = const Value.absent(),
+    this.isDirty = const Value.absent(),
+    required String quizType,
+    this.surahId = const Value.absent(),
+    required int score,
+    required int total,
+    required int takenAt,
+    this.rowid = const Value.absent(),
+  })  : id = Value(id),
+        updatedAt = Value(updatedAt),
+        quizType = Value(quizType),
+        score = Value(score),
+        total = Value(total),
+        takenAt = Value(takenAt);
+  static Insertable<QuizResultRow> custom({
+    Expression<String>? id,
+    Expression<String>? userId,
+    Expression<int>? updatedAt,
+    Expression<int>? deletedAt,
+    Expression<bool>? isDirty,
+    Expression<String>? quizType,
+    Expression<int>? surahId,
+    Expression<int>? score,
+    Expression<int>? total,
+    Expression<int>? takenAt,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (userId != null) 'user_id': userId,
+      if (updatedAt != null) 'updated_at': updatedAt,
+      if (deletedAt != null) 'deleted_at': deletedAt,
+      if (isDirty != null) 'is_dirty': isDirty,
+      if (quizType != null) 'quiz_type': quizType,
+      if (surahId != null) 'surah_id': surahId,
+      if (score != null) 'score': score,
+      if (total != null) 'total': total,
+      if (takenAt != null) 'taken_at': takenAt,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  QuizResultsCompanion copyWith(
+      {Value<String>? id,
+      Value<String?>? userId,
+      Value<int>? updatedAt,
+      Value<int?>? deletedAt,
+      Value<bool>? isDirty,
+      Value<String>? quizType,
+      Value<int?>? surahId,
+      Value<int>? score,
+      Value<int>? total,
+      Value<int>? takenAt,
+      Value<int>? rowid}) {
+    return QuizResultsCompanion(
+      id: id ?? this.id,
+      userId: userId ?? this.userId,
+      updatedAt: updatedAt ?? this.updatedAt,
+      deletedAt: deletedAt ?? this.deletedAt,
+      isDirty: isDirty ?? this.isDirty,
+      quizType: quizType ?? this.quizType,
+      surahId: surahId ?? this.surahId,
+      score: score ?? this.score,
+      total: total ?? this.total,
+      takenAt: takenAt ?? this.takenAt,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (userId.present) {
+      map['user_id'] = Variable<String>(userId.value);
+    }
+    if (updatedAt.present) {
+      map['updated_at'] = Variable<int>(updatedAt.value);
+    }
+    if (deletedAt.present) {
+      map['deleted_at'] = Variable<int>(deletedAt.value);
+    }
+    if (isDirty.present) {
+      map['is_dirty'] = Variable<bool>(isDirty.value);
+    }
+    if (quizType.present) {
+      map['quiz_type'] = Variable<String>(quizType.value);
+    }
+    if (surahId.present) {
+      map['surah_id'] = Variable<int>(surahId.value);
+    }
+    if (score.present) {
+      map['score'] = Variable<int>(score.value);
+    }
+    if (total.present) {
+      map['total'] = Variable<int>(total.value);
+    }
+    if (takenAt.present) {
+      map['taken_at'] = Variable<int>(takenAt.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('QuizResultsCompanion(')
+          ..write('id: $id, ')
+          ..write('userId: $userId, ')
+          ..write('updatedAt: $updatedAt, ')
+          ..write('deletedAt: $deletedAt, ')
+          ..write('isDirty: $isDirty, ')
+          ..write('quizType: $quizType, ')
+          ..write('surahId: $surahId, ')
+          ..write('score: $score, ')
+          ..write('total: $total, ')
+          ..write('takenAt: $takenAt, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $FlashcardDecksTable extends FlashcardDecks
+    with TableInfo<$FlashcardDecksTable, FlashcardDeckRow> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $FlashcardDecksTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+      'id', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  static const VerificationMeta _userIdMeta = const VerificationMeta('userId');
+  @override
+  late final GeneratedColumn<String> userId = GeneratedColumn<String>(
+      'user_id', aliasedName, true,
+      type: DriftSqlType.string, requiredDuringInsert: false);
+  static const VerificationMeta _updatedAtMeta =
+      const VerificationMeta('updatedAt');
+  @override
+  late final GeneratedColumn<int> updatedAt = GeneratedColumn<int>(
+      'updated_at', aliasedName, false,
+      type: DriftSqlType.int, requiredDuringInsert: true);
+  static const VerificationMeta _deletedAtMeta =
+      const VerificationMeta('deletedAt');
+  @override
+  late final GeneratedColumn<int> deletedAt = GeneratedColumn<int>(
+      'deleted_at', aliasedName, true,
+      type: DriftSqlType.int, requiredDuringInsert: false);
+  static const VerificationMeta _isDirtyMeta =
+      const VerificationMeta('isDirty');
+  @override
+  late final GeneratedColumn<bool> isDirty = GeneratedColumn<bool>(
+      'is_dirty', aliasedName, false,
+      type: DriftSqlType.bool,
+      requiredDuringInsert: false,
+      defaultConstraints:
+          GeneratedColumn.constraintIsAlways('CHECK ("is_dirty" IN (0, 1))'),
+      defaultValue: const Constant(true));
+  static const VerificationMeta _nameMeta = const VerificationMeta('name');
+  @override
+  late final GeneratedColumn<String> name = GeneratedColumn<String>(
+      'name', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  static const VerificationMeta _createdAtMeta =
+      const VerificationMeta('createdAt');
+  @override
+  late final GeneratedColumn<int> createdAt = GeneratedColumn<int>(
+      'created_at', aliasedName, false,
+      type: DriftSqlType.int, requiredDuringInsert: true);
+  @override
+  List<GeneratedColumn> get $columns =>
+      [id, userId, updatedAt, deletedAt, isDirty, name, createdAt];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'flashcard_decks';
+  @override
+  VerificationContext validateIntegrity(Insertable<FlashcardDeckRow> instance,
+      {bool isInserting = false}) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    } else if (isInserting) {
+      context.missing(_idMeta);
+    }
+    if (data.containsKey('user_id')) {
+      context.handle(_userIdMeta,
+          userId.isAcceptableOrUnknown(data['user_id']!, _userIdMeta));
+    }
+    if (data.containsKey('updated_at')) {
+      context.handle(_updatedAtMeta,
+          updatedAt.isAcceptableOrUnknown(data['updated_at']!, _updatedAtMeta));
+    } else if (isInserting) {
+      context.missing(_updatedAtMeta);
+    }
+    if (data.containsKey('deleted_at')) {
+      context.handle(_deletedAtMeta,
+          deletedAt.isAcceptableOrUnknown(data['deleted_at']!, _deletedAtMeta));
+    }
+    if (data.containsKey('is_dirty')) {
+      context.handle(_isDirtyMeta,
+          isDirty.isAcceptableOrUnknown(data['is_dirty']!, _isDirtyMeta));
+    }
+    if (data.containsKey('name')) {
+      context.handle(
+          _nameMeta, name.isAcceptableOrUnknown(data['name']!, _nameMeta));
+    } else if (isInserting) {
+      context.missing(_nameMeta);
+    }
+    if (data.containsKey('created_at')) {
+      context.handle(_createdAtMeta,
+          createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta));
+    } else if (isInserting) {
+      context.missing(_createdAtMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  FlashcardDeckRow map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return FlashcardDeckRow(
+      id: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}id'])!,
+      userId: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}user_id']),
+      updatedAt: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}updated_at'])!,
+      deletedAt: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}deleted_at']),
+      isDirty: attachedDatabase.typeMapping
+          .read(DriftSqlType.bool, data['${effectivePrefix}is_dirty'])!,
+      name: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}name'])!,
+      createdAt: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}created_at'])!,
+    );
+  }
+
+  @override
+  $FlashcardDecksTable createAlias(String alias) {
+    return $FlashcardDecksTable(attachedDatabase, alias);
+  }
+}
+
+class FlashcardDeckRow extends DataClass
+    implements Insertable<FlashcardDeckRow> {
+  final String id;
+  final String? userId;
+  final int updatedAt;
+  final int? deletedAt;
+  final bool isDirty;
+  final String name;
+  final int createdAt;
+  const FlashcardDeckRow(
+      {required this.id,
+      this.userId,
+      required this.updatedAt,
+      this.deletedAt,
+      required this.isDirty,
+      required this.name,
+      required this.createdAt});
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<String>(id);
+    if (!nullToAbsent || userId != null) {
+      map['user_id'] = Variable<String>(userId);
+    }
+    map['updated_at'] = Variable<int>(updatedAt);
+    if (!nullToAbsent || deletedAt != null) {
+      map['deleted_at'] = Variable<int>(deletedAt);
+    }
+    map['is_dirty'] = Variable<bool>(isDirty);
+    map['name'] = Variable<String>(name);
+    map['created_at'] = Variable<int>(createdAt);
+    return map;
+  }
+
+  FlashcardDecksCompanion toCompanion(bool nullToAbsent) {
+    return FlashcardDecksCompanion(
+      id: Value(id),
+      userId:
+          userId == null && nullToAbsent ? const Value.absent() : Value(userId),
+      updatedAt: Value(updatedAt),
+      deletedAt: deletedAt == null && nullToAbsent
+          ? const Value.absent()
+          : Value(deletedAt),
+      isDirty: Value(isDirty),
+      name: Value(name),
+      createdAt: Value(createdAt),
+    );
+  }
+
+  factory FlashcardDeckRow.fromJson(Map<String, dynamic> json,
+      {ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return FlashcardDeckRow(
+      id: serializer.fromJson<String>(json['id']),
+      userId: serializer.fromJson<String?>(json['userId']),
+      updatedAt: serializer.fromJson<int>(json['updatedAt']),
+      deletedAt: serializer.fromJson<int?>(json['deletedAt']),
+      isDirty: serializer.fromJson<bool>(json['isDirty']),
+      name: serializer.fromJson<String>(json['name']),
+      createdAt: serializer.fromJson<int>(json['createdAt']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<String>(id),
+      'userId': serializer.toJson<String?>(userId),
+      'updatedAt': serializer.toJson<int>(updatedAt),
+      'deletedAt': serializer.toJson<int?>(deletedAt),
+      'isDirty': serializer.toJson<bool>(isDirty),
+      'name': serializer.toJson<String>(name),
+      'createdAt': serializer.toJson<int>(createdAt),
+    };
+  }
+
+  FlashcardDeckRow copyWith(
+          {String? id,
+          Value<String?> userId = const Value.absent(),
+          int? updatedAt,
+          Value<int?> deletedAt = const Value.absent(),
+          bool? isDirty,
+          String? name,
+          int? createdAt}) =>
+      FlashcardDeckRow(
+        id: id ?? this.id,
+        userId: userId.present ? userId.value : this.userId,
+        updatedAt: updatedAt ?? this.updatedAt,
+        deletedAt: deletedAt.present ? deletedAt.value : this.deletedAt,
+        isDirty: isDirty ?? this.isDirty,
+        name: name ?? this.name,
+        createdAt: createdAt ?? this.createdAt,
+      );
+  FlashcardDeckRow copyWithCompanion(FlashcardDecksCompanion data) {
+    return FlashcardDeckRow(
+      id: data.id.present ? data.id.value : this.id,
+      userId: data.userId.present ? data.userId.value : this.userId,
+      updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
+      deletedAt: data.deletedAt.present ? data.deletedAt.value : this.deletedAt,
+      isDirty: data.isDirty.present ? data.isDirty.value : this.isDirty,
+      name: data.name.present ? data.name.value : this.name,
+      createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('FlashcardDeckRow(')
+          ..write('id: $id, ')
+          ..write('userId: $userId, ')
+          ..write('updatedAt: $updatedAt, ')
+          ..write('deletedAt: $deletedAt, ')
+          ..write('isDirty: $isDirty, ')
+          ..write('name: $name, ')
+          ..write('createdAt: $createdAt')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode =>
+      Object.hash(id, userId, updatedAt, deletedAt, isDirty, name, createdAt);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is FlashcardDeckRow &&
+          other.id == this.id &&
+          other.userId == this.userId &&
+          other.updatedAt == this.updatedAt &&
+          other.deletedAt == this.deletedAt &&
+          other.isDirty == this.isDirty &&
+          other.name == this.name &&
+          other.createdAt == this.createdAt);
+}
+
+class FlashcardDecksCompanion extends UpdateCompanion<FlashcardDeckRow> {
+  final Value<String> id;
+  final Value<String?> userId;
+  final Value<int> updatedAt;
+  final Value<int?> deletedAt;
+  final Value<bool> isDirty;
+  final Value<String> name;
+  final Value<int> createdAt;
+  final Value<int> rowid;
+  const FlashcardDecksCompanion({
+    this.id = const Value.absent(),
+    this.userId = const Value.absent(),
+    this.updatedAt = const Value.absent(),
+    this.deletedAt = const Value.absent(),
+    this.isDirty = const Value.absent(),
+    this.name = const Value.absent(),
+    this.createdAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  FlashcardDecksCompanion.insert({
+    required String id,
+    this.userId = const Value.absent(),
+    required int updatedAt,
+    this.deletedAt = const Value.absent(),
+    this.isDirty = const Value.absent(),
+    required String name,
+    required int createdAt,
+    this.rowid = const Value.absent(),
+  })  : id = Value(id),
+        updatedAt = Value(updatedAt),
+        name = Value(name),
+        createdAt = Value(createdAt);
+  static Insertable<FlashcardDeckRow> custom({
+    Expression<String>? id,
+    Expression<String>? userId,
+    Expression<int>? updatedAt,
+    Expression<int>? deletedAt,
+    Expression<bool>? isDirty,
+    Expression<String>? name,
+    Expression<int>? createdAt,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (userId != null) 'user_id': userId,
+      if (updatedAt != null) 'updated_at': updatedAt,
+      if (deletedAt != null) 'deleted_at': deletedAt,
+      if (isDirty != null) 'is_dirty': isDirty,
+      if (name != null) 'name': name,
+      if (createdAt != null) 'created_at': createdAt,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  FlashcardDecksCompanion copyWith(
+      {Value<String>? id,
+      Value<String?>? userId,
+      Value<int>? updatedAt,
+      Value<int?>? deletedAt,
+      Value<bool>? isDirty,
+      Value<String>? name,
+      Value<int>? createdAt,
+      Value<int>? rowid}) {
+    return FlashcardDecksCompanion(
+      id: id ?? this.id,
+      userId: userId ?? this.userId,
+      updatedAt: updatedAt ?? this.updatedAt,
+      deletedAt: deletedAt ?? this.deletedAt,
+      isDirty: isDirty ?? this.isDirty,
+      name: name ?? this.name,
+      createdAt: createdAt ?? this.createdAt,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (userId.present) {
+      map['user_id'] = Variable<String>(userId.value);
+    }
+    if (updatedAt.present) {
+      map['updated_at'] = Variable<int>(updatedAt.value);
+    }
+    if (deletedAt.present) {
+      map['deleted_at'] = Variable<int>(deletedAt.value);
+    }
+    if (isDirty.present) {
+      map['is_dirty'] = Variable<bool>(isDirty.value);
+    }
+    if (name.present) {
+      map['name'] = Variable<String>(name.value);
+    }
+    if (createdAt.present) {
+      map['created_at'] = Variable<int>(createdAt.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('FlashcardDecksCompanion(')
+          ..write('id: $id, ')
+          ..write('userId: $userId, ')
+          ..write('updatedAt: $updatedAt, ')
+          ..write('deletedAt: $deletedAt, ')
+          ..write('isDirty: $isDirty, ')
+          ..write('name: $name, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $FlashcardsTable extends Flashcards
+    with TableInfo<$FlashcardsTable, FlashcardRow> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $FlashcardsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+      'id', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  static const VerificationMeta _userIdMeta = const VerificationMeta('userId');
+  @override
+  late final GeneratedColumn<String> userId = GeneratedColumn<String>(
+      'user_id', aliasedName, true,
+      type: DriftSqlType.string, requiredDuringInsert: false);
+  static const VerificationMeta _updatedAtMeta =
+      const VerificationMeta('updatedAt');
+  @override
+  late final GeneratedColumn<int> updatedAt = GeneratedColumn<int>(
+      'updated_at', aliasedName, false,
+      type: DriftSqlType.int, requiredDuringInsert: true);
+  static const VerificationMeta _deletedAtMeta =
+      const VerificationMeta('deletedAt');
+  @override
+  late final GeneratedColumn<int> deletedAt = GeneratedColumn<int>(
+      'deleted_at', aliasedName, true,
+      type: DriftSqlType.int, requiredDuringInsert: false);
+  static const VerificationMeta _isDirtyMeta =
+      const VerificationMeta('isDirty');
+  @override
+  late final GeneratedColumn<bool> isDirty = GeneratedColumn<bool>(
+      'is_dirty', aliasedName, false,
+      type: DriftSqlType.bool,
+      requiredDuringInsert: false,
+      defaultConstraints:
+          GeneratedColumn.constraintIsAlways('CHECK ("is_dirty" IN (0, 1))'),
+      defaultValue: const Constant(true));
+  static const VerificationMeta _typeMeta = const VerificationMeta('type');
+  @override
+  late final GeneratedColumn<String> type = GeneratedColumn<String>(
+      'type', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  static const VerificationMeta _lexiconEntryTypeMeta =
+      const VerificationMeta('lexiconEntryType');
+  @override
+  late final GeneratedColumn<String> lexiconEntryType = GeneratedColumn<String>(
+      'lexicon_entry_type', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  static const VerificationMeta _lexiconEntryIdMeta =
+      const VerificationMeta('lexiconEntryId');
+  @override
+  late final GeneratedColumn<int> lexiconEntryId = GeneratedColumn<int>(
+      'lexicon_entry_id', aliasedName, false,
+      type: DriftSqlType.int, requiredDuringInsert: true);
+  static const VerificationMeta _deckIdMeta = const VerificationMeta('deckId');
+  @override
+  late final GeneratedColumn<String> deckId = GeneratedColumn<String>(
+      'deck_id', aliasedName, true,
+      type: DriftSqlType.string, requiredDuringInsert: false);
+  static const VerificationMeta _noteMeta = const VerificationMeta('note');
+  @override
+  late final GeneratedColumn<String> note = GeneratedColumn<String>(
+      'note', aliasedName, true,
+      type: DriftSqlType.string, requiredDuringInsert: false);
+  static const VerificationMeta _createdAtMeta =
+      const VerificationMeta('createdAt');
+  @override
+  late final GeneratedColumn<int> createdAt = GeneratedColumn<int>(
+      'created_at', aliasedName, false,
+      type: DriftSqlType.int, requiredDuringInsert: true);
+  @override
+  List<GeneratedColumn> get $columns => [
+        id,
+        userId,
+        updatedAt,
+        deletedAt,
+        isDirty,
+        type,
+        lexiconEntryType,
+        lexiconEntryId,
+        deckId,
+        note,
+        createdAt
+      ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'flashcards';
+  @override
+  VerificationContext validateIntegrity(Insertable<FlashcardRow> instance,
+      {bool isInserting = false}) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    } else if (isInserting) {
+      context.missing(_idMeta);
+    }
+    if (data.containsKey('user_id')) {
+      context.handle(_userIdMeta,
+          userId.isAcceptableOrUnknown(data['user_id']!, _userIdMeta));
+    }
+    if (data.containsKey('updated_at')) {
+      context.handle(_updatedAtMeta,
+          updatedAt.isAcceptableOrUnknown(data['updated_at']!, _updatedAtMeta));
+    } else if (isInserting) {
+      context.missing(_updatedAtMeta);
+    }
+    if (data.containsKey('deleted_at')) {
+      context.handle(_deletedAtMeta,
+          deletedAt.isAcceptableOrUnknown(data['deleted_at']!, _deletedAtMeta));
+    }
+    if (data.containsKey('is_dirty')) {
+      context.handle(_isDirtyMeta,
+          isDirty.isAcceptableOrUnknown(data['is_dirty']!, _isDirtyMeta));
+    }
+    if (data.containsKey('type')) {
+      context.handle(
+          _typeMeta, type.isAcceptableOrUnknown(data['type']!, _typeMeta));
+    } else if (isInserting) {
+      context.missing(_typeMeta);
+    }
+    if (data.containsKey('lexicon_entry_type')) {
+      context.handle(
+          _lexiconEntryTypeMeta,
+          lexiconEntryType.isAcceptableOrUnknown(
+              data['lexicon_entry_type']!, _lexiconEntryTypeMeta));
+    } else if (isInserting) {
+      context.missing(_lexiconEntryTypeMeta);
+    }
+    if (data.containsKey('lexicon_entry_id')) {
+      context.handle(
+          _lexiconEntryIdMeta,
+          lexiconEntryId.isAcceptableOrUnknown(
+              data['lexicon_entry_id']!, _lexiconEntryIdMeta));
+    } else if (isInserting) {
+      context.missing(_lexiconEntryIdMeta);
+    }
+    if (data.containsKey('deck_id')) {
+      context.handle(_deckIdMeta,
+          deckId.isAcceptableOrUnknown(data['deck_id']!, _deckIdMeta));
+    }
+    if (data.containsKey('note')) {
+      context.handle(
+          _noteMeta, note.isAcceptableOrUnknown(data['note']!, _noteMeta));
+    }
+    if (data.containsKey('created_at')) {
+      context.handle(_createdAtMeta,
+          createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta));
+    } else if (isInserting) {
+      context.missing(_createdAtMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  List<Set<GeneratedColumn>> get uniqueKeys => [
+        {lexiconEntryType, lexiconEntryId},
+      ];
+  @override
+  FlashcardRow map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return FlashcardRow(
+      id: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}id'])!,
+      userId: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}user_id']),
+      updatedAt: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}updated_at'])!,
+      deletedAt: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}deleted_at']),
+      isDirty: attachedDatabase.typeMapping
+          .read(DriftSqlType.bool, data['${effectivePrefix}is_dirty'])!,
+      type: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}type'])!,
+      lexiconEntryType: attachedDatabase.typeMapping.read(
+          DriftSqlType.string, data['${effectivePrefix}lexicon_entry_type'])!,
+      lexiconEntryId: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}lexicon_entry_id'])!,
+      deckId: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}deck_id']),
+      note: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}note']),
+      createdAt: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}created_at'])!,
+    );
+  }
+
+  @override
+  $FlashcardsTable createAlias(String alias) {
+    return $FlashcardsTable(attachedDatabase, alias);
+  }
+}
+
+class FlashcardRow extends DataClass implements Insertable<FlashcardRow> {
+  final String id;
+  final String? userId;
+  final int updatedAt;
+  final int? deletedAt;
+  final bool isDirty;
+
+  /// 'lemma' | 'root' | 'phrase' | 'grammar' | 'note' | 'custom' — chỉ
+  /// 'lemma' có dữ liệu thật ở Sprint 13.
+  final String type;
+
+  /// LexiconEntryType.name.
+  final String lexiconEntryType;
+  final int lexiconEntryId;
+  final String? deckId;
+  final String? note;
+  final int createdAt;
+  const FlashcardRow(
+      {required this.id,
+      this.userId,
+      required this.updatedAt,
+      this.deletedAt,
+      required this.isDirty,
+      required this.type,
+      required this.lexiconEntryType,
+      required this.lexiconEntryId,
+      this.deckId,
+      this.note,
+      required this.createdAt});
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<String>(id);
+    if (!nullToAbsent || userId != null) {
+      map['user_id'] = Variable<String>(userId);
+    }
+    map['updated_at'] = Variable<int>(updatedAt);
+    if (!nullToAbsent || deletedAt != null) {
+      map['deleted_at'] = Variable<int>(deletedAt);
+    }
+    map['is_dirty'] = Variable<bool>(isDirty);
+    map['type'] = Variable<String>(type);
+    map['lexicon_entry_type'] = Variable<String>(lexiconEntryType);
+    map['lexicon_entry_id'] = Variable<int>(lexiconEntryId);
+    if (!nullToAbsent || deckId != null) {
+      map['deck_id'] = Variable<String>(deckId);
+    }
+    if (!nullToAbsent || note != null) {
+      map['note'] = Variable<String>(note);
+    }
+    map['created_at'] = Variable<int>(createdAt);
+    return map;
+  }
+
+  FlashcardsCompanion toCompanion(bool nullToAbsent) {
+    return FlashcardsCompanion(
+      id: Value(id),
+      userId:
+          userId == null && nullToAbsent ? const Value.absent() : Value(userId),
+      updatedAt: Value(updatedAt),
+      deletedAt: deletedAt == null && nullToAbsent
+          ? const Value.absent()
+          : Value(deletedAt),
+      isDirty: Value(isDirty),
+      type: Value(type),
+      lexiconEntryType: Value(lexiconEntryType),
+      lexiconEntryId: Value(lexiconEntryId),
+      deckId:
+          deckId == null && nullToAbsent ? const Value.absent() : Value(deckId),
+      note: note == null && nullToAbsent ? const Value.absent() : Value(note),
+      createdAt: Value(createdAt),
+    );
+  }
+
+  factory FlashcardRow.fromJson(Map<String, dynamic> json,
+      {ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return FlashcardRow(
+      id: serializer.fromJson<String>(json['id']),
+      userId: serializer.fromJson<String?>(json['userId']),
+      updatedAt: serializer.fromJson<int>(json['updatedAt']),
+      deletedAt: serializer.fromJson<int?>(json['deletedAt']),
+      isDirty: serializer.fromJson<bool>(json['isDirty']),
+      type: serializer.fromJson<String>(json['type']),
+      lexiconEntryType: serializer.fromJson<String>(json['lexiconEntryType']),
+      lexiconEntryId: serializer.fromJson<int>(json['lexiconEntryId']),
+      deckId: serializer.fromJson<String?>(json['deckId']),
+      note: serializer.fromJson<String?>(json['note']),
+      createdAt: serializer.fromJson<int>(json['createdAt']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<String>(id),
+      'userId': serializer.toJson<String?>(userId),
+      'updatedAt': serializer.toJson<int>(updatedAt),
+      'deletedAt': serializer.toJson<int?>(deletedAt),
+      'isDirty': serializer.toJson<bool>(isDirty),
+      'type': serializer.toJson<String>(type),
+      'lexiconEntryType': serializer.toJson<String>(lexiconEntryType),
+      'lexiconEntryId': serializer.toJson<int>(lexiconEntryId),
+      'deckId': serializer.toJson<String?>(deckId),
+      'note': serializer.toJson<String?>(note),
+      'createdAt': serializer.toJson<int>(createdAt),
+    };
+  }
+
+  FlashcardRow copyWith(
+          {String? id,
+          Value<String?> userId = const Value.absent(),
+          int? updatedAt,
+          Value<int?> deletedAt = const Value.absent(),
+          bool? isDirty,
+          String? type,
+          String? lexiconEntryType,
+          int? lexiconEntryId,
+          Value<String?> deckId = const Value.absent(),
+          Value<String?> note = const Value.absent(),
+          int? createdAt}) =>
+      FlashcardRow(
+        id: id ?? this.id,
+        userId: userId.present ? userId.value : this.userId,
+        updatedAt: updatedAt ?? this.updatedAt,
+        deletedAt: deletedAt.present ? deletedAt.value : this.deletedAt,
+        isDirty: isDirty ?? this.isDirty,
+        type: type ?? this.type,
+        lexiconEntryType: lexiconEntryType ?? this.lexiconEntryType,
+        lexiconEntryId: lexiconEntryId ?? this.lexiconEntryId,
+        deckId: deckId.present ? deckId.value : this.deckId,
+        note: note.present ? note.value : this.note,
+        createdAt: createdAt ?? this.createdAt,
+      );
+  FlashcardRow copyWithCompanion(FlashcardsCompanion data) {
+    return FlashcardRow(
+      id: data.id.present ? data.id.value : this.id,
+      userId: data.userId.present ? data.userId.value : this.userId,
+      updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
+      deletedAt: data.deletedAt.present ? data.deletedAt.value : this.deletedAt,
+      isDirty: data.isDirty.present ? data.isDirty.value : this.isDirty,
+      type: data.type.present ? data.type.value : this.type,
+      lexiconEntryType: data.lexiconEntryType.present
+          ? data.lexiconEntryType.value
+          : this.lexiconEntryType,
+      lexiconEntryId: data.lexiconEntryId.present
+          ? data.lexiconEntryId.value
+          : this.lexiconEntryId,
+      deckId: data.deckId.present ? data.deckId.value : this.deckId,
+      note: data.note.present ? data.note.value : this.note,
+      createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('FlashcardRow(')
+          ..write('id: $id, ')
+          ..write('userId: $userId, ')
+          ..write('updatedAt: $updatedAt, ')
+          ..write('deletedAt: $deletedAt, ')
+          ..write('isDirty: $isDirty, ')
+          ..write('type: $type, ')
+          ..write('lexiconEntryType: $lexiconEntryType, ')
+          ..write('lexiconEntryId: $lexiconEntryId, ')
+          ..write('deckId: $deckId, ')
+          ..write('note: $note, ')
+          ..write('createdAt: $createdAt')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(id, userId, updatedAt, deletedAt, isDirty,
+      type, lexiconEntryType, lexiconEntryId, deckId, note, createdAt);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is FlashcardRow &&
+          other.id == this.id &&
+          other.userId == this.userId &&
+          other.updatedAt == this.updatedAt &&
+          other.deletedAt == this.deletedAt &&
+          other.isDirty == this.isDirty &&
+          other.type == this.type &&
+          other.lexiconEntryType == this.lexiconEntryType &&
+          other.lexiconEntryId == this.lexiconEntryId &&
+          other.deckId == this.deckId &&
+          other.note == this.note &&
+          other.createdAt == this.createdAt);
+}
+
+class FlashcardsCompanion extends UpdateCompanion<FlashcardRow> {
+  final Value<String> id;
+  final Value<String?> userId;
+  final Value<int> updatedAt;
+  final Value<int?> deletedAt;
+  final Value<bool> isDirty;
+  final Value<String> type;
+  final Value<String> lexiconEntryType;
+  final Value<int> lexiconEntryId;
+  final Value<String?> deckId;
+  final Value<String?> note;
+  final Value<int> createdAt;
+  final Value<int> rowid;
+  const FlashcardsCompanion({
+    this.id = const Value.absent(),
+    this.userId = const Value.absent(),
+    this.updatedAt = const Value.absent(),
+    this.deletedAt = const Value.absent(),
+    this.isDirty = const Value.absent(),
+    this.type = const Value.absent(),
+    this.lexiconEntryType = const Value.absent(),
+    this.lexiconEntryId = const Value.absent(),
+    this.deckId = const Value.absent(),
+    this.note = const Value.absent(),
+    this.createdAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  FlashcardsCompanion.insert({
+    required String id,
+    this.userId = const Value.absent(),
+    required int updatedAt,
+    this.deletedAt = const Value.absent(),
+    this.isDirty = const Value.absent(),
+    required String type,
+    required String lexiconEntryType,
+    required int lexiconEntryId,
+    this.deckId = const Value.absent(),
+    this.note = const Value.absent(),
+    required int createdAt,
+    this.rowid = const Value.absent(),
+  })  : id = Value(id),
+        updatedAt = Value(updatedAt),
+        type = Value(type),
+        lexiconEntryType = Value(lexiconEntryType),
+        lexiconEntryId = Value(lexiconEntryId),
+        createdAt = Value(createdAt);
+  static Insertable<FlashcardRow> custom({
+    Expression<String>? id,
+    Expression<String>? userId,
+    Expression<int>? updatedAt,
+    Expression<int>? deletedAt,
+    Expression<bool>? isDirty,
+    Expression<String>? type,
+    Expression<String>? lexiconEntryType,
+    Expression<int>? lexiconEntryId,
+    Expression<String>? deckId,
+    Expression<String>? note,
+    Expression<int>? createdAt,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (userId != null) 'user_id': userId,
+      if (updatedAt != null) 'updated_at': updatedAt,
+      if (deletedAt != null) 'deleted_at': deletedAt,
+      if (isDirty != null) 'is_dirty': isDirty,
+      if (type != null) 'type': type,
+      if (lexiconEntryType != null) 'lexicon_entry_type': lexiconEntryType,
+      if (lexiconEntryId != null) 'lexicon_entry_id': lexiconEntryId,
+      if (deckId != null) 'deck_id': deckId,
+      if (note != null) 'note': note,
+      if (createdAt != null) 'created_at': createdAt,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  FlashcardsCompanion copyWith(
+      {Value<String>? id,
+      Value<String?>? userId,
+      Value<int>? updatedAt,
+      Value<int?>? deletedAt,
+      Value<bool>? isDirty,
+      Value<String>? type,
+      Value<String>? lexiconEntryType,
+      Value<int>? lexiconEntryId,
+      Value<String?>? deckId,
+      Value<String?>? note,
+      Value<int>? createdAt,
+      Value<int>? rowid}) {
+    return FlashcardsCompanion(
+      id: id ?? this.id,
+      userId: userId ?? this.userId,
+      updatedAt: updatedAt ?? this.updatedAt,
+      deletedAt: deletedAt ?? this.deletedAt,
+      isDirty: isDirty ?? this.isDirty,
+      type: type ?? this.type,
+      lexiconEntryType: lexiconEntryType ?? this.lexiconEntryType,
+      lexiconEntryId: lexiconEntryId ?? this.lexiconEntryId,
+      deckId: deckId ?? this.deckId,
+      note: note ?? this.note,
+      createdAt: createdAt ?? this.createdAt,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (userId.present) {
+      map['user_id'] = Variable<String>(userId.value);
+    }
+    if (updatedAt.present) {
+      map['updated_at'] = Variable<int>(updatedAt.value);
+    }
+    if (deletedAt.present) {
+      map['deleted_at'] = Variable<int>(deletedAt.value);
+    }
+    if (isDirty.present) {
+      map['is_dirty'] = Variable<bool>(isDirty.value);
+    }
+    if (type.present) {
+      map['type'] = Variable<String>(type.value);
+    }
+    if (lexiconEntryType.present) {
+      map['lexicon_entry_type'] = Variable<String>(lexiconEntryType.value);
+    }
+    if (lexiconEntryId.present) {
+      map['lexicon_entry_id'] = Variable<int>(lexiconEntryId.value);
+    }
+    if (deckId.present) {
+      map['deck_id'] = Variable<String>(deckId.value);
+    }
+    if (note.present) {
+      map['note'] = Variable<String>(note.value);
+    }
+    if (createdAt.present) {
+      map['created_at'] = Variable<int>(createdAt.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('FlashcardsCompanion(')
+          ..write('id: $id, ')
+          ..write('userId: $userId, ')
+          ..write('updatedAt: $updatedAt, ')
+          ..write('deletedAt: $deletedAt, ')
+          ..write('isDirty: $isDirty, ')
+          ..write('type: $type, ')
+          ..write('lexiconEntryType: $lexiconEntryType, ')
+          ..write('lexiconEntryId: $lexiconEntryId, ')
+          ..write('deckId: $deckId, ')
+          ..write('note: $note, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
 abstract class _$UserDatabase extends GeneratedDatabase {
   _$UserDatabase(QueryExecutor e) : super(e);
   $UserDatabaseManager get managers => $UserDatabaseManager(this);
@@ -1954,12 +5594,32 @@ abstract class _$UserDatabase extends GeneratedDatabase {
   late final $NotesTable notes = $NotesTable(this);
   late final $FavoritesTable favorites = $FavoritesTable(this);
   late final $AyahStatusesTable ayahStatuses = $AyahStatusesTable(this);
+  late final $StudySessionsTable studySessions = $StudySessionsTable(this);
+  late final $KhatmCyclesTable khatmCycles = $KhatmCyclesTable(this);
+  late final $BookmarkCollectionsTable bookmarkCollections =
+      $BookmarkCollectionsTable(this);
+  late final $SrsCardsTable srsCards = $SrsCardsTable(this);
+  late final $QuizResultsTable quizResults = $QuizResultsTable(this);
+  late final $FlashcardDecksTable flashcardDecks = $FlashcardDecksTable(this);
+  late final $FlashcardsTable flashcards = $FlashcardsTable(this);
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
   @override
-  List<DatabaseSchemaEntity> get allSchemaEntities =>
-      [bookmarks, highlights, notes, favorites, ayahStatuses];
+  List<DatabaseSchemaEntity> get allSchemaEntities => [
+        bookmarks,
+        highlights,
+        notes,
+        favorites,
+        ayahStatuses,
+        studySessions,
+        khatmCycles,
+        bookmarkCollections,
+        srsCards,
+        quizResults,
+        flashcardDecks,
+        flashcards
+      ];
 }
 
 typedef $$BookmarksTableCreateCompanionBuilder = BookmarksCompanion Function({
@@ -1970,6 +5630,7 @@ typedef $$BookmarksTableCreateCompanionBuilder = BookmarksCompanion Function({
   Value<bool> isDirty,
   required int ayahId,
   required int createdAt,
+  Value<String?> collectionId,
   Value<int> rowid,
 });
 typedef $$BookmarksTableUpdateCompanionBuilder = BookmarksCompanion Function({
@@ -1980,6 +5641,7 @@ typedef $$BookmarksTableUpdateCompanionBuilder = BookmarksCompanion Function({
   Value<bool> isDirty,
   Value<int> ayahId,
   Value<int> createdAt,
+  Value<String?> collectionId,
   Value<int> rowid,
 });
 
@@ -2012,6 +5674,9 @@ class $$BookmarksTableFilterComposer
 
   ColumnFilters<int> get createdAt => $composableBuilder(
       column: $table.createdAt, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get collectionId => $composableBuilder(
+      column: $table.collectionId, builder: (column) => ColumnFilters(column));
 }
 
 class $$BookmarksTableOrderingComposer
@@ -2043,6 +5708,10 @@ class $$BookmarksTableOrderingComposer
 
   ColumnOrderings<int> get createdAt => $composableBuilder(
       column: $table.createdAt, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get collectionId => $composableBuilder(
+      column: $table.collectionId,
+      builder: (column) => ColumnOrderings(column));
 }
 
 class $$BookmarksTableAnnotationComposer
@@ -2074,6 +5743,9 @@ class $$BookmarksTableAnnotationComposer
 
   GeneratedColumn<int> get createdAt =>
       $composableBuilder(column: $table.createdAt, builder: (column) => column);
+
+  GeneratedColumn<String> get collectionId => $composableBuilder(
+      column: $table.collectionId, builder: (column) => column);
 }
 
 class $$BookmarksTableTableManager extends RootTableManager<
@@ -2106,6 +5778,7 @@ class $$BookmarksTableTableManager extends RootTableManager<
             Value<bool> isDirty = const Value.absent(),
             Value<int> ayahId = const Value.absent(),
             Value<int> createdAt = const Value.absent(),
+            Value<String?> collectionId = const Value.absent(),
             Value<int> rowid = const Value.absent(),
           }) =>
               BookmarksCompanion(
@@ -2116,6 +5789,7 @@ class $$BookmarksTableTableManager extends RootTableManager<
             isDirty: isDirty,
             ayahId: ayahId,
             createdAt: createdAt,
+            collectionId: collectionId,
             rowid: rowid,
           ),
           createCompanionCallback: ({
@@ -2126,6 +5800,7 @@ class $$BookmarksTableTableManager extends RootTableManager<
             Value<bool> isDirty = const Value.absent(),
             required int ayahId,
             required int createdAt,
+            Value<String?> collectionId = const Value.absent(),
             Value<int> rowid = const Value.absent(),
           }) =>
               BookmarksCompanion.insert(
@@ -2136,6 +5811,7 @@ class $$BookmarksTableTableManager extends RootTableManager<
             isDirty: isDirty,
             ayahId: ayahId,
             createdAt: createdAt,
+            collectionId: collectionId,
             rowid: rowid,
           ),
           withReferenceMapper: (p0) => p0
@@ -2950,6 +6626,1745 @@ typedef $$AyahStatusesTableProcessedTableManager = ProcessedTableManager<
     ),
     AyahStatusRow,
     PrefetchHooks Function()>;
+typedef $$StudySessionsTableCreateCompanionBuilder = StudySessionsCompanion
+    Function({
+  required String id,
+  Value<String?> userId,
+  required int updatedAt,
+  Value<int?> deletedAt,
+  Value<bool> isDirty,
+  required String date,
+  required int surahId,
+  required int ayahFrom,
+  required int ayahTo,
+  required int durationSec,
+  Value<String?> note,
+  required int createdAt,
+  Value<int> rowid,
+});
+typedef $$StudySessionsTableUpdateCompanionBuilder = StudySessionsCompanion
+    Function({
+  Value<String> id,
+  Value<String?> userId,
+  Value<int> updatedAt,
+  Value<int?> deletedAt,
+  Value<bool> isDirty,
+  Value<String> date,
+  Value<int> surahId,
+  Value<int> ayahFrom,
+  Value<int> ayahTo,
+  Value<int> durationSec,
+  Value<String?> note,
+  Value<int> createdAt,
+  Value<int> rowid,
+});
+
+class $$StudySessionsTableFilterComposer
+    extends Composer<_$UserDatabase, $StudySessionsTable> {
+  $$StudySessionsTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get id => $composableBuilder(
+      column: $table.id, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get userId => $composableBuilder(
+      column: $table.userId, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<int> get updatedAt => $composableBuilder(
+      column: $table.updatedAt, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<int> get deletedAt => $composableBuilder(
+      column: $table.deletedAt, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<bool> get isDirty => $composableBuilder(
+      column: $table.isDirty, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get date => $composableBuilder(
+      column: $table.date, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<int> get surahId => $composableBuilder(
+      column: $table.surahId, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<int> get ayahFrom => $composableBuilder(
+      column: $table.ayahFrom, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<int> get ayahTo => $composableBuilder(
+      column: $table.ayahTo, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<int> get durationSec => $composableBuilder(
+      column: $table.durationSec, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get note => $composableBuilder(
+      column: $table.note, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<int> get createdAt => $composableBuilder(
+      column: $table.createdAt, builder: (column) => ColumnFilters(column));
+}
+
+class $$StudySessionsTableOrderingComposer
+    extends Composer<_$UserDatabase, $StudySessionsTable> {
+  $$StudySessionsTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get id => $composableBuilder(
+      column: $table.id, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get userId => $composableBuilder(
+      column: $table.userId, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<int> get updatedAt => $composableBuilder(
+      column: $table.updatedAt, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<int> get deletedAt => $composableBuilder(
+      column: $table.deletedAt, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<bool> get isDirty => $composableBuilder(
+      column: $table.isDirty, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get date => $composableBuilder(
+      column: $table.date, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<int> get surahId => $composableBuilder(
+      column: $table.surahId, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<int> get ayahFrom => $composableBuilder(
+      column: $table.ayahFrom, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<int> get ayahTo => $composableBuilder(
+      column: $table.ayahTo, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<int> get durationSec => $composableBuilder(
+      column: $table.durationSec, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get note => $composableBuilder(
+      column: $table.note, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<int> get createdAt => $composableBuilder(
+      column: $table.createdAt, builder: (column) => ColumnOrderings(column));
+}
+
+class $$StudySessionsTableAnnotationComposer
+    extends Composer<_$UserDatabase, $StudySessionsTable> {
+  $$StudySessionsTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get userId =>
+      $composableBuilder(column: $table.userId, builder: (column) => column);
+
+  GeneratedColumn<int> get updatedAt =>
+      $composableBuilder(column: $table.updatedAt, builder: (column) => column);
+
+  GeneratedColumn<int> get deletedAt =>
+      $composableBuilder(column: $table.deletedAt, builder: (column) => column);
+
+  GeneratedColumn<bool> get isDirty =>
+      $composableBuilder(column: $table.isDirty, builder: (column) => column);
+
+  GeneratedColumn<String> get date =>
+      $composableBuilder(column: $table.date, builder: (column) => column);
+
+  GeneratedColumn<int> get surahId =>
+      $composableBuilder(column: $table.surahId, builder: (column) => column);
+
+  GeneratedColumn<int> get ayahFrom =>
+      $composableBuilder(column: $table.ayahFrom, builder: (column) => column);
+
+  GeneratedColumn<int> get ayahTo =>
+      $composableBuilder(column: $table.ayahTo, builder: (column) => column);
+
+  GeneratedColumn<int> get durationSec => $composableBuilder(
+      column: $table.durationSec, builder: (column) => column);
+
+  GeneratedColumn<String> get note =>
+      $composableBuilder(column: $table.note, builder: (column) => column);
+
+  GeneratedColumn<int> get createdAt =>
+      $composableBuilder(column: $table.createdAt, builder: (column) => column);
+}
+
+class $$StudySessionsTableTableManager extends RootTableManager<
+    _$UserDatabase,
+    $StudySessionsTable,
+    StudySessionRow,
+    $$StudySessionsTableFilterComposer,
+    $$StudySessionsTableOrderingComposer,
+    $$StudySessionsTableAnnotationComposer,
+    $$StudySessionsTableCreateCompanionBuilder,
+    $$StudySessionsTableUpdateCompanionBuilder,
+    (
+      StudySessionRow,
+      BaseReferences<_$UserDatabase, $StudySessionsTable, StudySessionRow>
+    ),
+    StudySessionRow,
+    PrefetchHooks Function()> {
+  $$StudySessionsTableTableManager(_$UserDatabase db, $StudySessionsTable table)
+      : super(TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$StudySessionsTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$StudySessionsTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$StudySessionsTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback: ({
+            Value<String> id = const Value.absent(),
+            Value<String?> userId = const Value.absent(),
+            Value<int> updatedAt = const Value.absent(),
+            Value<int?> deletedAt = const Value.absent(),
+            Value<bool> isDirty = const Value.absent(),
+            Value<String> date = const Value.absent(),
+            Value<int> surahId = const Value.absent(),
+            Value<int> ayahFrom = const Value.absent(),
+            Value<int> ayahTo = const Value.absent(),
+            Value<int> durationSec = const Value.absent(),
+            Value<String?> note = const Value.absent(),
+            Value<int> createdAt = const Value.absent(),
+            Value<int> rowid = const Value.absent(),
+          }) =>
+              StudySessionsCompanion(
+            id: id,
+            userId: userId,
+            updatedAt: updatedAt,
+            deletedAt: deletedAt,
+            isDirty: isDirty,
+            date: date,
+            surahId: surahId,
+            ayahFrom: ayahFrom,
+            ayahTo: ayahTo,
+            durationSec: durationSec,
+            note: note,
+            createdAt: createdAt,
+            rowid: rowid,
+          ),
+          createCompanionCallback: ({
+            required String id,
+            Value<String?> userId = const Value.absent(),
+            required int updatedAt,
+            Value<int?> deletedAt = const Value.absent(),
+            Value<bool> isDirty = const Value.absent(),
+            required String date,
+            required int surahId,
+            required int ayahFrom,
+            required int ayahTo,
+            required int durationSec,
+            Value<String?> note = const Value.absent(),
+            required int createdAt,
+            Value<int> rowid = const Value.absent(),
+          }) =>
+              StudySessionsCompanion.insert(
+            id: id,
+            userId: userId,
+            updatedAt: updatedAt,
+            deletedAt: deletedAt,
+            isDirty: isDirty,
+            date: date,
+            surahId: surahId,
+            ayahFrom: ayahFrom,
+            ayahTo: ayahTo,
+            durationSec: durationSec,
+            note: note,
+            createdAt: createdAt,
+            rowid: rowid,
+          ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ));
+}
+
+typedef $$StudySessionsTableProcessedTableManager = ProcessedTableManager<
+    _$UserDatabase,
+    $StudySessionsTable,
+    StudySessionRow,
+    $$StudySessionsTableFilterComposer,
+    $$StudySessionsTableOrderingComposer,
+    $$StudySessionsTableAnnotationComposer,
+    $$StudySessionsTableCreateCompanionBuilder,
+    $$StudySessionsTableUpdateCompanionBuilder,
+    (
+      StudySessionRow,
+      BaseReferences<_$UserDatabase, $StudySessionsTable, StudySessionRow>
+    ),
+    StudySessionRow,
+    PrefetchHooks Function()>;
+typedef $$KhatmCyclesTableCreateCompanionBuilder = KhatmCyclesCompanion
+    Function({
+  required String id,
+  Value<String?> userId,
+  required int updatedAt,
+  Value<int?> deletedAt,
+  Value<bool> isDirty,
+  required String name,
+  required int startedAt,
+  Value<String?> targetDate,
+  Value<int?> completedAt,
+  Value<int> currentAyahId,
+  Value<int> rowid,
+});
+typedef $$KhatmCyclesTableUpdateCompanionBuilder = KhatmCyclesCompanion
+    Function({
+  Value<String> id,
+  Value<String?> userId,
+  Value<int> updatedAt,
+  Value<int?> deletedAt,
+  Value<bool> isDirty,
+  Value<String> name,
+  Value<int> startedAt,
+  Value<String?> targetDate,
+  Value<int?> completedAt,
+  Value<int> currentAyahId,
+  Value<int> rowid,
+});
+
+class $$KhatmCyclesTableFilterComposer
+    extends Composer<_$UserDatabase, $KhatmCyclesTable> {
+  $$KhatmCyclesTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get id => $composableBuilder(
+      column: $table.id, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get userId => $composableBuilder(
+      column: $table.userId, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<int> get updatedAt => $composableBuilder(
+      column: $table.updatedAt, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<int> get deletedAt => $composableBuilder(
+      column: $table.deletedAt, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<bool> get isDirty => $composableBuilder(
+      column: $table.isDirty, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get name => $composableBuilder(
+      column: $table.name, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<int> get startedAt => $composableBuilder(
+      column: $table.startedAt, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get targetDate => $composableBuilder(
+      column: $table.targetDate, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<int> get completedAt => $composableBuilder(
+      column: $table.completedAt, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<int> get currentAyahId => $composableBuilder(
+      column: $table.currentAyahId, builder: (column) => ColumnFilters(column));
+}
+
+class $$KhatmCyclesTableOrderingComposer
+    extends Composer<_$UserDatabase, $KhatmCyclesTable> {
+  $$KhatmCyclesTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get id => $composableBuilder(
+      column: $table.id, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get userId => $composableBuilder(
+      column: $table.userId, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<int> get updatedAt => $composableBuilder(
+      column: $table.updatedAt, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<int> get deletedAt => $composableBuilder(
+      column: $table.deletedAt, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<bool> get isDirty => $composableBuilder(
+      column: $table.isDirty, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get name => $composableBuilder(
+      column: $table.name, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<int> get startedAt => $composableBuilder(
+      column: $table.startedAt, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get targetDate => $composableBuilder(
+      column: $table.targetDate, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<int> get completedAt => $composableBuilder(
+      column: $table.completedAt, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<int> get currentAyahId => $composableBuilder(
+      column: $table.currentAyahId,
+      builder: (column) => ColumnOrderings(column));
+}
+
+class $$KhatmCyclesTableAnnotationComposer
+    extends Composer<_$UserDatabase, $KhatmCyclesTable> {
+  $$KhatmCyclesTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get userId =>
+      $composableBuilder(column: $table.userId, builder: (column) => column);
+
+  GeneratedColumn<int> get updatedAt =>
+      $composableBuilder(column: $table.updatedAt, builder: (column) => column);
+
+  GeneratedColumn<int> get deletedAt =>
+      $composableBuilder(column: $table.deletedAt, builder: (column) => column);
+
+  GeneratedColumn<bool> get isDirty =>
+      $composableBuilder(column: $table.isDirty, builder: (column) => column);
+
+  GeneratedColumn<String> get name =>
+      $composableBuilder(column: $table.name, builder: (column) => column);
+
+  GeneratedColumn<int> get startedAt =>
+      $composableBuilder(column: $table.startedAt, builder: (column) => column);
+
+  GeneratedColumn<String> get targetDate => $composableBuilder(
+      column: $table.targetDate, builder: (column) => column);
+
+  GeneratedColumn<int> get completedAt => $composableBuilder(
+      column: $table.completedAt, builder: (column) => column);
+
+  GeneratedColumn<int> get currentAyahId => $composableBuilder(
+      column: $table.currentAyahId, builder: (column) => column);
+}
+
+class $$KhatmCyclesTableTableManager extends RootTableManager<
+    _$UserDatabase,
+    $KhatmCyclesTable,
+    KhatmCycleRow,
+    $$KhatmCyclesTableFilterComposer,
+    $$KhatmCyclesTableOrderingComposer,
+    $$KhatmCyclesTableAnnotationComposer,
+    $$KhatmCyclesTableCreateCompanionBuilder,
+    $$KhatmCyclesTableUpdateCompanionBuilder,
+    (
+      KhatmCycleRow,
+      BaseReferences<_$UserDatabase, $KhatmCyclesTable, KhatmCycleRow>
+    ),
+    KhatmCycleRow,
+    PrefetchHooks Function()> {
+  $$KhatmCyclesTableTableManager(_$UserDatabase db, $KhatmCyclesTable table)
+      : super(TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$KhatmCyclesTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$KhatmCyclesTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$KhatmCyclesTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback: ({
+            Value<String> id = const Value.absent(),
+            Value<String?> userId = const Value.absent(),
+            Value<int> updatedAt = const Value.absent(),
+            Value<int?> deletedAt = const Value.absent(),
+            Value<bool> isDirty = const Value.absent(),
+            Value<String> name = const Value.absent(),
+            Value<int> startedAt = const Value.absent(),
+            Value<String?> targetDate = const Value.absent(),
+            Value<int?> completedAt = const Value.absent(),
+            Value<int> currentAyahId = const Value.absent(),
+            Value<int> rowid = const Value.absent(),
+          }) =>
+              KhatmCyclesCompanion(
+            id: id,
+            userId: userId,
+            updatedAt: updatedAt,
+            deletedAt: deletedAt,
+            isDirty: isDirty,
+            name: name,
+            startedAt: startedAt,
+            targetDate: targetDate,
+            completedAt: completedAt,
+            currentAyahId: currentAyahId,
+            rowid: rowid,
+          ),
+          createCompanionCallback: ({
+            required String id,
+            Value<String?> userId = const Value.absent(),
+            required int updatedAt,
+            Value<int?> deletedAt = const Value.absent(),
+            Value<bool> isDirty = const Value.absent(),
+            required String name,
+            required int startedAt,
+            Value<String?> targetDate = const Value.absent(),
+            Value<int?> completedAt = const Value.absent(),
+            Value<int> currentAyahId = const Value.absent(),
+            Value<int> rowid = const Value.absent(),
+          }) =>
+              KhatmCyclesCompanion.insert(
+            id: id,
+            userId: userId,
+            updatedAt: updatedAt,
+            deletedAt: deletedAt,
+            isDirty: isDirty,
+            name: name,
+            startedAt: startedAt,
+            targetDate: targetDate,
+            completedAt: completedAt,
+            currentAyahId: currentAyahId,
+            rowid: rowid,
+          ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ));
+}
+
+typedef $$KhatmCyclesTableProcessedTableManager = ProcessedTableManager<
+    _$UserDatabase,
+    $KhatmCyclesTable,
+    KhatmCycleRow,
+    $$KhatmCyclesTableFilterComposer,
+    $$KhatmCyclesTableOrderingComposer,
+    $$KhatmCyclesTableAnnotationComposer,
+    $$KhatmCyclesTableCreateCompanionBuilder,
+    $$KhatmCyclesTableUpdateCompanionBuilder,
+    (
+      KhatmCycleRow,
+      BaseReferences<_$UserDatabase, $KhatmCyclesTable, KhatmCycleRow>
+    ),
+    KhatmCycleRow,
+    PrefetchHooks Function()>;
+typedef $$BookmarkCollectionsTableCreateCompanionBuilder
+    = BookmarkCollectionsCompanion Function({
+  required String id,
+  Value<String?> userId,
+  required int updatedAt,
+  Value<int?> deletedAt,
+  Value<bool> isDirty,
+  required String name,
+  Value<String?> emoji,
+  Value<int> displayOrder,
+  Value<int> rowid,
+});
+typedef $$BookmarkCollectionsTableUpdateCompanionBuilder
+    = BookmarkCollectionsCompanion Function({
+  Value<String> id,
+  Value<String?> userId,
+  Value<int> updatedAt,
+  Value<int?> deletedAt,
+  Value<bool> isDirty,
+  Value<String> name,
+  Value<String?> emoji,
+  Value<int> displayOrder,
+  Value<int> rowid,
+});
+
+class $$BookmarkCollectionsTableFilterComposer
+    extends Composer<_$UserDatabase, $BookmarkCollectionsTable> {
+  $$BookmarkCollectionsTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get id => $composableBuilder(
+      column: $table.id, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get userId => $composableBuilder(
+      column: $table.userId, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<int> get updatedAt => $composableBuilder(
+      column: $table.updatedAt, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<int> get deletedAt => $composableBuilder(
+      column: $table.deletedAt, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<bool> get isDirty => $composableBuilder(
+      column: $table.isDirty, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get name => $composableBuilder(
+      column: $table.name, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get emoji => $composableBuilder(
+      column: $table.emoji, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<int> get displayOrder => $composableBuilder(
+      column: $table.displayOrder, builder: (column) => ColumnFilters(column));
+}
+
+class $$BookmarkCollectionsTableOrderingComposer
+    extends Composer<_$UserDatabase, $BookmarkCollectionsTable> {
+  $$BookmarkCollectionsTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get id => $composableBuilder(
+      column: $table.id, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get userId => $composableBuilder(
+      column: $table.userId, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<int> get updatedAt => $composableBuilder(
+      column: $table.updatedAt, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<int> get deletedAt => $composableBuilder(
+      column: $table.deletedAt, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<bool> get isDirty => $composableBuilder(
+      column: $table.isDirty, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get name => $composableBuilder(
+      column: $table.name, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get emoji => $composableBuilder(
+      column: $table.emoji, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<int> get displayOrder => $composableBuilder(
+      column: $table.displayOrder,
+      builder: (column) => ColumnOrderings(column));
+}
+
+class $$BookmarkCollectionsTableAnnotationComposer
+    extends Composer<_$UserDatabase, $BookmarkCollectionsTable> {
+  $$BookmarkCollectionsTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get userId =>
+      $composableBuilder(column: $table.userId, builder: (column) => column);
+
+  GeneratedColumn<int> get updatedAt =>
+      $composableBuilder(column: $table.updatedAt, builder: (column) => column);
+
+  GeneratedColumn<int> get deletedAt =>
+      $composableBuilder(column: $table.deletedAt, builder: (column) => column);
+
+  GeneratedColumn<bool> get isDirty =>
+      $composableBuilder(column: $table.isDirty, builder: (column) => column);
+
+  GeneratedColumn<String> get name =>
+      $composableBuilder(column: $table.name, builder: (column) => column);
+
+  GeneratedColumn<String> get emoji =>
+      $composableBuilder(column: $table.emoji, builder: (column) => column);
+
+  GeneratedColumn<int> get displayOrder => $composableBuilder(
+      column: $table.displayOrder, builder: (column) => column);
+}
+
+class $$BookmarkCollectionsTableTableManager extends RootTableManager<
+    _$UserDatabase,
+    $BookmarkCollectionsTable,
+    BookmarkCollectionRow,
+    $$BookmarkCollectionsTableFilterComposer,
+    $$BookmarkCollectionsTableOrderingComposer,
+    $$BookmarkCollectionsTableAnnotationComposer,
+    $$BookmarkCollectionsTableCreateCompanionBuilder,
+    $$BookmarkCollectionsTableUpdateCompanionBuilder,
+    (
+      BookmarkCollectionRow,
+      BaseReferences<_$UserDatabase, $BookmarkCollectionsTable,
+          BookmarkCollectionRow>
+    ),
+    BookmarkCollectionRow,
+    PrefetchHooks Function()> {
+  $$BookmarkCollectionsTableTableManager(
+      _$UserDatabase db, $BookmarkCollectionsTable table)
+      : super(TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$BookmarkCollectionsTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$BookmarkCollectionsTableOrderingComposer(
+                  $db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$BookmarkCollectionsTableAnnotationComposer(
+                  $db: db, $table: table),
+          updateCompanionCallback: ({
+            Value<String> id = const Value.absent(),
+            Value<String?> userId = const Value.absent(),
+            Value<int> updatedAt = const Value.absent(),
+            Value<int?> deletedAt = const Value.absent(),
+            Value<bool> isDirty = const Value.absent(),
+            Value<String> name = const Value.absent(),
+            Value<String?> emoji = const Value.absent(),
+            Value<int> displayOrder = const Value.absent(),
+            Value<int> rowid = const Value.absent(),
+          }) =>
+              BookmarkCollectionsCompanion(
+            id: id,
+            userId: userId,
+            updatedAt: updatedAt,
+            deletedAt: deletedAt,
+            isDirty: isDirty,
+            name: name,
+            emoji: emoji,
+            displayOrder: displayOrder,
+            rowid: rowid,
+          ),
+          createCompanionCallback: ({
+            required String id,
+            Value<String?> userId = const Value.absent(),
+            required int updatedAt,
+            Value<int?> deletedAt = const Value.absent(),
+            Value<bool> isDirty = const Value.absent(),
+            required String name,
+            Value<String?> emoji = const Value.absent(),
+            Value<int> displayOrder = const Value.absent(),
+            Value<int> rowid = const Value.absent(),
+          }) =>
+              BookmarkCollectionsCompanion.insert(
+            id: id,
+            userId: userId,
+            updatedAt: updatedAt,
+            deletedAt: deletedAt,
+            isDirty: isDirty,
+            name: name,
+            emoji: emoji,
+            displayOrder: displayOrder,
+            rowid: rowid,
+          ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ));
+}
+
+typedef $$BookmarkCollectionsTableProcessedTableManager = ProcessedTableManager<
+    _$UserDatabase,
+    $BookmarkCollectionsTable,
+    BookmarkCollectionRow,
+    $$BookmarkCollectionsTableFilterComposer,
+    $$BookmarkCollectionsTableOrderingComposer,
+    $$BookmarkCollectionsTableAnnotationComposer,
+    $$BookmarkCollectionsTableCreateCompanionBuilder,
+    $$BookmarkCollectionsTableUpdateCompanionBuilder,
+    (
+      BookmarkCollectionRow,
+      BaseReferences<_$UserDatabase, $BookmarkCollectionsTable,
+          BookmarkCollectionRow>
+    ),
+    BookmarkCollectionRow,
+    PrefetchHooks Function()>;
+typedef $$SrsCardsTableCreateCompanionBuilder = SrsCardsCompanion Function({
+  required String id,
+  Value<String?> userId,
+  required int updatedAt,
+  Value<int?> deletedAt,
+  Value<bool> isDirty,
+  required String itemType,
+  required int itemId,
+  Value<double> easeFactor,
+  Value<int> intervalDays,
+  Value<int> repetitions,
+  required int dueDate,
+  required String state,
+  Value<int> rowid,
+});
+typedef $$SrsCardsTableUpdateCompanionBuilder = SrsCardsCompanion Function({
+  Value<String> id,
+  Value<String?> userId,
+  Value<int> updatedAt,
+  Value<int?> deletedAt,
+  Value<bool> isDirty,
+  Value<String> itemType,
+  Value<int> itemId,
+  Value<double> easeFactor,
+  Value<int> intervalDays,
+  Value<int> repetitions,
+  Value<int> dueDate,
+  Value<String> state,
+  Value<int> rowid,
+});
+
+class $$SrsCardsTableFilterComposer
+    extends Composer<_$UserDatabase, $SrsCardsTable> {
+  $$SrsCardsTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get id => $composableBuilder(
+      column: $table.id, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get userId => $composableBuilder(
+      column: $table.userId, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<int> get updatedAt => $composableBuilder(
+      column: $table.updatedAt, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<int> get deletedAt => $composableBuilder(
+      column: $table.deletedAt, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<bool> get isDirty => $composableBuilder(
+      column: $table.isDirty, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get itemType => $composableBuilder(
+      column: $table.itemType, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<int> get itemId => $composableBuilder(
+      column: $table.itemId, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<double> get easeFactor => $composableBuilder(
+      column: $table.easeFactor, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<int> get intervalDays => $composableBuilder(
+      column: $table.intervalDays, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<int> get repetitions => $composableBuilder(
+      column: $table.repetitions, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<int> get dueDate => $composableBuilder(
+      column: $table.dueDate, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get state => $composableBuilder(
+      column: $table.state, builder: (column) => ColumnFilters(column));
+}
+
+class $$SrsCardsTableOrderingComposer
+    extends Composer<_$UserDatabase, $SrsCardsTable> {
+  $$SrsCardsTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get id => $composableBuilder(
+      column: $table.id, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get userId => $composableBuilder(
+      column: $table.userId, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<int> get updatedAt => $composableBuilder(
+      column: $table.updatedAt, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<int> get deletedAt => $composableBuilder(
+      column: $table.deletedAt, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<bool> get isDirty => $composableBuilder(
+      column: $table.isDirty, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get itemType => $composableBuilder(
+      column: $table.itemType, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<int> get itemId => $composableBuilder(
+      column: $table.itemId, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<double> get easeFactor => $composableBuilder(
+      column: $table.easeFactor, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<int> get intervalDays => $composableBuilder(
+      column: $table.intervalDays,
+      builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<int> get repetitions => $composableBuilder(
+      column: $table.repetitions, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<int> get dueDate => $composableBuilder(
+      column: $table.dueDate, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get state => $composableBuilder(
+      column: $table.state, builder: (column) => ColumnOrderings(column));
+}
+
+class $$SrsCardsTableAnnotationComposer
+    extends Composer<_$UserDatabase, $SrsCardsTable> {
+  $$SrsCardsTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get userId =>
+      $composableBuilder(column: $table.userId, builder: (column) => column);
+
+  GeneratedColumn<int> get updatedAt =>
+      $composableBuilder(column: $table.updatedAt, builder: (column) => column);
+
+  GeneratedColumn<int> get deletedAt =>
+      $composableBuilder(column: $table.deletedAt, builder: (column) => column);
+
+  GeneratedColumn<bool> get isDirty =>
+      $composableBuilder(column: $table.isDirty, builder: (column) => column);
+
+  GeneratedColumn<String> get itemType =>
+      $composableBuilder(column: $table.itemType, builder: (column) => column);
+
+  GeneratedColumn<int> get itemId =>
+      $composableBuilder(column: $table.itemId, builder: (column) => column);
+
+  GeneratedColumn<double> get easeFactor => $composableBuilder(
+      column: $table.easeFactor, builder: (column) => column);
+
+  GeneratedColumn<int> get intervalDays => $composableBuilder(
+      column: $table.intervalDays, builder: (column) => column);
+
+  GeneratedColumn<int> get repetitions => $composableBuilder(
+      column: $table.repetitions, builder: (column) => column);
+
+  GeneratedColumn<int> get dueDate =>
+      $composableBuilder(column: $table.dueDate, builder: (column) => column);
+
+  GeneratedColumn<String> get state =>
+      $composableBuilder(column: $table.state, builder: (column) => column);
+}
+
+class $$SrsCardsTableTableManager extends RootTableManager<
+    _$UserDatabase,
+    $SrsCardsTable,
+    SrsCardRow,
+    $$SrsCardsTableFilterComposer,
+    $$SrsCardsTableOrderingComposer,
+    $$SrsCardsTableAnnotationComposer,
+    $$SrsCardsTableCreateCompanionBuilder,
+    $$SrsCardsTableUpdateCompanionBuilder,
+    (SrsCardRow, BaseReferences<_$UserDatabase, $SrsCardsTable, SrsCardRow>),
+    SrsCardRow,
+    PrefetchHooks Function()> {
+  $$SrsCardsTableTableManager(_$UserDatabase db, $SrsCardsTable table)
+      : super(TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$SrsCardsTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$SrsCardsTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$SrsCardsTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback: ({
+            Value<String> id = const Value.absent(),
+            Value<String?> userId = const Value.absent(),
+            Value<int> updatedAt = const Value.absent(),
+            Value<int?> deletedAt = const Value.absent(),
+            Value<bool> isDirty = const Value.absent(),
+            Value<String> itemType = const Value.absent(),
+            Value<int> itemId = const Value.absent(),
+            Value<double> easeFactor = const Value.absent(),
+            Value<int> intervalDays = const Value.absent(),
+            Value<int> repetitions = const Value.absent(),
+            Value<int> dueDate = const Value.absent(),
+            Value<String> state = const Value.absent(),
+            Value<int> rowid = const Value.absent(),
+          }) =>
+              SrsCardsCompanion(
+            id: id,
+            userId: userId,
+            updatedAt: updatedAt,
+            deletedAt: deletedAt,
+            isDirty: isDirty,
+            itemType: itemType,
+            itemId: itemId,
+            easeFactor: easeFactor,
+            intervalDays: intervalDays,
+            repetitions: repetitions,
+            dueDate: dueDate,
+            state: state,
+            rowid: rowid,
+          ),
+          createCompanionCallback: ({
+            required String id,
+            Value<String?> userId = const Value.absent(),
+            required int updatedAt,
+            Value<int?> deletedAt = const Value.absent(),
+            Value<bool> isDirty = const Value.absent(),
+            required String itemType,
+            required int itemId,
+            Value<double> easeFactor = const Value.absent(),
+            Value<int> intervalDays = const Value.absent(),
+            Value<int> repetitions = const Value.absent(),
+            required int dueDate,
+            required String state,
+            Value<int> rowid = const Value.absent(),
+          }) =>
+              SrsCardsCompanion.insert(
+            id: id,
+            userId: userId,
+            updatedAt: updatedAt,
+            deletedAt: deletedAt,
+            isDirty: isDirty,
+            itemType: itemType,
+            itemId: itemId,
+            easeFactor: easeFactor,
+            intervalDays: intervalDays,
+            repetitions: repetitions,
+            dueDate: dueDate,
+            state: state,
+            rowid: rowid,
+          ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ));
+}
+
+typedef $$SrsCardsTableProcessedTableManager = ProcessedTableManager<
+    _$UserDatabase,
+    $SrsCardsTable,
+    SrsCardRow,
+    $$SrsCardsTableFilterComposer,
+    $$SrsCardsTableOrderingComposer,
+    $$SrsCardsTableAnnotationComposer,
+    $$SrsCardsTableCreateCompanionBuilder,
+    $$SrsCardsTableUpdateCompanionBuilder,
+    (SrsCardRow, BaseReferences<_$UserDatabase, $SrsCardsTable, SrsCardRow>),
+    SrsCardRow,
+    PrefetchHooks Function()>;
+typedef $$QuizResultsTableCreateCompanionBuilder = QuizResultsCompanion
+    Function({
+  required String id,
+  Value<String?> userId,
+  required int updatedAt,
+  Value<int?> deletedAt,
+  Value<bool> isDirty,
+  required String quizType,
+  Value<int?> surahId,
+  required int score,
+  required int total,
+  required int takenAt,
+  Value<int> rowid,
+});
+typedef $$QuizResultsTableUpdateCompanionBuilder = QuizResultsCompanion
+    Function({
+  Value<String> id,
+  Value<String?> userId,
+  Value<int> updatedAt,
+  Value<int?> deletedAt,
+  Value<bool> isDirty,
+  Value<String> quizType,
+  Value<int?> surahId,
+  Value<int> score,
+  Value<int> total,
+  Value<int> takenAt,
+  Value<int> rowid,
+});
+
+class $$QuizResultsTableFilterComposer
+    extends Composer<_$UserDatabase, $QuizResultsTable> {
+  $$QuizResultsTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get id => $composableBuilder(
+      column: $table.id, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get userId => $composableBuilder(
+      column: $table.userId, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<int> get updatedAt => $composableBuilder(
+      column: $table.updatedAt, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<int> get deletedAt => $composableBuilder(
+      column: $table.deletedAt, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<bool> get isDirty => $composableBuilder(
+      column: $table.isDirty, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get quizType => $composableBuilder(
+      column: $table.quizType, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<int> get surahId => $composableBuilder(
+      column: $table.surahId, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<int> get score => $composableBuilder(
+      column: $table.score, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<int> get total => $composableBuilder(
+      column: $table.total, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<int> get takenAt => $composableBuilder(
+      column: $table.takenAt, builder: (column) => ColumnFilters(column));
+}
+
+class $$QuizResultsTableOrderingComposer
+    extends Composer<_$UserDatabase, $QuizResultsTable> {
+  $$QuizResultsTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get id => $composableBuilder(
+      column: $table.id, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get userId => $composableBuilder(
+      column: $table.userId, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<int> get updatedAt => $composableBuilder(
+      column: $table.updatedAt, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<int> get deletedAt => $composableBuilder(
+      column: $table.deletedAt, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<bool> get isDirty => $composableBuilder(
+      column: $table.isDirty, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get quizType => $composableBuilder(
+      column: $table.quizType, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<int> get surahId => $composableBuilder(
+      column: $table.surahId, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<int> get score => $composableBuilder(
+      column: $table.score, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<int> get total => $composableBuilder(
+      column: $table.total, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<int> get takenAt => $composableBuilder(
+      column: $table.takenAt, builder: (column) => ColumnOrderings(column));
+}
+
+class $$QuizResultsTableAnnotationComposer
+    extends Composer<_$UserDatabase, $QuizResultsTable> {
+  $$QuizResultsTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get userId =>
+      $composableBuilder(column: $table.userId, builder: (column) => column);
+
+  GeneratedColumn<int> get updatedAt =>
+      $composableBuilder(column: $table.updatedAt, builder: (column) => column);
+
+  GeneratedColumn<int> get deletedAt =>
+      $composableBuilder(column: $table.deletedAt, builder: (column) => column);
+
+  GeneratedColumn<bool> get isDirty =>
+      $composableBuilder(column: $table.isDirty, builder: (column) => column);
+
+  GeneratedColumn<String> get quizType =>
+      $composableBuilder(column: $table.quizType, builder: (column) => column);
+
+  GeneratedColumn<int> get surahId =>
+      $composableBuilder(column: $table.surahId, builder: (column) => column);
+
+  GeneratedColumn<int> get score =>
+      $composableBuilder(column: $table.score, builder: (column) => column);
+
+  GeneratedColumn<int> get total =>
+      $composableBuilder(column: $table.total, builder: (column) => column);
+
+  GeneratedColumn<int> get takenAt =>
+      $composableBuilder(column: $table.takenAt, builder: (column) => column);
+}
+
+class $$QuizResultsTableTableManager extends RootTableManager<
+    _$UserDatabase,
+    $QuizResultsTable,
+    QuizResultRow,
+    $$QuizResultsTableFilterComposer,
+    $$QuizResultsTableOrderingComposer,
+    $$QuizResultsTableAnnotationComposer,
+    $$QuizResultsTableCreateCompanionBuilder,
+    $$QuizResultsTableUpdateCompanionBuilder,
+    (
+      QuizResultRow,
+      BaseReferences<_$UserDatabase, $QuizResultsTable, QuizResultRow>
+    ),
+    QuizResultRow,
+    PrefetchHooks Function()> {
+  $$QuizResultsTableTableManager(_$UserDatabase db, $QuizResultsTable table)
+      : super(TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$QuizResultsTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$QuizResultsTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$QuizResultsTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback: ({
+            Value<String> id = const Value.absent(),
+            Value<String?> userId = const Value.absent(),
+            Value<int> updatedAt = const Value.absent(),
+            Value<int?> deletedAt = const Value.absent(),
+            Value<bool> isDirty = const Value.absent(),
+            Value<String> quizType = const Value.absent(),
+            Value<int?> surahId = const Value.absent(),
+            Value<int> score = const Value.absent(),
+            Value<int> total = const Value.absent(),
+            Value<int> takenAt = const Value.absent(),
+            Value<int> rowid = const Value.absent(),
+          }) =>
+              QuizResultsCompanion(
+            id: id,
+            userId: userId,
+            updatedAt: updatedAt,
+            deletedAt: deletedAt,
+            isDirty: isDirty,
+            quizType: quizType,
+            surahId: surahId,
+            score: score,
+            total: total,
+            takenAt: takenAt,
+            rowid: rowid,
+          ),
+          createCompanionCallback: ({
+            required String id,
+            Value<String?> userId = const Value.absent(),
+            required int updatedAt,
+            Value<int?> deletedAt = const Value.absent(),
+            Value<bool> isDirty = const Value.absent(),
+            required String quizType,
+            Value<int?> surahId = const Value.absent(),
+            required int score,
+            required int total,
+            required int takenAt,
+            Value<int> rowid = const Value.absent(),
+          }) =>
+              QuizResultsCompanion.insert(
+            id: id,
+            userId: userId,
+            updatedAt: updatedAt,
+            deletedAt: deletedAt,
+            isDirty: isDirty,
+            quizType: quizType,
+            surahId: surahId,
+            score: score,
+            total: total,
+            takenAt: takenAt,
+            rowid: rowid,
+          ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ));
+}
+
+typedef $$QuizResultsTableProcessedTableManager = ProcessedTableManager<
+    _$UserDatabase,
+    $QuizResultsTable,
+    QuizResultRow,
+    $$QuizResultsTableFilterComposer,
+    $$QuizResultsTableOrderingComposer,
+    $$QuizResultsTableAnnotationComposer,
+    $$QuizResultsTableCreateCompanionBuilder,
+    $$QuizResultsTableUpdateCompanionBuilder,
+    (
+      QuizResultRow,
+      BaseReferences<_$UserDatabase, $QuizResultsTable, QuizResultRow>
+    ),
+    QuizResultRow,
+    PrefetchHooks Function()>;
+typedef $$FlashcardDecksTableCreateCompanionBuilder = FlashcardDecksCompanion
+    Function({
+  required String id,
+  Value<String?> userId,
+  required int updatedAt,
+  Value<int?> deletedAt,
+  Value<bool> isDirty,
+  required String name,
+  required int createdAt,
+  Value<int> rowid,
+});
+typedef $$FlashcardDecksTableUpdateCompanionBuilder = FlashcardDecksCompanion
+    Function({
+  Value<String> id,
+  Value<String?> userId,
+  Value<int> updatedAt,
+  Value<int?> deletedAt,
+  Value<bool> isDirty,
+  Value<String> name,
+  Value<int> createdAt,
+  Value<int> rowid,
+});
+
+class $$FlashcardDecksTableFilterComposer
+    extends Composer<_$UserDatabase, $FlashcardDecksTable> {
+  $$FlashcardDecksTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get id => $composableBuilder(
+      column: $table.id, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get userId => $composableBuilder(
+      column: $table.userId, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<int> get updatedAt => $composableBuilder(
+      column: $table.updatedAt, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<int> get deletedAt => $composableBuilder(
+      column: $table.deletedAt, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<bool> get isDirty => $composableBuilder(
+      column: $table.isDirty, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get name => $composableBuilder(
+      column: $table.name, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<int> get createdAt => $composableBuilder(
+      column: $table.createdAt, builder: (column) => ColumnFilters(column));
+}
+
+class $$FlashcardDecksTableOrderingComposer
+    extends Composer<_$UserDatabase, $FlashcardDecksTable> {
+  $$FlashcardDecksTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get id => $composableBuilder(
+      column: $table.id, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get userId => $composableBuilder(
+      column: $table.userId, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<int> get updatedAt => $composableBuilder(
+      column: $table.updatedAt, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<int> get deletedAt => $composableBuilder(
+      column: $table.deletedAt, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<bool> get isDirty => $composableBuilder(
+      column: $table.isDirty, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get name => $composableBuilder(
+      column: $table.name, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<int> get createdAt => $composableBuilder(
+      column: $table.createdAt, builder: (column) => ColumnOrderings(column));
+}
+
+class $$FlashcardDecksTableAnnotationComposer
+    extends Composer<_$UserDatabase, $FlashcardDecksTable> {
+  $$FlashcardDecksTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get userId =>
+      $composableBuilder(column: $table.userId, builder: (column) => column);
+
+  GeneratedColumn<int> get updatedAt =>
+      $composableBuilder(column: $table.updatedAt, builder: (column) => column);
+
+  GeneratedColumn<int> get deletedAt =>
+      $composableBuilder(column: $table.deletedAt, builder: (column) => column);
+
+  GeneratedColumn<bool> get isDirty =>
+      $composableBuilder(column: $table.isDirty, builder: (column) => column);
+
+  GeneratedColumn<String> get name =>
+      $composableBuilder(column: $table.name, builder: (column) => column);
+
+  GeneratedColumn<int> get createdAt =>
+      $composableBuilder(column: $table.createdAt, builder: (column) => column);
+}
+
+class $$FlashcardDecksTableTableManager extends RootTableManager<
+    _$UserDatabase,
+    $FlashcardDecksTable,
+    FlashcardDeckRow,
+    $$FlashcardDecksTableFilterComposer,
+    $$FlashcardDecksTableOrderingComposer,
+    $$FlashcardDecksTableAnnotationComposer,
+    $$FlashcardDecksTableCreateCompanionBuilder,
+    $$FlashcardDecksTableUpdateCompanionBuilder,
+    (
+      FlashcardDeckRow,
+      BaseReferences<_$UserDatabase, $FlashcardDecksTable, FlashcardDeckRow>
+    ),
+    FlashcardDeckRow,
+    PrefetchHooks Function()> {
+  $$FlashcardDecksTableTableManager(
+      _$UserDatabase db, $FlashcardDecksTable table)
+      : super(TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$FlashcardDecksTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$FlashcardDecksTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$FlashcardDecksTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback: ({
+            Value<String> id = const Value.absent(),
+            Value<String?> userId = const Value.absent(),
+            Value<int> updatedAt = const Value.absent(),
+            Value<int?> deletedAt = const Value.absent(),
+            Value<bool> isDirty = const Value.absent(),
+            Value<String> name = const Value.absent(),
+            Value<int> createdAt = const Value.absent(),
+            Value<int> rowid = const Value.absent(),
+          }) =>
+              FlashcardDecksCompanion(
+            id: id,
+            userId: userId,
+            updatedAt: updatedAt,
+            deletedAt: deletedAt,
+            isDirty: isDirty,
+            name: name,
+            createdAt: createdAt,
+            rowid: rowid,
+          ),
+          createCompanionCallback: ({
+            required String id,
+            Value<String?> userId = const Value.absent(),
+            required int updatedAt,
+            Value<int?> deletedAt = const Value.absent(),
+            Value<bool> isDirty = const Value.absent(),
+            required String name,
+            required int createdAt,
+            Value<int> rowid = const Value.absent(),
+          }) =>
+              FlashcardDecksCompanion.insert(
+            id: id,
+            userId: userId,
+            updatedAt: updatedAt,
+            deletedAt: deletedAt,
+            isDirty: isDirty,
+            name: name,
+            createdAt: createdAt,
+            rowid: rowid,
+          ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ));
+}
+
+typedef $$FlashcardDecksTableProcessedTableManager = ProcessedTableManager<
+    _$UserDatabase,
+    $FlashcardDecksTable,
+    FlashcardDeckRow,
+    $$FlashcardDecksTableFilterComposer,
+    $$FlashcardDecksTableOrderingComposer,
+    $$FlashcardDecksTableAnnotationComposer,
+    $$FlashcardDecksTableCreateCompanionBuilder,
+    $$FlashcardDecksTableUpdateCompanionBuilder,
+    (
+      FlashcardDeckRow,
+      BaseReferences<_$UserDatabase, $FlashcardDecksTable, FlashcardDeckRow>
+    ),
+    FlashcardDeckRow,
+    PrefetchHooks Function()>;
+typedef $$FlashcardsTableCreateCompanionBuilder = FlashcardsCompanion Function({
+  required String id,
+  Value<String?> userId,
+  required int updatedAt,
+  Value<int?> deletedAt,
+  Value<bool> isDirty,
+  required String type,
+  required String lexiconEntryType,
+  required int lexiconEntryId,
+  Value<String?> deckId,
+  Value<String?> note,
+  required int createdAt,
+  Value<int> rowid,
+});
+typedef $$FlashcardsTableUpdateCompanionBuilder = FlashcardsCompanion Function({
+  Value<String> id,
+  Value<String?> userId,
+  Value<int> updatedAt,
+  Value<int?> deletedAt,
+  Value<bool> isDirty,
+  Value<String> type,
+  Value<String> lexiconEntryType,
+  Value<int> lexiconEntryId,
+  Value<String?> deckId,
+  Value<String?> note,
+  Value<int> createdAt,
+  Value<int> rowid,
+});
+
+class $$FlashcardsTableFilterComposer
+    extends Composer<_$UserDatabase, $FlashcardsTable> {
+  $$FlashcardsTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get id => $composableBuilder(
+      column: $table.id, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get userId => $composableBuilder(
+      column: $table.userId, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<int> get updatedAt => $composableBuilder(
+      column: $table.updatedAt, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<int> get deletedAt => $composableBuilder(
+      column: $table.deletedAt, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<bool> get isDirty => $composableBuilder(
+      column: $table.isDirty, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get type => $composableBuilder(
+      column: $table.type, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get lexiconEntryType => $composableBuilder(
+      column: $table.lexiconEntryType,
+      builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<int> get lexiconEntryId => $composableBuilder(
+      column: $table.lexiconEntryId,
+      builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get deckId => $composableBuilder(
+      column: $table.deckId, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get note => $composableBuilder(
+      column: $table.note, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<int> get createdAt => $composableBuilder(
+      column: $table.createdAt, builder: (column) => ColumnFilters(column));
+}
+
+class $$FlashcardsTableOrderingComposer
+    extends Composer<_$UserDatabase, $FlashcardsTable> {
+  $$FlashcardsTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get id => $composableBuilder(
+      column: $table.id, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get userId => $composableBuilder(
+      column: $table.userId, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<int> get updatedAt => $composableBuilder(
+      column: $table.updatedAt, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<int> get deletedAt => $composableBuilder(
+      column: $table.deletedAt, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<bool> get isDirty => $composableBuilder(
+      column: $table.isDirty, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get type => $composableBuilder(
+      column: $table.type, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get lexiconEntryType => $composableBuilder(
+      column: $table.lexiconEntryType,
+      builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<int> get lexiconEntryId => $composableBuilder(
+      column: $table.lexiconEntryId,
+      builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get deckId => $composableBuilder(
+      column: $table.deckId, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get note => $composableBuilder(
+      column: $table.note, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<int> get createdAt => $composableBuilder(
+      column: $table.createdAt, builder: (column) => ColumnOrderings(column));
+}
+
+class $$FlashcardsTableAnnotationComposer
+    extends Composer<_$UserDatabase, $FlashcardsTable> {
+  $$FlashcardsTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get userId =>
+      $composableBuilder(column: $table.userId, builder: (column) => column);
+
+  GeneratedColumn<int> get updatedAt =>
+      $composableBuilder(column: $table.updatedAt, builder: (column) => column);
+
+  GeneratedColumn<int> get deletedAt =>
+      $composableBuilder(column: $table.deletedAt, builder: (column) => column);
+
+  GeneratedColumn<bool> get isDirty =>
+      $composableBuilder(column: $table.isDirty, builder: (column) => column);
+
+  GeneratedColumn<String> get type =>
+      $composableBuilder(column: $table.type, builder: (column) => column);
+
+  GeneratedColumn<String> get lexiconEntryType => $composableBuilder(
+      column: $table.lexiconEntryType, builder: (column) => column);
+
+  GeneratedColumn<int> get lexiconEntryId => $composableBuilder(
+      column: $table.lexiconEntryId, builder: (column) => column);
+
+  GeneratedColumn<String> get deckId =>
+      $composableBuilder(column: $table.deckId, builder: (column) => column);
+
+  GeneratedColumn<String> get note =>
+      $composableBuilder(column: $table.note, builder: (column) => column);
+
+  GeneratedColumn<int> get createdAt =>
+      $composableBuilder(column: $table.createdAt, builder: (column) => column);
+}
+
+class $$FlashcardsTableTableManager extends RootTableManager<
+    _$UserDatabase,
+    $FlashcardsTable,
+    FlashcardRow,
+    $$FlashcardsTableFilterComposer,
+    $$FlashcardsTableOrderingComposer,
+    $$FlashcardsTableAnnotationComposer,
+    $$FlashcardsTableCreateCompanionBuilder,
+    $$FlashcardsTableUpdateCompanionBuilder,
+    (
+      FlashcardRow,
+      BaseReferences<_$UserDatabase, $FlashcardsTable, FlashcardRow>
+    ),
+    FlashcardRow,
+    PrefetchHooks Function()> {
+  $$FlashcardsTableTableManager(_$UserDatabase db, $FlashcardsTable table)
+      : super(TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$FlashcardsTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$FlashcardsTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$FlashcardsTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback: ({
+            Value<String> id = const Value.absent(),
+            Value<String?> userId = const Value.absent(),
+            Value<int> updatedAt = const Value.absent(),
+            Value<int?> deletedAt = const Value.absent(),
+            Value<bool> isDirty = const Value.absent(),
+            Value<String> type = const Value.absent(),
+            Value<String> lexiconEntryType = const Value.absent(),
+            Value<int> lexiconEntryId = const Value.absent(),
+            Value<String?> deckId = const Value.absent(),
+            Value<String?> note = const Value.absent(),
+            Value<int> createdAt = const Value.absent(),
+            Value<int> rowid = const Value.absent(),
+          }) =>
+              FlashcardsCompanion(
+            id: id,
+            userId: userId,
+            updatedAt: updatedAt,
+            deletedAt: deletedAt,
+            isDirty: isDirty,
+            type: type,
+            lexiconEntryType: lexiconEntryType,
+            lexiconEntryId: lexiconEntryId,
+            deckId: deckId,
+            note: note,
+            createdAt: createdAt,
+            rowid: rowid,
+          ),
+          createCompanionCallback: ({
+            required String id,
+            Value<String?> userId = const Value.absent(),
+            required int updatedAt,
+            Value<int?> deletedAt = const Value.absent(),
+            Value<bool> isDirty = const Value.absent(),
+            required String type,
+            required String lexiconEntryType,
+            required int lexiconEntryId,
+            Value<String?> deckId = const Value.absent(),
+            Value<String?> note = const Value.absent(),
+            required int createdAt,
+            Value<int> rowid = const Value.absent(),
+          }) =>
+              FlashcardsCompanion.insert(
+            id: id,
+            userId: userId,
+            updatedAt: updatedAt,
+            deletedAt: deletedAt,
+            isDirty: isDirty,
+            type: type,
+            lexiconEntryType: lexiconEntryType,
+            lexiconEntryId: lexiconEntryId,
+            deckId: deckId,
+            note: note,
+            createdAt: createdAt,
+            rowid: rowid,
+          ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ));
+}
+
+typedef $$FlashcardsTableProcessedTableManager = ProcessedTableManager<
+    _$UserDatabase,
+    $FlashcardsTable,
+    FlashcardRow,
+    $$FlashcardsTableFilterComposer,
+    $$FlashcardsTableOrderingComposer,
+    $$FlashcardsTableAnnotationComposer,
+    $$FlashcardsTableCreateCompanionBuilder,
+    $$FlashcardsTableUpdateCompanionBuilder,
+    (
+      FlashcardRow,
+      BaseReferences<_$UserDatabase, $FlashcardsTable, FlashcardRow>
+    ),
+    FlashcardRow,
+    PrefetchHooks Function()>;
 
 class $UserDatabaseManager {
   final _$UserDatabase _db;
@@ -2964,4 +8379,18 @@ class $UserDatabaseManager {
       $$FavoritesTableTableManager(_db, _db.favorites);
   $$AyahStatusesTableTableManager get ayahStatuses =>
       $$AyahStatusesTableTableManager(_db, _db.ayahStatuses);
+  $$StudySessionsTableTableManager get studySessions =>
+      $$StudySessionsTableTableManager(_db, _db.studySessions);
+  $$KhatmCyclesTableTableManager get khatmCycles =>
+      $$KhatmCyclesTableTableManager(_db, _db.khatmCycles);
+  $$BookmarkCollectionsTableTableManager get bookmarkCollections =>
+      $$BookmarkCollectionsTableTableManager(_db, _db.bookmarkCollections);
+  $$SrsCardsTableTableManager get srsCards =>
+      $$SrsCardsTableTableManager(_db, _db.srsCards);
+  $$QuizResultsTableTableManager get quizResults =>
+      $$QuizResultsTableTableManager(_db, _db.quizResults);
+  $$FlashcardDecksTableTableManager get flashcardDecks =>
+      $$FlashcardDecksTableTableManager(_db, _db.flashcardDecks);
+  $$FlashcardsTableTableManager get flashcards =>
+      $$FlashcardsTableTableManager(_db, _db.flashcards);
 }

@@ -145,6 +145,3 @@ class StatsStore {
 }
 
 final statsStoreProvider = Provider<StatsStore>(StatsStore.new);
-
-/// Bộ đếm phiên bản để màn hình thống kê tự làm mới khi mở lại.
-final statsRefreshProvider = StateProvider<int>((ref) => 0);

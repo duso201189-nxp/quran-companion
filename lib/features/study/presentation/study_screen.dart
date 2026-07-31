@@ -1,9 +1,18 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:quran_companion/l10n/app_localizations.dart';
 
-/// Màn hình Học — bốn công cụ (Flashcard, Lặp lại ngắt quãng,
-/// Trắc nghiệm, Ôn tập hằng ngày). UI sẵn sàng, logic học sẽ
-/// nối vào ở bước sau (chưa cần backend).
+import '../../../app/router.dart';
+
+/// Màn hình Học — điểm vào chính "Bắt đầu buổi học" (Sprint 11 Phase
+/// 3, Learning Session) phía trên, bốn công cụ truy cập trực tiếp
+/// (Flashcard, Lặp lại ngắt quãng, Trắc nghiệm, Ôn tập hằng ngày) giữ
+/// nguyên bên dưới làm lối tắt — Phase 0 Revision cố ý để cả hai cùng
+/// tồn tại thay vì bỏ 4 thẻ cũ (câu hỏi sản phẩm còn mở, xem kiến
+/// trúc). Flashcard nối vào FlashcardBrowseScreen từ Sprint 13 Phase
+/// 3 — LƯU Ý: Lexicon (nhóm A) hiện CHƯA có dữ liệu Lemma thật (xem
+/// Sprint 12 Phase 3 §5), nên màn hình Duyệt/Thêm sẽ trống cho tới khi
+/// dữ liệu thật được nạp; đây là hạn chế dữ liệu, không phải lỗi UI.
 class StudyScreen extends StatelessWidget {
   const StudyScreen({super.key});
 
@@ -15,26 +24,43 @@ class StudyScreen extends StatelessWidget {
       IconData icon,
       String title,
       String subtitle,
+      VoidCallback? onTap,
     })>[
       (
         icon: Icons.style_rounded,
         title: l10n.studyFlashcards,
         subtitle: l10n.studyFlashcardsDesc,
+        onTap: () => context.push(AppRoutes.flashcards),
       ),
       (
         icon: Icons.update_rounded,
         title: l10n.studySpaced,
         subtitle: l10n.studySpacedDesc,
+        onTap: () => context.push(AppRoutes.reviewSession),
       ),
       (
         icon: Icons.quiz_rounded,
         title: l10n.studyQuiz,
         subtitle: l10n.studyQuizDesc,
+        onTap: () => context.push(AppRoutes.quizSession),
       ),
       (
         icon: Icons.today_rounded,
         title: l10n.studyDailyReview,
         subtitle: l10n.studyDailyReviewDesc,
+        onTap: () => context.push(AppRoutes.revisionQueue),
+      ),
+      (
+        icon: Icons.insights_rounded,
+        title: l10n.studyProgress,
+        subtitle: l10n.studyProgressDesc,
+        onTap: () => context.push(AppRoutes.progressDashboard),
+      ),
+      (
+        icon: Icons.auto_awesome_rounded,
+        title: l10n.studyAiTutor,
+        subtitle: l10n.studyAiTutorDesc,
+        onTap: () => context.push(AppRoutes.aiTutor),
       ),
     ];
 
@@ -47,20 +73,39 @@ class StudyScreen extends StatelessWidget {
             final horizontal = constraints.maxWidth > 900
                 ? (constraints.maxWidth - 860) / 2
                 : 16.0;
-            return GridView.count(
+            return ListView(
               padding: EdgeInsets.fromLTRB(horizontal, 12, horizontal, 24),
-              crossAxisCount: wide ? 2 : 1,
-              mainAxisSpacing: 14,
-              crossAxisSpacing: 14,
-              childAspectRatio: wide ? 2.9 : 3.4,
               children: [
-                for (final t in tools)
-                  _StudyToolCard(
-                    icon: t.icon,
-                    title: t.title,
-                    subtitle: t.subtitle,
-                    comingSoonLabel: l10n.comingSoon,
+                SizedBox(
+                  width: double.infinity,
+                  child: FilledButton.icon(
+                    onPressed: () => context.push(AppRoutes.learningSession),
+                    icon: const Icon(Icons.auto_stories_rounded),
+                    label: Text(l10n.learningSessionStart),
+                    style: FilledButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(vertical: 16),
+                    ),
                   ),
+                ),
+                const SizedBox(height: 18),
+                GridView.count(
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  crossAxisCount: wide ? 2 : 1,
+                  mainAxisSpacing: 14,
+                  crossAxisSpacing: 14,
+                  childAspectRatio: wide ? 2.9 : 3.4,
+                  children: [
+                    for (final t in tools)
+                      _StudyToolCard(
+                        icon: t.icon,
+                        title: t.title,
+                        subtitle: t.subtitle,
+                        comingSoonLabel: l10n.comingSoon,
+                        onTap: t.onTap,
+                      ),
+                  ],
+                ),
               ],
             );
           },
@@ -76,12 +121,16 @@ class _StudyToolCard extends StatelessWidget {
     required this.title,
     required this.subtitle,
     required this.comingSoonLabel,
+    required this.onTap,
   });
 
   final IconData icon;
   final String title;
   final String subtitle;
   final String comingSoonLabel;
+
+  /// null = công cụ chưa nối logic thật, hiện chip "Sắp ra mắt".
+  final VoidCallback? onTap;
 
   @override
   Widget build(BuildContext context) {
@@ -93,7 +142,7 @@ class _StudyToolCard extends StatelessWidget {
       borderRadius: BorderRadius.circular(16),
       child: InkWell(
         borderRadius: BorderRadius.circular(16),
-        onTap: null, // sẽ mở công cụ khi logic học hoàn thiện
+        onTap: onTap,
         child: Padding(
           padding: const EdgeInsets.all(16),
           child: Row(
@@ -132,22 +181,28 @@ class _StudyToolCard extends StatelessWidget {
                   ],
                 ),
               ),
-              const SizedBox(width: 10),
-              Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 10,
-                  vertical: 5,
+              if (onTap == null) ...[
+                const SizedBox(width: 10),
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 10,
+                    vertical: 5,
+                  ),
+                  decoration: BoxDecoration(
+                    color: scheme.secondaryContainer,
+                    borderRadius: BorderRadius.circular(999),
+                  ),
+                  child: Text(
+                    comingSoonLabel,
+                    style: textTheme.labelSmall
+                        ?.copyWith(color: scheme.onSecondaryContainer),
+                  ),
                 ),
-                decoration: BoxDecoration(
-                  color: scheme.secondaryContainer,
-                  borderRadius: BorderRadius.circular(999),
+              ] else
+                Icon(
+                  Icons.chevron_right_rounded,
+                  color: scheme.onSurfaceVariant,
                 ),
-                child: Text(
-                  comingSoonLabel,
-                  style: textTheme.labelSmall
-                      ?.copyWith(color: scheme.onSecondaryContainer),
-                ),
-              ),
             ],
           ),
         ),

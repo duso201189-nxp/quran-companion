@@ -1,7 +1,7 @@
 name: quran_companion
 description: Ứng dụng học Kinh Qur'an chuyên nghiệp — người thầy đồng hành.
 publish_to: 'none'
-version: 0.6.0+6
+version: 0.8.1+7
 
 environment:
   sdk: '>=3.4.0 <4.0.0'
