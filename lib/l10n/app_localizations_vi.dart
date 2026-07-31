@@ -1066,6 +1066,28 @@ class AppLocalizationsVi extends AppLocalizations {
   String get smartLearningStrategyRecovery => 'Phục hồi';
 
   @override
+  String get studySummaryTitle => 'Tóm tắt học tập';
+
+  @override
+  String get studySummaryLoading => 'Đang tải tóm tắt học tập của bạn…';
+
+  @override
+  String get studySummaryEmpty =>
+      'Chưa có gì để tóm tắt — hãy học một chút rồi quay lại đây!';
+
+  @override
+  String get studySummaryContextTitle => 'Tổng quan học tập';
+
+  @override
+  String get studySummaryInsightsTitle => 'Nhận định';
+
+  @override
+  String get studySummaryPlanTitle => 'Kế hoạch hôm nay';
+
+  @override
+  String get studySummarySessionTitle => 'Phiên học đề xuất';
+
+  @override
   String learningSummaryFlashcardCount(int count) {
     return 'Đã ôn $count từ vựng';
   }

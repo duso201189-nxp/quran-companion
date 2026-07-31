@@ -19,6 +19,7 @@ import '../features/profile/presentation/profile_screen.dart';
 import '../features/quiz/presentation/quiz_session_screen.dart';
 import '../features/quran/presentation/reading/reading_screen.dart';
 import '../features/quran/presentation/surah_list_screen.dart';
+import '../features/read_model/presentation/study_summary_screen.dart';
 import '../features/search/presentation/search_screen.dart';
 import '../features/smart_learning/presentation/smart_learning_screen.dart';
 import '../features/stats/presentation/stats_screen.dart';
@@ -111,6 +112,12 @@ abstract final class AppRoutes {
   /// LearningJourneyScreen._SmartLearningEntryCard), cùng mẫu
   /// [progressDashboard]/[aiTutor]/[learningJourney].
   static const String smartLearning = '/smart-learning';
+
+  /// Study Summary / Read Model (Sprint R2.1 — nền tảng) — cùng mẫu
+  /// [progressDashboard]/[aiTutor]/[learningJourney]/[smartLearning].
+  /// CHƯA có CTA nào trỏ tới route này (lối vào từ SmartLearningScreen
+  /// thuộc sprint sau) — chỉ route + màn hình tồn tại ở sprint này.
+  static const String studySummary = '/study-summary';
 
   /// Trang đọc trong tab Qur'an (giữ thanh điều hướng): /quran/surah/2
   static String surahReading(int surahId) => '/quran/surah/$surahId';
@@ -251,6 +258,11 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: AppRoutes.smartLearning,
         builder: (context, state) => const SmartLearningScreen(),
+      ),
+
+      GoRoute(
+        path: AppRoutes.studySummary,
+        builder: (context, state) => const StudySummaryScreen(),
       ),
 
       GoRoute(

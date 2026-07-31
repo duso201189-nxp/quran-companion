@@ -1063,6 +1063,28 @@ class AppLocalizationsAr extends AppLocalizations {
   String get smartLearningStrategyRecovery => 'تعافٍ';
 
   @override
+  String get studySummaryTitle => 'ملخص التعلم';
+
+  @override
+  String get studySummaryLoading => 'جارٍ تحميل ملخص تعلمك…';
+
+  @override
+  String get studySummaryEmpty =>
+      'لا يوجد شيء لتلخيصه بعد — تعلّم قليلاً ثم عد إلى هنا!';
+
+  @override
+  String get studySummaryContextTitle => 'نظرة عامة على التعلم';
+
+  @override
+  String get studySummaryInsightsTitle => 'ملاحظات';
+
+  @override
+  String get studySummaryPlanTitle => 'خطة اليوم';
+
+  @override
+  String get studySummarySessionTitle => 'الجلسة الموصى بها';
+
+  @override
   String learningSummaryFlashcardCount(int count) {
     return 'تمت مراجعة $count كلمة';
   }

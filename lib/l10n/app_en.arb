@@ -576,6 +576,13 @@
   "smartLearningStrategyDeepStudy": "Deep study",
   "smartLearningStrategyMemorization": "Memorization",
   "smartLearningStrategyRecovery": "Recovery",
+  "studySummaryTitle": "Study Summary",
+  "studySummaryLoading": "Loading your study summary…",
+  "studySummaryEmpty": "Nothing to summarize yet — study a little, then come back!",
+  "studySummaryContextTitle": "Learning overview",
+  "studySummaryInsightsTitle": "Insights",
+  "studySummaryPlanTitle": "Today's plan",
+  "studySummarySessionTitle": "Recommended session",
   "learningSummaryFlashcardCount": "Reviewed {count} words",
   "@learningSummaryFlashcardCount": {
     "placeholders": {

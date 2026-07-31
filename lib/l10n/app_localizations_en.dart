@@ -1071,6 +1071,28 @@ class AppLocalizationsEn extends AppLocalizations {
   String get smartLearningStrategyRecovery => 'Recovery';
 
   @override
+  String get studySummaryTitle => 'Study Summary';
+
+  @override
+  String get studySummaryLoading => 'Loading your study summary…';
+
+  @override
+  String get studySummaryEmpty =>
+      'Nothing to summarize yet — study a little, then come back!';
+
+  @override
+  String get studySummaryContextTitle => 'Learning overview';
+
+  @override
+  String get studySummaryInsightsTitle => 'Insights';
+
+  @override
+  String get studySummaryPlanTitle => 'Today\'s plan';
+
+  @override
+  String get studySummarySessionTitle => 'Recommended session';
+
+  @override
   String learningSummaryFlashcardCount(int count) {
     return 'Reviewed $count words';
   }

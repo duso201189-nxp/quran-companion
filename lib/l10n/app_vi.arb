@@ -576,6 +576,13 @@
   "smartLearningStrategyDeepStudy": "Học sâu",
   "smartLearningStrategyMemorization": "Ghi nhớ",
   "smartLearningStrategyRecovery": "Phục hồi",
+  "studySummaryTitle": "Tóm tắt học tập",
+  "studySummaryLoading": "Đang tải tóm tắt học tập của bạn…",
+  "studySummaryEmpty": "Chưa có gì để tóm tắt — hãy học một chút rồi quay lại đây!",
+  "studySummaryContextTitle": "Tổng quan học tập",
+  "studySummaryInsightsTitle": "Nhận định",
+  "studySummaryPlanTitle": "Kế hoạch hôm nay",
+  "studySummarySessionTitle": "Phiên học đề xuất",
   "learningSummaryFlashcardCount": "Đã ôn {count} từ vựng",
   "@learningSummaryFlashcardCount": {
     "placeholders": {

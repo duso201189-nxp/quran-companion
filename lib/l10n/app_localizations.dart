@@ -2026,6 +2026,48 @@ abstract class AppLocalizations {
   /// **'Phục hồi'**
   String get smartLearningStrategyRecovery;
 
+  /// No description provided for @studySummaryTitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Tóm tắt học tập'**
+  String get studySummaryTitle;
+
+  /// No description provided for @studySummaryLoading.
+  ///
+  /// In vi, this message translates to:
+  /// **'Đang tải tóm tắt học tập của bạn…'**
+  String get studySummaryLoading;
+
+  /// No description provided for @studySummaryEmpty.
+  ///
+  /// In vi, this message translates to:
+  /// **'Chưa có gì để tóm tắt — hãy học một chút rồi quay lại đây!'**
+  String get studySummaryEmpty;
+
+  /// No description provided for @studySummaryContextTitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Tổng quan học tập'**
+  String get studySummaryContextTitle;
+
+  /// No description provided for @studySummaryInsightsTitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Nhận định'**
+  String get studySummaryInsightsTitle;
+
+  /// No description provided for @studySummaryPlanTitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Kế hoạch hôm nay'**
+  String get studySummaryPlanTitle;
+
+  /// No description provided for @studySummarySessionTitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Phiên học đề xuất'**
+  String get studySummarySessionTitle;
+
   /// No description provided for @learningSummaryFlashcardCount.
   ///
   /// In vi, this message translates to:

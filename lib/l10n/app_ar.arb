@@ -576,6 +576,13 @@
   "smartLearningStrategyDeepStudy": "دراسة معمّقة",
   "smartLearningStrategyMemorization": "حفظ",
   "smartLearningStrategyRecovery": "تعافٍ",
+  "studySummaryTitle": "ملخص التعلم",
+  "studySummaryLoading": "جارٍ تحميل ملخص تعلمك…",
+  "studySummaryEmpty": "لا يوجد شيء لتلخيصه بعد — تعلّم قليلاً ثم عد إلى هنا!",
+  "studySummaryContextTitle": "نظرة عامة على التعلم",
+  "studySummaryInsightsTitle": "ملاحظات",
+  "studySummaryPlanTitle": "خطة اليوم",
+  "studySummarySessionTitle": "الجلسة الموصى بها",
   "learningSummaryFlashcardCount": "تمت مراجعة {count} كلمة",
   "@learningSummaryFlashcardCount": {
     "placeholders": {
