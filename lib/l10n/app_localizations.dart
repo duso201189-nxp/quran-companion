@@ -802,6 +802,18 @@ abstract class AppLocalizations {
   /// **'Đang tìm kiếm...'**
   String get searchLoadingLabel;
 
+  /// Sprint R1.2 — tìm kiếm chạy xong nhưng rỗng, khác Empty State (chưa gõ gì)/Loading/Error.
+  ///
+  /// In vi, this message translates to:
+  /// **'Không tìm thấy kết quả cho \"{query}\"'**
+  String searchNoResultsTitle(String query);
+
+  /// No description provided for @searchNoResultsSubtitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Thử một từ khoá khác hoặc kiểm tra chính tả.'**
+  String get searchNoResultsSubtitle;
+
   /// No description provided for @libraryTitle.
   ///
   /// In vi, this message translates to:

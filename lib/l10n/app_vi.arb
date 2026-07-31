@@ -152,6 +152,16 @@
   "searchEmptyRecentSectionTitle": "Gần đây",
   "searchEmptySuggestedSectionTitle": "Gợi ý",
   "searchLoadingLabel": "Đang tìm kiếm...",
+  "searchNoResultsTitle": "Không tìm thấy kết quả cho \"{query}\"",
+  "@searchNoResultsTitle": {
+    "description": "Sprint R1.2 — tìm kiếm chạy xong nhưng rỗng, khác Empty State (chưa gõ gì)/Loading/Error.",
+    "placeholders": {
+      "query": {
+        "type": "String"
+      }
+    }
+  },
+  "searchNoResultsSubtitle": "Thử một từ khoá khác hoặc kiểm tra chính tả.",
   "libraryTitle": "Thư viện của tôi",
   "libraryBookmarks": "Đã lưu",
   "libraryFavorites": "Yêu thích",

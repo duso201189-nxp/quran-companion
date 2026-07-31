@@ -25,6 +25,13 @@ void main() {
         ),
         'mercy',
       );
+      // Sprint R1.1: gõ chữ giờ tạo 1 Future debounce 250ms thật
+      // (searchResultsProvider) — phải tự bơm qua khỏi mốc đó trước
+      // khi test kết thúc, nếu không framework test báo lỗi "Timer
+      // still pending" dù bài test này chỉ quan tâm kích thước nút,
+      // không quan tâm kết quả tìm kiếm.
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 300));
       await tester.pumpAndSettle();
 
       final size = tester.getSize(
@@ -194,6 +201,30 @@ void main() {
 
       final node = tester.getSemantics(find.textContaining('· 1'));
       expect(node.flagsCollection.isHeader, isTrue);
+
+      handle.dispose();
+    });
+
+    testWidgets(
+        'Sprint R1.3 — SearchResultSection: tiêu đề CŨNG là live region '
+        '(công bố khi tìm xong có kết quả, khớp Loading/Error/'
+        'NoResults — trước sprint này chỉ 3/4 trạng thái thân màn hình '
+        'tự công bố)', (tester) async {
+      final handle = tester.ensureSemantics();
+      await tester.pumpWidget(
+        localizedTestApp(
+          Builder(
+            builder: (context) => SearchResultSection.ayahs(
+              l10n: AppLocalizations.of(context),
+              results: const [sampleAyah],
+            ),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      final node = tester.getSemantics(find.textContaining('· 1'));
+      expect(node.flagsCollection.isLiveRegion, isTrue);
 
       handle.dispose();
     });

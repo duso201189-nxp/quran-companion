@@ -152,6 +152,16 @@
   "searchEmptyRecentSectionTitle": "Recent",
   "searchEmptySuggestedSectionTitle": "Suggested",
   "searchLoadingLabel": "Searching...",
+  "searchNoResultsTitle": "No results found for \"{query}\"",
+  "@searchNoResultsTitle": {
+    "description": "Sprint R1.2 — search completed successfully but returned zero results, distinct from Empty State (nothing typed yet)/Loading/Error.",
+    "placeholders": {
+      "query": {
+        "type": "String"
+      }
+    }
+  },
+  "searchNoResultsSubtitle": "Try a different keyword or check your spelling.",
   "libraryTitle": "My Library",
   "libraryBookmarks": "Bookmarks",
   "libraryFavorites": "Favorites",

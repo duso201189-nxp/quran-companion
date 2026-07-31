@@ -377,6 +377,15 @@ class AppLocalizationsVi extends AppLocalizations {
   String get searchLoadingLabel => 'Đang tìm kiếm...';
 
   @override
+  String searchNoResultsTitle(String query) {
+    return 'Không tìm thấy kết quả cho \"$query\"';
+  }
+
+  @override
+  String get searchNoResultsSubtitle =>
+      'Thử một từ khoá khác hoặc kiểm tra chính tả.';
+
+  @override
   String get libraryTitle => 'Thư viện của tôi';
 
   @override

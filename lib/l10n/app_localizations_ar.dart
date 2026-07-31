@@ -376,6 +376,15 @@ class AppLocalizationsAr extends AppLocalizations {
   String get searchLoadingLabel => 'جارٍ البحث...';
 
   @override
+  String searchNoResultsTitle(String query) {
+    return 'لم يتم العثور على نتائج لـ \"$query\"';
+  }
+
+  @override
+  String get searchNoResultsSubtitle =>
+      'جرّب كلمة بحث مختلفة أو تحقّق من الإملاء.';
+
+  @override
   String get libraryTitle => 'مكتبتي';
 
   @override

@@ -77,6 +77,14 @@ class SearchResultSection extends StatelessWidget {
           padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
           child: Semantics(
             header: true,
+            // Sprint R1.3: khớp SearchLoadingSkeleton/SearchErrorState/
+            // SearchNoResultsState — cả 3 trạng thái còn lại của thân
+            // SearchScreen đều tự công bố qua liveRegion khi xuất hiện;
+            // thiếu cờ này ở đây khiến trình đọc màn hình KHÔNG biết
+            // tìm kiếm đã xong khi có kết quả thật (chỉ đọc được nếu
+            // người dùng tự điều hướng tới) — một khoảng trống thật,
+            // không phải giả định.
+            liveRegion: true,
             child: Text(
               title,
               style: textTheme.titleSmall?.copyWith(

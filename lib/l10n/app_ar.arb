@@ -152,6 +152,16 @@
   "searchEmptyRecentSectionTitle": "الأخيرة",
   "searchEmptySuggestedSectionTitle": "مقترح",
   "searchLoadingLabel": "جارٍ البحث...",
+  "searchNoResultsTitle": "لم يتم العثور على نتائج لـ \"{query}\"",
+  "@searchNoResultsTitle": {
+    "description": "Sprint R1.2 — search completed successfully but returned zero results, distinct from Empty State (nothing typed yet)/Loading/Error.",
+    "placeholders": {
+      "query": {
+        "type": "String"
+      }
+    }
+  },
+  "searchNoResultsSubtitle": "جرّب كلمة بحث مختلفة أو تحقّق من الإملاء.",
   "libraryTitle": "مكتبتي",
   "libraryBookmarks": "المحفوظة",
   "libraryFavorites": "المفضلة",

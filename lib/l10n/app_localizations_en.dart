@@ -379,6 +379,15 @@ class AppLocalizationsEn extends AppLocalizations {
   String get searchLoadingLabel => 'Searching...';
 
   @override
+  String searchNoResultsTitle(String query) {
+    return 'No results found for \"$query\"';
+  }
+
+  @override
+  String get searchNoResultsSubtitle =>
+      'Try a different keyword or check your spelling.';
+
+  @override
   String get libraryTitle => 'My Library';
 
   @override
