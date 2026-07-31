@@ -10,15 +10,17 @@ void main() {
     // thuộc Riverpod, giống SearchErrorState/SearchEmptyState.
     testWidgets('hiện đúng icon search_off + từ khoá trong thông điệp',
         (tester) async {
-      await tester
-          .pumpWidget(localizedTestApp(const SearchNoResultsState(query: 'xyz')));
+      await tester.pumpWidget(
+        localizedTestApp(const SearchNoResultsState(query: 'xyz')),
+      );
 
       expect(find.byIcon(Icons.search_off), findsOneWidget);
       expect(find.text('Không tìm thấy kết quả cho "xyz"'), findsOneWidget);
       expect(tester.takeException(), isNull);
     });
 
-    testWidgets('đổi query khác -> thông điệp đổi theo, không phải chuỗi cố định',
+    testWidgets(
+        'đổi query khác -> thông điệp đổi theo, không phải chuỗi cố định',
         (tester) async {
       await tester.pumpWidget(
         localizedTestApp(const SearchNoResultsState(query: 'الرحمن')),
@@ -52,8 +54,9 @@ void main() {
     testWidgets('thông điệp + gợi ý là live region cho trình đọc màn hình',
         (tester) async {
       final handle = tester.ensureSemantics();
-      await tester
-          .pumpWidget(localizedTestApp(const SearchNoResultsState(query: 'xyz')));
+      await tester.pumpWidget(
+        localizedTestApp(const SearchNoResultsState(query: 'xyz')),
+      );
 
       expect(
         find.bySemanticsLabel(
