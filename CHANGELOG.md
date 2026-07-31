@@ -5,6 +5,74 @@ Phiên bản theo [Semantic Versioning](https://semver.org/lang/vi/).
 
 ## [Unreleased]
 
+### Ghi chú — khoảng trống backfill
+
+Các mục "Sprint 10" trở xuống trong phần `[Unreleased]` này được viết
+tại thời điểm đó (trước đợt khôi phục phát hành). Mục "Đợt khôi phục
+phát hành" ngay bên dưới backfill toàn bộ những gì đã merge SAU Sprint
+10 — P1–P4, F1–F8, và Sprint S1/S2 — được viết muộn hơn nhiều (Phase
+2.1, Documentation Integration), tóm tắt ở mức PR chứ không chi tiết
+từng phase như các mục cũ hơn. Chi tiết đầy đủ từng nhóm:
+[`docs/reports/release-recovery/`](docs/reports/release-recovery/).
+
+### Added — Đợt khôi phục phát hành: P1–P4, F1–F8 (PR #3–#19)
+
+Một mega-commit lớn (`d4976b0`) được tách lại thành 12 nhóm PR độc
+lập, xác minh và merge lần lượt vào `main`:
+
+- **P1 — Lớp tin cậy (Reliability layer)**: `AppFailure`/
+  `FailureCategory`/`FailureSeverity`, `Logger`/`CrashReporter`
+  (interface, `ConsoleLogger`/`NoopCrashReporter` mặc định),
+  `withFailureLogging`/`withFailureLoggingStream` — điểm bọc lỗi DUY
+  NHẤT ở ranh giới Repository (PR #3).
+- **P2 — Widget accessibility dùng chung**: `EmptyStateBanner`,
+  `LoadingState`, `SectionHeader`, `StatCard` (PR #5).
+- **P3 — Schema database cho Lexicon/Flashcards/Analytics**:
+  `UserDatabase` schemaVersion 3→6 (`srs_cards` tổng quát hoá,
+  `quiz_results`, `flashcard_decks`, `flashcards`); 8 bảng Lexicon mới
+  trong `AppDatabase` (PR #11).
+- **P4 — Áp dụng lớp tin cậy vào 9 repository hiện có** (PR #12).
+- **F1 — Lexicon**: domain/repository đọc Root/Lemma/Lexeme/
+  WordInstance/GrammarFeature/Phrase/LexiconRelation (PR #13, gộp
+  cùng F2/F3).
+- **F2 — Flashcards**: duyệt/thêm/xoá/gộp Smart Deck, gắn vào
+  Scheduler qua cầu nối ở tầng Provider (PR #13).
+- **F3 — Analytics (Phân tích học tập)**: thống kê, lịch sử, insight,
+  mục tiêu, thành tích — tổng hợp thuần từ 4 repository lá, không lưu
+  trữ riêng (PR #13).
+- **F4 — AI Tutor**: gợi ý/insight dựa trên luật từ Analytics — CHƯA
+  gọi AI/LLM thật (PR #14).
+- **F5 — Learning Journey**: kế hoạch học hằng ngày, tổng hợp từ AI
+  Tutor (PR #15).
+- **F6 — Smart Learning**: xếp hạng chiến lược học từ Learning
+  Journey (PR #16).
+- **F7 — Read Model**: `LearningSnapshot` bất biến, tổng hợp cả chuỗi
+  5 tầng — CHƯA có màn hình dùng tới (PR #17).
+- **F8 — Learning Session wiring**: hợp nhất Review/Quiz/Flashcard
+  vào một luồng phiên học duy nhất, một route (PR #18).
+
+### Fixed — Sprint S1 (audit) → S2 (Quality & Polish, PR #19)
+
+Sau khi cả 12 nhóm trên merge, một đợt audit toàn diện
+(`docs/reports/release-recovery/PROJECT_AUDIT_REPORT.md`) tìm ra và
+ưu tiên hoá nợ kỹ thuật; Sprint S2 sửa các mục Critical/High:
+
+- `learning_session` không có xử lý lỗi nào (Notifier trần, không
+  bắt exception) — thêm trạng thái `failed` + `retry()`, dùng lại
+  đúng `LoadingState`/`SearchErrorState` mọi tính năng khác đã dùng.
+- `CrashReporter` được xây từ Sprint 19 nhưng chưa từng được gọi —
+  nối vào `ConsoleLogger` để mọi lỗi qua ranh giới Repository đều tới
+  được nó (vẫn no-op cho tới khi có implementation thật).
+- Dọn 1 provider chết hoàn toàn (`statsRefreshProvider`), gộp 2 widget
+  trùng lặp trong `stats_screen.dart` vào `StatCard`/`EmptyStateBanner`
+  dùng chung, trích 1 helper dùng chung cho 4 generator câu hỏi Quiz.
+- Thêm test cho 4 khoảng trống coverage (session_strategy_rules,
+  daily_goal store/providers, 2 provider DI chưa từng qua
+  `container.read()` trực tiếp).
+
+Bộ test đầy đủ: 767/767 qua tại thời điểm PR #19 merge (từ mốc 375 ở
+cuối Sprint 10). Chi tiết đầy đủ: `docs/reports/release-recovery/`.
+
 ### Added — Sprint 10: Learning Engine — Scheduler SM-2 + Quiz (Bước 9 phần 1)
 
 Thực hiện theo [DR-2026-0005](docs/adr/DR-2026-0005.md) (5 phase:

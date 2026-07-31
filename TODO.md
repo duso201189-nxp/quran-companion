@@ -1,6 +1,19 @@
 # TODO — việc treo
 
-Lộ trình: xem ROADMAP.md. Checklist phát hành: RELEASE_CHECKLIST.md.
+> **Tài liệu này là LỊCH SỬ, đóng băng tại Sprint 10.** Danh sách việc
+> còn mở HIỆN TẠI (đã đối chiếu code, không phải suy đoán) nằm ở
+> **[docs/release/RELEASE_PLAN_V1.md](docs/release/RELEASE_PLAN_V1.md)**
+> (điểm chặn v1.0) và
+> **[docs/release/UPDATED_TECHNICAL_DEBT.md](docs/release/UPDATED_TECHNICAL_DEBT.md)**
+> (nợ kỹ thuật đang mở, đã ưu tiên). File này vẫn hữu ích cho ngữ cảnh
+> lịch sử (quyết định nào từng được đưa ra, lý do gì) nhưng đừng dùng
+> nó để biết "việc gì còn mở hôm nay" — nhiều mục bên dưới (đặc biệt
+> mục Flashcard "hoãn lại có chủ đích") đã được giải quyết sau đó qua
+> đợt khôi phục phát hành, xem
+> [`docs/reports/release-recovery/README.md`](docs/reports/release-recovery/README.md).
+
+Lộ trình gốc: xem ROADMAP.md (cũng đã đóng băng, xem banner ở đầu file
+đó). Checklist phát hành hiện tại vẫn còn đúng: RELEASE_CHECKLIST.md.
 
 ## Quyết định / dữ liệu còn thiếu
 - [ ] Tên tiếng Việt chuẩn cho 114 Surah (hiện dùng tên Latin trong
@@ -120,3 +133,29 @@ Lộ trình: xem ROADMAP.md. Checklist phát hành: RELEASE_CHECKLIST.md.
       coverage% thật chưa đo lại (`flutter test --coverage` không nằm
       trong phạm vi Phase 5), chỉ xác nhận KHÔNG có code mới nào thiếu
       test (khác với Sprint 9, xem CHANGELOG).
+
+## Đối chiếu lại sau đợt khôi phục phát hành (không sửa mục nào ở trên)
+
+Vài mục phía trên đã lỗi thời theo cách dễ gây hiểu lầm nếu đọc mà
+không biết bối cảnh (xem banner đầu file):
+
+- **"Flashcard hoãn lại có chủ đích"** (nhắc tới nhiều lần ở trên,
+  Sprint 10): Flashcard **đã được xây đầy đủ** (nhóm F2 của đợt khôi
+  phục), cùng Lexicon/Từ vựng (F1) làm nền. Lý do hoãn gốc — thiếu
+  nguồn word-by-word tiếng Việt cho lemmas/word_instances — **vẫn còn
+  đúng một phần**: schema đã có, nhưng dữ liệu lemma thật trong
+  database đóng gói vẫn rỗng (xem
+  `docs/architecture/DATABASE_REFERENCE.md` §1.1). Đây là điểm chặn kỹ
+  thuật ưu tiên cao nhất cho v1.0 hiện nay — xem
+  `docs/release/RELEASE_PLAN_V1.md` §2.
+- **Coverage CI 70% → 80%**: vẫn ở 70%; số test hiện tại (767, tính
+  tới Sprint S2) chưa được đo lại `flutter test --coverage` — xem
+  `docs/testing/TESTING_GUIDE.md` §2.4 (một file `coverage/lcov.info`
+  cũ tồn tại trong repo nhưng chỉ phủ 57 file, KHÔNG đại diện cho
+  coverage hiện tại — đừng trích dẫn con số của nó).
+- **Bước 7.2 (engine tìm kiếm thật)**: vẫn CHƯA nối — vẫn là gap thật,
+  xem `docs/architecture/DATA_FLOW.md` Flow 2 và
+  `docs/release/RELEASE_PLAN_V1.md` §4 bước 3.
+
+Danh sách việc mở đầy đủ, hiện tại: `docs/release/RELEASE_PLAN_V1.md`
++ `docs/release/UPDATED_TECHNICAL_DEBT.md`.
