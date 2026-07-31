@@ -33,19 +33,32 @@ as designed. 5 new tests, all passing.
 
 ## P1 — Real, evidenced debt
 
-### D3. `LearningSnapshotRepository` (F7, Read Model) is fully unreachable — **NOT ACTIONED, unchanged**
+### D3. `LearningSnapshotRepository` (F7, Read Model) is fully unreachable — **RESOLVED (Phase 3 Sprint R2)**
 
-Still true. Requires a product decision (build Read Model a UI, or
-formally accept it stays infrastructure-only) before any code should
-move — see `ROADMAP_RECOMMENDATION.md` S4. Not an S2 item.
+The product decision was made and implemented: `StudySummaryScreen`
+(`lib/features/read_model/presentation/study_summary_screen.dart`,
+route `/study-summary`) now consumes `learningSnapshotProvider` and
+renders all four `LearningSnapshot` sections, with pull-to-refresh/
+retry wired to `smartLearningSessionProvider`. Details across
+`docs/release/PHASE3_SPRINT_R2_PLAN.md`,
+`PHASE3_SPRINT_R2_DESIGN_REVIEW.md`, and the R2.1–R2.3 reports. Not
+fully closed as a *product* surface — no CTA yet links to the route
+from `SmartLearningScreen` — but the debt item itself (repository
+built with no consumer, no decision made) is resolved.
 
 ### D4. Unused providers — **PARTIALLY FIXED (S2)**
 
 Commit `0653295`. `statsRefreshProvider` removed (was fully dead, zero
 usages anywhere). `learningSnapshotRepositoryProvider` and
-`learningSnapshotProvider` deliberately left alone — both are
-downstream of D3's unresolved product decision; removing them now
-would presuppose that decision.
+`learningSnapshotProvider` deliberately left alone at the time — both
+were downstream of D3's then-unresolved product decision, so removing
+them would have presupposed that decision. D3 is now resolved (see
+above): both providers are the real, actively-consumed read path for
+`StudySummaryScreen`, so this reasoning no longer applies — they were
+never dead code to begin with, just correctly left untouched pending a
+decision that has since landed. No further action taken here as part
+of Sprint R2; still recorded as "partially fixed" since the original
+`statsRefreshProvider` removal is the only concrete fix in this item.
 
 ### D5. Dead files — **NOT ACTIONED, unchanged**
 
@@ -113,13 +126,21 @@ valid, still low priority, still opportunistic.
 | Priority | Total | Fixed | Partially fixed | Not actioned (reasoned) |
 |---|--:|--:|--:|--:|
 | P0 | 2 | 2 | 0 | 0 |
-| P1 | 6 | 2 | 2 | 2 |
+| P1 | 7 | 3 | 2 | 2 |
 | P2 | 5 | 0 | 0 | 5 (out of scope) |
 
-Every P0 item is closed. Of the 6 P1 items, 2 are fully closed, 2 are
-partially closed with the remainder explicitly reasoned and deferred
-(not silently dropped), and 2 were evaluated and correctly left alone
-— one because it's a product decision, not an engineering task; one
-because this engagement's own roadmap already called for isolating it
-into its own sprint given its size. See `ROADMAP_RECOMMENDATION.md`
-for suggested S3+ sequencing of everything still open.
+(Corrected P1 total from a pre-existing "6" to "7" — D3/D4/D5/D6/D7/D8/D9
+is seven items; the previous version of this table undercounted by
+one, missing D5 from its tally. Not introduced by this update, fixed
+in passing while updating D3's status.)
+
+Every P0 item is closed. Of the 7 P1 items, 3 are fully closed (D7/D9
+from S2, D3 from Phase 3 Sprint R2), 2 are partially closed with the
+remainder explicitly reasoned and deferred (not silently dropped), and
+2 (D5, D8) were evaluated and correctly left alone — D5 because no
+single action ("wire in" vs "delete") was safe and unambiguous within
+S2's constraints; D8 because this engagement's own roadmap already
+called for isolating it into its own sprint given its size. See
+`ROADMAP_RECOMMENDATION.md` for suggested S3+ sequencing of everything
+still open — note it predates D3's resolution and should be read with
+that in mind.

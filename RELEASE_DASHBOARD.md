@@ -24,7 +24,7 @@ ship decision:
 
 | Category | Score | Weight | Basis |
 |---|--:|--:|---|
-| Product feature completeness | 90% | 30% | `PRODUCT_ROADMAP.md`: "nearly all of the original v1.5 feature scope is already built" — reading, audio, bookmarks, search UI, full learning engine, 5-layer AI-adjacent chain. Open: Search engine wiring, Read Model UI decision. |
+| Product feature completeness | 90% | 30% | `PRODUCT_ROADMAP.md`: "nearly all of the original v1.5 feature scope is already built" — reading, audio, bookmarks, search UI, full learning engine, 5-layer AI-adjacent chain. Read Model UI decision now closed (Phase 3 Sprint R2, see §2) — this score/list was not otherwise recalculated as part of that update; see note at end of §1. |
 | Technical debt closure (P0+P1) | 63% | 20% | `UPDATED_TECHNICAL_DEBT.md` summary table: P0 2/2 fixed (100%), P1 2/6 fixed + 2/6 partial + 2/6 not actioned → 50%. Weighted by item count (2 P0 + 6 P1 = 8 items): 63%. P2 (5 items, explicitly out of scope) excluded from this score. |
 | Documentation & planning foundation | 100% | 15% | Product Foundation (8 documents) + Phase 2.1 (integration, `PROJECT_INDEX.md`, `CONTRIBUTING.md`, `ARCHITECTURE_DECISIONS.md`) + this dashboard — all complete. |
 | v1.0-specific release blockers closed | 10% | 35% | `RELEASE_PLAN_V1.md` §2's four blocker groups (Store & legal; Platform completeness; Verification gaps; Known engineering gaps) — none closed yet. The only movement is the documentation-debt sub-item from §0 (ROADMAP/TODO/CHANGELOG/CLAUDE reconciled in Phase 2.1); `pubspec.yaml`'s version itself is still unbumped. |
@@ -37,6 +37,17 @@ the least progress, which is the accurate picture per `RELEASE_PLAN_V1.md`
 (no blocker group has been actioned by any sprint to date; S1/S2 and
 the documentation phases addressed code quality and knowledge capture,
 not the release-blocking gaps themselves).
+
+> **Note (post-Phase-3 R2 update)**: this table's percentages predate
+> Phase 3 Sprint R1 (Search FTS5 wiring, shipped) and Sprint R2 (Read
+> Model UI, shipped, see §2) — both closed real items this table still
+> scores as open/unclosed. The individual facts affected by R2 were
+> corrected in §2/§3/§4/§7 as part of this update; the numeric score
+> itself was deliberately **not** recalculated here (that requires
+> re-deriving the full weighted model this dashboard's original task
+> built, which is out of scope for a single-sprint completion update)
+> — treat 58%/10% as understating actual progress until a full
+> dashboard refresh is run.
 
 ---
 
@@ -108,6 +119,27 @@ added, no silent rewrites). This closes the documentation-debt item
 `RELEASE_PLAN_V1.md` §0 originally flagged — the one piece of
 movement reflected in the "v1.0-specific blockers" score above.
 
+### Phase 3 — Sprint R2 (Read Model UI)
+
+`StudySummaryScreen` shipped (`lib/features/read_model/presentation/study_summary_screen.dart`,
+route `/study-summary`): renders all four `LearningSnapshot` sections
+(context/insights/daily plan/recommended session) by reusing existing
+widgets and pure presentation functions from `ai_tutor`/
+`learning_journey`/`smart_learning`, with pull-to-refresh and retry
+both invalidating `smartLearningSessionProvider` (never
+`learningSnapshotProvider` directly — see
+[`docs/release/PHASE3_SPRINT_R2_DESIGN_REVIEW.md`](docs/release/PHASE3_SPRINT_R2_DESIGN_REVIEW.md)
+"Refresh Strategy"). 799 tests passing, `flutter analyze
+--fatal-infos` clean, CI green on `main`
+([run 30634893231](https://github.com/duso201189-nxp/quran-companion/actions/runs/30634893231),
+commit `275204b`). This closes **D3** — the Read Model no longer has
+"no product decision"; the decision made was to ship a UI. Still open,
+deliberately unchanged by this sprint: no entry-point CTA from
+`SmartLearningScreen` yet (route exists, nothing links to it), and no
+action wiring on plan steps (the screen is display-only by design this
+sprint). Full detail: `docs/release/PHASE3_SPRINT_R2_1_REPORT.md`
+through `PHASE3_SPRINT_R2_3_REPORT.md`.
+
 ---
 
 ## 3. Remaining blockers
@@ -133,12 +165,6 @@ movement reflected in the "v1.0-specific blockers" score above.
 
 ### High
 
-- **Read Model (D3) has no product decision.** `LearningSnapshotRepository`
-  is fully built and fully unreachable — needs a call: give it a UI
-  (natural fit: a "smart study summary" screen) or explicitly scope it
-  out of v1.0. Not an engineering blocker by itself, but leaving it
-  undecided blocks anyone from planning around it.
-  ([`docs/release/UPDATED_TECHNICAL_DEBT.md`](docs/release/UPDATED_TECHNICAL_DEBT.md) D3)
 - **Web platform is broken** (missing WASM/worker files for the
   database layer) and undecided — ship it or explicitly defer.
 - **No real accessibility audit** has been performed (screen readers);
@@ -223,6 +249,9 @@ movement reflected in the "v1.0-specific blockers" score above.
 - **Estimated complexity**: Medium-High. The decisions themselves are
   cheap; D8's refactor touches 20+ call sites and needs the full test
   suite green after, not just the touched files.
+- **Status**: Read Model UI deliverable **shipped** (Phase 3 Sprint R2,
+  see §2 above). Web platform go/no-go, D8 refactor, and D5's 4 dead
+  files remain open — this milestone is partially, not fully, closed.
 
 ### R3 — Verification & Quality Gate
 
@@ -349,8 +378,8 @@ A release candidate is v1.0-ready only when all of the following hold:
 
 - [ ] Lexicon database asset populated and verified on a real install
 - [ ] Search returns real FTS5 results, not placeholder/empty states
-- [ ] Read Model decision made and implemented (UI shipped or formally
-      deferred)
+- [x] Read Model decision made and implemented (UI shipped or formally
+      deferred) — shipped, Phase 3 Sprint R2 (see §2)
 - [ ] Web platform decision made and implemented (fixed or excluded)
 - [ ] Accessibility audit complete, Critical/High findings closed
 - [ ] Performance measured on a real mid-range Android device
