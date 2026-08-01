@@ -1022,6 +1022,12 @@ class AppLocalizationsAr extends AppLocalizations {
   String get journeyEntrySmartLearningDesc => 'توصية مخصّصة للحظة الحالية';
 
   @override
+  String get journeyEntryStudySummaryTitle => 'اطّلع على ملخص التعلم';
+
+  @override
+  String get journeyEntryStudySummaryDesc => 'كل ما تتعلمه في مكان واحد';
+
+  @override
   String get smartLearningTitle => 'التعلّم الذكي';
 
   @override

@@ -113,10 +113,10 @@ abstract final class AppRoutes {
   /// [progressDashboard]/[aiTutor]/[learningJourney].
   static const String smartLearning = '/smart-learning';
 
-  /// Study Summary / Read Model (Sprint R2.1 — nền tảng) — cùng mẫu
+  /// Study Summary / Read Model (Sprint R2.1 — nền tảng; Sprint R3.1 —
+  /// nối lối vào) — push từ [smartLearning] (lối vào duy nhất, xem
+  /// SmartLearningScreen._StudySummaryEntryCard), cùng mẫu
   /// [progressDashboard]/[aiTutor]/[learningJourney]/[smartLearning].
-  /// CHƯA có CTA nào trỏ tới route này (lối vào từ SmartLearningScreen
-  /// thuộc sprint sau) — chỉ route + màn hình tồn tại ở sprint này.
   static const String studySummary = '/study-summary';
 
   /// Trang đọc trong tab Qur'an (giữ thanh điều hướng): /quran/surah/2

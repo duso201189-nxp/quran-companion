@@ -1025,6 +1025,13 @@ class AppLocalizationsVi extends AppLocalizations {
   String get journeyEntrySmartLearningDesc => 'Gợi ý riêng cho ngay bây giờ';
 
   @override
+  String get journeyEntryStudySummaryTitle => 'Xem tóm tắt học tập';
+
+  @override
+  String get journeyEntryStudySummaryDesc =>
+      'Tất cả những gì bạn đang học, ở một nơi';
+
+  @override
   String get smartLearningTitle => 'Học thông minh';
 
   @override

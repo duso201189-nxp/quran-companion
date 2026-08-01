@@ -1954,6 +1954,18 @@ abstract class AppLocalizations {
   /// **'Gợi ý riêng cho ngay bây giờ'**
   String get journeyEntrySmartLearningDesc;
 
+  /// No description provided for @journeyEntryStudySummaryTitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Xem tóm tắt học tập'**
+  String get journeyEntryStudySummaryTitle;
+
+  /// No description provided for @journeyEntryStudySummaryDesc.
+  ///
+  /// In vi, this message translates to:
+  /// **'Tất cả những gì bạn đang học, ở một nơi'**
+  String get journeyEntryStudySummaryDesc;
+
   /// No description provided for @smartLearningTitle.
   ///
   /// In vi, this message translates to:

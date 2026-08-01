@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:quran_companion/l10n/app_localizations.dart';
 
+import '../../../app/router.dart';
 import '../../../shared/widgets/empty_state_banner.dart';
 import '../../../shared/widgets/loading_state.dart';
 import '../../../shared/widgets/section_header.dart';
@@ -96,6 +98,8 @@ class _SmartLearningContent extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 20),
+        const _StudySummaryEntryCard(),
+        const SizedBox(height: 20),
         if (recommendations.isEmpty)
           EmptyStateBanner(text: l10n.smartLearningEmpty)
         else ...[
@@ -147,6 +151,76 @@ class _OtherRecommendation extends StatelessWidget {
           l10n.statsTodayMinutes(recommendation.estimatedMinutes),
       relatedStepsLabel:
           l10n.smartLearningRelatedStepsLabel(recommendation.relatedStepCount),
+    );
+  }
+}
+
+/// Lối vào Study Summary (Sprint R3.1) — banner CTA tĩnh, KHÔNG đọc
+/// provider nào, chỉ push route — cùng mẫu
+/// LearningJourneyScreen._SmartLearningEntryCard (Sprint 17 Phase 2
+/// mục 5) và TutorHomeScreen._JourneyEntryCard (Sprint 16 Phase 2),
+/// không phát minh kiểu điều hướng mới.
+///
+/// Nối mắt xích CUỐI của chuỗi lối vào theo tầng đã có sẵn:
+/// TutorHome -> LearningJourney -> SmartLearning -> StudySummary.
+/// Trước sprint này, `AppRoutes.studySummary` tồn tại nhưng KHÔNG có
+/// CTA nào trỏ tới (màn hình Read Model đã dựng xong ở Sprint R2 mà
+/// người dùng không có đường nào tới được) — xem
+/// `docs/release/PHASE3_SPRINT_R3_PLAN.md`.
+///
+/// Nằm trong [_SmartLearningContent] nên CHỈ hiện ở trạng thái `data`
+/// — đúng y hệt `_SmartLearningEntryCard` (cũng nằm trong nhánh dữ
+/// liệu của màn hình cha nó), không phải quyết định mới của sprint
+/// này.
+class _StudySummaryEntryCard extends StatelessWidget {
+  const _StudySummaryEntryCard();
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    final scheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
+
+    return Material(
+      color: scheme.secondaryContainer.withValues(alpha: 0.6),
+      borderRadius: BorderRadius.circular(16),
+      child: InkWell(
+        borderRadius: BorderRadius.circular(16),
+        onTap: () => context.push(AppRoutes.studySummary),
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Row(
+            children: [
+              Icon(Icons.summarize_rounded, color: scheme.onSecondaryContainer),
+              const SizedBox(width: 14),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      l10n.journeyEntryStudySummaryTitle,
+                      style: textTheme.titleMedium?.copyWith(
+                        fontWeight: FontWeight.w700,
+                        color: scheme.onSecondaryContainer,
+                      ),
+                    ),
+                    const SizedBox(height: 2),
+                    Text(
+                      l10n.journeyEntryStudySummaryDesc,
+                      style: textTheme.bodySmall
+                          ?.copyWith(color: scheme.onSecondaryContainer),
+                    ),
+                  ],
+                ),
+              ),
+              Icon(
+                Icons.chevron_right_rounded,
+                color: scheme.onSecondaryContainer,
+              ),
+            ],
+          ),
+        ),
+      ),
     );
   }
 }

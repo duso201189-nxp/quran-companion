@@ -550,6 +550,8 @@
   },
   "journeyEntrySmartLearningTitle": "Nhận phiên học thông minh",
   "journeyEntrySmartLearningDesc": "Gợi ý riêng cho ngay bây giờ",
+  "journeyEntryStudySummaryTitle": "Xem tóm tắt học tập",
+  "journeyEntryStudySummaryDesc": "Tất cả những gì bạn đang học, ở một nơi",
   "smartLearningTitle": "Học thông minh",
   "smartLearningHeaderTitle": "Phiên học thông minh của bạn",
   "smartLearningRecommendationCountLabel": "{count} đề xuất hôm nay",

@@ -550,6 +550,8 @@
   },
   "journeyEntrySmartLearningTitle": "Get your Smart Session",
   "journeyEntrySmartLearningDesc": "A personalized recommendation for right now",
+  "journeyEntryStudySummaryTitle": "See your Study Summary",
+  "journeyEntryStudySummaryDesc": "Everything you're learning, in one place",
   "smartLearningTitle": "Smart Learning",
   "smartLearningHeaderTitle": "Your smart session",
   "smartLearningRecommendationCountLabel": "{count} recommendations today",

@@ -550,6 +550,8 @@
   },
   "journeyEntrySmartLearningTitle": "احصل على جلستك الذكية",
   "journeyEntrySmartLearningDesc": "توصية مخصّصة للحظة الحالية",
+  "journeyEntryStudySummaryTitle": "اطّلع على ملخص التعلم",
+  "journeyEntryStudySummaryDesc": "كل ما تتعلمه في مكان واحد",
   "smartLearningTitle": "التعلّم الذكي",
   "smartLearningHeaderTitle": "جلستك الذكية",
   "smartLearningRecommendationCountLabel": "{count} توصية اليوم",

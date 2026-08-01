@@ -1030,6 +1030,13 @@ class AppLocalizationsEn extends AppLocalizations {
       'A personalized recommendation for right now';
 
   @override
+  String get journeyEntryStudySummaryTitle => 'See your Study Summary';
+
+  @override
+  String get journeyEntryStudySummaryDesc =>
+      'Everything you\'re learning, in one place';
+
+  @override
   String get smartLearningTitle => 'Smart Learning';
 
   @override

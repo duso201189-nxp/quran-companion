@@ -66,10 +66,12 @@ import '../domain/entities/learning_snapshot.dart';
 /// `smartLearningSessionProvider` (dependency) mới thật sự kích hoạt
 /// lượt gọi mới VÀ tự động lan tới [learningSnapshotProvider] đang
 /// watch nó — đúng 1 điểm invalidate duy nhất cho toàn chuỗi, khớp
-/// mẫu `SmartLearningScreen` đã dùng sẵn. CHƯA có lối vào từ
-/// `SmartLearningScreen` — route tồn tại (`AppRoutes.studySummary`)
-/// nhưng chưa có CTA nào trỏ tới, tránh đổi bố cục màn hình khác
-/// trong sprint chỉ xây nội dung này.
+/// mẫu `SmartLearningScreen` đã dùng sẵn.
+///
+/// **Sprint R3.1**: đã có lối vào — `SmartLearningScreen._StudySummaryEntryCard`
+/// push tới `AppRoutes.studySummary`, nối mắt xích cuối của chuỗi
+/// TutorHome -> LearningJourney -> SmartLearning -> StudySummary.
+/// Trước sprint đó, route tồn tại nhưng KHÔNG có CTA nào trỏ tới.
 class StudySummaryScreen extends ConsumerWidget {
   const StudySummaryScreen({super.key});
 

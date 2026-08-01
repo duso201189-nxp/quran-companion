@@ -11,6 +11,7 @@ import 'package:quran_companion/core/database/user/user_database_providers.dart'
 import 'package:quran_companion/core/storage/prefs_provider.dart';
 import 'package:quran_companion/features/ai_tutor/presentation/tutor_home_screen.dart';
 import 'package:quran_companion/features/learning_journey/presentation/learning_journey_screen.dart';
+import 'package:quran_companion/features/read_model/presentation/study_summary_screen.dart';
 import 'package:quran_companion/features/smart_learning/presentation/smart_learning_screen.dart';
 import 'package:quran_companion/features/smart_learning/presentation/widgets/session_summary_card.dart';
 import 'package:quran_companion/features/study/presentation/study_screen.dart';
@@ -60,6 +61,12 @@ void main() {
         GoRoute(
           path: AppRoutes.smartLearning,
           builder: (_, __) => const SmartLearningScreen(),
+        ),
+        // Sprint R3.1 — đích của thẻ lối vào mới; đăng ký ở đây để bài
+        // kiểm điều hướng đi ĐÚNG đường thật, không giả lập route.
+        GoRoute(
+          path: AppRoutes.studySummary,
+          builder: (_, __) => const StudySummaryScreen(),
         ),
       ],
     );
@@ -142,5 +149,57 @@ void main() {
     expect(inScreen(find.text('1 related steps')), findsOneWidget);
 
     await _disposeTree(tester);
+  });
+
+  group('Sprint R3.1 — thẻ lối vào Study Summary', () {
+    testWidgets('vẽ thẻ lối vào (tiêu đề + mô tả + mũi tên) trong màn hình',
+        (tester) async {
+      await pumpAndNavigateToSmartLearning(tester);
+
+      expect(inScreen(find.text('See your Study Summary')), findsOneWidget);
+      expect(
+        inScreen(find.text("Everything you're learning, in one place")),
+        findsOneWidget,
+      );
+      expect(
+        inScreen(find.byIcon(Icons.chevron_right_rounded)),
+        findsOneWidget,
+      );
+      expect(tester.takeException(), isNull);
+
+      await _disposeTree(tester);
+    });
+
+    testWidgets(
+        'thẻ lối vào nằm trong nhánh DỮ LIỆU — hiện cùng lúc với nội '
+        'dung phiên học thật, không phải khi đang tải/lỗi', (tester) async {
+      await pumpAndNavigateToSmartLearning(tester);
+
+      // Không còn khung chờ -> đã ở trạng thái data.
+      expect(find.byType(CircularProgressIndicator), findsNothing);
+      // Dấu hiệu nội dung data thật của màn hình cha...
+      expect(inScreen(find.byType(SessionSummaryCard)), findsOneWidget);
+      // ...và thẻ lối vào xuất hiện CÙNG nó (cùng nhánh data).
+      expect(inScreen(find.text('See your Study Summary')), findsOneWidget);
+
+      await _disposeTree(tester);
+    });
+
+    testWidgets('chạm thẻ lối vào -> điều hướng tới StudySummaryScreen',
+        (tester) async {
+      await pumpAndNavigateToSmartLearning(tester);
+      expect(find.byType(StudySummaryScreen), findsNothing);
+
+      await tester.runAsync(() async {
+        await tester.tap(find.text('See your Study Summary'));
+        await tester.pump();
+        await pumpUntilLoaded(tester);
+      });
+
+      expect(find.byType(StudySummaryScreen), findsOneWidget);
+      expect(tester.takeException(), isNull);
+
+      await _disposeTree(tester);
+    });
   });
 }
