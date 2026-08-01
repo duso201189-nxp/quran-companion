@@ -119,6 +119,51 @@ added, no silent rewrites). This closes the documentation-debt item
 `RELEASE_PLAN_V1.md` §0 originally flagged — the one piece of
 movement reflected in the "v1.0-specific blockers" score above.
 
+### Phase 3 — Sprint R3.2 (coverage measurement policy)
+
+Test coverage was measured for the first time since F1–F8 landed, and
+the CI gate reconciled against it per `DR-2026-0015`
+([docs/adr/](docs/adr/DR-2026-0015-coverage-measurement-policy.md)).
+
+**All four measured figures, disclosed in full** (`flutter test
+--coverage` on `main`, 802 tests, post-Sprint-R3.1):
+
+| Measurement | Coverage | Lines |
+|---|--:|---|
+| Raw — no exclusions at all | 51.96% | 8816/16968 |
+| Filtered — previous CI policy (`main.dart`, `*.g.dart`, db connection stubs) | 76.25% | 6584/8635 |
+| **Filtered + generated localization excluded — current policy** | **81.54%** | **6141/7531** |
+| (Reference) filtered + *all* of `lib/l10n/` excluded — rejected | 81.51% | 6123/7512 |
+
+**The change**: one lcov pattern, `lib/l10n/app_localizations_*.dart`,
+added alongside the `**/*.g.dart` exclusion that already existed.
+`lib/l10n/app_localizations.dart` is deliberately **kept in scope** —
+it holds the real `LocalizationsDelegate` logic and is 94.7% covered.
+`MIN_COVERAGE` moved 70 → 80.
+
+**Rationale, stated plainly**: the three per-locale files are
+structurally identical — 298 constant getters, 33 interpolations, one
+`Intl.pluralLogic` branch each — yet scored 4.3% (ar), 46.7% (vi), and
+69.3% (en). That spread measures which locale the tests happened to
+run in, not how well the project is tested. Generated Drift output was
+already excluded on identical grounds; this applies one rule to one
+category instead of two rules.
+
+**This raises the reported number by ~5.3 points without a single new
+test being written.** That is a denominator correction, not new
+coverage: every hand-written line's covered/uncovered status is
+unchanged. It is disclosed here rather than asserted quietly precisely
+because §6 of this document warns against the opposite. The v1.0
+coverage claim must always be stated with its scope — **"80% of
+hand-written product code, generated sources excluded"** — never as a
+bare "80% coverage."
+
+**One real loss, re-homed not buried**: Arabic at 4.3% was an
+accidental indicator that RTL is barely exercised. Excluding these
+files removes that indicator; the underlying gap is unchanged and is
+now tracked explicitly under `RELEASE_PLAN_V1.md` §2 "Verification
+gaps." It is **not** closed by this change.
+
 ### Phase 3 — Sprint R2 (Read Model UI)
 
 `StudySummaryScreen` shipped (`lib/features/read_model/presentation/study_summary_screen.dart`,
@@ -170,9 +215,10 @@ through `PHASE3_SPRINT_R2_3_REPORT.md`.
 - **No real accessibility audit** has been performed (screen readers);
   `PERFORMANCE.md`'s Android column is unmeasured on a real mid-range
   device; automated tests (767) verify logic, not an actual QA pass.
-- **Coverage gate mismatch**: CI enforces 70%; the project's own
-  stated target is 80%, not yet re-measured since F1–F8 landed with
-  their own strong coverage.
+- ~~**Coverage gate mismatch**~~ — **resolved (Sprint R3.2, see §2)**.
+  Measured at 81.54% on hand-written code; gate raised 70 → 80 under
+  `DR-2026-0015`. Still open in the adjacent sense that Arabic/RTL
+  remains under-tested — tracked under Verification gaps, not here.
 - **16 outdated packages**, including 2 major-version-behind
   (`flutter_riverpod`, `go_router`) and one EOL-flagged SQLite
   package — each requires its own regression pass; `CLAUDE.md` flags
@@ -383,7 +429,10 @@ A release candidate is v1.0-ready only when all of the following hold:
 - [ ] Web platform decision made and implemented (fixed or excluded)
 - [ ] Accessibility audit complete, Critical/High findings closed
 - [ ] Performance measured on a real mid-range Android device
-- [ ] Coverage gate reconciled with actual measured coverage
+- [x] Coverage gate reconciled with actual measured coverage — measured
+      81.54% (hand-written code, generated sources excluded), gate set
+      to 80; all four figures and the rationale in §2, policy in
+      `DR-2026-0015`
 - [ ] All 16 outdated packages triaged; load-bearing/EOL ones upgraded
 - [ ] `RELEASE_CHECKLIST.md` fully signed off (assets, legal, signing)
 - [ ] Tanzil translation license legal review returned a clear result

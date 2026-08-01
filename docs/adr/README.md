@@ -13,6 +13,7 @@ record's own "Relationship to" note) DR.
 | [DR-2026-0003](DR-2026-0003-sprint8-data-architecture.md) | Sprint 8 data architecture: Reading Statistics, Khatm, Bookmark Collections | accepted | 2026-07-20 |
 | [DR-2026-0004](DR-2026-0004-sprint9-streak-daily-goal-revision-queue.md) | Sprint 9: canonical streak source, Daily Goal storage split, Revision Queue reuse | accepted | 2026-07-20 |
 | [DR-2026-0005](DR-2026-0005.md) | Sprint 10: Learning Engine architecture — Scheduler (SM-2), Review Session, Quiz | accepted | 2026-07-20 |
+| [DR-2026-0015](DR-2026-0015-coverage-measurement-policy.md) | Coverage measurement policy: generated code in the denominator | accepted | 2026-08-01 |
 
 ## Known gap: `DR-2026-0002`
 

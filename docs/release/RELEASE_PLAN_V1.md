@@ -103,10 +103,20 @@ plus this engagement's `UPDATED_TECHNICAL_DEBT.md`.
   marked `+eol` upstream — none upgraded yet; each needs its own
   regression pass before bumping per `README.md`'s dependency-update
   process.
-- CI coverage gate is at 70%, not the 80% target `ARCHITECTURE.md`
-  states for v1.0 — last measured real coverage was ~74% before this
-  engagement's F1–F8 work landed; needs remeasuring now that ~40 files
-  and hundreds of tests have been added since.
+- ~~CI coverage gate is at 70%, not the 80% target~~ — **closed**
+  (Phase 3 Sprint R3.2, `DR-2026-0015`). Re-measured at 81.54% on
+  hand-written code (generated sources excluded); gate raised to 80.
+  All four measured figures and the full rationale are disclosed in
+  `RELEASE_DASHBOARD.md` §2.
+- **Arabic / RTL is barely exercised by the test suite.** Surfaced by
+  the R3.2 coverage measurement: the generated Arabic string table was
+  4.3% covered against 69.3% for English — the same file structure,
+  differing only in which locale tests set. `DR-2026-0015` excludes
+  those generated files from the coverage metric (they are not the
+  right instrument for this), so this gap is recorded here instead of
+  being lost with them. It is **not** closed. Related to, but distinct
+  from, the screen-reader audit above: this one is about RTL layout,
+  text overflow, and locale-specific formatting under `ar`.
 
 ### Known engineering gaps from this engagement's own audits
 - **D3** (`UPDATED_TECHNICAL_DEBT.md`): Read Model (F7) has zero UI

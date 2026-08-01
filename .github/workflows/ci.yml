@@ -7,7 +7,8 @@
 # Luồng:
 #   secret-scan   : quét key/secret bị lộ (chạy song song)
 #   quality       : format -> analyze -> pub outdated -> test
-#                   -> coverage gate >= 70% (mục tiêu v1.0: 80%)
+#                   -> coverage gate >= 80% (mã NGƯỜI viết; mã sinh tự
+#                      động không tính — DR-2026-0015)
 #   build-android : APK debug        (cần quality pass)
 #   build-web     : Web release      (cần quality pass)
 #   build-ios     : iOS no-codesign  (cần quality pass)
@@ -33,12 +34,17 @@ env:
   # `flutter pub get` fail thẳng ở bước cài dependencies.
   FLUTTER_VERSION: '3.44.4'
   # Ngưỡng coverage tối thiểu (%). Thấp hơn -> CI fail.
-  # Mục tiêu dài hạn (ARCHITECTURE.md, đạt khi phát hành v1.0) vẫn là
-  # 80%. Coverage thật đo được ở Bước 6/12 là ~74% (filtered) — đặt
-  # ngưỡng CI tạm ở 70% (có biên độ) để CI phản ánh đúng thực tế thay
-  # vì đỏ thường trực; nâng dần về 80% khi Bước 7-9 (tìm kiếm, thống
-  # kê, SRS) có thêm test đi kèm. Xem TODO.md.
-  MIN_COVERAGE: '70'
+  #
+  # DR-2026-0015 (docs/adr/) — đo trên MÃ NGƯỜI VIẾT, mã sinh tự động
+  # bị loại khỏi mẫu số (xem bước "Coverage gate" bên dưới). Số đo
+  # thật trên main @ 802 test (sau Sprint R3.1):
+  #   51.96% thô | 76.25% lọc cũ | 81.54% lọc mới (chuẩn hiện tại)
+  # Ngưỡng đặt ở 80% — ĐÚNG mục tiêu v1.0 mà ARCHITECTURE.md nêu, nay
+  # lần đầu tiên thật sự đạt được với mẫu số đúng (biên độ ~1.5 điểm
+  # ~ 116 dòng). Hạ ngưỡng này về sau PHẢI có DR thay thế ghi rõ số đo
+  # và lý do — không bao giờ sửa lặng lẽ (DR-2026-0015 mục "Future
+  # maintenance rules" điểm 4).
+  MIN_COVERAGE: '80'
 
 jobs:
   # -----------------------------------------------------------
@@ -111,12 +117,28 @@ jobs:
       - name: Chạy unit & widget test
         run: flutter test --coverage
 
-      - name: Coverage gate >= 70%
+      - name: Coverage gate >= 80%
         run: |
           sudo apt-get update -qq
           sudo apt-get install -y -qq lcov
           # Loại trừ file bootstrap (main.dart chỉ gọi runApp,
-          # không chứa logic) và file sinh tự động.
+          # không chứa logic) và MÃ SINH TỰ ĐỘNG.
+          #
+          # DR-2026-0015: mã sinh tự động (Drift *.g.dart VÀ bảng chuỗi
+          # l10n do `flutter gen-l10n` sinh) không nằm trong mẫu số —
+          # cùng MỘT quy tắc cho cùng MỘT loại mã: máy sinh, không ai
+          # sửa tay, sinh lại được từ nguồn sự thật trong repo
+          # (user_tables.dart / *.arb), đúng sai do trình sinh + trình
+          # biên dịch bảo đảm chứ không phải do test.
+          #
+          # CHỈ loại app_localizations_<locale>.dart (bảng chuỗi thuần:
+          # 298 getter hằng, 33 nội suy, đúng 1 nhánh Intl.pluralLogic
+          # mỗi file). GIỮ LẠI app_localizations.dart — nó chứa
+          # LocalizationsDelegate thật, là logic thật, và đang đạt
+          # 94.7%. Dấu `_` trong pattern là chủ ý: nó khớp
+          # app_localizations_ar/en/vi.dart nhưng KHÔNG khớp
+          # app_localizations.dart. Đừng nới thành 'lib/l10n/**'.
+          #
           # --ignore-errors unused: lcov 2.x coi pattern không khớp
           # file nào là lỗi cứng (vd. main.dart không được test nào
           # import nên không có mặt trong lcov.info) — vẫn giữ pattern
@@ -126,6 +148,7 @@ jobs:
             'lib/main.dart' \
             '**/*.g.dart' \
             '*/lib/core/database/connection/*' \
+            'lib/l10n/app_localizations_*.dart' \
             -o coverage/filtered.info
           PCT=$(lcov --summary coverage/filtered.info 2>&1 \
             | awk '/lines\.+:/ {gsub("%","",$2); print $2}')
