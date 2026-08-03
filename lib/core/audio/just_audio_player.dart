@@ -2,13 +2,16 @@ import 'dart:async';
 
 import 'package:just_audio/just_audio.dart';
 
+import 'ayah_audio_item.dart';
 import 'ayah_audio_player.dart';
 
 /// Triển khai [AyahAudioPlayer] trên package just_audio.
 ///
-/// Ghi chú nền tảng: phát khi tắt màn hình / thông báo media cần
-/// cấu hình bổ sung theo docs/AUDIO.md (AndroidManifest + Info.plist
-/// + package audio_service) — thực hiện ở giai đoạn phát hành.
+/// Đây là trình phát DUY NHẤT trên mọi nền tảng. `audio_service` không
+/// thay thế lớp này — `QuranAudioHandler` bọc quanh nó để nói chuyện
+/// với thông báo của hệ điều hành (xem docs/AUDIO.md). Nhờ vậy Windows
+/// và Linux, nơi audio_service không hỗ trợ, dùng đúng lớp này không
+/// sửa gì.
 class JustAudioAyahPlayer implements AyahAudioPlayer {
   JustAudioAyahPlayer({AudioPlayer? player})
       : _player = player ?? AudioPlayer() {
@@ -23,6 +26,10 @@ class JustAudioAyahPlayer implements AyahAudioPlayer {
   final AudioPlayer _player;
   final StreamController<String> _errors = StreamController.broadcast();
   StreamSubscription<PlaybackEvent>? _eventSub;
+
+  /// Playlist đang nạp — nguồn của [currentItem]/[currentItemStream].
+  /// just_audio chỉ trả về chỉ số, phần mô tả là của ứng dụng.
+  List<AyahAudioItem> _items = const [];
 
   static String _describe(Object e) => switch (e) {
         PlayerException(:final message) => message ?? 'PlayerException',
@@ -57,12 +64,32 @@ class JustAudioAyahPlayer implements AyahAudioPlayer {
   @override
   Stream<String> get errorStream => _errors.stream;
 
+  /// Chỉ số nằm ngoài playlist -> `null`, KHÔNG ném. just_audio có thể
+  /// phát ra chỉ số của playlist cũ trong khoảnh khắc đang đổi nguồn;
+  /// một ngoại lệ ở đây sẽ giết stream và làm thông báo hệ điều hành
+  /// đứng hình vĩnh viễn.
+  AyahAudioItem? _itemAt(int? index) =>
+      index != null && index >= 0 && index < _items.length
+          ? _items[index]
+          : null;
+
   @override
-  Future<void> setPlaylist(List<Uri> sources, {int initialIndex = 0}) async {
+  AyahAudioItem? get currentItem => _itemAt(_player.currentIndex);
+
+  @override
+  Stream<AyahAudioItem?> get currentItemStream =>
+      _player.currentIndexStream.map(_itemAt);
+
+  @override
+  Future<void> setPlaylist(
+    List<AyahAudioItem> items, {
+    int initialIndex = 0,
+  }) async {
+    _items = List.unmodifiable(items);
     try {
       await _player.setAudioSource(
         ConcatenatingAudioSource(
-          children: [for (final uri in sources) AudioSource.uri(uri)],
+          children: [for (final item in items) AudioSource.uri(item.source)],
         ),
         initialIndex: initialIndex,
       );

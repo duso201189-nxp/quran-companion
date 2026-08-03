@@ -452,6 +452,50 @@ Removing it for real requires `DR-2026-0017` M4/M5 — schema change,
 comment saying why. Sequencing E2 ahead of M4/M5 buys less than the ADR
 implies.
 
+### Track B — Sprint B1 Phase 0–1 (background-audio foundation)
+
+Phases 0–1 of background audio. **No user-visible change** — audio still
+plays while the app is open, exactly as before.
+
+`AyahAudioItem` replaces bare `List<Uri>` in `setPlaylist`: a URL cannot
+answer *"what is the user listening to"*, and once the screen is locked
+the notification **is** the remaining interface. The item's identity is
+its `QuranAddress` (Sprint F0), not its URL — URLs change with the
+reciter, addresses do not.
+
+`QuranAudioHandler` **wraps** `AyahAudioPlayer` rather than replacing
+it. That buys two things: Windows and Linux — which `audio_service` does
+not support — keep using `JustAudioAyahPlayer` unchanged; and
+`AudioController` needs no change at all, because notification buttons
+call straight down into the player, which the controller already
+observes. No second write path into state, so no feedback loop of the
+kind `DR-2026-0019` E3 exists to remove.
+
+Dependency: `audio_service ^0.18.19`. Dart floor raised 3.4 → 3.6 as the
+package requires — `pub get` resolves against the *installed* SDK so it
+never complained, but the old declaration was wrong. Note it also pulls
+in `flutter_cache_manager` → **`sqflite`**, a second SQLite stack
+alongside Drift, used only for notification artwork this app does not
+have. Unavoidable transitively; recorded so it is not discovered later.
+
+**+21 tests.** The "needs a real device" boundary turned out narrower
+than expected: `BaseAudioHandler` constructs fine in a plain test, so
+lock-screen content, which controls light up, *and* whether the buttons
+actually route to the player are all covered. Coverage 81.72% → 81.71%.
+
+**Deliberately unwired (Phase 2).** `AudioService.init()` is not called,
+the Android manifest declares no service, `Info.plist` has no
+`UIBackgroundModes`. Calling `init()` without the manifest service is a
+**runtime** failure, so wiring early would break the app on Android. The
+permission set is a store-listing commitment rather than a code change,
+so it waits on a decision. Consequence, stated plainly:
+`QuranAudioHandler` is currently unreferenced on the live path — dead
+code against this project's own "no provider without a consumer"
+precedent, accepted here as time-boxed and reversed by Phase 2.
+
+**Still unverifiable here:** whether audio actually keeps playing when
+the screen locks. That needs hardware — roadmap B4.
+
 ---
 
 ## 3. Remaining blockers

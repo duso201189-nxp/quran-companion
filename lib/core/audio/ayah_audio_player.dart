@@ -1,5 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import 'ayah_audio_item.dart';
+
 /// Chế độ lặp của trình phát.
 enum RepeatMode { off, one, all }
 
@@ -29,7 +31,20 @@ abstract interface class AyahAudioPlayer {
   /// ngoài; mọi lỗi đi qua stream này để UI xử lý một chỗ.
   Stream<String> get errorStream;
 
-  Future<void> setPlaylist(List<Uri> sources, {int initialIndex = 0});
+  /// Mục playlist đang phát, kèm mô tả — `null` khi chưa nạp.
+  ///
+  /// Sprint B1: cái mà [currentIndexStream] không trả lời được. Một chỉ
+  /// số chỉ có nghĩa với ai đang giữ playlist; thông báo của hệ điều
+  /// hành thì không, nên nó cần chính mục đó.
+  Stream<AyahAudioItem?> get currentItemStream;
+
+  /// Mục playlist hiện tại theo lối đồng bộ — `null` khi chưa nạp.
+  ///
+  /// Cần cho bên nghe đăng ký MUỘN (adapter hệ điều hành dựng sau khi
+  /// nhạc đã chạy): một stream broadcast không phát lại giá trị cũ.
+  AyahAudioItem? get currentItem;
+
+  Future<void> setPlaylist(List<AyahAudioItem> items, {int initialIndex = 0});
 
   Future<void> play();
 

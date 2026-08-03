@@ -4,9 +4,16 @@ publish_to: 'none'
 version: 0.8.1+7
 
 environment:
-  sdk: '>=3.4.0 <4.0.0'
+  # Nâng sàn 3.4 -> 3.6 vì audio_service ^0.18.19 yêu cầu Dart ^3.6.0.
+  # `pub get` phân giải theo SDK ĐANG CÀI nên không báo lỗi, nhưng khai
+  # báo cũ là sai: máy dùng Dart 3.4/3.5 sẽ hỏng lúc build.
+  sdk: '>=3.6.0 <4.0.0'
 
 dependencies:
+  # Phát nền + điều khiển trên thông báo/màn hình khoá. Bọc quanh
+  # AyahAudioPlayer, KHÔNG thay thế nó — xem docs/AUDIO.md.
+  # Chỉ có Android/iOS/macOS/web; Windows và Linux dùng just_audio trần.
+  audio_service: ^0.18.19
   drift: ^2.18.0
   flutter:
     sdk: flutter

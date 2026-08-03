@@ -2,6 +2,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:quran_companion/core/audio/audio_url.dart';
 import 'package:quran_companion/core/audio/ayah_audio_player.dart';
+import 'package:quran_companion/core/quran/quran_address.dart';
 import 'package:quran_companion/core/storage/prefs_provider.dart';
 import 'package:quran_companion/features/quran/data/quran_providers.dart';
 import 'package:quran_companion/features/quran/domain/entities/ayah.dart';
@@ -33,8 +34,22 @@ class _RepoWithReciters implements QuranRepository {
 
   @override
   Future<List<Surah>> getAllSurahs() async => const [];
+
+  /// Chỉ Surah 2 có tên — Surah khác trả null để test được cả nhánh
+  /// rơi-về-địa-chỉ khi database không có hàng tương ứng.
   @override
-  Future<Surah?> getSurahById(int id) async => null;
+  Future<Surah?> getSurahById(int id) async => id == 2
+      ? const Surah(
+          id: 2,
+          nameArabic: 'البقرة',
+          nameLatin: 'Al-Baqarah',
+          nameVi: 'Con Bò',
+          nameEn: 'The Cow',
+          ayahCount: 286,
+          revelationPlace: RevelationPlace.madinah,
+          orderRevealed: 87,
+        )
+      : null;
   @override
   Future<List<TranslationSource>> getEnabledSources() async => const [];
   @override
@@ -53,9 +68,9 @@ class _RepoWithReciters implements QuranRepository {
   Future<List<AyahSearchResult>> getAyahsByIds(List<int> ids) async => const [];
 }
 
-List<Ayah> _ayahs(int count) => [
+List<Ayah> _ayahs(int count, {int surahId = 2}) => [
       for (var n = 1; n <= count; n++)
-        Ayah(id: n, surahId: 2, ayahNumber: n, textUthmani: 'x$n'),
+        Ayah(id: n, surahId: surahId, ayahNumber: n, textUthmani: 'x$n'),
     ];
 
 void main() {
@@ -94,9 +109,18 @@ void main() {
     await c.playSurah(surahId: 2, ayahs: _ayahs(3), startIndex: 1);
 
     expect(player.playlist.length, 3);
-    expect(player.playlist.first.toString(), 'https://a.test/002001.mp3');
+    expect(
+      player.playlist.first.source.toString(),
+      'https://a.test/002001.mp3',
+    );
     expect(player.initialIndex, 1);
     expect(player.playing, isTrue);
+
+    // Sprint B1: mỗi mục mang đủ mô tả cho thông báo hệ điều hành.
+    expect(player.playlist.first.address, QuranAddress.ayah(2, 1));
+    expect(player.playlist.last.address, QuranAddress.ayah(2, 3));
+    expect(player.playlist.first.surahName, 'Al-Baqarah');
+    expect(player.playlist.first.reciterName, 'Alafasy');
 
     final state = container.read(audioControllerProvider);
     expect(state.active, isTrue);
@@ -127,7 +151,22 @@ void main() {
       c2.read(audioControllerProvider).reciter?.code,
       'husary',
     );
-    expect(player.playlist.first.toString(), 'https://h.test/002001.mp3');
+    expect(
+      player.playlist.first.source.toString(),
+      'https://h.test/002001.mp3',
+    );
+  });
+
+  test('Surah không có trong database -> tên rơi về địa chỉ, KHÔNG chặn phát',
+      () async {
+    final c = container.read(audioControllerProvider.notifier);
+    // _RepoWithReciters chỉ biết Surah 2.
+    await c.playSurah(surahId: 3, ayahs: _ayahs(2, surahId: 3));
+
+    // Thiếu một cái tên không phải lý do để người dùng không nghe được.
+    expect(player.playing, isTrue);
+    expect(player.playlist, hasLength(2));
+    expect(player.playlist.first.surahName, '3');
   });
 
   test('nextAyah/previousAyah tôn trọng biên playlist', () async {

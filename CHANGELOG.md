@@ -5,6 +5,42 @@ Phiên bản theo [Semantic Versioning](https://semver.org/lang/vi/).
 
 ## [Unreleased]
 
+### Added — Sprint B1 (Phase 0–1): Nền móng phát nền (2026-08-03)
+
+Hai phần đầu của phát-nền. **Người dùng chưa thấy gì đổi**: audio vẫn
+phát khi app mở, y như trước.
+
+- **`AyahAudioItem`** — mục playlist mang theo mô tả. `setPlaylist` nhận
+  `List<AyahAudioItem>` thay cho `List<Uri>`: một URL không trả lời được
+  "người dùng đang nghe gì", mà khi màn hình đã khoá thì thông báo là
+  toàn bộ giao diện còn lại. Danh tính của mục là `QuranAddress` (Sprint
+  F0) chứ không phải URL — URL đổi theo Qari, địa chỉ thì không.
+- **`QuranAudioHandler`** — `BaseAudioHandler` **bọc quanh**
+  `AyahAudioPlayer` chứ không thay thế nó. Đổi lại được hai điều:
+  Windows/Linux (nơi `audio_service` không hỗ trợ) dùng
+  `JustAudioAyahPlayer` không sửa gì; và `AudioController` không phải
+  đổi một dòng, vì nút trên thông báo gọi thẳng xuống trình phát mà
+  controller vốn đã lắng nghe — không có đường ghi thứ hai vào state,
+  tức không có vòng lặp như chỗ audio/cuộn mà `DR-2026-0019` E3 phải gỡ.
+- **`audio_service: ^0.18.19`**. Sàn Dart nâng 3.4 → 3.6 theo yêu cầu
+  của gói: `pub get` phân giải theo SDK đang cài nên không báo lỗi,
+  nhưng khai báo cũ là sai.
+- **+21 test**. Hoá ra ranh giới "cần thiết bị thật" hẹp hơn dự đoán:
+  `BaseAudioHandler` dựng được trong test thường, nên nội dung màn hình
+  khoá, nút nào sáng, VÀ việc nút có nối đúng xuống trình phát đều kiểm
+  được. Coverage 81.72% → 81.71%.
+
+**Chưa nối, có chủ ý (Phase 2).** `AudioService.init()` chưa được gọi ở
+`main.dart`, AndroidManifest chưa khai báo service, Info.plist chưa có
+`UIBackgroundModes`. Gọi `init()` khi manifest chưa khai báo service là
+lỗi lúc chạy, nên nối sớm sẽ làm hỏng app trên Android. Bộ quyền là một
+cam kết với cửa hàng ứng dụng, không phải một thay đổi mã — nên phần đó
+chờ quyết định. Điều này khiến `QuranAudioHandler` tạm thời chưa có nơi
+tiêu thụ trên đường chạy thật; đánh đổi được ghi nhận, không giấu.
+
+**Chưa kiểm được:** audio có thực sự tiếp tục phát khi khoá màn hình
+không — cần thiết bị thật (roadmap B4).
+
 ### Changed — Phase 4 Sprint F2: Khai báo phần mở đầu Surah + đặt tên cho hàng danh sách (2026-08-03)
 
 Nền móng cuối cùng trước Basmalah 2.0. Hành vi người dùng **không đổi

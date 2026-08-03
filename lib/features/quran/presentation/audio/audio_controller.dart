@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../core/audio/audio_url.dart';
+import '../../../../core/audio/ayah_audio_item.dart';
 import '../../../../core/audio/ayah_audio_player.dart';
 import '../../../../core/quran/quran_address.dart';
 import '../../../../core/storage/prefs_provider.dart';
@@ -38,7 +39,7 @@ class AudioState {
 
   /// Chỉ số Ayah **0-based** trong Surah đang phát.
   ///
-  /// 0-based vì nó là chỉ số trong playlist (`_sources`), không phải
+  /// 0-based vì nó là chỉ số trong playlist (`_items`), không phải
   /// số Ayah người đọc thấy. ĐỪNG so sánh trực tiếp với
   /// `Ayah.ayahNumber` (1-based) — dùng [currentAddress] để phép quy
   /// đổi có tên và có test. Xem `docs/knowledge/quran_index_conventions.md`.
@@ -123,8 +124,8 @@ class AudioController extends Notifier<AudioState> {
   final List<StreamSubscription<Object?>> _subs = [];
   int _playlistLength = 0;
 
-  /// Nguồn đang phát — giữ lại để Thử lại sau lỗi mạng.
-  List<Uri> _sources = const [];
+  /// Playlist đang phát — giữ lại để Thử lại sau lỗi mạng.
+  List<AyahAudioItem> _items = const [];
 
   AyahAudioPlayer get _player => ref.read(ayahAudioPlayerProvider);
 
@@ -197,15 +198,27 @@ class AudioController extends Notifier<AudioState> {
     final reciter = await _resolveReciter();
     if (reciter == null || ayahs.isEmpty) return;
 
+    // Tên Surah lấy TRONG controller chứ không nhận qua tham số: bên
+    // gọi nào quên truyền thì thông báo trên màn hình khoá sẽ thiếu
+    // chữ một cách âm thầm, và đó là loại lỗi không ai thấy cho tới
+    // khi cầm điện thoại thật. Một lượt đọc theo khoá chính, trong
+    // đường đã async sẵn và đã có trạng thái loading.
+    final surahName = await _resolveSurahName(surahId);
+
     _playlistLength = ayahs.length;
-    _sources = [
+    _items = [
       for (final a in ayahs)
-        Uri.parse(
-          buildAyahAudioUrl(
-            template: reciter.audioUrlTemplate,
-            surahId: surahId,
-            ayahNumber: a.ayahNumber,
+        AyahAudioItem(
+          address: QuranAddress.ayah(surahId, a.ayahNumber),
+          source: Uri.parse(
+            buildAyahAudioUrl(
+              template: reciter.audioUrlTemplate,
+              surahId: surahId,
+              ayahNumber: a.ayahNumber,
+            ),
           ),
+          surahName: surahName,
+          reciterName: reciter.name,
         ),
     ];
 
@@ -221,7 +234,7 @@ class AudioController extends Notifier<AudioState> {
       loading: true,
     );
 
-    await _player.setPlaylist(_sources, initialIndex: startIndex);
+    await _player.setPlaylist(_items, initialIndex: startIndex);
     await _player.setSpeed(state.speed);
     await _player.setRepeatMode(state.repeat);
     await _player.play();
@@ -230,9 +243,9 @@ class AudioController extends Notifier<AudioState> {
   /// Thử lại sau lỗi (mạng chập chờn...): nạp lại playlist tại
   /// đúng Ayah đang dở rồi phát tiếp.
   Future<void> retry() async {
-    if (!state.active || _sources.isEmpty) return;
+    if (!state.active || _items.isEmpty) return;
     state = state.copyWith(clearError: true, loading: true);
-    await _player.setPlaylist(_sources, initialIndex: state.currentIndex);
+    await _player.setPlaylist(_items, initialIndex: state.currentIndex);
     await _player.setSpeed(state.speed);
     await _player.setRepeatMode(state.repeat);
     await _player.play();
@@ -291,6 +304,15 @@ class AudioController extends Notifier<AudioState> {
         .read(sharedPreferencesProvider)
         .setString(kReciterPrefsKey, reciter.code);
     state = state.copyWith(reciter: reciter);
+  }
+
+  /// Tên Latin của Surah cho thông báo hệ điều hành.
+  ///
+  /// Không tìm thấy -> rơi về chính địa chỉ (`"2"`). Xấu hơn nhưng
+  /// đúng; chặn phát chỉ vì thiếu một cái tên thì tệ hơn nhiều.
+  Future<String> _resolveSurahName(int surahId) async {
+    final surah = await ref.read(quranRepositoryProvider).getSurahById(surahId);
+    return surah?.nameLatin ?? '${QuranAddress.surah(surahId)}';
   }
 
   Future<Reciter?> _resolveReciter() async {

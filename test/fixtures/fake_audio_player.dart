@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:quran_companion/core/audio/ayah_audio_item.dart';
 import 'package:quran_companion/core/audio/ayah_audio_player.dart';
 
 /// Trình phát giả cho test: ghi lại mọi lệnh, phát stream điều
@@ -12,8 +13,11 @@ class FakeAyahAudioPlayer implements AyahAudioPlayer {
   final processingController =
       StreamController<AyahPlayerProcessing>.broadcast();
   final errorController = StreamController<String>.broadcast();
+  final itemController = StreamController<AyahAudioItem?>.broadcast();
 
-  List<Uri> playlist = const [];
+  AyahAudioItem? _item;
+
+  List<AyahAudioItem> playlist = const [];
   int initialIndex = 0;
   bool playing = false;
   double speed = 1.0;
@@ -41,9 +45,21 @@ class FakeAyahAudioPlayer implements AyahAudioPlayer {
   Stream<String> get errorStream => errorController.stream;
 
   @override
-  Future<void> setPlaylist(List<Uri> sources, {int initialIndex = 0}) async {
-    playlist = sources;
+  AyahAudioItem? get currentItem => _item;
+
+  @override
+  Stream<AyahAudioItem?> get currentItemStream => itemController.stream;
+
+  @override
+  Future<void> setPlaylist(
+    List<AyahAudioItem> items, {
+    int initialIndex = 0,
+  }) async {
+    playlist = items;
     this.initialIndex = initialIndex;
+    _item = initialIndex >= 0 && initialIndex < items.length
+        ? items[initialIndex]
+        : null;
     processingController.add(AyahPlayerProcessing.loading);
   }
 
@@ -84,5 +100,6 @@ class FakeAyahAudioPlayer implements AyahAudioPlayer {
     await durationController.close();
     await processingController.close();
     await errorController.close();
+    await itemController.close();
   }
 }
