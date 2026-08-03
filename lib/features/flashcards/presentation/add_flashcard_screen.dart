@@ -17,6 +17,13 @@ import '../domain/entities/flashcard_type.dart';
 /// thật — cùng mức "cấu trúc có sẵn, dữ liệu/thao tác thật chưa tới"
 /// mà FlashcardType đã áp dụng từ Sprint 12 Phase 0.1. KHÔNG giả lập
 /// kết quả tìm kiếm cho 2 loại này.
+///
+/// Sprint R3b.3: [lemma] có truy vấn thật NHƯNG bảng `lemmas` hiện 0
+/// dòng — cùng bảng trống, khác lý do với Root/Phrase (thao tác chưa
+/// xây, so với dữ liệu chưa tới). [_LemmaSourceBody] kiểm tra
+/// [lemmaLibraryAvailableProvider] trước khi vẽ ô tìm kiếm thật, để
+/// người dùng thấy đúng "chưa có dữ liệu" thay vì "tìm xong, không có
+/// kết quả" — xem `docs/release/PHASE3_SPRINT_R3B_3_REPORT.md`.
 enum AddFlashcardSource { lemma, root, phrase }
 
 class AddFlashcardScreen extends ConsumerStatefulWidget {
@@ -90,7 +97,7 @@ class _AddFlashcardScreenState extends ConsumerState<AddFlashcardScreen> {
             ),
             Expanded(
               child: switch (_source) {
-                AddFlashcardSource.lemma => _LemmaResults(query: _query),
+                AddFlashcardSource.lemma => _LemmaSourceBody(query: _query),
                 AddFlashcardSource.root ||
                 AddFlashcardSource.phrase =>
                   _SourceNotAvailable(l10n: l10n),
@@ -99,6 +106,30 @@ class _AddFlashcardScreenState extends ConsumerState<AddFlashcardScreen> {
           ],
         ),
       ),
+    );
+  }
+}
+
+/// Cổng trước [_LemmaResults] (Sprint R3b.3) — xem lý do đầy đủ ở doc
+/// comment [AddFlashcardSource] và [lemmaLibraryAvailableProvider].
+/// KHÔNG có nhánh riêng cho "đang gõ" — kiểm tra tính sẵn có 1 lần,
+/// không phụ thuộc [query], nên gõ chữ không gọi lại kiểm tra này.
+class _LemmaSourceBody extends ConsumerWidget {
+  const _LemmaSourceBody({required this.query});
+
+  final String query;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context);
+    final availableAsync = ref.watch(lemmaLibraryAvailableProvider);
+
+    return availableAsync.when(
+      loading: () => const Center(child: CircularProgressIndicator()),
+      error: (_, __) => Center(child: Text(l10n.errorLoadData)),
+      data: (available) => available
+          ? _LemmaResults(query: query)
+          : _SourceNotAvailable(l10n: l10n),
     );
   }
 }

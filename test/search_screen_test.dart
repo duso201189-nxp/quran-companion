@@ -209,81 +209,6 @@ void main() {
     });
   });
 
-  group('Task 7.1.6 — chuyển đổi Tìm kiếm / Hỏi AI', () {
-    testWidgets('hiển thị 2 chế độ, Tìm kiếm đang chọn, Hỏi AI bị khoá',
-        (tester) async {
-      await openSearchScreen(tester);
-
-      expect(find.text('Tìm kiếm'), findsOneWidget);
-      expect(find.text('Hỏi AI · Sắp ra mắt'), findsOneWidget);
-
-      final button = tester.widget<SegmentedButton<SearchMode>>(
-        find.byType(SegmentedButton<SearchMode>),
-      );
-      expect(button.selected, {SearchMode.search});
-      final askSegment =
-          button.segments.firstWhere((s) => s.value == SearchMode.ask);
-      expect(askSegment.enabled, isFalse);
-    });
-
-    testWidgets('bấm vào Hỏi AI không đổi chế độ, không lỗi', (tester) async {
-      await openSearchScreen(tester);
-
-      await tester.tap(find.text('Hỏi AI · Sắp ra mắt'));
-      await tester.pumpAndSettle();
-
-      final button = tester.widget<SegmentedButton<SearchMode>>(
-        find.byType(SegmentedButton<SearchMode>),
-      );
-      expect(button.selected, {SearchMode.search});
-      expect(tester.takeException(), isNull);
-    });
-  });
-
-  group('Task 7.1.7 — Scope Chips', () {
-    Finder scopeChips() => find.descendant(
-          of: find.byType(SearchScreen),
-          matching: find.byType(ChoiceChip),
-        );
-
-    testWidgets('hiển thị 3 scope chip, "Tất cả" đang chọn mặc định',
-        (tester) async {
-      await openSearchScreen(tester);
-
-      final chips = tester.widgetList<ChoiceChip>(scopeChips()).toList();
-      expect(chips, hasLength(3));
-      expect((chips[0].label as Text).data, 'Tất cả');
-      expect((chips[1].label as Text).data, "Qur'an");
-      expect((chips[2].label as Text).data, 'Ghi chú của tôi');
-      expect(chips[0].selected, isTrue);
-      expect(chips[1].selected, isFalse);
-      expect(chips[2].selected, isFalse);
-    });
-
-    testWidgets('bấm chip khác chỉ đổi lựa chọn trực quan, không đụng Mode',
-        (tester) async {
-      await openSearchScreen(tester);
-
-      await tester.tap(scopeChips().at(1)); // "Qur'an"
-      await tester.pumpAndSettle();
-
-      final chips = tester.widgetList<ChoiceChip>(scopeChips()).toList();
-      expect(chips[0].selected, isFalse);
-      expect(chips[1].selected, isTrue);
-      expect(chips[2].selected, isFalse);
-
-      // Search Mode hoàn toàn độc lập — đổi Scope không đụng Mode.
-      final mode = tester.widget<SegmentedButton<SearchMode>>(
-        find.byType(SegmentedButton<SearchMode>),
-      );
-      expect(mode.selected, {SearchMode.search});
-
-      expect(find.byType(CircularProgressIndicator), findsNothing);
-      expect(find.byType(ListView), findsNothing);
-      expect(tester.takeException(), isNull);
-    });
-  });
-
   group('Task 7.1.8 — Empty State đầy đủ', () {
     testWidgets('hiển thị tiêu đề, gợi ý gõ, và 2 khu vực placeholder',
         (tester) async {
@@ -338,27 +263,6 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(find.text('Tìm điều bạn cần trong Qur\'an'), findsOneWidget);
-    });
-
-    testWidgets('không đụng Mode/Scope, không lỗi', (tester) async {
-      await openSearchScreen(tester);
-
-      final mode = tester.widget<SegmentedButton<SearchMode>>(
-        find.byType(SegmentedButton<SearchMode>),
-      );
-      expect(mode.selected, {SearchMode.search});
-
-      final scopeChips = tester
-          .widgetList<ChoiceChip>(
-            find.descendant(
-              of: find.byType(SearchScreen),
-              matching: find.byType(ChoiceChip),
-            ),
-          )
-          .toList();
-      expect(scopeChips[0].selected, isTrue);
-
-      expect(tester.takeException(), isNull);
     });
   });
 
@@ -419,12 +323,6 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(find.byType(SearchLoadingSkeleton), findsNothing);
-
-      // Mode/Scope vẫn không đổi — mặc định chưa bật preview nào.
-      final mode = tester.widget<SegmentedButton<SearchMode>>(
-        find.byType(SegmentedButton<SearchMode>),
-      );
-      expect(mode.selected, {SearchMode.search});
     });
   });
 
@@ -496,28 +394,11 @@ void main() {
       expect(find.byType(SearchEmptyState), findsOneWidget);
     });
 
-    testWidgets(
-        'chuyển qua lại các trạng thái không đụng Mode/Scope, '
-        'không lỗi', (tester) async {
+    testWidgets('chuyển qua lại các trạng thái không lỗi', (tester) async {
       await openSearchScreen(tester);
       await pickDevPreview(tester, 'Results');
       await pickDevPreview(tester, 'Error');
       await pickDevPreview(tester, 'Loading');
-
-      final mode = tester.widget<SegmentedButton<SearchMode>>(
-        find.byType(SegmentedButton<SearchMode>),
-      );
-      expect(mode.selected, {SearchMode.search});
-
-      final scopeChips = tester
-          .widgetList<ChoiceChip>(
-            find.descendant(
-              of: find.byType(SearchScreen),
-              matching: find.byType(ChoiceChip),
-            ),
-          )
-          .toList();
-      expect(scopeChips[0].selected, isTrue);
 
       expect(tester.takeException(), isNull);
     });

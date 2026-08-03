@@ -748,12 +748,6 @@ abstract class AppLocalizations {
   /// **'Tìm kiếm'**
   String get searchLabel;
 
-  /// No description provided for @searchAskLabel.
-  ///
-  /// In vi, this message translates to:
-  /// **'Hỏi AI'**
-  String get searchAskLabel;
-
   /// No description provided for @searchQueryHint.
   ///
   /// In vi, this message translates to:
@@ -765,12 +759,6 @@ abstract class AppLocalizations {
   /// In vi, this message translates to:
   /// **'Xoá'**
   String get searchClearTooltip;
-
-  /// No description provided for @searchScopeMyNotes.
-  ///
-  /// In vi, this message translates to:
-  /// **'Ghi chú của tôi'**
-  String get searchScopeMyNotes;
 
   /// No description provided for @searchEmptyTitle.
   ///

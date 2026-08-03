@@ -10,23 +10,6 @@ import 'widgets/search_error_state.dart';
 import 'widgets/search_no_results_state.dart';
 import 'widgets/search_result_section.dart';
 
-/// Chế độ tìm kiếm — trục riêng, KHÔNG phải nguồn nội dung (xem
-/// [SearchMode.ask] vs Scope Chips ở Task 7.1.7). Chỉ 2 giá trị vì
-/// đây là Sprint 7.1 (nền tảng UI); khi Bước 7.2+ nối AI thật
-/// (`DR-2026-0002` mục 5 — AI là một provider, không thay thế công
-/// cụ tìm kiếm), state chọn chế độ nên chuyển sang provider dùng
-/// chung nếu có màn hình khác cần đọc — hiện tại chưa có, nên vẫn để
-/// state cục bộ.
-enum SearchMode { search, ask }
-
-/// Phạm vi nội dung tìm — trục HOÀN TOÀN riêng với [SearchMode] (một
-/// bên chọn "cách trả lời", một bên chọn "tìm ở đâu"; xem
-/// `DR-2026-0002` mục 2 — Search domain-agnostic). Task 7.1.7: chỉ 2
-/// phạm vi có thật hôm nay (Qur'an, Ghi chú của tôi) + "Tất cả"; các
-/// domain tương lai (Tafsir, Hadith, Dua...) thêm bằng cách thêm giá
-/// trị enum + provider riêng, KHÔNG sửa widget này.
-enum SearchScope { all, quran, myNotes }
-
 /// Năm trạng thái mà bộ chuyển đổi dành cho dev (Task 7.1.13) có thể
 /// đặt — [real] nghĩa là "tắt xem trước, dùng hành vi thật của màn
 /// hình". CỐ Ý KHÔNG dùng `_DevPreviewState?` (nullable) với `null`
@@ -78,25 +61,31 @@ const _devPreviewResults = [
 /// Sprint 7.1 / Task 7.1.5: ô nhập từ khoá thay cho tiêu đề AppBar —
 /// gợi ý placeholder, nút xoá hiện khi có chữ.
 ///
-/// Sprint R1.1: gõ (Chế độ Tìm kiếm, Phạm vi "Tất cả"/"Qur'an") giờ
-/// đồng bộ vào [searchQueryProvider] (`search/data/search_providers.dart`
-/// — ĐỘC LẬP với `surahSearchQueryProvider` của `SurahListScreen`) và
-/// hiển thị kết quả FTS5 thật qua [SearchResultSection.ayahs] — xem
-/// `docs/release/PHASE3_SPRINT_R1_DESIGN_REVIEW.md`. Phạm vi "Ghi chú
-/// của tôi" và chế độ "Hỏi AI" (luôn khoá) chưa có nguồn dữ liệu, vẫn
-/// giữ hành vi placeholder trước R1.1 — thuộc sprint sau.
+/// Sprint R1.1: gõ giờ đồng bộ vào [searchQueryProvider]
+/// (`search/data/search_providers.dart` — ĐỘC LẬP với
+/// `surahSearchQueryProvider` của `SurahListScreen`) và hiển thị kết quả
+/// FTS5 thật qua [SearchResultSection.ayahs] — xem
+/// `docs/release/PHASE3_SPRINT_R1_DESIGN_REVIEW.md`.
 ///
 /// Sprint R1.2: truy vấn ≥ 2 ký tự chạy xong nhưng rỗng giờ hiện
 /// [SearchNoResultsState] (khác Empty State/Loading/Error) thay vì
 /// [SearchResultSection] rỗng. Truy vấn dưới 2 ký tự (chưa thật sự
 /// chạy tìm) vẫn là Empty State — xem nhánh trong [_buildBody].
 ///
-/// Task 7.1.6: chuyển chế độ Tìm kiếm / Hỏi AI. "Hỏi AI" luôn khoá
-/// (disabled) + nhãn "Sắp ra mắt" — chưa có logic AI (`DR-2026-0002`
-/// mục 5, mục 6: AI phụ thuộc mạng, không phải chỗ dựa mặc định).
-///
-/// Task 7.1.7: Scope Chips — chỉ đổi trạng thái CHỌN trực quan, không
-/// lọc hay truy vấn gì. Độc lập hoàn toàn với [_mode].
+/// Task 7.1.6 (chuyển chế độ Tìm kiếm / "Hỏi AI") và Task 7.1.7 (Scope
+/// Chips: Tất cả / Qur'an / Ghi chú của tôi) GỠ BỎ hoàn toàn ở Sprint
+/// R3b.2 — cả `SearchMode` lẫn `SearchScope` không còn tồn tại trong
+/// tệp này. Lý do: "Hỏi AI" luôn khoá từ khi xây (chưa có logic AI
+/// thật, `DR-2026-0002` mục 5–6); "Tất cả" và "Qur'an" luôn chạy chung
+/// một engine (không có 2 hành vi khác nhau để chọn); "Ghi chú của tôi"
+/// bị khoá ở Sprint R3b.1 sau khi phát hiện nó render trống khi chọn.
+/// Ba yếu tố cộng lại: hàng điều khiển 2 tầng không còn tầng nào tạo ra
+/// khác biệt hành vi thật. Xem
+/// `docs/release/PHASE3_SPRINT_R3B_DESIGN_REVIEW.md` §3–4 cho phân
+/// tích, `docs/release/PHASE3_SPRINT_R3B_2_REPORT.md` cho việc thực
+/// hiện. KHÔNG thay bằng cờ tính năng hay mã ẩn — khi một trục có dữ
+/// liệu thật (AI thật; hoặc Notes có FTS5 index), thêm lại đúng kiểu
+/// điều khiển tương ứng lúc đó từ đầu, không phục hồi mã cũ.
 ///
 /// Task 7.1.8: Empty State đầy đủ (tiêu đề + gợi ý cách gõ + hai khu
 /// vực "Gần đây" / "Gợi ý"). Hai khu vực đó CHƯA có dữ liệu thật —
@@ -146,8 +135,6 @@ class SearchScreen extends ConsumerStatefulWidget {
 
 class _SearchScreenState extends ConsumerState<SearchScreen> {
   final _queryController = TextEditingController();
-  SearchMode _mode = SearchMode.search;
-  SearchScope _scope = SearchScope.all;
 
   /// [_DevPreviewState.real] = hành vi thật (theo [_queryController]);
   /// giá trị khác = đang ép xem trước một trạng thái (chỉ có thể xảy
@@ -160,17 +147,9 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
     super.dispose();
   }
 
-  String _scopeLabel(SearchScope scope, AppLocalizations l10n) =>
-      switch (scope) {
-        SearchScope.all => l10n.filterAll,
-        SearchScope.quran => l10n.tabQuran,
-        SearchScope.myNotes => l10n.searchScopeMyNotes,
-      };
-
   /// Thân màn hình — ưu tiên trạng thái xem trước của dev (chỉ khả
   /// dụng khi [kDebugMode]), nếu không thì rơi về hành vi thật: Empty
-  /// State khi ô trống, còn lại (Chế độ Tìm kiếm, Phạm vi khác "Ghi
-  /// chú của tôi") theo [searchResultsProvider] thật
+  /// State khi ô trống, còn lại theo [searchResultsProvider] thật
   /// (loading/error/data) — xem [searchQueryProvider].
   Widget _buildBody(AppLocalizations l10n) {
     if (kDebugMode) {
@@ -202,15 +181,11 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
     if (query.trim().isEmpty) {
       return SearchEmptyState(l10n: l10n);
     }
-    // Sprint R1.1: engine FTS5 chỉ nối cho nội dung Qur'an — "Ghi chú
-    // của tôi" chưa có nguồn dữ liệu để tìm (không có FTS5 index cho
-    // notes/highlights, xem PHASE3_SPRINT_R1_PLAN.md "Out of Scope").
-    // "Tất cả" vẫn dùng engine Qur'an vì đó là domain duy nhất có dữ
-    // liệu hôm nay; giữ nguyên placeholder cho "Ghi chú của tôi" và
-    // Hỏi AI (luôn khoá) đúng hành vi trước R1.1.
-    if (_mode != SearchMode.search || _scope == SearchScope.myNotes) {
-      return const SizedBox.shrink();
-    }
+    // Sprint R1.1: engine FTS5 chỉ nối cho nội dung Qur'an — domain duy
+    // nhất có dữ liệu hôm nay. Sprint R3b.2 gỡ bỏ Chế độ Tìm kiếm/Hỏi AI
+    // và Scope Chips (xem doc comment [SearchScreen]) nên không còn
+    // nhánh nào cần rẽ trước khi gọi provider — tìm kiếm luôn chạy trên
+    // nội dung Qur'an.
     final resultsAsync = ref.watch(searchResultsProvider);
     return resultsAsync.when(
       loading: () => const SearchLoadingSkeleton(),
@@ -313,53 +288,7 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.fromLTRB(16, 12, 16, 24),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Align(
-                alignment: Alignment.centerLeft,
-                child: SegmentedButton<SearchMode>(
-                  showSelectedIcon: false,
-                  segments: [
-                    ButtonSegment(
-                      value: SearchMode.search,
-                      icon: const Icon(Icons.search),
-                      label: Text(l10n.searchLabel),
-                    ),
-                    ButtonSegment(
-                      value: SearchMode.ask,
-                      enabled: false,
-                      icon: const Icon(Icons.auto_awesome_rounded),
-                      label:
-                          Text('${l10n.searchAskLabel} · ${l10n.comingSoon}'),
-                      tooltip: l10n.comingSoon,
-                    ),
-                  ],
-                  selected: {_mode},
-                  onSelectionChanged: (selection) =>
-                      setState(() => _mode = selection.first),
-                ),
-              ),
-              const SizedBox(height: 12),
-              SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
-                child: Row(
-                  children: [
-                    for (final scope in SearchScope.values) ...[
-                      ChoiceChip(
-                        label: Text(_scopeLabel(scope, l10n)),
-                        selected: _scope == scope,
-                        onSelected: (_) => setState(() => _scope = scope),
-                      ),
-                      const SizedBox(width: 8),
-                    ],
-                  ],
-                ),
-              ),
-              const SizedBox(height: 8),
-              _buildBody(l10n),
-            ],
-          ),
+          child: _buildBody(l10n),
         ),
       ),
     );

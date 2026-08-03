@@ -17,7 +17,16 @@ final packageInfoProvider = FutureProvider<PackageInfo>(
 /// Màn hình Hồ sơ.
 ///
 /// Hiện có: đổi giao diện (Sáng/Hệ thống/Tối) và ngôn ngữ (vi/en/ar).
-/// Hồ sơ cá nhân, mục tiêu học, đồng bộ: Bước 8, 10, 11.
+/// Hồ sơ cá nhân, đồng bộ: chưa xây — nhãn dùng [AppLocalizations.comingSoon]
+/// chung (Sprint R3b.1), KHÔNG còn lộ số bước nội bộ ra người dùng (xem
+/// `docs/release/PRODUCT_READINESS_REVIEW.md` — `CLAUDE.md` đã tuyên bố
+/// đánh số "Bước N/12" không còn là chỉ báo trạng thái từ Sprint 10).
+///
+/// Mục tiêu học (trước đây gắn nhãn sai "Coming in Step 8") ĐÃ xây và
+/// đang chạy thật — xem `lib/features/stats/data/daily_goal_providers.dart`
+/// — nên ô này bị GỠ khỏi màn hình thay vì đổi nhãn: đổi thành "Sắp ra
+/// mắt" vẫn sẽ là một câu sai, chỉ đổi loại sai. Vào mục tiêu qua màn
+/// Thống kê (widget goal đã có ở đó).
 class ProfileScreen extends ConsumerWidget {
   const ProfileScreen({super.key});
 
@@ -100,19 +109,17 @@ class ProfileScreen extends ConsumerWidget {
           ListTile(
             leading: const Icon(Icons.person_outline),
             title: Text(l10n.profilePersonalInfo),
-            subtitle: Text(l10n.comingInStep(10)),
+            subtitle: Text(l10n.comingSoon),
             enabled: false,
           ),
-          ListTile(
-            leading: const Icon(Icons.flag_outlined),
-            title: Text(l10n.profileGoal),
-            subtitle: Text(l10n.comingInStep(8)),
-            enabled: false,
-          ),
+          // "Mục tiêu" (Goal) ĐÃ GỠ (Sprint R3b.1) — Daily Goal đã xây
+          // và đang chạy thật (daily_goal_providers.dart/daily_goal_store
+          // .dart/daily_goal_dialog.dart), nên tile "Coming in Step 8"
+          // ở đây là SAI, không phải chưa xây. Vào mục tiêu qua Thống kê.
           ListTile(
             leading: const Icon(Icons.cloud_sync_outlined),
             title: Text(l10n.profileSync),
-            subtitle: Text(l10n.comingInStep(11)),
+            subtitle: Text(l10n.comingSoon),
             enabled: false,
           ),
           const Divider(height: 32),

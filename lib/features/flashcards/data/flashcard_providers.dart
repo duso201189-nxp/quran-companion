@@ -23,6 +23,27 @@ final flashcardRepositoryProvider = Provider<FlashcardRepository>(
   ),
 );
 
+/// Lexicon có ít nhất 1 Lemma hay chưa (Sprint R3b.3 — xem
+/// `docs/release/PHASE3_SPRINT_R3B_3_REPORT.md`). Add Flashcard cần
+/// biết TRƯỚC khi mời người dùng gõ vào ô tìm Lemma: phương thức
+/// [LexiconRepository.searchLemmas] đã thật (khác Root/Phrase), nhưng
+/// nếu bảng `lemmas` đang rỗng, mọi truy vấn trả rỗng MÃI MÃI — không
+/// gate trước, người dùng gõ gì cũng thấy "Không tìm thấy kết quả.",
+/// y hệt một tìm kiếm thật sự thất bại, sai bản chất với "nguồn dữ
+/// liệu chưa có". CHỈ đọc lại [searchLemmas] đã có (limit 1, không
+/// query) — không thêm phương thức repository mới, không đổi schema,
+/// không phải "implement Lexicon". Tự phục hồi khi Lexicon có dữ liệu
+/// thật (kết quả đổi thành true, không cần sửa mã) — xem
+/// `docs/release/PHASE3_SPRINT_R3B_DESIGN_REVIEW.md` §5 cho lý do
+/// chọn kiểm tra thay vì hằng số khoá tay.
+final lemmaLibraryAvailableProvider = FutureProvider.autoDispose<bool>((
+  ref,
+) async {
+  final probe =
+      await ref.watch(lexiconRepositoryProvider).searchLemmas(limit: 1);
+  return probe.isNotEmpty;
+});
+
 /// Mọi Flashcard còn sống, mới nhất trước.
 final allFlashcardsProvider = StreamProvider.autoDispose<List<Flashcard>>(
   (ref) => ref.watch(flashcardRepositoryProvider).watchAllFlashcards(),

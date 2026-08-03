@@ -351,16 +351,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get searchLabel => 'Search';
 
   @override
-  String get searchAskLabel => 'Ask AI';
-
-  @override
   String get searchQueryHint => 'Search the Qur\'an...';
 
   @override
   String get searchClearTooltip => 'Clear';
-
-  @override
-  String get searchScopeMyNotes => 'My notes';
 
   @override
   String get searchEmptyTitle => 'Find what you\'re looking for';

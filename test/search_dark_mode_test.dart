@@ -147,24 +147,5 @@ void main() {
         expect(tester.takeException(), isNull, reason: 'trạng thái $label');
       }
     });
-
-    testWidgets(
-        'Mode Switch: nhãn "Ask" (đã khoá) vẫn hiển thị, đọc được ở '
-        'dark mode', (tester) async {
-      await openSearchScreen(
-        tester,
-        prefs: {ThemeController.prefsKey: 'dark'},
-      );
-
-      expect(find.text('Hỏi AI · Sắp ra mắt'), findsOneWidget);
-      final askSegment = tester
-          .widget<SegmentedButton<SearchMode>>(
-            find.byType(SegmentedButton<SearchMode>),
-          )
-          .segments
-          .firstWhere((s) => s.value == SearchMode.ask);
-      expect(askSegment.enabled, isFalse);
-      expect(tester.takeException(), isNull);
-    });
   });
 }

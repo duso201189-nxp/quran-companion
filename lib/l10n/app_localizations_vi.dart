@@ -349,16 +349,10 @@ class AppLocalizationsVi extends AppLocalizations {
   String get searchLabel => 'Tìm kiếm';
 
   @override
-  String get searchAskLabel => 'Hỏi AI';
-
-  @override
   String get searchQueryHint => 'Tìm kiếm trong Qur\'an...';
 
   @override
   String get searchClearTooltip => 'Xoá';
-
-  @override
-  String get searchScopeMyNotes => 'Ghi chú của tôi';
 
   @override
   String get searchEmptyTitle => 'Tìm điều bạn cần trong Qur\'an';

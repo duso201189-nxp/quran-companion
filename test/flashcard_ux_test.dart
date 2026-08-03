@@ -62,8 +62,12 @@ void main() {
 
   setUp(() async {
     userDb = UserDatabase(NativeDatabase.memory());
+    // Sprint R3b.3: KHÔNG còn seed mặc định ở đây — mỗi test tự gọi
+    // _seedLemmas(appDb) khi cần Lemma để tìm/thêm, để bộ test cũng
+    // bao phủ được đúng trạng thái Lexicon thật hôm nay (0 dòng, xem
+    // PRODUCT_READINESS_REVIEW.md), không chỉ trạng thái đã có dữ
+    // liệu.
     appDb = AppDatabase(NativeDatabase.memory());
-    await _seedLemmas(appDb);
     SharedPreferences.setMockInitialValues({});
     prefs = await SharedPreferences.getInstance();
   });
@@ -133,6 +137,7 @@ void main() {
   testWidgets(
       'Onboarding CTA -> AddFlashcardScreen, tìm + thêm 1 Lemma -> quay '
       'lại Browse thấy Flashcard vừa thêm', (tester) async {
+    await _seedLemmas(appDb);
     await tester.pumpWidget(wrap());
     await tester.pumpAndSettle();
     await tester.tap(find.text('Flashcards'));
@@ -174,6 +179,36 @@ void main() {
     await tester.tap(find.text('Root'));
     await tester.pumpAndSettle();
 
+    expect(find.text('No browsable data for this type yet.'), findsOneWidget);
+
+    await _disposeTree(tester);
+  });
+
+  testWidgets(
+      'Sprint R3b.3 — Add Flashcard: nguồn Lemma hiện trạng thái "chưa '
+      'có dữ liệu" ngay khi Lexicon rỗng, KHÔNG BAO GIỜ hiện "Không tìm '
+      'thấy kết quả." dù gõ gì đi nữa', (tester) async {
+    // KHÔNG gọi _seedLemmas — mô phỏng đúng trạng thái Lexicon thật
+    // hôm nay (bảng lemmas 0 dòng, xem PRODUCT_READINESS_REVIEW.md).
+    await tester.pumpWidget(wrap());
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Flashcards'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Add your first flashcard'));
+    await tester.pumpAndSettle();
+
+    // Tab Lemma là mặc định — CHƯA gõ gì cũng đã thấy "chưa có dữ
+    // liệu", không phải một ô tìm kiếm chờ gõ rồi mới báo rỗng.
+    expect(find.text('No browsable data for this type yet.'), findsOneWidget);
+    expect(find.text('No results found.'), findsNothing);
+
+    await tester.enterText(find.byType(TextField), 'anything at all');
+    await tester.pumpAndSettle();
+
+    // Gõ gì cũng không đổi kết luận — "No results found." ngụ ý một
+    // tìm kiếm thật đã chạy và thất bại, sai bản chất với "nguồn dữ
+    // liệu chưa tồn tại" (đây chính là lỗi Sprint R3b.3 sửa).
+    expect(find.text('No results found.'), findsNothing);
     expect(find.text('No browsable data for this type yet.'), findsOneWidget);
 
     await _disposeTree(tester);
@@ -254,6 +289,7 @@ void main() {
       'Smart Deck: chạm chip "Today\'s Review" điều hướng sang '
       'SmartDeckScreen, trạng thái rỗng khi chưa có gì đến hạn',
       (tester) async {
+    await _seedLemmas(appDb);
     await tester.pumpWidget(wrap());
     await tester.pumpAndSettle();
     await tester.tap(find.text('Flashcards'));

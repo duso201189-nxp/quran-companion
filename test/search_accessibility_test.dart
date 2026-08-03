@@ -132,8 +132,9 @@ void main() {
   });
 
   group('Task 7.1.15 — thứ tự đọc (trên xuống, khớp thứ tự hiển thị)', () {
-    testWidgets('ô tìm kiếm -> Mode -> Scope -> nội dung thân màn hình',
-        (tester) async {
+    testWidgets(
+        'ô tìm kiếm -> nội dung thân màn hình (Sprint R3b.2: Mode/Scope '
+        'đã gỡ bỏ, không còn 2 mốc trung gian để kiểm)', (tester) async {
       await openSearchScreen(tester);
 
       final queryFieldY = tester
@@ -144,14 +145,9 @@ void main() {
             ),
           )
           .dy;
-      final modeSwitchY =
-          tester.getTopLeft(find.byType(SegmentedButton<SearchMode>)).dy;
-      final scopeChipY = tester.getTopLeft(find.byType(ChoiceChip).first).dy;
       final emptyStateY = tester.getTopLeft(find.byType(SearchEmptyState)).dy;
 
-      expect(queryFieldY, lessThan(modeSwitchY));
-      expect(modeSwitchY, lessThan(scopeChipY));
-      expect(scopeChipY, lessThan(emptyStateY));
+      expect(queryFieldY, lessThan(emptyStateY));
     });
   });
 

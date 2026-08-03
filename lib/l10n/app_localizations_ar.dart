@@ -348,16 +348,10 @@ class AppLocalizationsAr extends AppLocalizations {
   String get searchLabel => 'بحث';
 
   @override
-  String get searchAskLabel => 'اسأل الذكاء الاصطناعي';
-
-  @override
   String get searchQueryHint => 'ابحث في القرآن...';
 
   @override
   String get searchClearTooltip => 'مسح';
-
-  @override
-  String get searchScopeMyNotes => 'ملاحظاتي';
 
   @override
   String get searchEmptyTitle => 'ابحث عمّا تريده في القرآن';
