@@ -25,8 +25,11 @@ deliberately deferred) — but Flashcards (F2) is fully built and merged.
 **None of this reflects the current repository.** The feature work in
 this repo has substantially overshot what these four files describe —
 Lexicon, Flashcards, Analytics, AI Tutor, Learning Journey, Smart
-Learning, and Learning Session wiring are all merged and gated (only
-Read Model has no UI yet, see §2). This appears to be a side effect of
+Learning, and Learning Session wiring are all merged and gated, and
+Read Model has had a shipped UI since Phase 3 Sprint R2 (§1) — **this
+parenthetical previously said Read Model had no UI yet; corrected in
+this pass**, since that was true only until 2026-07-31. This appears to
+be a side effect of
 how this engagement's mega-commit decomposition happened outside the
 normal per-sprint versioning/changelog workflow. **Reconciling these
 four files (version bump, CHANGELOG backfill, ROADMAP/TODO status
@@ -43,11 +46,11 @@ per-feature detail):
 | Area | Status |
 |---|---|
 | Reading (Surah list, reading screen, audio, bookmarks/highlights/notes) | Built, shipped in earlier releases, unaffected by this engagement |
-| Search | UI foundation built (Sprint 7.1); real FTS5 engine wiring is a separate, still-open item (§4) |
+| Search | Built **and** wired to the real FTS5 engine — **stale since 2026-07-31, corrected in this pass**: this row previously said engine wiring was "a separate, still-open item," which §4 item 3 already marked done (Phase 3 Sprint R1, commit `0f3f751`, `search_index_content` holds 43,652 real rows). No placeholder path remains. |
 | Stats/Dashboard, Khatm, Daily Goal, Revision Queue | Built (Sprint 8–9) |
 | Learning Engine (SRS scheduler, Review Session, Quiz) | Built (Sprint 10 / G7) |
 | Lexicon, Flashcards, Analytics, AI Tutor, Learning Journey, Smart Learning | Built and merged (F1–F6) |
-| Read Model | Built and merged (F7) — **no UI consumes it yet**, infrastructure-only |
+| Read Model | Built and merged (F7); **has a shipped UI** — **stale since 2026-07-31, corrected in this pass**: this row previously said "no UI consumes it yet, infrastructure-only," which §4 item 4 already marked done (`StudySummaryScreen`, Phase 3 Sprint R2, reachable via a CTA from `SmartLearningScreen` as of Sprint R3.1). |
 | Learning Session wiring (unifies Review/Quiz/Flashcard into one session) | Built and merged (F8) |
 | Reliability layer (structured failures, Logger, CrashReporter) | Built, and as of Sprint S2, actually wired end-to-end (was previously half-dead) |
 
@@ -128,12 +131,17 @@ plus this engagement's `UPDATED_TECHNICAL_DEBT.md`.
   text overflow, and locale-specific formatting under `ar`.
 
 ### Known engineering gaps from this engagement's own audits
-- **D3** (`UPDATED_TECHNICAL_DEBT.md`): Read Model (F7) has zero UI
-  consumers. Before v1.0, decide: build it a screen, or explicitly
-  scope it out of v1.0 as backend-only groundwork for a later release.
-  This is a product decision, not an engineering task — it blocks
-  nothing technically, but shipping v1.0 without resolving it means
-  shipping dead-weight infrastructure knowingly.
+- ~~**D3**~~ (`UPDATED_TECHNICAL_DEBT.md`) — **resolved, Phase 3 Sprint
+  R2 (2026-07-31)**. Previously: Read Model (F7) had zero UI consumers,
+  and this document asked for an explicit product decision — ship a
+  screen or scope it out. The decision made was to ship one:
+  `StudySummaryScreen` (route `/study-summary`), reachable via a CTA
+  from `SmartLearningScreen` as of Sprint R3.1. See
+  `RELEASE_DASHBOARD.md` §2 "Sprint R2." **This entry was left
+  describing D3 as open through Sprints R3.2, R3a, and R3b** despite
+  being closed at R2 — corrected in this release-tracking pass, not at
+  the time it actually closed; flagged as its own finding in
+  `docs/release/PHASE3_RELEASE_TRACKING_FINAL_REPORT.md`.
 - **D8**: a soft-delete filter and an upsert pattern are duplicated
   across 9+ repository files. Not a correctness bug (tests pass,
   behavior is consistent), but real duplication debt — recommended as
@@ -187,9 +195,16 @@ plus this engagement's `UPDATED_TECHNICAL_DEBT.md`.
 - `docs/adr/DR-2026-0002-*.md` (Search, Sprint 7.1) is referenced from
   6 places in `lib/` and `CHANGELOG.md` but the file doesn't exist —
   a documentation-completeness gap, not a functional one.
-- Recent Searches, Suggestions, Filters, "Ask AI" in Search — UI
-  scaffolding exists (empty-state placeholders, a locked "Ask AI" mode
-  button) but nothing is wired to real logic yet.
+- Recent Searches, Suggestions, Filters in Search — UI scaffolding
+  exists (empty-state placeholders) but nothing is wired to real logic
+  yet. **Stale claim corrected 2026-08-03**: this bullet previously
+  also named a "locked 'Ask AI' mode button" as existing scaffolding —
+  that control was removed outright in Phase 3 Sprint R3b, not merely
+  wired up, after a design review found no remaining product signal in
+  keeping a permanently-locked toggle on the primary Search surface
+  (see `RELEASE_DASHBOARD.md` §2 "Sprint R3b"). Re-adding an AI mode is
+  now a build-from-scratch decision for whenever real AI search exists
+  (v2.0), not a matter of wiring up scaffolding already in place.
 - Hifz mode and the "Nhật ký" (journal) feature named in early roadmap
   notes were never concretely specified beyond a name — treat as v2.0
   candidates, not v1.0 scope creep.

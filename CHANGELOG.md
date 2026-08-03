@@ -5,6 +5,64 @@ Phiên bản theo [Semantic Versioning](https://semver.org/lang/vi/).
 
 ## [Unreleased]
 
+### Fixed — Phase 3 Sprint R3b: Bề mặt sản phẩm trung thực (2026-08-03)
+
+Đợt review sản phẩm (`PRODUCT_READINESS_REVIEW.md`) phát hiện chất
+lượng mã không còn là điểm nghẽn cho beta công khai — ba điểm giao diện
+hứa hẹn tính năng mà tầng dữ liệu không thực hiện được mới là điểm
+nghẽn. Đóng dứt điểm qua 3 sprint con + 1 đợt review cuối, mỗi bước đều
+qua `flutter analyze --fatal-infos` / `flutter test` / `dart format`,
+không commit cho tới khi review cuối duyệt:
+
+- **R3b.1**: chip phạm vi tìm kiếm "Ghi chú của tôi" trước đây bấm
+  chọn được nhưng thân màn hình render trống — sửa bằng cách khoá chip
+  (đúng mẫu đã dùng cho "Hỏi AI"). Hai ô Hồ sơ ("Thông tin cá nhân",
+  "Đồng bộ") đổi nhãn nội bộ `"Coming in Step N"` thành "Sắp ra mắt"
+  chung. Ô "Mục tiêu" bị **gỡ hẳn**, không đổi nhãn — vì tính năng
+  (Mục tiêu ngày) đã xây và đang chạy thật, đổi nhãn chỉ đổi loại câu
+  sai, không sửa được câu sai.
+- **R3b.2**: gỡ hẳn nút "Hỏi AI" và toàn bộ hàng chip phạm vi tìm kiếm
+  (cả 3 chip, không chỉ chip đã khoá ở R3b.1) — sau khi review kiến
+  trúc xác nhận không còn chip nào tạo ra khác biệt hành vi thật:
+  "Tất cả" và "Qur'an" luôn chạy chung một truy vấn, "Ghi chú của tôi"
+  chưa từng có nguồn dữ liệu.
+- **R3b.3**: ô tìm Lemma trong Thêm Flashcard — luồng bế tắc DUY NHẤT
+  còn thật sự chạm tới được hôm nay (Smart Deck "Gốc từ yếu"/"Theo thể
+  động từ" đã được rà soát và xác nhận KHÔNG thể chạm tới trong ứng
+  dụng hiện tại, không phải đã sửa) — giờ kiểm tra Lexicon có dữ liệu
+  thật trước khi vẽ ô tìm kiếm, thay vì mời gõ vào một bảng luôn rỗng
+  rồi báo "Không tìm thấy kết quả." (câu ngụ ý một tìm kiếm thật đã
+  chạy và thất bại, sai bản chất với "chưa có dữ liệu").
+
+Chi tiết: `docs/release/PHASE3_SPRINT_R3B_PLAN.md`,
+`_DESIGN_REVIEW.md`, `_1_REPORT.md` đến `_3_REPORT.md`,
+`_FINAL_REVIEW.md`. Hai hạng mục cố ý để ngoài phạm vi 3 sprint con này
+(2 hàng chip xám giữ chỗ, 2 nhóm khoá l10n không còn tham chiếu) — đóng
+dứt điểm ngay bên dưới, mục "R3b Close-out Patch".
+
+### Fixed — Phase 3 R3b Close-out Patch: dọn nốt 2 hạng mục còn lại (2026-08-03)
+
+Hai hạng mục "Bề mặt trung thực" cố ý để ngoài phạm vi R3b.1–3 (đã ghi
+nhận ở mục ngay trên), đóng dứt điểm ở đợt patch này:
+
+- Gỡ hẳn `_PlaceholderChipRow` VÀ 2 tiêu đề "Gần đây"/"Gợi ý" cùng lúc
+  — chỉ gỡ khối chip mà giữ lại tiêu đề sẽ để lại 1 heading thật trỏ
+  vào khoảng trống, một kiểu bề mặt không trung thực MỚI, không phải
+  bản sửa cho kiểu cũ. `SearchEmptyState` giờ chỉ còn icon + tiêu đề +
+  gợi ý cách gõ.
+- Xoá 4 khoá l10n `placeholder*` (0 nơi gọi thật) — đúng phạm vi đã
+  định. Xoá thêm 2 khoá `searchEmptyRecentSectionTitle`/
+  `searchEmptySuggestedSectionTitle` — không cùng tiền tố `placeholder*`
+  nhưng trở nên không còn nơi gọi ĐÚNG VÌ việc gỡ 2 tiêu đề ở trên, nên
+  cùng thuộc diện xoá theo tiêu chí đã áp dụng xuyên suốt R3b ("0 nơi
+  gọi", không phải "khớp tên").
+
+Không đụng `l10n.comingInStep` (mồ côi từ R3b.1, khác nguyên nhân, vẫn
+mở — xem `RELEASE_DASHBOARD.md` §3). 1 test gỡ hẳn (mất đúng lý do so
+sánh trực quan của nó, không còn gì để so sánh), 2 test khác chỉ bớt
+assertion, giữ nguyên test. 792 test qua (802 mốc R3.2 → 793 sau R3b.1–3
+→ 792). Chi tiết: `docs/release/PHASE3_R3B_CLOSEOUT_PATCH_REPORT.md`.
+
 ### Fixed — Phase 3 Sprint R3a: Web platform hoàn thiện (2026-08-03)
 
 Nền tảng Web trước đây build được nhưng mở database lỗi runtime (thiếu
@@ -31,6 +89,81 @@ Chi tiết: `docs/release/PHASE3_SPRINT_R3A1_REPORT.md` đến
 Web, nên tầng lưu trữ nhanh nhất (OPFS, cần header COOP/COEP) chưa được
 xác minh trong thực tế — không phải lỗi đúng/sai, chỉ là hiệu năng chưa
 tối ưu; tầng IndexedDB đã xác minh hoạt động đầy đủ.
+
+### Fixed — Phase 3 Sprint R3.2: Chính sách đo coverage (2026-08-01)
+
+Đo lại coverage lần đầu tiên kể từ khi P1–P4/F1–F8 merge, và điều
+chỉnh ngưỡng CI theo đúng số đo thật (`DR-2026-0015`). Bốn số đo công
+khai đầy đủ (`flutter test --coverage` trên `main`, 802 test, sau
+Sprint R3.1):
+
+| Cách đo | Coverage | Số dòng |
+|---|--:|--:|
+| Thô — không loại trừ gì | 51.96% | 8816/16968 |
+| Đã lọc — chính sách CI cũ (`main.dart`, `*.g.dart`, stub kết nối db) | 76.25% | 6584/8635 |
+| **Đã lọc + loại cả bảng chuỗi l10n sinh tự động — chính sách mới** | **81.54%** | **6141/7531** |
+
+Thay đổi duy nhất: thêm 1 mẫu lcov (`lib/l10n/app_localizations_*.dart`)
+vào cạnh mẫu `**/*.g.dart` đã có sẵn — `app_localizations.dart` (chứa
+`LocalizationsDelegate` thật, đạt 94.7%) CỐ Ý giữ lại trong phạm vi đo.
+`MIN_COVERAGE` nâng 70 → 80. Đây là một điều chỉnh MẪU SỐ, không phải
+coverage mới — trạng thái qua/chưa qua test của từng dòng tay viết
+không đổi. Một mất mát thật, ghi nhận lại chứ không giấu đi: tiếng Ả
+Rập từng chỉ đạt 4.3% coverage (so với 69.3% tiếng Anh, cùng 1 cấu
+trúc file) — đó là dấu hiệu RTL gần như chưa được test tới, giờ
+chuyển sang theo dõi tường minh ở `RELEASE_PLAN_V1.md` §2 "Verification
+gaps", KHÔNG coi là đã đóng chỉ vì bị loại khỏi số đo. Chi tiết:
+`docs/adr/DR-2026-0015-coverage-measurement-policy.md`,
+`RELEASE_DASHBOARD.md` §2.
+
+### Fixed — Phase 3 Sprint R2: Màn hình Read Model (Study Summary) (2026-07-31)
+
+`StudySummaryScreen` ra mắt (route `/study-summary`): hiển thị đủ 4
+mục của `LearningSnapshot` (bối cảnh/nhận định/kế hoạch ngày/phiên học
+đề xuất) bằng cách dùng lại nguyên widget và hàm trình bày thuần đã có
+từ `ai_tutor`/`learning_journey`/`smart_learning` — không viết lại
+logic hiển thị nào. Kéo để làm mới + nút Thử lại đều chỉ invalidate
+`smartLearningSessionProvider` (KHÔNG BAO GIỜ invalidate
+`learningSnapshotProvider` trực tiếp — xem "Refresh Strategy" trong
+`docs/release/PHASE3_SPRINT_R2_DESIGN_REVIEW.md`). Đóng **D3** — Read
+Model (F7, merge từ đợt khôi phục phát hành nhưng chưa từng có màn
+hình dùng tới) giờ có quyết định sản phẩm rõ ràng: xây UI, không phải
+hoãn lại. 799 test qua, `flutter analyze --fatal-infos` sạch, CI xanh
+trên `main` (commit `275204b`). Còn mở, cố ý chưa làm trong sprint
+này: chưa có điểm vào (CTA) từ `SmartLearningScreen` (route đã có,
+chưa nơi nào dẫn tới) — đóng ở Sprint R3.1 ngay sau đó. Chi tiết:
+`docs/release/PHASE3_SPRINT_R2_1_REPORT.md` đến `_R2_3_REPORT.md`.
+
+### Fixed — Phase 3 Sprint R1: Nối engine tìm kiếm FTS5 thật (2026-07-31)
+
+Ba sprint con, commit `0f3f751`. Đóng khoảng trống đã ghi nhận từ
+`RELEASE_PLAN_V1.md`: màn Tìm kiếm có đủ giao diện từ Sprint 7.1
+nhưng chưa nối engine thật — gõ gì cũng không ra kết quả.
+
+- **R1.1**: nối `SearchScreen` vào engine FTS5 đã có qua một cặp
+  provider MỚI, độc lập (`searchQueryProvider`/`searchResultsProvider`
+  trong `search/data/search_providers.dart` mới) — cố ý KHÔNG dùng lại
+  `ayahSearchProvider` của `SurahListScreen` để tránh 2 màn hình dùng
+  chung 1 state tìm kiếm. Gọi thẳng `QuranRepository.searchAyahs()`
+  không sửa gì — không thêm phương thức repository, không đổi schema.
+- **R1.2**: thêm `SearchNoResultsState` — tìm xong mà không khớp gì
+  giờ tách biệt rõ (hình ảnh lẫn accessibility) khỏi "chưa gõ đủ" và
+  "lỗi tải".
+- **R1.3**: đợt rà soát — 5/6 khu vực rà soát (gõ nhanh/debounce, xoá,
+  chuyển trạng thái tải/lỗi/không kết quả, focus) đã đúng sẵn, chỉ ghi
+  lại chứ không sửa; 1 lỗi accessibility thật được tìm thấy và sửa
+  (`SearchResultSection` thiếu `liveRegion: true` khi công bố kết
+  quả — bất đối xứng duy nhất trong 4 trạng thái thân màn hình). Thêm
+  1 test hồi quy: gõ 5 lần liên tiếp không đợi nhau chỉ gọi repository
+  ĐÚNG 1 LẦN, với truy vấn cuối cùng.
+
+`search_index_content` (FTS5) có 43.652 dòng thật, xác minh xuyên suốt
+trong đợt kiểm tra trình duyệt Sprint R3a.2. 786 test qua tại thời
+điểm R1.3 đóng. **Đây là mục hoàn thành lớn nhất bị bỏ sót khỏi
+CHANGELOG lâu nhất** — phát hiện tại `PRODUCT_READINESS_REVIEW.md` §5,
+bổ sung tại đợt dọn dẹp theo dõi phát hành này. Chi tiết:
+`docs/release/PHASE3_SPRINT_R1_PLAN.md`, `_DESIGN_REVIEW.md`,
+`_1_REPORT.md` đến `_3_REPORT.md`.
 
 ### Ghi chú — khoảng trống backfill
 

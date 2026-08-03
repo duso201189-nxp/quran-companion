@@ -48,6 +48,15 @@ not the release-blocking gaps themselves).
 > built, which is out of scope for a single-sprint completion update)
 > — treat 58%/10% as understating actual progress until a full
 > dashboard refresh is run.
+>
+> **Note (post-Phase-3 R3b update, 2026-08-03)**: also predates Sprint
+> R3a (Web platform, shipped) and Sprint R3b (Honest Surface Area,
+> shipped — see §2). This table's weighted model is still **not**
+> recalculated here for the same reason as above. An independently
+> derived, axis-based readiness estimate (not this table's model) is
+> maintained in `docs/release/PRODUCT_READINESS_REVIEW.md` and updated
+> post-R3b in `docs/release/PHASE3_EPIC_CLOSEOUT_REPORT.md` — consult
+> those for current numbers; treat this table as directional only.
 
 ---
 
@@ -118,6 +127,43 @@ reconciled (historical content preserved, current status pointers
 added, no silent rewrites). This closes the documentation-debt item
 `RELEASE_PLAN_V1.md` §0 originally flagged — the one piece of
 movement reflected in the "v1.0-specific blockers" score above.
+
+### Phase 3 — Sprint R1 (Search FTS5 Integration)
+
+Three sub-sprints, commit `0f3f751` ("feat(search): integrate FTS5
+search and complete search UX states"), 2026-07-31. Closed the gap
+`RELEASE_PLAN_V1.md` had flagged since before this dashboard existed:
+Search had a built UI with no real engine behind it. **This entry was
+missing from this dashboard until this close-out pass** despite being
+the largest single feature shipped in Phase 3 — flagged as a
+release-tracking gap in `PRODUCT_READINESS_REVIEW.md` §5, corrected
+here.
+
+- **R1.1**: wired `SearchScreen` to the existing FTS5 engine via a new,
+  independent provider pair (`searchQueryProvider`/`searchResultsProvider`
+  in the new `search/data/search_providers.dart`) — deliberately not
+  reusing `SurahListScreen`'s `ayahSearchProvider`, to avoid coupling
+  the two screens' search state. Calls `QuranRepository.searchAyahs()`
+  directly and unmodified; no new repository method, no schema change.
+- **R1.2**: added `SearchNoResultsState` — a query ran and matched
+  nothing is now visually and semantically distinct from "haven't
+  typed enough yet" (`SearchEmptyState`) and "something broke"
+  (`SearchErrorState`). 2 new l10n keys.
+- **R1.3**: verification pass — five of six reviewed areas (rapid
+  typing/debounce, clearing, loading/error/no-results transitions,
+  focus) were confirmed already correct and are documented, not
+  changed; one real accessibility gap was found and fixed
+  (`SearchResultSection`'s result announcement was missing
+  `liveRegion: true`, the one asymmetry among the four body-states).
+  A direct regression test now asserts 5 rapid, un-awaited query
+  changes produce exactly one repository call, for the final query
+  only.
+
+`search_index_content` (FTS5) holds 43,652 real rows, verified end-to-end
+in Sprint R3a.2's browser verification pass. 786 tests passing at R1.3
+close (782 + 4 new this sub-sprint). Full detail:
+`docs/release/PHASE3_SPRINT_R1_PLAN.md`, `_DESIGN_REVIEW.md`,
+`_1_REPORT.md` through `_3_REPORT.md`.
 
 ### Phase 3 — Sprint R3.2 (coverage measurement policy)
 
@@ -207,6 +253,85 @@ action wiring on plan steps (the screen is display-only by design this
 sprint). Full detail: `docs/release/PHASE3_SPRINT_R2_1_REPORT.md`
 through `PHASE3_SPRINT_R2_3_REPORT.md`.
 
+### Phase 3 — Sprint R3b (Honest Surface Area)
+
+Committed `e59c106`, 2026-08-03. Follows directly from
+`docs/release/PRODUCT_READINESS_REVIEW.md`'s finding that the product's
+code quality was not the gap to public beta — three visible UI
+affordances were. Run as three sub-sprints plus a final review, each
+gated on `flutter analyze --fatal-infos` / `flutter test` / `dart
+format`, none committed until an explicit final-review approval:
+
+- **R3b.1**: the "Ghi chú của tôi" (My Notes) Search scope chip was
+  fully selectable but rendered a blank body when chosen — fixed by
+  disabling it, matching the pattern already used for the "Hỏi AI"
+  toggle. Profile's "Personal info"/"Sync" tiles had their internal
+  `"Coming in Step N"` labels replaced with a generic "coming soon."
+  Profile's "Goal" tile was **removed outright**, not relabeled — it
+  claimed a feature (Daily Goal) that had already shipped and was
+  reachable from Stats; relabeling would have swapped one false claim
+  for another.
+- **R3b.2**: the "Hỏi AI" toggle and the entire Search scope-chip row
+  (all three chips, not just the one already disabled in R3b.1) were
+  removed outright, per a design review confirming neither had any
+  remaining real behavioral distinction to offer — "All" and "Qur'an"
+  ran the identical query, and My Notes had no data source.
+- **R3b.3**: Add Flashcard's Lemma search — the one dead-end flow found
+  to be currently *reachable* (Smart Deck's "weak roots"/"verb forms"
+  were reviewed and found structurally unreachable today, not fixed,
+  see below) — was gated behind a real Lexicon-availability check, so
+  an empty Lexicon table shows "no data yet" immediately instead of
+  inviting a guaranteed-empty search that reads as "tìm xong, không có
+  kết quả" (a real search that ran and failed).
+
+**Deliberately out of scope for R3b.1–3 itself** (sequenced later in
+the original plan): the `_PlaceholderChipRow` grey skeleton chips under
+Search's "Recent"/"Suggestions" headings, and the 4 unused
+`placeholder*` l10n keys. Both closed in a small follow-up patch — see
+"Phase 3 — R3b Close-out Patch," immediately below.
+
+Net test count at R3b.1–3 close: 802 → 793 (−9: 11 tests removed for
+controls that no longer exist, 1 narrowed, 2 added — full itemization
+in `docs/release/PHASE3_SPRINT_R3B_2_REPORT.md` §10 and
+`_R3B_3_REPORT.md` §10). Coverage on hand-written code re-measured at
+close-out: **81.52%** (was 81.54% at Sprint R3.2) — effectively
+unchanged; the product code shrank in step with the tests that covered
+the removed UI. Full detail: `docs/release/PHASE3_SPRINT_R3B_PLAN.md`,
+`_DESIGN_REVIEW.md`, `_1_REPORT.md` through `_3_REPORT.md`, and
+`_FINAL_REVIEW.md`.
+
+### Phase 3 — R3b Close-out Patch
+
+Committed `75adf1c`, 2026-08-03. Closes the two items R3b.1–3
+deliberately deferred (immediately above): `_PlaceholderChipRow` was
+removed **together with** the two "Gần đây"/"Gợi ý" headings it sat
+under, not on its own — removing only the grey chip shapes and leaving
+a real, accessible heading pointing at empty space would have been a
+*new* dishonest surface, not a fix for the old one.
+`docs/release/PHASE3_SPRINT_R3B_PLAN.md`'s own original scoping for
+this item already said "chips **+ heading**," matched here.
+`SearchEmptyState` now shows only icon, title, and the typing-hint
+subtitle.
+
+The 4 unused `placeholder*` l10n keys were removed as scoped. Two
+further keys not matching that name pattern
+(`searchEmptyRecentSectionTitle`, `searchEmptySuggestedSectionTitle`)
+were removed alongside them — they lost their only call site as a
+direct consequence of the heading removal above, meeting the same
+"zero call sites" bar this engagement's l10n cleanups have used
+throughout, not a literal name match. `l10n.comingInStep` was
+**not** touched — orphaned for a different reason (Sprint R3b.1, not
+this patch) and out of this patch's stated scope; still open, see §3.
+
+Net test count: 793 → 792 (−1: one test removed outright — its stated
+purpose, proving `SearchNoResultsState` lacks sections
+`SearchEmptyState` no longer has either, became impossible to fail
+regardless of correctness once both sections were gone from the app
+entirely; two other tests kept but had assertions on the removed
+widgets trimmed). `flutter analyze --fatal-infos`, `flutter test`, and
+`dart format` all clean. Full detail:
+`docs/release/PHASE3_R3B_CLOSEOUT_PATCH_REPORT.md`.
+
 ---
 
 ## 3. Remaining blockers
@@ -244,6 +369,20 @@ selection so engineering is never idle waiting on them.
   R1 (commit `0f3f751`). `search_index_content` holds 43,652 rows and
   the UI is wired end-to-end. This entry was stale for three sprints;
   corrected during the Release Governance Recovery audit.
+- ~~**Dead/dishonest UI affordances**~~ — **resolved** (Phase 3 Sprint
+  R3b, `e59c106`, plus the R3b Close-out Patch, `75adf1c`, both
+  2026-08-03). This item was never entered into this dashboard while
+  it was open — flagged as a release-tracking gap in
+  `PRODUCT_READINESS_REVIEW.md` §5, corrected here at close-out. Of the
+  three affordances that review found (a permanently locked "Hỏi AI"
+  toggle, a Search scope chip that rendered blank when selected, an
+  Add-Flashcard search guaranteed to return nothing), all three closed
+  in R3b.1–3 — the first two removed outright, the third gated on a
+  real data-availability check (§2 "Sprint R3b"). The two items R3b
+  itself deliberately deferred — the `_PlaceholderChipRow` skeleton
+  chips (Recent/Suggestions) and 4 unused l10n keys — closed in the
+  follow-up patch (§2 "R3b Close-out Patch"). No open item remains
+  under this banner.
 - **Store & legal readiness unstarted per `RELEASE_PLAN_V1.md`**:
   icons, screenshots, privacy policy, legal review of the Tanzil
   translation license, platform certificates. Process work, not
@@ -291,6 +430,10 @@ selection so engineering is never idle waiting on them.
 
 ### Medium
 
+- **`l10n.comingInStep`** — a parameterized string, 0 remaining call
+  sites after Sprint R3b.1 removed its last three usages (Profile's
+  step-numbered labels). Same class of cleanup as the item above,
+  found during R3b, not yet actioned.
 - **D8 — duplicated soft-delete filter / upsert pattern**, 20+ sites
   across 9 repository files. `RELEASE_PLAN_V1.md`'s own recommendation
   is that this get an isolated sprint with full regression re-runs,
@@ -319,9 +462,13 @@ selection so engineering is never idle waiting on them.
   priority.
 - **Missing `DR-2026-0002` file** — referenced elsewhere but never
   written as its own record.
-- **Search polish** (Recent Searches, Suggestions, Filters) — UI
-  scaffolding exists, no logic behind it yet; correctly scoped to
-  v1.1 in `PRODUCT_ROADMAP.md`, not v1.0.
+- **Search polish** (Recent Searches, Suggestions, Filters) — *building
+  the real feature* (real recent-query history, real suggestion logic)
+  is correctly scoped to v1.1 in `PRODUCT_ROADMAP.md`, not v1.0. The
+  placeholder *shapes* that used to stand in for this feature's future
+  UI were removed entirely (R3b Close-out Patch, §2) rather than kept
+  as scaffolding — when this is actually built, it starts from
+  nothing, not from resurrected placeholders.
 - **Hifz mode, "Nhật ký"** — named as future directions, never
   concretely specified; v2.0 candidates per `PRODUCT_ROADMAP.md`, not
   a v1.0 gap.
@@ -409,6 +556,32 @@ original R3/R4/R5 follow unchanged in their own sections.)*
   (§4a above) rather than as part of this milestone. D8 refactor and
   D5's 4 dead files remain open — this milestone is partially, not
   fully, closed.
+
+### R3b — Honest Surface Area
+
+Inserted 2026-08-03, following directly from
+`docs/release/PRODUCT_READINESS_REVIEW.md`'s finding that code quality
+was no longer the constraint on public beta readiness — three visible,
+misleading UI affordances were.
+
+- **Objective**: make every visible control either work, or clearly and
+  passively say it doesn't yet — no control that looks interactive but
+  silently does nothing or guarantees failure.
+- **Why now**: the one Critical-tier item in the Product Readiness
+  Review that engineering could close unilaterally — no dependency on
+  the Lexicon licence answer, store/legal action, or physical-device
+  access.
+- **Deliverables**: remove the permanently-locked "Hỏi AI" toggle and
+  the Search scope-chip row; gate Add Flashcard's Lemma search on real
+  data availability instead of letting it search a permanently-empty
+  table.
+- **Dependencies**: none.
+- **Status (2026-08-03)**: **done**. R3b.1–R3b.3 (committed `e59c106`)
+  closed the three items scoped and executed; the two items named in
+  the original plan but sequenced after R3b.3 (Search placeholder
+  chips A4/A5, 2 sets of unused l10n keys) closed in a small follow-up
+  patch the same day (committed `75adf1c` — see §2 "R3b Close-out
+  Patch"). Nothing remains open under the "Honest Surface Area" theme.
 
 ### R3 — Verification & Quality Gate
 
@@ -576,6 +749,14 @@ A release candidate is v1.0-ready only when all of the following hold:
 - [ ] Zero open P0 technical debt (currently satisfied)
 - [ ] No Critical blocker from §3 remains open
 
+**Sprint R3b note**: none of the 14 boxes above is directly about UI
+honesty, so R3b (§2, §4) does not check a new one — stated plainly
+rather than implied, per this dashboard's own §5 finding that
+completed work has previously gone unrecorded here. Its effect is on
+the *quality* of a beta a user would actually see, and on de-risking
+the last unchecked box for R4 (store screenshots), not on this
+checklist's count.
+
 **Go** requires every box checked. Any single unchecked Critical-tier
 item (§3) is an automatic **No-Go** regardless of how many other boxes
 are checked — the Critical tier was chosen specifically because each
@@ -598,9 +779,19 @@ sequence re-cut so engineering is never idle waiting on a third party.
    Closed Go/No-Go box 4 and removed the false-green from CI; verified
    working in a real browser. Hosting-target choice still open, not
    blocking.
+2a. ~~**R3b — Honest Surface Area**~~ — **done, fully** (2026-08-03,
+    R3b.1–R3b.3 + the R3b Close-out Patch, see §4 "R3b"). Did not check
+    a new Go/No-Go box (none of the 14 items in §7 is about UI
+    honesty), but closes the one Critical-tier, engineering-only item
+    the Product Readiness Review found, and materially de-risks R4's
+    store-screenshot dependency on Lexicon (an honest empty state is a
+    permanently valid screenshot; a blank/broken-looking one is not).
 3. **R2 remainder** (D8 / D5 debt — Web go/no-go closed via R3a) — Read
    Model shipped; the rest can proceed at any time. **Next available
-   engineering sprint**, now that R3a is closed.
+   engineering sprint candidate**, alongside, per
+   `PRODUCT_READINESS_REVIEW.md` §6's second priority, a release-record
+   reconciliation pass (§5 of this document lists what's still missing
+   from tracking as of this close-out).
 
 *(Historical: the original step 2 was "R1 — Lexicon data + Search
 wiring". Search shipped in Sprint R1; the Lexicon half moved off the
