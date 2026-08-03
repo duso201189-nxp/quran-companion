@@ -361,6 +361,46 @@ axis — all specified in `DR-2026-0017` but with no consumer yet
 because **F0 persists no address anywhere**. No schema change, no data
 change. Coverage 81.52% → 81.58%.
 
+### Phase 4 — Sprint F1 (decoration layer, auto-scroll politeness)
+
+Second Phase 4 foundation step, per `DR-2026-0019` E1 and §7.3. Two
+changes, one invisible and one deliberately visible.
+
+**Decoration layer.** The rule deciding an āyah card's background —
+playing beats user highlight beats plain — lived inside a nested
+ternary in `AyahCard.build()`, so verifying it meant standing up a
+database, a provider container and a frame. It now lives in
+`resolveAyahDecoration` (`lib/features/quran/domain/ayah_decoration.dart`),
+a pure function over a `sealed` result type. Presentation still owns
+appearance: the engine names a *marker*, never a colour
+(`DR-2026-0019` §6.3). The `sealed` type is the point — a future
+decoration source (reflection marker, AI-tutor citation, search hit)
+becomes a compile error at every branch rather than a silently missed
+one.
+
+Deliberately **not** done: the literal `Map<Address, Decoration>` the
+roadmap sketched. Computing that map in the parent would move the audio
+subscription from per-card `select()` to per-screen, turning today's
+one-card rebuild on every audio tick into a whole-list rebuild — the
+performance risk `DR-2026-0019` R2 flagged, arriving as a design
+regression rather than a measurement. Revisit at E5, behind a
+performance gate.
+
+**Auto-scroll politeness.** Scrolling away during playback used to be
+undone by the next āyah change, once per āyah. A 10-second grace window
+after any user drag now suppresses the follow (`shouldFollowPlayback`,
+`lib/features/quran/domain/playback_follow_policy.dart`). It expires on
+its own, so no "jump to what's playing" affordance is needed and no user
+can get stuck. This is the tactical fix; the structural one — audio and
+scroll each being both producer and consumer of position — is
+`DR-2026-0019` E3 and remains out of scope.
+
+**Behaviour otherwise unchanged**: all 834 tests pass, +21 new (17 pure
++ 4 widget). The 4 widget tests assert the *rendered* card colour in all
+four precedence states — before F1 nothing tested that colour at all, so
+the extraction would otherwise have been guarded only by argument.
+Coverage 81.58% → 81.60%. No schema change, no l10n change, no new UI.
+
 ---
 
 ## 3. Remaining blockers

@@ -16,10 +16,12 @@ import '../../../stats/data/stats_store.dart';
 import '../../../stats/data/study_session_providers.dart';
 import '../../../stats/domain/repositories/study_session_repository.dart';
 import '../../data/user_content_providers.dart';
+import '../../domain/ayah_decoration.dart';
 import '../../domain/basmalah.dart';
 import '../../domain/entities/ayah_annotation.dart';
 import '../../domain/entities/ayah_content.dart';
 import '../../domain/entities/surah.dart';
+import '../../domain/playback_follow_policy.dart';
 import '../annotations/ayah_actions_sheet.dart';
 import '../audio/audio_bar.dart';
 import '../audio/audio_controller.dart';
@@ -57,6 +59,10 @@ class _ReadingScreenState extends ConsumerState<ReadingScreen> {
   bool _focusMode = false;
   int _initialAyahIndex = 0;
   int? _lastSavedIndex;
+
+  /// Lần gần nhất người dùng TỰ cuộn — đầu vào của
+  /// `shouldFollowPlayback`. `null` = chưa cuộn lần nào trong phiên này.
+  DateTime? _lastManualScrollAt;
 
   // pinch-zoom
   double _pinchBaseScale = 1.0;
@@ -118,6 +124,31 @@ class _ReadingScreenState extends ConsumerState<ReadingScreen> {
           .read(readingPositionStoreProvider)
           .save(surahId: widget.surahId, ayahIndex: ayahIndex),
     );
+  }
+
+  /// Ghi lại thời điểm người dùng TỰ cuộn (Sprint F1).
+  ///
+  /// `dragDetails != null` là dấu hiệu chắc chắn của thao tác kéo tay:
+  /// cuộn do `ItemScrollController.scrollTo()` gây ra luôn để trường này
+  /// null. Phân biệt bằng `UserScrollNotification` thì ngắn hơn nhưng
+  /// KHÔNG an toàn — cuộn theo lập trình cũng phát ra nó, nên màn hình
+  /// sẽ nhận thao tác của chính mình là của người dùng rồi tự chặn lần
+  /// cuộn kế tiếp, thành ra bám audio cách quãng một Ayah.
+  ///
+  /// Chỉ cần bắt lúc bắt đầu kéo: quán tính sau khi thả tay
+  /// (`BallisticScrollActivity`) không mang `dragDetails`, nhưng nó luôn
+  /// nối tiếp một lần kéo vừa được ghi và ngắn hơn nhiều so với
+  /// `kPlaybackFollowGrace`.
+  ///
+  /// KHÔNG gọi `setState`: trường này chỉ được đọc trong `ref.listen`
+  /// của audio và không tham gia dựng giao diện. `setState` ở đây là
+  /// dựng lại toàn bộ danh sách mỗi khung hình cuộn.
+  bool _onScrollNotification(ScrollNotification notification) {
+    if (notification is ScrollStartNotification &&
+        notification.dragDetails != null) {
+      _lastManualScrollAt = DateTime.now();
+    }
+    return false; // không nuốt thông báo — các lớp trên vẫn nhận được
   }
 
   void _savePage(int firstAyahIndex) {
@@ -182,6 +213,14 @@ class _ReadingScreenState extends ConsumerState<ReadingScreen> {
           sameAyah ||
           settings.mode != ReadingMode.list ||
           !_itemScrollController.isAttached) {
+        return;
+      }
+      // Sprint F1: người dùng vừa tự cuộn -> để yên cho họ đọc. Hết
+      // khoảng lặng thì bám theo audio trở lại (DR-2026-0019 §7.3).
+      if (!shouldFollowPlayback(
+        now: DateTime.now(),
+        lastManualScrollAt: _lastManualScrollAt,
+      )) {
         return;
       }
       _itemScrollController.scrollTo(
@@ -280,18 +319,24 @@ class _ReadingScreenState extends ConsumerState<ReadingScreen> {
                         initialAyahIndex: _initialAyahIndex,
                         onPageFirstAyah: _savePage,
                       )
-                    : _AyahListView(
-                        surah: data.surah,
-                        ayahs: data.ayahs,
-                        surahId: widget.surahId,
-                        focus: _focusMode,
-                        // Vị trí 0 = chưa đọc dở -> mở từ ĐẦU trang (kèm
-                        // header Surah); đọc dở -> nhảy thẳng tới Ayah đó.
-                        initialScrollIndex: _initialAyahIndex == 0
-                            ? 0
-                            : min(_initialAyahIndex + 1, data.ayahs.length),
-                        itemScrollController: _itemScrollController,
-                        itemPositionsListener: _positionsListener,
+                    // Sprint F1: chỉ nhánh danh sách mới cần theo dõi
+                    // cuộn tay — chế độ Mushaf không bao giờ tự cuộn.
+                    : NotificationListener<ScrollNotification>(
+                        onNotification: _onScrollNotification,
+                        child: _AyahListView(
+                          surah: data.surah,
+                          ayahs: data.ayahs,
+                          surahId: widget.surahId,
+                          focus: _focusMode,
+                          // Vị trí 0 = chưa đọc dở -> mở từ ĐẦU trang
+                          // (kèm header Surah); đọc dở -> nhảy thẳng
+                          // tới Ayah đó.
+                          initialScrollIndex: _initialAyahIndex == 0
+                              ? 0
+                              : min(_initialAyahIndex + 1, data.ayahs.length),
+                          itemScrollController: _itemScrollController,
+                          itemPositionsListener: _positionsListener,
+                        ),
                       );
                 return GestureDetector(
                   behavior: HitTestBehavior.translucent,
@@ -689,9 +734,6 @@ class AyahCard extends ConsumerWidget {
             .watch(ayahAnnotationsProvider(content.ayah.surahId))
             .valueOrNull?[content.ayah.id] ??
         AyahAnnotation.empty;
-    final highlightColor = annotation.highlightColors.isEmpty
-        ? null
-        : kHighlightColorValues[annotation.highlightColors.first];
 
     final width = MediaQuery.sizeOf(context).width;
     final arabicStyle = quranTextStyle(
@@ -725,18 +767,31 @@ class AyahCard extends ConsumerWidget {
     final vi = content.texts['vi_main'];
     final en = content.texts['en_sahih'];
 
-    // Nền thẻ: đang phát > highlight người dùng > mặt thẻ tối.
-    final cardColor = isPlayingThis
-        ? Color.alphaBlend(
-            scheme.primaryContainer.withValues(alpha: 0.35),
-            scheme.surfaceContainerLow,
-          )
-        : highlightColor != null
-            ? Color.alphaBlend(
-                highlightColor.withValues(alpha: 0.16),
-                scheme.surfaceContainerLow,
-              )
-            : scheme.surfaceContainerLow;
+    // Nền thẻ. Sprint F1: LUẬT ưu tiên (đang phát > người dùng tô >
+    // không gì) đã ra `resolveAyahDecoration`; ở đây chỉ còn việc của
+    // tầng trình bày là đổi một dấu hiệu thành một màu — đúng ranh giới
+    // DR-2026-0019 §6.3 ("engine không bao giờ gọi tên một màu").
+    final decoration = resolveAyahDecoration(
+      isPlaying: isPlayingThis,
+      highlightColors: annotation.highlightColors,
+    );
+    final cardColor = switch (decoration) {
+      NoDecoration() => scheme.surfaceContainerLow,
+      PlayingDecoration() => Color.alphaBlend(
+          scheme.primaryContainer.withValues(alpha: 0.35),
+          scheme.surfaceContainerLow,
+        ),
+      // Tên màu không có trong bảng (dữ liệu cũ hoặc bảng đổi sau này)
+      // -> nền thường, đúng như hành vi trước F1.
+      UserHighlightDecoration(:final colorName) => switch (
+            kHighlightColorValues[colorName]) {
+          null => scheme.surfaceContainerLow,
+          final color => Color.alphaBlend(
+              color.withValues(alpha: 0.16),
+              scheme.surfaceContainerLow,
+            ),
+        },
+    };
 
     return Semantics(
       label: l10n.ayahSemanticLabel(content.ayah.ayahNumber),

@@ -5,6 +5,35 @@ Phiên bản theo [Semantic Versioning](https://semver.org/lang/vi/).
 
 ## [Unreleased]
 
+### Changed — Phase 4 Sprint F1: Tầng trang trí + cuộn theo audio lịch sự (2026-08-03)
+
+Bước nền móng thứ hai của Phase 4 (`DR-2026-0019` E1 và §7.3).
+
+- **Tầng trang trí** (`lib/features/quran/domain/ayah_decoration.dart`)
+  — luật quyết định nền thẻ Ayah (đang phát > người dùng tô màu > không
+  gì) trước đây nằm trong một biểu thức ba ngôi lồng nhau giữa
+  `AyahCard.build()`, nên muốn kiểm chứng phải dựng cả database, cả
+  provider, cả khung hình. Giờ là `resolveAyahDecoration`, một hàm thuần
+  trả về kiểu `sealed`. Tầng domain gọi tên một DẤU HIỆU, không bao giờ
+  gọi tên một màu; đổi dấu hiệu thành màu vẫn là việc của tầng trình
+  bày. Kiểu `sealed` là chủ ý: thêm một loại trang trí mới sau này (dấu
+  chiêm nghiệm, trích dẫn AI Tutor, kết quả tìm kiếm) sẽ thành lỗi biên
+  dịch ở mọi nhánh, thay vì một nhánh bị quên âm thầm.
+- **Cuộn theo audio lịch sự** — thay đổi DUY NHẤT người dùng thấy được.
+  Trước F1, cuộn đi đọc bản dịch thì Ayah kế chuyển là màn hình giật
+  ngược về chỗ đang phát, mỗi Ayah một lần. Giờ sau mỗi lần người dùng
+  tự kéo có 10 giây để yên (`shouldFollowPlayback`). Khoảng lặng tự hết
+  hạn, nên không cần thêm nút "về chỗ đang phát" và người dùng không thể
+  tự đưa mình vào trạng thái kẹt.
+- **Hành vi còn lại KHÔNG đổi**: 834 test qua hết, +21 test mới (17
+  thuần + 4 widget). Bốn test widget so màu nền THẬT của thẻ ở cả bốn
+  trạng thái ưu tiên — trước F1 không có test nào chạm tới màu đó, nên
+  lần tách tầng này lẽ ra chỉ được bảo vệ bằng lập luận. Không đổi
+  schema, không đổi l10n, không thêm giao diện.
+
+Chưa làm, có chủ ý: cắt vòng lặp cấu trúc giữa audio và cuộn (mỗi bên
+vừa là nguồn vừa là đích của vị trí) — thuộc `DR-2026-0019` E3.
+
 ### Added — Phase 4 Sprint F0: Địa chỉ Qur'an (mức Surah/Ayah) (2026-08-03)
 
 Nền móng đầu tiên của Phase 4 (`DR-2026-0017`). Trước F0, "vị trí một

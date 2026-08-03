@@ -15,6 +15,8 @@ import 'package:quran_companion/features/quran/domain/entities/reciter.dart';
 import 'package:quran_companion/features/quran/domain/entities/surah.dart';
 import 'package:quran_companion/features/quran/domain/entities/translation_source.dart';
 import 'package:quran_companion/features/quran/domain/repositories/quran_repository.dart';
+import 'package:quran_companion/features/quran/presentation/annotations/ayah_actions_sheet.dart'
+    show kHighlightColorValues;
 import 'package:quran_companion/features/quran/presentation/reading/reading_screen.dart';
 import 'package:quran_companion/features/stats/data/study_session_providers.dart';
 import 'package:quran_companion/features/stats/domain/entities/study_session.dart';
@@ -546,6 +548,98 @@ void main() {
       expect(session.date, isNotEmpty);
       expect(session.durationSec, greaterThanOrEqualTo(5));
       expect(session.ayahFrom, 0);
+    });
+  });
+
+  /// Sprint F1 — luật ưu tiên trang trí đã ra `resolveAyahDecoration`
+  /// (DR-2026-0019 §6.3 / cổng E1: "kết quả vẽ ra phải y hệt").
+  ///
+  /// Trước F1 KHÔNG có test nào chạm tới màu nền thẻ Ayah, nên lần tách
+  /// tầng này lẽ ra chỉ được bảo vệ bằng lập luận. Bốn test dưới đây so
+  /// màu THẬT của `AnimatedContainer` bọc thẻ với công thức trong mã cũ
+  /// — nếu lần tách làm lệch một nhánh nào, chúng đỏ.
+  group('Sprint F1 — nền thẻ Ayah', () {
+    ColorScheme schemeOf(WidgetTester tester) =>
+        Theme.of(tester.element(find.byType(AyahCard).first)).colorScheme;
+
+    Color firstCardColor(WidgetTester tester) {
+      final container = tester.widget<AnimatedContainer>(
+        find
+            .descendant(
+              of: find.byType(AyahCard).first,
+              matching: find.byType(AnimatedContainer),
+            )
+            .first,
+      );
+      return (container.decoration! as BoxDecoration).color!;
+    }
+
+    Future<void> highlightFirstAyahGreen(WidgetTester tester) async {
+      await tester.longPress(find.textContaining('نص عربي ١'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.bySemanticsLabel('green'));
+      await tester.pumpAndSettle();
+      await tester.tapAt(const Offset(10, 10)); // đóng sheet
+      await tester.pumpAndSettle();
+    }
+
+    _testReading('không phát, không tô -> mặt thẻ thường', (tester) async {
+      await tester.pumpWidget(await _app(_FakeRepo()));
+      await tester.pumpAndSettle();
+
+      expect(firstCardColor(tester), schemeOf(tester).surfaceContainerLow);
+    });
+
+    _testReading('đang phát -> trộn primaryContainer ở 0.35', (tester) async {
+      await tester.pumpWidget(await _app(_FakeRepo()));
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.byIcon(Icons.play_arrow_rounded).first);
+      await tester.pumpAndSettle();
+
+      final scheme = schemeOf(tester);
+      expect(
+        firstCardColor(tester),
+        Color.alphaBlend(
+          scheme.primaryContainer.withValues(alpha: 0.35),
+          scheme.surfaceContainerLow,
+        ),
+      );
+    });
+
+    _testReading('người dùng tô màu -> trộn ĐÚNG màu đó ở 0.16',
+        (tester) async {
+      await tester.pumpWidget(await _app(_FakeRepo()));
+      await tester.pumpAndSettle();
+      await highlightFirstAyahGreen(tester);
+
+      expect(
+        firstCardColor(tester),
+        Color.alphaBlend(
+          kHighlightColorValues['green']!.withValues(alpha: 0.16),
+          schemeOf(tester).surfaceContainerLow,
+        ),
+      );
+    });
+
+    _testReading(
+        'đang phát THẮNG màu người dùng — luật ưu tiên sống sót qua lần '
+        'tách tầng', (tester) async {
+      await tester.pumpWidget(await _app(_FakeRepo()));
+      await tester.pumpAndSettle();
+      await highlightFirstAyahGreen(tester);
+
+      await tester.tap(find.byIcon(Icons.play_arrow_rounded).first);
+      await tester.pumpAndSettle();
+
+      final scheme = schemeOf(tester);
+      expect(
+        firstCardColor(tester),
+        Color.alphaBlend(
+          scheme.primaryContainer.withValues(alpha: 0.35),
+          scheme.surfaceContainerLow,
+        ),
+      );
     });
   });
 }
