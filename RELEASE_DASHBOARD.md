@@ -164,6 +164,28 @@ files removes that indicator; the underlying gap is unchanged and is
 now tracked explicitly under `RELEASE_PLAN_V1.md` §2 "Verification
 gaps." It is **not** closed by this change.
 
+### Phase 3 — Sprint R3a (Web Platform Completion)
+
+Three-part sprint, 2026-08-03. **R3a.1**: vendored `web/sqlite3.wasm`
+and `web/drift_worker.js`, version-matched exactly against
+`pubspec.lock` (`sqlite3-3.3.4`, `drift-2.34.0` — not "latest"), with
+SHA-256 provenance recorded in `docs/DATA_PIPELINE.md`.
+**R3a.2**: verified in a real browser against the release build —
+content and user databases open, Surah list renders, FTS5 Search
+returns 40 correctly-ranked real results, a bookmark write persisted
+across a full reload, storage backend confirmed as IndexedDB
+(`sharedIndexedDb`), zero console errors throughout. **R3a.3**: added a
+CI guard to `build-web` that fails immediately, before the Flutter SDK
+install, if either vendored file is missing — closing the "CI green on
+a broken platform" gap this blocker was originally filed under. Full
+detail: `docs/release/PHASE3_SPRINT_R3A1_REPORT.md` through
+`PHASE3_SPRINT_R3A3_REPORT.md`.
+
+This closes the Web platform High blocker (§3) for the verified
+storage tier. Not decided by this sprint: a hosting target, and
+therefore whether the fastest (OPFS/COOP-COEP) tier is ever reached —
+see §3 for that trade-off, deliberately left open.
+
 ### Phase 3 — Sprint R2 (Read Model UI)
 
 `StudySummaryScreen` shipped (`lib/features/read_model/presentation/study_summary_screen.dart`,
@@ -189,18 +211,39 @@ through `PHASE3_SPRINT_R2_3_REPORT.md`.
 
 ## 3. Remaining blockers
 
-### Critical
+### External dependencies — NOT on the engineering critical path
+
+These block v1.0 but cannot be resolved by engineering work. They are
+tracked here so they stay visible, and deliberately excluded from sprint
+selection so engineering is never idle waiting on them.
+
+| Item | Status | Owner | Dependency | Deadline |
+|---|---|---|---|---|
+| **Lexicon content** | `WAITING_EXTERNAL_DECISION` | Product Owner | QAC permission response | **2026-08-24** (21 days from 2026-08-03) |
 
 - **Lexicon tables empty (0 rows) in the shipped database asset.**
-  Schema exists (8 tables, F1/P3); no data ships. Blocks the Lexicon
-  feature and, transitively, Flashcards (F2 depends on Lexicon) from
-  working on a real install — tests pass because they don't exercise
-  the shipped asset. Flagged in `RELEASE_PLAN_V1.md` as likely the
-  single highest-priority blocker for v1.0.
-- **Search: FTS5 engine not wired to the Search UI.** The UI (4
-  states, navigation) shipped in Sprint 7.1; the full-text engine is
-  built but not connected. This is the one gap a user would notice
-  immediately — a Search screen that doesn't search.
+  Schema exists (8 tables, F1/P3) and the full build pipeline exists
+  (`tool/lexicon/`, 2,140 lines, unit-tested). Neither is the blocker.
+  The blocker is a **licence question on the Quranic Arabic Corpus**,
+  now analysed in full — see `docs/release/RELEASE_GOVERNANCE_AUDIT.md`
+  §3 and the Phase 3 Legal Decision Review. MASAQ was evaluated as a
+  replacement and **rejected** (no root/lemma columns —
+  `docs/release/MASAQ_ACCEPTANCE_REPORT.md`).
+  **Resolution path**: Product Owner sends a written permission request
+  to corpus.quran.com; if no clear grant by the deadline above, Lexicon
+  and Flashcards are formally deferred from v1.0 under a Decision
+  Record. **No engineering sprint should be scheduled against this item
+  until the answer arrives.**
+  Consequence while unresolved: Lexicon and Flashcards are
+  non-functional on a real install; `weakRoots` in AI Tutor can never
+  fire.
+
+### Critical
+
+- ~~**Search: FTS5 engine not wired**~~ — **shipped** in Phase 3 Sprint
+  R1 (commit `0f3f751`). `search_index_content` holds 43,652 rows and
+  the UI is wired end-to-end. This entry was stale for three sprints;
+  corrected during the Release Governance Recovery audit.
 - **Store & legal readiness unstarted per `RELEASE_PLAN_V1.md`**:
   icons, screenshots, privacy policy, legal review of the Tanzil
   translation license, platform certificates. Process work, not
@@ -210,8 +253,30 @@ through `PHASE3_SPRINT_R2_3_REPORT.md`.
 
 ### High
 
-- **Web platform is broken** (missing WASM/worker files for the
-  database layer) and undecided — ship it or explicitly defer.
+- ~~**Web platform is broken**~~ — **resolved (Phase 3 Sprint R3a.1–R3a.3,
+  2026-08-03)**. `web/sqlite3.wasm` (from `sqlite3.dart` release
+  `sqlite3-3.3.4`, exact match to the pinned `pubspec.lock` version) and
+  `web/drift_worker.js` (from `drift` release `drift-2.34.0`, exact
+  match) are vendored, with provenance and SHA-256 hashes recorded in
+  `docs/DATA_PIPELINE.md`. **Verified working in a real browser, not
+  just built** (`docs/release/PHASE3_SPRINT_R3A2_REPORT.md`): the
+  content and user databases both open, the Surah list renders, FTS5
+  Search returns real ranked results (40 hits for a test query), a
+  bookmark write survived a full page reload, and the browser console
+  was clean throughout (zero WASM/worker/drift errors). Storage backend
+  confirmed as IndexedDB (`sharedIndexedDb` tier — no COOP/COEP headers
+  were set in this test, so the fastest OPFS tier was not exercised; see
+  below). A CI guard (`docs/release/PHASE3_SPRINT_R3A3_REPORT.md`) now
+  fails `build-web` immediately if either vendored file goes missing,
+  closing the "green CI on a broken platform" finding this item
+  originally flagged.
+  **Still open, deliberately out of this sprint's scope**: no hosting
+  target has been chosen yet, so whether the fastest storage tier
+  (`opfsLocks`, needs COOP/COEP headers) is reachable is undecided — if
+  GitHub Pages is chosen, those headers are unreachable without a
+  service-worker workaround (`docs/release/WEB_PLATFORM_VERIFICATION.md`
+  §4); this is a UX/performance trade-off, not a correctness gap, since
+  the verified IndexedDB tier is fully functional and persistent.
 - **No real accessibility audit** has been performed (screen readers);
   `PERFORMANCE.md`'s Android column is unmeasured on a real mid-range
   device; automated tests (767) verify logic, not an actual QA pass.
@@ -278,6 +343,50 @@ through `PHASE3_SPRINT_R2_3_REPORT.md`.
   and pipeline problem, not a code problem — effort depends on where
   the lemma/word-instance data comes from, which no source document
   specifies. Search wiring is scoped and mechanical by comparison.
+- **Status (2026-08-03)**: **split**. Search FTS5 wiring is **done**
+  (Sprint R1, `0f3f751`). The Lexicon half is **removed from the
+  engineering critical path** and reclassified as an external
+  dependency (see §3) — the original "effort depends on where the data
+  comes from" framing was wrong: the pipeline exists and the source is
+  identified; the gate is a licence answer. This milestone cannot close
+  until that answer arrives or Lexicon is formally deferred.
+
+### R3a — Web Platform Completion ← **RECOMMENDED NEXT SPRINT**
+
+Inserted 2026-08-03, ahead of the dashboard's original R3, because it
+is the highest-value work that is fully independent of every external
+dependency.
+
+- **Objective**: make the Web target either genuinely functional or
+  explicitly excluded — and stop CI reporting green on a broken
+  platform.
+- **Why now**: closes Go/No-Go box 4 (High tier); zero dependency on
+  Lexicon, on any legal answer, or on physical-device access; and it
+  fixes a live false-positive in CI, which is a correctness problem in
+  the release signal itself, not just a missing feature.
+- **Why it is small**: the web database layer is **already fully
+  written** (`connection/web.dart`, `user/connection_web.dart` — both
+  complete drift WASM implementations). The gap is two published
+  binaries — `sqlite3.wasm` and `drift_worker.js` — from packages
+  already in `pubspec.yaml`, with instructions already in
+  `docs/DATA_PIPELINE.md` §"Web".
+- **Deliverables**: either (a) vendor the two artifacts, verify the app
+  actually opens both databases in a browser, and add a CI check that
+  fails when they are absent; or (b) a Decision Record deferring Web
+  from v1.0, the `build-web` job removed or marked advisory, and Web
+  dropped from any store/marketing claim.
+- **Dependencies**: none.
+- **Estimated complexity**: Low-Medium for (a), Low for (b). The real
+  work in (a) is runtime verification, not integration.
+- **Status (2026-08-03)**: **done** — path (a) completed in full
+  (R3a.1 vendor, R3a.2 browser verification, R3a.3 CI guard; see §2
+  above). Path (b) was not needed. Only the hosting-target decision
+  (and therefore the OPFS/COOP-COEP question) remains open, tracked in
+  §3, not blocking this milestone's closure.
+
+*(R3a is listed here, immediately after R1, because it was the next
+sprint to run. R2 below is already partially complete; the dashboard's
+original R3/R4/R5 follow unchanged in their own sections.)*
 
 ### R2 — Scope Decisions & Debt Closure
 
@@ -296,8 +405,10 @@ through `PHASE3_SPRINT_R2_3_REPORT.md`.
   cheap; D8's refactor touches 20+ call sites and needs the full test
   suite green after, not just the touched files.
 - **Status**: Read Model UI deliverable **shipped** (Phase 3 Sprint R2,
-  see §2 above). Web platform go/no-go, D8 refactor, and D5's 4 dead
-  files remain open — this milestone is partially, not fully, closed.
+  see §2 above). Web platform go/no-go **also resolved**, via R3a
+  (§4a above) rather than as part of this milestone. D8 refactor and
+  D5's 4 dead files remain open — this milestone is partially, not
+  fully, closed.
 
 ### R3 — Verification & Quality Gate
 
@@ -311,6 +422,12 @@ through `PHASE3_SPRINT_R2_3_REPORT.md`.
   each with its own regression pass.
 - **Dependencies**: R1 — verifying performance/accessibility against
   features about to change (Search, Lexicon) wastes the measurement.
+- **Soft dependency on Lexicon (2026-08-03)**: R3 is **not blocked**,
+  but an accessibility/QA pass run today would evaluate Flashcards and
+  Lexicon screens in their empty state. Run R3 against everything
+  *except* those two surfaces, and re-test them once the Lexicon
+  external dependency resolves either way. Coverage was already closed
+  separately (`DR-2026-0015`), so it is no longer part of this sprint.
 - **Estimated complexity**: Medium. Mostly measurement and incremental
   fixes, but major dependency bumps carry real regression risk in a
   codebase where `.autoDispose` provider chains have already shown
@@ -328,6 +445,13 @@ through `PHASE3_SPRINT_R2_3_REPORT.md`.
   final UI, legal review should cover the actual shipped feature set.
   Exception: the legal review itself has external lead time and
   should be *started* in parallel with R1, not queued behind it.
+- **Hard dependency on Lexicon (2026-08-03)**: **store screenshots
+  cannot be finalised** while Lexicon is unresolved. Any screenshot of
+  Flashcards or Lexicon would show empty content, and screenshots are
+  a permanent public artifact. This is the one downstream sprint the
+  Lexicon external dependency genuinely gates. Either wait for the
+  answer, or — if Lexicon is deferred — take screenshots of the
+  feature set that actually ships.
 - **Estimated complexity**: Medium. Mostly process and asset work, but
   legal/licensing review is outside engineering's direct control and
   is the one item here that can silently become the critical path if
@@ -422,11 +546,21 @@ A release candidate is v1.0-ready only when all of the following hold:
 
 ## 7. Go / No-Go checklist
 
-- [ ] Lexicon database asset populated and verified on a real install
-- [ ] Search returns real FTS5 results, not placeholder/empty states
+- [ ] **Lexicon database asset populated and verified on a real
+      install — `WAITING_EXTERNAL_DECISION`**, Product Owner, blocked on
+      QAC permission response, decision deadline **2026-08-24**. Closes
+      either by a permission grant + pipeline run, or by formal deferral
+      under a Decision Record. **Not an engineering task until then.**
+- [x] Search returns real FTS5 results, not placeholder/empty states —
+      shipped Phase 3 Sprint R1 (`0f3f751`); 43,652 rows in
+      `search_index_content`
 - [x] Read Model decision made and implemented (UI shipped or formally
       deferred) — shipped, Phase 3 Sprint R2 (see §2)
-- [ ] Web platform decision made and implemented (fixed or excluded)
+- [x] Web platform decision made and implemented (fixed or excluded) —
+      fixed, Phase 3 Sprint R3a.1–R3a.3 (see §2); verified working in a
+      real browser on the IndexedDB storage tier; hosting-target choice
+      (and reachability of the fastest OPFS tier) remains open but is
+      not a correctness gap
 - [ ] Accessibility audit complete, Critical/High findings closed
 - [ ] Performance measured on a real mid-range Android device
 - [x] Coverage gate reconciled with actual measured coverage — measured
@@ -453,15 +587,24 @@ flashcard feature with no data, are each disqualifying alone).
 
 ## 8. Recommended release order
 
-1. **Start the Tanzil legal review now**, in parallel with everything
-   else — it's the one item with external lead time and binary risk
-   (§6).
-2. **R1** (Lexicon data + Search wiring) — highest-uncertainty,
-   highest-leverage work; start immediately, don't let it drift to
-   the end where its unscoped effort becomes a launch-date surprise.
-3. **R2** (scope decisions + D8/D5 debt) — can overlap with the tail
-   of R1; the Read Model and Web decisions don't require R1 to be
-   finished, only informed by it.
+**Revised 2026-08-03** — Lexicon reclassified as an external dependency;
+sequence re-cut so engineering is never idle waiting on a third party.
+
+1. **Send the QAC permission request today**, and **start the Tanzil
+   legal review in parallel** — both are external, both have lead time,
+   both carry binary risk (§6). Neither is engineering work. Hard
+   decision date for QAC: **2026-08-24**.
+2. ~~**R3a — Web Platform Completion**~~ — **done** (2026-08-03).
+   Closed Go/No-Go box 4 and removed the false-green from CI; verified
+   working in a real browser. Hosting-target choice still open, not
+   blocking.
+3. **R2 remainder** (D8 / D5 debt — Web go/no-go closed via R3a) — Read
+   Model shipped; the rest can proceed at any time. **Next available
+   engineering sprint**, now that R3a is closed.
+
+*(Historical: the original step 2 was "R1 — Lexicon data + Search
+wiring". Search shipped in Sprint R1; the Lexicon half moved off the
+engineering path entirely — see §3.)*
 4. **R3** (verification) — strictly after R1, since measuring
    performance/accessibility against features about to change wastes
    the work.

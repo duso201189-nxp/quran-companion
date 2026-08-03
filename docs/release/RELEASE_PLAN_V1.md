@@ -79,10 +79,19 @@ plus this engagement's `UPDATED_TECHNICAL_DEBT.md`.
   testing track set up.
 
 ### Platform completeness (from `RELEASE_CHECKLIST.md`, still open)
-- **Web platform is currently broken**: `sqlite3.wasm` and
-  `drift_worker.js` are confirmed absent from `web/` — a real web build
-  will fail to open the database. Either ship without Web for v1.0 or
-  complete this before claiming Web support.
+- ~~**Web platform is currently broken**~~ — **closed** (Phase 3 Sprint
+  R3a, 2026-08-03). `web/sqlite3.wasm` and `web/drift_worker.js` are
+  vendored (version-matched to `pubspec.lock` — `sqlite3-3.3.4`,
+  `drift-2.34.0`) and verified working in a real browser: both
+  databases open, Surah list renders, FTS5 Search returns real results,
+  a bookmark write persisted across a full reload, zero console errors.
+  A CI guard now fails `build-web` if either file is later removed. See
+  `RELEASE_DASHBOARD.md` §2 "Sprint R3a" and
+  `docs/release/PHASE3_SPRINT_R3A1_REPORT.md` through `_R3A3_REPORT.md`.
+  **Still open**: no hosting target has been chosen, so the fastest
+  storage tier (OPFS, needs COOP/COEP headers) is unverified in
+  practice — the verified IndexedDB tier is fully functional, so this
+  is a performance question, not a "ship or defer" one anymore.
 - Background audio playback (`audio_service` + platform manifest
   entries) not implemented — `AudioController` currently only plays in
   foreground.
@@ -141,12 +150,30 @@ plus this engagement's `UPDATED_TECHNICAL_DEBT.md`.
   actually succeed and just return empty results. The practical
   consequence is unchanged either way: **there is no real Lexicon
   content shipped yet**, so Lexicon/Flashcards (which depends on
-  Lexicon) will appear functionally empty on a real install. This
-  needs the content pipeline re-run — **this is likely the single
-  highest-priority technical blocker for v1.0**, since it affects a
-  feature that's otherwise fully built and merged. See
+  Lexicon) will appear functionally empty on a real install. See
   [DATABASE_REFERENCE.md](../architecture/DATABASE_REFERENCE.md) §1.1
   for the full verification.
+
+  **Reclassified 2026-08-03 — `WAITING_EXTERNAL_DECISION`.** This is
+  **no longer an engineering task** and has been removed from the
+  active critical path.
+
+  | Field | Value |
+  |---|---|
+  | Status | `WAITING_EXTERNAL_DECISION` |
+  | Owner | **Product Owner** (not engineering) |
+  | Dependency | QAC permission response (corpus.quran.com) |
+  | Deadline | **2026-08-24** (21 days) |
+
+  The original framing above — "needs the content pipeline re-run",
+  "effort depends on where the data comes from" — was **wrong**. The
+  pipeline exists and is unit-tested (`tool/lexicon/`, 2,140 lines);
+  the source is identified. The gate is a licence question, analysed in
+  full in `RELEASE_GOVERNANCE_AUDIT.md` §3 and the Phase 3 Legal
+  Decision Review. MASAQ was evaluated as a replacement and **rejected**
+  (`MASAQ_ACCEPTANCE_REPORT.md` — no root/lemma columns).
+  On deadline expiry with no clear grant: defer Lexicon and Flashcards
+  from v1.0 under a Decision Record. Do not renegotiate the date.
 
 ## 3. Nice-to-have (does not block v1.0)
 
@@ -173,18 +200,24 @@ plus this engagement's `UPDATED_TECHNICAL_DEBT.md`.
    backfill `CHANGELOG.md` for P1–P4/F1–F8/S2, update `ROADMAP.md`/
    `TODO.md`/`CLAUDE.md` to reflect actual current status. Cheap, and
    every later step benefits from working docs.
-2. **Rebuild the content database asset** to include the 8 Lexicon
-   tables — the highest-priority technical blocker (§2), since Lexicon/
-   Flashcards are otherwise release-ready.
-3. **Finish the FTS5 search engine wiring** (`TODO.md` Sprint 7.2 —
-   `QuranRepository.searchAyahs` exists and the index is built, it just
-   needs to replace the dev-preview static sample data in the Search
-   screen). Search is a headline v1.0 feature per `ROADMAP.md`; shipping
-   it with only a UI shell would be a visible gap.
-4. **Resolve D3** (Read Model UI decision) — quick either way, but
-   needs an explicit answer before v1.0 ships.
-5. **Remeasure test coverage** and decide whether to raise the CI gate
-   toward 80% now that F1–F8's own test suites exist.
+2. ~~**Rebuild the content database asset**~~ — **removed from the
+   engineering sequence 2026-08-03.** Now an external dependency owned
+   by the Product Owner (§2). Engineering schedules nothing against it
+   until the QAC answer arrives or the deadline passes.
+3. ~~**Finish the FTS5 search engine wiring**~~ — **done**, Phase 3
+   Sprint R1 (commit `0f3f751`).
+4. ~~**Resolve D3** (Read Model UI decision)~~ — **done**, Phase 3
+   Sprints R2 and R3.1: `StudySummaryScreen` shipped and reachable via
+   a CTA from `SmartLearningScreen`.
+5. ~~**Remeasure test coverage**~~ — **done**, Phase 3 Sprint R3.2
+   (`DR-2026-0015`): measured 81.54% on hand-written code, gate raised
+   70 → 80.
+
+   ~~**→ Next engineering sprint: Web Platform Completion.**~~ —
+   **done**, Phase 3 Sprint R3a (2026-08-03): `sqlite3.wasm` and
+   `drift_worker.js` vendored and verified working in a real browser;
+   CI now guards against either going missing again. See
+   `RELEASE_DASHBOARD.md` §4 "R3a" and §2 "Sprint R3a".
 6. **Real-device passes**: accessibility (TalkBack/VoiceOver),
    performance (Android mid-range), and the full store/legal checklist
    in §2 — these are the genuinely time-consuming, non-engineering

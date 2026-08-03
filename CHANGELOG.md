@@ -5,6 +5,33 @@ Phiên bản theo [Semantic Versioning](https://semver.org/lang/vi/).
 
 ## [Unreleased]
 
+### Fixed — Phase 3 Sprint R3a: Web platform hoàn thiện (2026-08-03)
+
+Nền tảng Web trước đây build được nhưng mở database lỗi runtime (thiếu
+2 file WASM/JS bắt buộc) — CI vẫn xanh vì `flutter build web` không tự
+mở database thật. Đã đóng dứt điểm qua 3 sprint con:
+
+- **R3a.1**: vendor `web/sqlite3.wasm` (từ release `sqlite3-3.3.4` của
+  `sqlite3.dart`) và `web/drift_worker.js` (từ release `drift-2.34.0`)
+  — khớp CHÍNH XÁC với version khoá trong `pubspec.lock`, không phải
+  bản mới nhất. Nguồn gốc + SHA-256 từng file ghi lại trong
+  `docs/DATA_PIPELINE.md` mục "Web runtime".
+- **R3a.2**: xác minh THẬT trong trình duyệt (không chỉ build): cả 2
+  database (nội dung + người dùng) đều mở được, danh sách Surah hiển
+  thị đúng, Tìm kiếm FTS5 trả về 40 kết quả thật xếp hạng đúng, bookmark
+  ghi vào vẫn còn sau khi tải lại trang, console sạch hoàn toàn (không
+  lỗi WASM/worker/drift). Backend lưu trữ xác nhận là IndexedDB
+  (tầng `sharedIndexedDb`).
+- **R3a.3**: thêm bước kiểm tra trong CI (`build-web`) — fail NGAY nếu
+  thiếu 1 trong 2 file, trước khi tốn thời gian cài Flutter, tránh tái
+  diễn tình trạng CI xanh nhưng runtime lỗi.
+
+Chi tiết: `docs/release/PHASE3_SPRINT_R3A1_REPORT.md` đến
+`_R3A3_REPORT.md`. Còn mở: chưa chọn nơi lưu trữ (hosting) cho bản
+Web, nên tầng lưu trữ nhanh nhất (OPFS, cần header COOP/COEP) chưa được
+xác minh trong thực tế — không phải lỗi đúng/sai, chỉ là hiệu năng chưa
+tối ưu; tầng IndexedDB đã xác minh hoạt động đầy đủ.
+
 ### Ghi chú — khoảng trống backfill
 
 Các mục "Sprint 10" trở xuống trong phần `[Unreleased]` này được viết

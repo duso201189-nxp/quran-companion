@@ -231,6 +231,26 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      # DR-2026-0015-adjacent guard (Phase 3 Sprint R3a.3): 2 file WASM/
+      # JS vendor thủ công (xem docs/DATA_PIPELINE.md mục "Web runtime")
+      # — không do build_runner/pub sinh ra, nên không có cơ chế nào
+      # khác phát hiện nếu bị xoá nhầm. Không có 2 file này, bản Web
+      # vẫn BUILD ĐƯỢC nhưng mở database lỗi runtime (đã xảy ra thật —
+      # xem PHASE3_SPRINT_R3A1_REPORT.md) — kiểm tra NGAY sau checkout,
+      # trước khi tốn thời gian cài Flutter, để fail nhanh và rõ ràng
+      # thay vì fail muộn/khó hiểu ở bước mở database (vốn không chạy
+      # trong CI, nên trước đây KHÔNG bị phát hiện luôn).
+      - name: Kiểm tra tồn tại web/sqlite3.wasm + web/drift_worker.js
+        run: |
+          MISSING=0
+          for f in web/sqlite3.wasm web/drift_worker.js; do
+            if [ ! -f "$f" ]; then
+              echo "::error::Thiếu file bắt buộc cho Web runtime: $f (xem docs/DATA_PIPELINE.md mục \"Web runtime\")"
+              MISSING=1
+            fi
+          done
+          exit $MISSING
+
       - name: Cài Flutter
         uses: subosito/flutter-action@v2
         with:

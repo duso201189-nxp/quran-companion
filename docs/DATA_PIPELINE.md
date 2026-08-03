@@ -70,3 +70,25 @@ Drift trên Web cần 2 file đặt trong thư mục `web/` của project:
 
 Không có 2 file này, bản Web build được nhưng mở database sẽ lỗi
 runtime. (Sẽ kiểm tra ở bước chạy thử Web.)
+
+**Đã vendor (Phase 3 Sprint R3a.1, 2026-08-03).** Quy tắc tương thích
+phiên bản — xác nhận trực tiếp từ tác giả drift/sqlite3.dart
+([github.com/simolus3/drift, thảo luận #3721](https://github.com/simolus3/drift/discussions/3721)):
+tương thích XUÔI (file mới hơn dùng được với package cũ hơn) nhưng
+KHÔNG tương thích NGƯỢC — `sqlite3.wasm` phiên bản x đòi hỏi
+`package:sqlite3` PHẢI ≥ x. Do đó luôn ghim đúng version đang khoá
+trong `pubspec.lock`, không lấy "latest".
+
+| File | Nguồn (tag phát hành) | Khớp `pubspec.lock` | SHA-256 |
+|---|---|---|---|
+| `web/sqlite3.wasm` | [`sqlite3.dart` release `sqlite3-3.3.4`](https://github.com/simolus3/sqlite3.dart/releases/tag/sqlite3-3.3.4) — asset `sqlite3.wasm` (bản release, KHÔNG phải `sqlite3.debug.wasm`/`sqlite3mc.wasm`) | `sqlite3: 3.3.4` — khớp CHÍNH XÁC, không phải bản gần nhất | `cfab48c6bbb718552ec19bc4f1365e19185311b72e4739cc19ef7333758304d3` |
+| `web/drift_worker.js` | [`drift` release `drift-2.34.0`](https://github.com/simolus3/drift/releases/tag/drift-2.34.0) — asset `drift_worker.js` | `drift: 2.34.0` — khớp CHÍNH XÁC | `b8b9f88cdfa0582eedacf3b55f6133b7d9bea7c8e74d4dc019a380da9976a7a8` |
+
+**Khi nâng cấp `drift`/`sqlite3` sau này** (đã là mục "stop and ask
+before" theo `CLAUDE.md`): tải lại đúng 2 file này từ tag phát hành
+khớp version mới, cập nhật bảng trên trong CÙNG PR — đừng để version
+Dart và version file WASM/JS lệch nhau lặng lẽ.
+
+**Chưa xác nhận runtime thật** (Phase 3 Sprint R3a.1 chỉ vendor + build
+kiểm tra tĩnh, KHÔNG mở app trong trình duyệt thật) — xem
+`docs/release/PHASE3_SPRINT_R3A1_REPORT.md` mục "Remaining follow-up".
