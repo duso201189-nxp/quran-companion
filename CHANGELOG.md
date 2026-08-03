@@ -5,6 +5,46 @@ Phiên bản theo [Semantic Versioning](https://semver.org/lang/vi/).
 
 ## [Unreleased]
 
+### Added — Phase 4 Sprint F0: Địa chỉ Qur'an (mức Surah/Ayah) (2026-08-03)
+
+Nền móng đầu tiên của Phase 4 (`DR-2026-0017`). Trước F0, "vị trí một
+Ayah" được biểu diễn bằng BA hệ số khác nhau trong cùng một ứng dụng —
+số Ayah 1-based, chỉ số Ayah 0-based, và chỉ số dòng trong danh sách —
+và việc quy đổi giữa chúng nằm rải rác dưới dạng `+ 1` / `- 1` trần.
+
+- **`QuranAddress`** (`lib/core/quran/quran_address.dart`) — kiểu giá
+  trị bất biến, **thuần Dart** (không Flutter, không Drift, không
+  database, dựng và test được ở bất cứ đâu). Dựng theo mức Surah hoặc
+  Ayah, so sánh theo giá trị, sắp theo thứ tự đọc, chứa-theo-tiền-tố,
+  tuần tự hoá dạng quen thuộc `2:255`. **Bảo đảm ĐÚNG DẠNG, không bảo
+  đảm TỒN TẠI** — `2:300` dựng được và không tồn tại; kiểm tra tồn tại
+  cần dữ liệu và là việc của tầng repository. Chính sự tách bạch đó giữ
+  cho kiểu này thuần Dart. +21 test.
+- **`AudioState.currentAddress`** — điểm quy đổi DUY NHẤT giữa
+  `currentIndex` (0-based, hệ của playlist) và số Ayah 1-based. Trả
+  `null` thay vì ném khi trạng thái chưa dựng được địa chỉ đúng dạng:
+  getter này chạy trong `select()` lúc build, nơi một ngoại lệ là màn
+  hình trắng cho người dùng.
+- **Gỡ mơ hồ tại 2 nơi, hành vi KHÔNG đổi**: `AyahCard` (đang phát) từ
+  `s.currentIndex == ayahNumber - 1` thành so sánh hai `QuranAddress`;
+  `AudioBar` từ chuỗi ghép tay `'${surahId}:${currentIndex + 1}'` thành
+  `QuranAddress.toString()`. Toàn bộ 792 test cũ qua nguyên vẹn.
+- **`docs/knowledge/quran_index_conventions.md`** — mô tả cả ba hệ số,
+  nơi dùng từng hệ, và quy tắc quy đổi.
+- **Cảnh báo dữ liệu tại `study_sessions.ayah_from/ayah_to`**: cột lưu
+  0-based và KHÔNG có cột nào ghi lại hệ số của chính nó. Đổi bên ghi
+  sang 1-based mà không bump `data_version` sẽ khiến dòng cũ/mới không
+  phân biệt được, và vì streak/tổng phút tính TRÊN TRUY VẤN từ bảng này
+  nên toàn bộ thống kê sai âm thầm, **không khôi phục được**. Đã ghi
+  cảnh báo tại chỗ.
+
+Phạm vi cố ý nhỏ: **chỉ mức Surah và Ayah**. Chưa có mức Word/Segment,
+chưa có `Range`, chưa có trục ấn bản — cả ba nằm trong `DR-2026-0017`
+nhưng chưa có nơi tiêu thụ (tiền lệ `DR-2026-0006` D4 / `DR-2026-0007`
+D5), và thêm sau không tốn di trú vì F0 KHÔNG lưu địa chỉ xuống đĩa ở
+bất cứ đâu. Không đổi schema, không đổi dữ liệu, không thêm tính năng
+người dùng thấy được. Coverage 81.52% → 81.58%.
+
 ### Fixed — Phase 3 Sprint R3b: Bề mặt sản phẩm trung thực (2026-08-03)
 
 Đợt review sản phẩm (`PRODUCT_READINESS_REVIEW.md`) phát hiện chất

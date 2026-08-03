@@ -11,6 +11,7 @@ import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 
 import '../../../../app/router.dart';
 import '../../../../app/theme/app_theme.dart';
+import '../../../../core/quran/quran_address.dart';
 import '../../../stats/data/stats_store.dart';
 import '../../../stats/data/study_session_providers.dart';
 import '../../../stats/domain/repositories/study_session_repository.dart';
@@ -669,13 +670,18 @@ class AyahCard extends ConsumerWidget {
     // Ayah đang phát audio -> nền highlight nhẹ (mục UX #6).
     // select(): thẻ CHỈ rebuild khi kết quả bool đổi — các tick
     // position/duration của trình phát không đụng tới danh sách.
+    //
+    // Sprint F0: trước đây là `s.currentIndex == ayahNumber - 1` —
+    // so một chỉ số 0-based với một số 1-based bằng phép trừ trần.
+    // Đúng, nhưng đúng một cách khó kiểm chứng. Giờ cả hai vế là
+    // QuranAddress nên phép so sánh là bằng-nhau-theo-giá-trị, và
+    // phép quy đổi nằm trong AudioState.currentAddress (có test).
+    final thisAyah = QuranAddress.ayah(
+      content.ayah.surahId,
+      content.ayah.ayahNumber,
+    );
     final isPlayingThis = ref.watch(
-      audioControllerProvider.select(
-        (s) =>
-            s.active &&
-            s.surahId == content.ayah.surahId &&
-            s.currentIndex == content.ayah.ayahNumber - 1,
-      ),
+      audioControllerProvider.select((s) => s.currentAddress == thisAyah),
     );
 
     // Chú thích người dùng (bookmark/highlight/note/status) realtime.

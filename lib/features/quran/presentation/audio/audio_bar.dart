@@ -28,6 +28,9 @@ class AudioBar extends ConsumerWidget {
 
     if (!audio.active) return const SizedBox.shrink();
 
+    // Không null sau lệnh chặn ở trên (active == surahId != null).
+    final address = audio.currentAddress!;
+
     return Material(
       color: scheme.surfaceContainerHigh,
       elevation: 3,
@@ -96,9 +99,13 @@ class AudioBar extends ConsumerWidget {
                           style: textTheme.labelMedium,
                         ),
                         Text(
+                          // Sprint F0: tham chiếu "surah:ayah" trước đây
+                          // được ghép tay bằng `currentIndex + 1` ở cả hai
+                          // nhánh; giờ lấy từ QuranAddress.toString() —
+                          // cùng một dạng chuỗi, một chỗ quy đổi.
                           audio.duration == null
-                              ? '${audio.surahId}:${audio.currentIndex + 1}'
-                              : '${audio.surahId}:${audio.currentIndex + 1}'
+                              ? '$address'
+                              : '$address'
                                   ' · ${_fmtTime(audio.position)}'
                                   ' / ${_fmtTime(audio.duration!)}',
                           style: textTheme.labelSmall

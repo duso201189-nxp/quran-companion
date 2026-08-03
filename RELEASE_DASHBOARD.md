@@ -332,6 +332,35 @@ widgets trimmed). `flutter analyze --fatal-infos`, `flutter test`, and
 `dart format` all clean. Full detail:
 `docs/release/PHASE3_R3B_CLOSEOUT_PATCH_REPORT.md`.
 
+### Phase 4 — Sprint F0 (Qur'an Address, Surah/Āyah)
+
+First Phase 4 foundation step, per `DR-2026-0017` and
+`docs/release/PHASE4_FOUNDATION_ROADMAP.md` §6. Not a beta blocker and
+not a user-visible change — it removes a defect *class*.
+
+Before F0, one āyah's position was represented three different ways in
+the same application (1-based āyah number, 0-based āyah index, 0-based
+list-row index), with conversions scattered as bare `+ 1` / `- 1`.
+F0 adds `QuranAddress` — an immutable, **pure-Dart** value type (no
+Flutter, no Drift, no database) covering Surah and Āyah levels only —
+and routes two conversion sites through it: `AyahCard`'s
+playing-highlight check and `AudioBar`'s reference display. **Behaviour
+is unchanged; all 792 pre-existing tests pass unmodified**, +21 new.
+
+Also recorded: a data-integrity warning at `study_sessions.ayah_from/
+ayah_to`. Those columns store 0-based indices with no column recording
+their own base, and streak/study-time statistics are computed *on read*
+from that table — so changing the writer to 1-based without a
+`data_version` bump would silently and **unrecoverably** corrupt every
+statistic. The warning now sits at the column and in
+`docs/knowledge/quran_index_conventions.md`.
+
+Deliberately excluded: Word/Segment levels, `Range`, and the edition
+axis — all specified in `DR-2026-0017` but with no consumer yet
+(`DR-2026-0006` D4 / `DR-2026-0007` D5 precedent), and free to add later
+because **F0 persists no address anywhere**. No schema change, no data
+change. Coverage 81.52% → 81.58%.
+
 ---
 
 ## 3. Remaining blockers

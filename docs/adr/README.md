@@ -14,6 +14,16 @@ record's own "Relationship to" note) DR.
 | [DR-2026-0004](DR-2026-0004-sprint9-streak-daily-goal-revision-queue.md) | Sprint 9: canonical streak source, Daily Goal storage split, Revision Queue reuse | accepted | 2026-07-20 |
 | [DR-2026-0005](DR-2026-0005.md) | Sprint 10: Learning Engine architecture — Scheduler (SM-2), Review Session, Quiz | accepted | 2026-07-20 |
 | [DR-2026-0015](DR-2026-0015-coverage-measurement-policy.md) | Coverage measurement policy: generated code in the denominator | accepted | 2026-08-01 |
+| [DR-2026-0016](DR-2026-0016-lexicon-data-source.md) | Lexicon morphology data source | proposed | 2026-08-01 |
+| [DR-2026-0017](DR-2026-0017-universal-quran-address.md) | The Universal Qur'an Address | proposed | 2026-08-03 |
+| [DR-2026-0018](DR-2026-0018-reading-session-architecture.md) | Reading Session architecture | proposed | 2026-08-03 |
+| [DR-2026-0019](DR-2026-0019-reading-engine-architecture.md) | Reading Engine architecture | proposed | 2026-08-03 |
+
+`DR-2026-0017` is partially implemented: Sprint F0 (Phase 4) shipped its
+Surah/Āyah subset as `lib/core/quran/quran_address.dart`. The record
+remains `proposed` because its later milestones — Word/Segment levels,
+`Range`, and the schema change at M4 — are neither built nor approved,
+and M4 additionally requires `PROJ-P-002` sign-off.
 
 ## Known gap: `DR-2026-0002`
 

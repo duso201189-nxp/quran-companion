@@ -132,7 +132,23 @@ class StudySessions extends Table with SyncColumns {
 
   IntColumn get surahId => integer().named('surah_id')();
 
-  /// Chỉ số Ayah 0-based trong Surah — khớp ReadingPositionStore.
+  /// Chỉ số Ayah **0-based** trong Surah — khớp ReadingPositionStore.
+  ///
+  /// ⚠️ **KHÔNG đổi sang 1-based nếu không kèm mốc `data_version` mới.**
+  ///
+  /// Mọi dòng đã lưu đều 0-based và KHÔNG có cột nào ghi lại hệ số của
+  /// chính nó. Nếu ai đó đổi bên GHI sang 1-based mà không đánh dấu
+  /// phiên bản, dòng cũ và dòng mới trở nên không phân biệt được — và
+  /// vì streak/tổng phút được TÍNH TRÊN TRUY VẤN từ bảng này (xem doc
+  /// comment ở đầu bảng), toàn bộ thống kê sẽ sai một cách âm thầm,
+  /// không thể khôi phục: dữ liệu thô để tính lại không tồn tại.
+  ///
+  /// Cách đúng khi cần đổi: bump `data_version`, migrate dòng cũ một
+  /// lần, HOẶC giữ 0-based ở tầng lưu trữ và quy đổi ở ranh giới
+  /// repository (đây là hướng `DR-2026-0017` quy tắc 2 chọn — dùng
+  /// [QuranAddress.fromZeroBasedAyahIndex] để quy đổi có tên, có test).
+  ///
+  /// Xem `docs/knowledge/quran_index_conventions.md`.
   IntColumn get ayahFrom => integer().named('ayah_from')();
   IntColumn get ayahTo => integer().named('ayah_to')();
 

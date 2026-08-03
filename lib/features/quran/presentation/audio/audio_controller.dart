@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../core/audio/audio_url.dart';
 import '../../../../core/audio/ayah_audio_player.dart';
+import '../../../../core/quran/quran_address.dart';
 import '../../../../core/storage/prefs_provider.dart';
 import '../../data/quran_providers.dart';
 import '../../domain/entities/ayah.dart';
@@ -35,7 +36,12 @@ class AudioState {
   /// Surah đang phát; null = trình phát chưa hoạt động.
   final int? surahId;
 
-  /// Chỉ số Ayah (0-based) trong Surah đang phát.
+  /// Chỉ số Ayah **0-based** trong Surah đang phát.
+  ///
+  /// 0-based vì nó là chỉ số trong playlist (`_sources`), không phải
+  /// số Ayah người đọc thấy. ĐỪNG so sánh trực tiếp với
+  /// `Ayah.ayahNumber` (1-based) — dùng [currentAddress] để phép quy
+  /// đổi có tên và có test. Xem `docs/knowledge/quran_index_conventions.md`.
   final int currentIndex;
   final bool playing;
   final double speed;
@@ -55,6 +61,24 @@ class AudioState {
   final String? errorMessage;
 
   bool get active => surahId != null;
+
+  /// Địa chỉ Ayah đang phát, hoặc `null` khi trình phát chưa hoạt động.
+  ///
+  /// Sprint F0: điểm quy đổi DUY NHẤT giữa [currentIndex] (0-based, hệ
+  /// của playlist) và số Ayah 1-based mà phần còn lại của ứng dụng
+  /// dùng. Trước đây mỗi nơi tiêu thụ tự viết `currentIndex + 1` hoặc
+  /// `ayahNumber - 1`; giờ phép quy đổi nằm trong [QuranAddress] và
+  /// được test riêng. Xem `docs/adr/DR-2026-0017-universal-quran-address.md`.
+  /// Trả `null` — KHÔNG ném — khi trạng thái chưa dựng được địa chỉ
+  /// đúng dạng. Getter này chạy trong `select()` lúc build (xem
+  /// `AyahCard`); một ngoại lệ ở đó là màn hình trắng cho người dùng,
+  /// trong khi "chưa có Ayah nào đang phát" là câu trả lời đúng và vô
+  /// hại. Cùng tinh thần với [QuranAddress.tryParse].
+  QuranAddress? get currentAddress {
+    final id = surahId;
+    if (id == null || id < 1 || currentIndex < 0) return null;
+    return QuranAddress.fromZeroBasedAyahIndex(id, currentIndex);
+  }
 
   double? get progress {
     final d = duration;
