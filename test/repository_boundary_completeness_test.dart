@@ -39,8 +39,9 @@ const Map<String, String> _grandfathered = {
   'tool/data/transliteration_words.json': 'thôi theo dõi ở giai đoạn D2',
 };
 
-/// TRÙNG với ngưỡng trong tệp cốt lõi — xem lý do chọn 1 MB ở đó.
-const int _maxTrackedFileBytes = 1024 * 1024;
+/// TRÙNG với ngưỡng trong tệp cốt lõi — xem lý do chọn 2 MB (nâng từ
+/// 1 MB ở Sprint R3a.1, sau khi vendor `web/sqlite3.wasm`) ở đó.
+const int _maxTrackedFileBytes = 2 * 1024 * 1024;
 
 List<String> _trackedFiles() {
   final result = Process.runSync(

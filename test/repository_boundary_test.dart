@@ -143,26 +143,43 @@ List<String> _trackedFiles() {
 
 /// Ngưỡng kích thước cho MỘT tệp được git theo dõi.
 ///
-/// CHỌN 1 MB THEO SỐ ĐO, không theo cảm tính. Phân bố thực tế trên
-/// `main` (kích thước TRÊN ĐĨA, đo lại riêng cho nhánh này — không
-/// suy từ `sprint1-my-library`):
+/// CHỌN 2 MB THEO SỐ ĐO, không theo cảm tính. Phân bố thực tế trên
+/// `main` (kích thước TRÊN ĐĨA, đo lại 2026-08-03 sau khi Sprint R3a.1
+/// vendor `web/sqlite3.wasm` — xem lịch sử đổi ngưỡng bên dưới):
 ///
-///   18,955 MB  assets/database/quran.sqlite            (miễn trừ, D1)
+///   19,031 MB  assets/database/quran.sqlite            (miễn trừ, D1)
 ///    2,534 MB  tool/data/transliteration_words.json    (miễn trừ, D2)
 ///    0,731 MB  tool/data/transliteration.json          (miễn trừ, D2)
 ///  ─────────── khoảng trống tự nhiên ───────────
-///    0,401 MB  assets/fonts/Inter-Bold.ttf   ← TỆP HỢP LỆ LỚN NHẤT
+///    0,712 MB  web/sqlite3.wasm               ← TỆP HỢP LỆ LỚN NHẤT
+///    0,401 MB  assets/fonts/Inter-Bold.ttf
 ///    0,400 MB  assets/fonts/Inter-SemiBold.ttf
-///    0,398 MB  assets/fonts/Inter-Italic.ttf
 ///
-/// Tệp hợp lệ lớn nhất trên `main` TRÙNG với tệp hợp lệ lớn nhất từng
-/// đo trên `sprint1-my-library` (font chưa đổi giữa hai nhánh), nên lý
-/// do chọn 1 MB — dư địa hơn 2 lần tệp hợp lệ lớn nhất — vẫn đúng
-/// nguyên vẹn ở đây, không phải giả định mang từ nhánh khác sang.
+/// LỊCH SỬ ĐỔI NGƯỠNG:
 ///
-/// ĐỔI NGƯỠNG: sửa đúng hằng số này. Test ngay bên dưới khoá lại lý do
-/// chọn nó, nên hạ ngưỡng quá tay sẽ làm đỏ chính nó.
-const int _maxTrackedFileBytes = 1024 * 1024;
+/// Ngưỡng gốc (1 MB, chọn ở DR-2026-0013 B1/B2) dựa trên tệp hợp lệ
+/// lớn nhất khi đó là `assets/fonts/Inter-Bold.ttf` (0,401 MB) — dư
+/// địa ~2,5 lần. Sprint R3a.1 (Phase 3, 2026-08-03) vendor
+/// `web/sqlite3.wasm` (0,712 MB) — SQLite biên dịch WebAssembly cho
+/// runtime Drift trên Web, tải nguyên bản từ release GitHub của
+/// `sqlite3.dart` (xem `docs/DATA_PIPELINE.md` mục "Web runtime"), một
+/// PHỤ THUỘC BUILD hợp pháp, KHÔNG phải nội dung Qur'an có giấy phép
+/// hạn chế — `_restricted` ở trên không khớp nó, và không nên khớp.
+/// Tệp này trở thành tệp hợp lệ lớn nhất mới, ăn gần hết dư địa của
+/// ngưỡng 1 MB (chỉ còn ~1,4 lần) — test "ngưỡng còn dư địa thật" ngay
+/// bên dưới bắt được ĐÚNG LÚC nó xảy ra, đúng mục đích thiết kế của
+/// nó, không phải một lỗi của test.
+///
+/// Ngưỡng MỚI (2 MB) đo lại THEO ĐÚNG PHƯƠNG PHÁP GỐC trên phân bố tệp
+/// THẬT của `main` hôm nay: 2 MB / 0,712 MB ≈ 2,8 lần — cùng bậc dư
+/// địa (hơn 2 lần, không sát mép) mà lần chọn ngưỡng đầu tiên đã đặt
+/// ra, không phải một con số tuỳ hứng hay nới ngay sát tệp hiện tại.
+///
+/// ĐỔI NGƯỠNG: sửa đúng hằng số này, VÀ hằng số cùng tên trong
+/// `test/repository_boundary_completeness_test.dart` (hai tệp cố ý
+/// trùng giá trị này — xem doc comment ở đó). Test ngay bên dưới khoá
+/// lại lý do chọn nó, nên hạ ngưỡng quá tay sẽ làm đỏ chính nó.
+const int _maxTrackedFileBytes = 2 * 1024 * 1024;
 
 /// Kích thước của từng tệp đang được git theo dõi, theo byte.
 ///
