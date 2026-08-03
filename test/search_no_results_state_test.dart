@@ -40,17 +40,6 @@ void main() {
       expect(find.byType(FilledButton), findsNothing);
     });
 
-    testWidgets(
-        'khác biệt trực quan với SearchEmptyState: không có 2 khu vực '
-        '"Gần đây"/"Gợi ý"', (tester) async {
-      await tester
-          .pumpWidget(localizedTestApp(const SearchNoResultsState(query: 'a')));
-
-      expect(find.text('Gần đây'), findsNothing);
-      expect(find.text('Gợi ý'), findsNothing);
-      expect(find.byIcon(Icons.travel_explore_outlined), findsNothing);
-    });
-
     testWidgets('thông điệp + gợi ý là live region cho trình đọc màn hình',
         (tester) async {
       final handle = tester.ensureSemantics();

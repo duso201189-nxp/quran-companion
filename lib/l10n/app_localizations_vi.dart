@@ -65,22 +65,6 @@ class AppLocalizationsVi extends AppLocalizations {
   }
 
   @override
-  String get placeholderHome =>
-      'Bước 8 sẽ xây dựng Dashboard học tập: tiếp tục đọc, tiến độ hôm nay, chuỗi ngày học, câu Qur\'an trong ngày.';
-
-  @override
-  String get placeholderQuran =>
-      'Bước 3 sẽ hiển thị danh sách 114 Surah với tìm kiếm và bộ lọc Mecca / Madinah.';
-
-  @override
-  String get placeholderStudy =>
-      'Bước 9 sẽ xây dựng Flashcard (Spaced Repetition) và Quiz.';
-
-  @override
-  String get placeholderStats =>
-      'Bước 9 sẽ hiển thị biểu đồ: chuỗi ngày học, tổng Ayah, thời gian học, nhật ký học.';
-
-  @override
   String get searchSurahHint => 'Tìm Surah theo tên hoặc số...';
 
   @override
@@ -360,12 +344,6 @@ class AppLocalizationsVi extends AppLocalizations {
   @override
   String get searchEmptySubtitle =>
       'Nhập tên Surah, số Ayah (ví dụ 2:255), hoặc một từ khoá.';
-
-  @override
-  String get searchEmptyRecentSectionTitle => 'Gần đây';
-
-  @override
-  String get searchEmptySuggestedSectionTitle => 'Gợi ý';
 
   @override
   String get searchLoadingLabel => 'Đang tìm kiếm...';

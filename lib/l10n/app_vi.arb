@@ -25,10 +25,6 @@
       }
     }
   },
-  "placeholderHome": "Bước 8 sẽ xây dựng Dashboard học tập: tiếp tục đọc, tiến độ hôm nay, chuỗi ngày học, câu Qur'an trong ngày.",
-  "placeholderQuran": "Bước 3 sẽ hiển thị danh sách 114 Surah với tìm kiếm và bộ lọc Mecca / Madinah.",
-  "placeholderStudy": "Bước 9 sẽ xây dựng Flashcard (Spaced Repetition) và Quiz.",
-  "placeholderStats": "Bước 9 sẽ hiển thị biểu đồ: chuỗi ngày học, tổng Ayah, thời gian học, nhật ký học.",
   "searchSurahHint": "Tìm Surah theo tên hoặc số...",
   "filterAll": "Tất cả",
   "revelationMecca": "Mecca",
@@ -147,8 +143,6 @@
   "searchClearTooltip": "Xoá",
   "searchEmptyTitle": "Tìm điều bạn cần trong Qur'an",
   "searchEmptySubtitle": "Nhập tên Surah, số Ayah (ví dụ 2:255), hoặc một từ khoá.",
-  "searchEmptyRecentSectionTitle": "Gần đây",
-  "searchEmptySuggestedSectionTitle": "Gợi ý",
   "searchLoadingLabel": "Đang tìm kiếm...",
   "searchNoResultsTitle": "Không tìm thấy kết quả cho \"{query}\"",
   "@searchNoResultsTitle": {

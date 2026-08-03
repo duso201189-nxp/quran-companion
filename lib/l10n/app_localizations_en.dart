@@ -65,22 +65,6 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get placeholderHome =>
-      'Step 8 will build the learning dashboard: continue reading, today\'s progress, study streak, verse of the day.';
-
-  @override
-  String get placeholderQuran =>
-      'Step 3 will show all 114 Surahs with search and Mecca / Madinah filters.';
-
-  @override
-  String get placeholderStudy =>
-      'Step 9 will build Flashcards (Spaced Repetition) and Quizzes.';
-
-  @override
-  String get placeholderStats =>
-      'Step 9 will show charts: study streak, total Ayahs, study time, daily journal.';
-
-  @override
   String get searchSurahHint => 'Search Surah by name or number...';
 
   @override
@@ -362,12 +346,6 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get searchEmptySubtitle =>
       'Type a Surah name, an ayah reference (e.g. 2:255), or a keyword.';
-
-  @override
-  String get searchEmptyRecentSectionTitle => 'Recent';
-
-  @override
-  String get searchEmptySuggestedSectionTitle => 'Suggested';
 
   @override
   String get searchLoadingLabel => 'Searching...';

@@ -65,22 +65,6 @@ class AppLocalizationsAr extends AppLocalizations {
   }
 
   @override
-  String get placeholderHome =>
-      'الخطوة 8 ستبني لوحة التعلم: متابعة القراءة، تقدم اليوم، سلسلة الأيام، آية اليوم.';
-
-  @override
-  String get placeholderQuran =>
-      'الخطوة 3 ستعرض 114 سورة مع البحث والتصفية (مكية / مدنية).';
-
-  @override
-  String get placeholderStudy =>
-      'الخطوة 9 ستبني البطاقات التعليمية (التكرار المتباعد) والاختبارات.';
-
-  @override
-  String get placeholderStats =>
-      'الخطوة 9 ستعرض الرسوم البيانية: سلسلة الأيام، مجموع الآيات، وقت الدراسة، اليوميات.';
-
-  @override
   String get searchSurahHint => 'ابحث عن سورة بالاسم أو الرقم...';
 
   @override
@@ -359,12 +343,6 @@ class AppLocalizationsAr extends AppLocalizations {
   @override
   String get searchEmptySubtitle =>
       'اكتب اسم سورة، رقم آية (مثل 2:255)، أو كلمة مفتاحية.';
-
-  @override
-  String get searchEmptyRecentSectionTitle => 'الأخيرة';
-
-  @override
-  String get searchEmptySuggestedSectionTitle => 'مقترح';
 
   @override
   String get searchLoadingLabel => 'جارٍ البحث...';

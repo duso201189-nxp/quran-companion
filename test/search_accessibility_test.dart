@@ -152,23 +152,19 @@ void main() {
   });
 
   group('Task 7.1.15 — tiêu đề khu vực được đánh dấu header', () {
-    testWidgets('Empty State: 3 tiêu đề đều là header semantics',
+    testWidgets('Empty State: tiêu đề chính là header semantics',
         (tester) async {
       final handle = tester.ensureSemantics();
       await openSearchScreen(tester);
 
-      for (final label in [
-        'Tìm điều bạn cần trong Qur\'an',
-        'Gần đây',
-        'Gợi ý',
-      ]) {
-        final node = tester.getSemantics(find.text(label));
-        expect(
-          node.flagsCollection.isHeader,
-          isTrue,
-          reason: '"$label" phải có flag isHeader',
-        );
-      }
+      final node = tester.getSemantics(
+        find.text('Tìm điều bạn cần trong Qur\'an'),
+      );
+      expect(
+        node.flagsCollection.isHeader,
+        isTrue,
+        reason: 'Tiêu đề Empty State phải có flag isHeader',
+      );
       // Phụ đề KHÔNG phải heading.
       final subtitle = tester.getSemantics(
         find.text(

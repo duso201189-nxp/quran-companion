@@ -25,10 +25,6 @@
       }
     }
   },
-  "placeholderHome": "Step 8 will build the learning dashboard: continue reading, today's progress, study streak, verse of the day.",
-  "placeholderQuran": "Step 3 will show all 114 Surahs with search and Mecca / Madinah filters.",
-  "placeholderStudy": "Step 9 will build Flashcards (Spaced Repetition) and Quizzes.",
-  "placeholderStats": "Step 9 will show charts: study streak, total Ayahs, study time, daily journal.",
   "searchSurahHint": "Search Surah by name or number...",
   "filterAll": "All",
   "revelationMecca": "Mecca",
@@ -147,8 +143,6 @@
   "searchClearTooltip": "Clear",
   "searchEmptyTitle": "Find what you're looking for",
   "searchEmptySubtitle": "Type a Surah name, an ayah reference (e.g. 2:255), or a keyword.",
-  "searchEmptyRecentSectionTitle": "Recent",
-  "searchEmptySuggestedSectionTitle": "Suggested",
   "searchLoadingLabel": "Searching...",
   "searchNoResultsTitle": "No results found for \"{query}\"",
   "@searchNoResultsTitle": {

@@ -87,13 +87,19 @@ const _devPreviewResults = [
 /// liệu thật (AI thật; hoặc Notes có FTS5 index), thêm lại đúng kiểu
 /// điều khiển tương ứng lúc đó từ đầu, không phục hồi mã cũ.
 ///
-/// Task 7.1.8: Empty State đầy đủ (tiêu đề + gợi ý cách gõ + hai khu
-/// vực "Gần đây" / "Gợi ý"). Hai khu vực đó CHƯA có dữ liệu thật —
-/// tính năng Recent Searches và Suggestions không nằm trong phạm vi
-/// Sprint 7.1 — nên chỉ vẽ khối placeholder (không chữ, không thao
-/// tác được) để giữ đúng HÌNH DẠNG bố cục cho lúc nối dữ liệu thật,
-/// tránh vẽ sẵn nội dung minh hoạ có thể bị hiểu nhầm là tính năng
-/// đã xong.
+/// Task 7.1.8 (Empty State: tiêu đề + gợi ý cách gõ + hai khu vực
+/// "Gần đây" / "Gợi ý" dạng khối placeholder xám) — hai khu vực đó GỠ
+/// BỎ hoàn toàn ở Sprint R3b's close-out patch (2026-08-03), cùng đợt
+/// với việc gỡ AI toggle/Scope Chips ở R3b.2: khối xám dưới một tiêu
+/// đề thật không truyền đạt gì (không chữ, không thao tác được), và
+/// Recent Searches/Suggestions vẫn chưa có ngày triển khai thật —
+/// giữ hình dạng bố cục cho một tính năng chưa có lịch không còn hợp
+/// lý sau khi toàn bộ Search đã được rà soát vì tính trung thực. Empty
+/// State giờ chỉ còn icon + tiêu đề + gợi ý cách gõ. Xem
+/// `docs/release/PHASE3_SPRINT_R3B_PLAN.md` mục A4/A5,
+/// `docs/release/PHASE3_R3B_CLOSEOUT_PATCH_REPORT.md`. Khi Recent
+/// Searches/Suggestions có dữ liệu thật, xây lại từ đầu đúng hình dạng
+/// lúc đó cần, không phục hồi khối placeholder cũ.
 ///
 /// Task 7.1.9: [SearchLoadingSkeleton] — component khung xương chờ
 /// tải. Không có truy vấn thật (`DR-2026-0002` mục 4 — chưa có
@@ -296,9 +302,9 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
 }
 
 /// Trạng thái rỗng đầy đủ — hiển thị khi ô tìm kiếm chưa có chữ (hoặc
-/// khi dev ép xem trước, Task 7.1.13). Hai khu "Gần đây" / "Gợi ý"
-/// chỉ vẽ HÌNH DẠNG (placeholder xám, không chữ, không bấm được) —
-/// xem ghi chú Task 7.1.8 ở [SearchScreen]. Public (đổi tên từ
+/// khi dev ép xem trước, Task 7.1.13). Trước Sprint R3b's close-out
+/// patch còn có 2 khu "Gần đây" / "Gợi ý" dạng khối placeholder xám —
+/// gỡ bỏ, xem doc comment [SearchScreen]. Public (đổi tên từ
 /// `_EmptyState`) để [SearchScreen._buildBody] và test truy cập
 /// trực tiếp, khớp quy ước đặt tên với [SearchLoadingSkeleton] /
 /// [SearchErrorState] / [SearchResultSection].
@@ -337,68 +343,7 @@ class SearchEmptyState extends StatelessWidget {
           textAlign: TextAlign.center,
           style: textTheme.bodyMedium?.copyWith(color: scheme.onSurfaceVariant),
         ),
-        const SizedBox(height: 28),
-        Semantics(
-          header: true,
-          child: Text(
-            l10n.searchEmptyRecentSectionTitle,
-            style:
-                textTheme.labelLarge?.copyWith(color: scheme.onSurfaceVariant),
-          ),
-        ),
-        const SizedBox(height: 8),
-        const _PlaceholderChipRow(
-          key: Key('search-empty-recent-chips'),
-          widths: [72, 96, 60],
-        ),
-        const SizedBox(height: 20),
-        Semantics(
-          header: true,
-          child: Text(
-            l10n.searchEmptySuggestedSectionTitle,
-            style:
-                textTheme.labelLarge?.copyWith(color: scheme.onSurfaceVariant),
-          ),
-        ),
-        const SizedBox(height: 8),
-        const _PlaceholderChipRow(
-          key: Key('search-empty-suggested-chips'),
-          widths: [88, 64, 100, 76],
-        ),
       ],
-    );
-  }
-}
-
-/// Hàng khối placeholder xám (bo tròn, không chữ, không thao tác) —
-/// giữ chỗ cho nội dung thật của Recent Searches / Suggestions ở
-/// sprint sau. Bọc [ExcludeSemantics] vì không mang thông tin gì cho
-/// người dùng trình đọc màn hình.
-class _PlaceholderChipRow extends StatelessWidget {
-  const _PlaceholderChipRow({super.key, required this.widths});
-
-  final List<double> widths;
-
-  @override
-  Widget build(BuildContext context) {
-    final scheme = Theme.of(context).colorScheme;
-
-    return ExcludeSemantics(
-      child: Wrap(
-        spacing: 8,
-        runSpacing: 8,
-        children: [
-          for (final width in widths)
-            Container(
-              width: width,
-              height: 32,
-              decoration: BoxDecoration(
-                color: scheme.surfaceContainerHighest,
-                borderRadius: BorderRadius.circular(999),
-              ),
-            ),
-        ],
-      ),
     );
   }
 }

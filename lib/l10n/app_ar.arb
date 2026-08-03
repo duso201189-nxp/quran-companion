@@ -25,10 +25,6 @@
       }
     }
   },
-  "placeholderHome": "الخطوة 8 ستبني لوحة التعلم: متابعة القراءة، تقدم اليوم، سلسلة الأيام، آية اليوم.",
-  "placeholderQuran": "الخطوة 3 ستعرض 114 سورة مع البحث والتصفية (مكية / مدنية).",
-  "placeholderStudy": "الخطوة 9 ستبني البطاقات التعليمية (التكرار المتباعد) والاختبارات.",
-  "placeholderStats": "الخطوة 9 ستعرض الرسوم البيانية: سلسلة الأيام، مجموع الآيات، وقت الدراسة، اليوميات.",
   "searchSurahHint": "ابحث عن سورة بالاسم أو الرقم...",
   "filterAll": "الكل",
   "revelationMecca": "مكية",
@@ -147,8 +143,6 @@
   "searchClearTooltip": "مسح",
   "searchEmptyTitle": "ابحث عمّا تريده في القرآن",
   "searchEmptySubtitle": "اكتب اسم سورة، رقم آية (مثل 2:255)، أو كلمة مفتاحية.",
-  "searchEmptyRecentSectionTitle": "الأخيرة",
-  "searchEmptySuggestedSectionTitle": "مقترح",
   "searchLoadingLabel": "جارٍ البحث...",
   "searchNoResultsTitle": "لم يتم العثور على نتائج لـ \"{query}\"",
   "@searchNoResultsTitle": {

@@ -210,8 +210,7 @@ void main() {
   });
 
   group('Task 7.1.8 — Empty State đầy đủ', () {
-    testWidgets('hiển thị tiêu đề, gợi ý gõ, và 2 khu vực placeholder',
-        (tester) async {
+    testWidgets('hiển thị tiêu đề và gợi ý gõ', (tester) async {
       await openSearchScreen(tester);
 
       expect(find.text('Tìm điều bạn cần trong Qur\'an'), findsOneWidget);
@@ -221,19 +220,6 @@ void main() {
         ),
         findsOneWidget,
       );
-      expect(find.text('Gần đây'), findsOneWidget);
-      expect(find.text('Gợi ý'), findsOneWidget);
-
-      final recentChips = find.descendant(
-        of: find.byKey(const Key('search-empty-recent-chips')),
-        matching: find.byType(Container),
-      );
-      final suggestedChips = find.descendant(
-        of: find.byKey(const Key('search-empty-suggested-chips')),
-        matching: find.byType(Container),
-      );
-      expect(recentChips, findsNWidgets(3));
-      expect(suggestedChips, findsNWidgets(4));
     });
 
     testWidgets('gõ chữ -> Empty State biến mất; xoá hết -> quay lại',
@@ -252,7 +238,6 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(find.text('Tìm điều bạn cần trong Qur\'an'), findsNothing);
-      expect(find.text('Gần đây'), findsNothing);
 
       await tester.tap(
         find.descendant(

@@ -208,30 +208,6 @@ abstract class AppLocalizations {
   /// **'Sẽ xây dựng ở Bước {step}'**
   String comingInStep(int step);
 
-  /// No description provided for @placeholderHome.
-  ///
-  /// In vi, this message translates to:
-  /// **'Bước 8 sẽ xây dựng Dashboard học tập: tiếp tục đọc, tiến độ hôm nay, chuỗi ngày học, câu Qur\'an trong ngày.'**
-  String get placeholderHome;
-
-  /// No description provided for @placeholderQuran.
-  ///
-  /// In vi, this message translates to:
-  /// **'Bước 3 sẽ hiển thị danh sách 114 Surah với tìm kiếm và bộ lọc Mecca / Madinah.'**
-  String get placeholderQuran;
-
-  /// No description provided for @placeholderStudy.
-  ///
-  /// In vi, this message translates to:
-  /// **'Bước 9 sẽ xây dựng Flashcard (Spaced Repetition) và Quiz.'**
-  String get placeholderStudy;
-
-  /// No description provided for @placeholderStats.
-  ///
-  /// In vi, this message translates to:
-  /// **'Bước 9 sẽ hiển thị biểu đồ: chuỗi ngày học, tổng Ayah, thời gian học, nhật ký học.'**
-  String get placeholderStats;
-
   /// No description provided for @searchSurahHint.
   ///
   /// In vi, this message translates to:
@@ -771,18 +747,6 @@ abstract class AppLocalizations {
   /// In vi, this message translates to:
   /// **'Nhập tên Surah, số Ayah (ví dụ 2:255), hoặc một từ khoá.'**
   String get searchEmptySubtitle;
-
-  /// No description provided for @searchEmptyRecentSectionTitle.
-  ///
-  /// In vi, this message translates to:
-  /// **'Gần đây'**
-  String get searchEmptyRecentSectionTitle;
-
-  /// No description provided for @searchEmptySuggestedSectionTitle.
-  ///
-  /// In vi, this message translates to:
-  /// **'Gợi ý'**
-  String get searchEmptySuggestedSectionTitle;
 
   /// No description provided for @searchLoadingLabel.
   ///
