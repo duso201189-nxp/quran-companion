@@ -83,6 +83,13 @@ void main() {
       );
     });
 
+    test('in ra kèm tên màu — thứ phân biệt hai trang trí khi test đỏ', () {
+      expect(
+        const UserHighlightDecoration('sky').toString(),
+        'UserHighlightDecoration(sky)',
+      );
+    });
+
     test('ba loại trang trí không lẫn vào nhau', () {
       expect(const NoDecoration(), isNot(const PlayingDecoration()));
       expect(

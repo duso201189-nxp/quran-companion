@@ -5,6 +5,45 @@ Phiên bản theo [Semantic Versioning](https://semver.org/lang/vi/).
 
 ## [Unreleased]
 
+### Changed — Phase 4 Sprint F2: Khai báo phần mở đầu Surah + đặt tên cho hàng danh sách (2026-08-03)
+
+Nền móng cuối cùng trước Basmalah 2.0. Hành vi người dùng **không đổi
+một điểm ảnh nào**; F2 chỉ gỡ hai chỗ mập mờ sẽ cản đường.
+
+- **`SurahOpening`** (`lib/features/quran/domain/basmalah.dart`) thay
+  cho `surahHasLeadingBasmalah`. Hàm cũ trả `false` cho CẢ Al-Fatihah
+  lẫn At-Tawbah — vì hai lý do ngược nhau: Al-Fatihah CÓ Basmalah (nó
+  chính là Ayah 1), At-Tawbah thì KHÔNG có. Một `false` mang hai nghĩa
+  chạy đúng hôm nay và sai lặng lẽ ngay khi có ai hỏi "Surah này có
+  phần mở đầu để phát / tô / tính tiến độ không?" — đúng câu hỏi
+  Basmalah 2.0 sẽ hỏi. Kiểu `sealed` ba nhánh tách hai nghĩa đó ra, và
+  nhánh của Al-Fatihah mang địa chỉ thật `1:1` (dùng `QuranAddress` của
+  F0). Số Surah 1 và 9 giờ chỉ còn xuất hiện ở đúng một hàm.
+- **`ReadingRows`**
+  (`lib/features/quran/presentation/reading/reading_rows.dart`) gom
+  NĂM chỗ viết tay phép quy đổi Ayah ↔ hàng danh sách (`itemCount`,
+  `itemBuilder`, `initialScrollIndex`, `_onPositionsChanged`, cuộn theo
+  audio). Không chỗ nào từng phát biểu hợp đồng "hàng 0 là header"; cả
+  năm chỉ cùng giả định. Khi Basmalah 2.0 cho phần mở đầu một hàng
+  riêng, bốn trong năm chỗ sẽ hỏng **lặng lẽ** — vị trí đọc lưu xuống
+  đĩa lệch một Ayah, không ném lỗi, không test nào đỏ. Giờ chỉ còn
+  `ReadingRows.leadingRows` phải đổi.
+- **Kiểm chứng lại dữ liệu**, không chép từ tài liệu: 112 Surah có
+  Basmalah là 4 token đầu của Ayah 1 (110 giống hệt từng byte + 2 biến
+  thể chính tả ở 95/97), Ayah 1 ngắn nhất trong nhóm có 5 token nên
+  phần còn lại không bao giờ rỗng; Al-Fatihah 1:1 đúng 4 token và không
+  gì thêm; At-Tawbah không có.
+- **851 test** (+17), trong đó một test đối chiếu kết quả của 114 Surah
+  × 2 Ayah với công thức nguyên văn trước F2 — cổng "byte-identical"
+  của `DR-2026-0019` E2 phát biểu ở dạng thuần. Coverage 81.60% →
+  81.72%. Không đổi schema, không di trú dữ liệu, không thêm giao diện.
+
+Chưa làm, có chủ ý: `_basmalahWordCount = 4` vẫn là một sự thật về ấn
+bản nằm trong logic. Chữa thật cần chỉ mục từ có trong DỮ LIỆU
+(`DR-2026-0017` M4/M5, kèm đổi schema và `PROJ-P-002`); chuyển sang
+`Range(s:1:1 – s:1:4)` lúc này chỉ dời con số 4 sang chỗ khác chứ không
+xoá nó. Con số ở nguyên chỗ cũ, kèm cảnh báo nói rõ vì sao.
+
 ### Changed — Phase 4 Sprint F1: Tầng trang trí + cuộn theo audio lịch sự (2026-08-03)
 
 Bước nền móng thứ hai của Phase 4 (`DR-2026-0019` E1 và §7.3).

@@ -28,6 +28,7 @@ import '../audio/audio_controller.dart';
 import 'mushaf_builder.dart';
 import 'reading_controller.dart';
 import 'reading_position_store.dart';
+import 'reading_rows.dart';
 import 'reading_settings.dart';
 
 /// Trang đọc Qur'an — màn hình quan trọng nhất của ứng dụng.
@@ -116,7 +117,8 @@ class _ReadingScreenState extends ConsumerState<ReadingScreen> {
     final visible = positions.where((p) => p.itemTrailingEdge > 0);
     if (visible.isEmpty) return;
     final minItemIndex = visible.map((p) => p.index).reduce(min);
-    final ayahIndex = max(0, minItemIndex - 1); // index 0 là header
+    // Hàng header -> coi như đang ở Ayah đầu tiên.
+    final ayahIndex = ReadingRows.ayahIndexForRow(minItemIndex) ?? 0;
     if (ayahIndex == _lastSavedIndex) return;
     _lastSavedIndex = ayahIndex;
     unawaited(
@@ -224,7 +226,7 @@ class _ReadingScreenState extends ConsumerState<ReadingScreen> {
         return;
       }
       _itemScrollController.scrollTo(
-        index: next.currentIndex + 1, // +1: header
+        index: ReadingRows.rowForAyahIndex(next.currentIndex),
         alignment: 0.15,
         duration: const Duration(milliseconds: 350),
         curve: Curves.easeOutCubic,
@@ -330,10 +332,15 @@ class _ReadingScreenState extends ConsumerState<ReadingScreen> {
                           focus: _focusMode,
                           // Vị trí 0 = chưa đọc dở -> mở từ ĐẦU trang
                           // (kèm header Surah); đọc dở -> nhảy thẳng
-                          // tới Ayah đó.
+                          // tới Ayah đó, kẹp trong danh sách thật.
                           initialScrollIndex: _initialAyahIndex == 0
                               ? 0
-                              : min(_initialAyahIndex + 1, data.ayahs.length),
+                              : min(
+                                  ReadingRows.rowForAyahIndex(
+                                    _initialAyahIndex,
+                                  ),
+                                  ReadingRows.lastRowFor(data.ayahs.length),
+                                ),
                           itemScrollController: _itemScrollController,
                           itemPositionsListener: _positionsListener,
                         ),
@@ -433,27 +440,37 @@ class _AyahListView extends ConsumerWidget {
             horizontal: horizontal,
             vertical: 12,
           ),
-          itemCount: ayahs.length + 1,
-          itemBuilder: (context, index) {
-            if (index == 0) {
-              // Basmalah trang trí = 4 từ đầu của Ayah 1 (lấy TỪ DỮ
-              // LIỆU), chỉ với Surah có Basmalah dẫn đầu (≠ 1, 9).
-              final basmalah = surahHasLeadingBasmalah(surahId) &&
-                      ayahs.isNotEmpty
-                  ? splitLeadingBasmalah(ayahs.first.ayah.textUthmani).basmalah
-                  : null;
+          itemCount: ReadingRows.rowCountFor(ayahs.length),
+          itemBuilder: (context, row) {
+            final ayahIndex = ReadingRows.ayahIndexForRow(row);
+            if (ayahIndex == null) {
+              // Sprint F2: header hỏi Surah này MỞ ĐẦU thế nào, không
+              // còn hỏi "số Surah có khác 1 và 9 không".
+              final basmalah = ayahs.isEmpty
+                  ? null
+                  : switch (resolveSurahOpening(
+                      surahId: surahId,
+                      firstAyahText: ayahs.first.ayah.textUthmani,
+                    )) {
+                      // Basmalah nằm trong Ayah 1 -> tách lên header.
+                      OpeningPrefixesFirstAyah(:final text) => text,
+                      // Ayah 1 LÀ Basmalah (Surah 1): thẻ Ayah 1 vẽ nó,
+                      // header vẽ nữa là thành hai. Không có phần mở
+                      // đầu (Surah 9): không có gì để vẽ.
+                      OpeningIsFirstAyah() || NoOpening() => null,
+                    };
               return focus
                   ? const SizedBox.shrink()
                   : _SurahHeader(surah: surah, basmalah: basmalah);
             }
             return AyahCard(
-              content: ayahs[index - 1],
+              content: ayahs[ayahIndex],
               focus: focus,
               onPlay: () =>
                   ref.read(audioControllerProvider.notifier).playSurah(
                         surahId: surahId,
                         ayahs: [for (final a in ayahs) a.ayah],
-                        startIndex: index - 1,
+                        startIndex: ayahIndex,
                       ),
             );
           },

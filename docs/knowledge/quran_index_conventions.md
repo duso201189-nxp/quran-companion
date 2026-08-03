@@ -17,7 +17,7 @@ và phép quy đổi giữa chúng nằm rải rác dưới dạng `+ 1` / `- 1`
 |---|---|---|---|---|
 | **A** | **Số Ayah** | **1-based** | Al-Baqarah 255 → `255` | `Ayah.ayahNumber`, `AyahSearchResult.ayahNumber`, `openAyahInReadingScreen(ayahNumber:)`, giao diện, `QuranAddress` |
 | **B** | **Chỉ số Ayah trong Surah** | **0-based** | Al-Baqarah 255 → `254` | `AudioState.currentIndex`, `ReadingPositionStore`, `study_sessions.ayah_from/ayah_to`, `AudioController.playSurah(startIndex:)` |
-| **C** | **Chỉ số dòng trong danh sách** | **0-based, +1 vì header** | Ayah đầu → dòng `1` | `ScrollablePositionedList` trong `ReadingScreen` |
+| **C** | **Chỉ số dòng trong danh sách** | **0-based, +1 vì header** | Ayah đầu → dòng `1` | `ReadingRows` (Sprint F2) — dùng bởi `ScrollablePositionedList` trong `ReadingScreen` |
 
 **Hệ C không phải là hệ B cộng một.** Nó là vị trí trong một danh sách
 có phần tử header ở đầu, tức là một khái niệm của TRÌNH BÀY, không phải
@@ -35,7 +35,9 @@ của nội dung. Đừng quy đổi thẳng B ↔ C ngoài chỗ dựng danh s�
    quy đổi có tên thì kiểm chứng được bằng test, phép trừ trần thì
    không.
 4. **Hệ C chỉ tồn tại bên trong `ReadingScreen`.** Không để nó rò ra
-   ngoài widget đó.
+   ngoài widget đó, và không tự viết `+ 1` / `- 1` để vào ra hệ C —
+   dùng `ReadingRows` (Sprint F2). Khi Basmalah 2.0 cho phần mở đầu một
+   HÀNG riêng, `ReadingRows.leadingRows` là con số duy nhất phải đổi.
 
 ## 3. Hai chỗ đã lưu xuống đĩa theo hệ B — cần biết trước khi sửa
 
@@ -92,11 +94,27 @@ thuần Dart.
 | `AyahCard` (đang phát) | `s.currentIndex == ayahNumber - 1` | `s.currentAddress == thisAyah` |
 | `AudioBar` (tham chiếu) | `'${surahId}:${currentIndex + 1}'` | `'$address'` |
 
+## 5b. Đã đặt tên cho hệ C (F2)
+
+Năm chỗ viết tay phép quy đổi hệ B ↔ hệ C, giờ đi qua `ReadingRows`:
+
+| Nơi | Trước | Sau |
+|---|---|---|
+| `itemCount` | `ayahs.length + 1` | `ReadingRows.rowCountFor(...)` |
+| `itemBuilder` | `index == 0` / `ayahs[index - 1]` | `ayahIndexForRow(row)`, `null` = header |
+| `initialScrollIndex` | `min(i + 1, ayahs.length)` | `min(rowForAyahIndex(i), lastRowFor(...))` |
+| `_onPositionsChanged` | `max(0, minItemIndex - 1)` | `ayahIndexForRow(...) ?? 0` |
+| cuộn theo audio | `scrollTo(index: currentIndex + 1)` | `scrollTo(index: rowForAyahIndex(...))` |
+
+Không chỗ nào trong năm chỗ đó từng phát biểu hợp đồng "hàng 0 là
+header" — cả năm chỉ cùng giả định. Khi Basmalah 2.0 thêm một hàng dẫn
+đầu, bốn trong năm chỗ sẽ hỏng **lặng lẽ** (vị trí đọc lưu xuống đĩa
+lệch một Ayah, không ném lỗi).
+
 ## 6. Còn dùng số trần — có chủ ý, và vì sao
 
 | Nơi | Vì sao chưa đổi |
 |---|---|
 | `HomeScreen` `ayahIndex + 1` | Dùng cho nhãn accessibility và phân số tiến độ; phân số là phép TÍNH, không phải địa chỉ. Đổi sẽ dài hơn mà không rõ hơn. |
-| `ReadingScreen` `scrollTo(index: currentIndex + 1)` | Hệ B → hệ C (cộng 1 vì header), không phải quy đổi Ayah. Thuộc về `DR-2026-0019` E4 (tách chiều đọc/ghi của cuộn). |
 | `AudioController.playSurah(startIndex:)` | API playlist, hệ B đúng chỗ. Sẽ nhận địa chỉ khi `DR-2026-0018` S2 tách vị trí phát. |
 | `QuizSessionState.currentIndex` | Chỉ số câu hỏi, không phải Ayah. Không mơ hồ. |

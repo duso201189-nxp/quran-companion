@@ -401,6 +401,57 @@ four precedence states — before F1 nothing tested that colour at all, so
 the extraction would otherwise have been guarded only by argument.
 Coverage 81.58% → 81.60%. No schema change, no l10n change, no new UI.
 
+### Phase 4 — Sprint F2 (surah-opening declaration, named row layout)
+
+The last foundation step before Basmalah 2.0. **No user-visible change
+at all** — F2 only removes two ambiguities that would otherwise get in
+the way.
+
+**Al-Fātiḥah and At-Tawbah gave the same answer.**
+`surahHasLeadingBasmalah` returned `false` for both — for opposite
+reasons. Al-Fātiḥah *has* a Basmalah (it **is** āyah 1); At-Tawbah has
+none. One `false` carrying two meanings works today and fails silently
+the moment anything asks *"does this surah have an opening to play, to
+highlight, to count toward progress?"* — precisely what Basmalah 2.0
+asks. A three-branch `sealed SurahOpening` separates them, and
+Al-Fātiḥah's branch carries a real `QuranAddress` of `1:1`. Surah
+numbers 1 and 9 now appear in exactly one function.
+
+**Five hand-written row conversions, four of which fail quietly.**
+`itemCount`, `itemBuilder`, `initialScrollIndex`, `_onPositionsChanged`
+and the audio follow each converted between āyah index and list-row
+index by hand; none of them stated the "row 0 is the header" contract
+they all assumed. When Basmalah 2.0 gives the opening its own row, a
+missed `- 1` writes a reading position one āyah off to disk — no
+exception, no red test. `ReadingRows` makes `leadingRows` the single
+number that changes.
+
+**Data re-verified against `quran.sqlite` rather than taken from the doc
+comments**: 112 surahs carry the Basmalah as the first 4 tokens of āyah
+1 (110 byte-identical, 2 spelling variants at 95/97); the shortest āyah
+1 in that group has 5 tokens, so the remainder is never empty;
+Al-Fātiḥah 1:1 is exactly the 4 tokens and nothing more; At-Tawbah has
+none.
+
+**851 tests** (+17), including one that checks all 114 surahs × 2 āyahs
+against the verbatim pre-F2 formula — `DR-2026-0019` E2's
+"byte-identical" gate stated purely instead of by rendering 114 screens.
+Coverage 81.60% → 81.72%. No schema change, no data migration, no new
+UI, no l10n change.
+
+**Deliberately not done — and this is a correction to `DR-2026-0019`
+E2 / `DR-2026-0017` M2 as written.** Those milestones bundle two
+separable things: the *declaration* (which delivers the architectural
+value) and expressing the opening's extent as a Word-level `Range`
+(which needs Word Address). The second cannot deliver its headline
+benefit yet: this edition stores āyah text as a string with no word
+index, so `Range(s:1:1 – s:1:4)` would **relocate** the magic `4` into
+whatever resolves word addresses to text offsets, not remove it.
+Removing it for real requires `DR-2026-0017` M4/M5 — schema change,
+`PROJ-P-002`. The `4` therefore stays exactly where it was, now with a
+comment saying why. Sequencing E2 ahead of M4/M5 buys less than the ADR
+implies.
+
 ---
 
 ## 3. Remaining blockers
