@@ -12,6 +12,9 @@ import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 import '../../../../app/router.dart';
 import '../../../../app/theme/app_theme.dart';
 import '../../../../core/quran/quran_address.dart';
+import '../../../khatm/data/khatm_cycle_providers.dart';
+import '../../../khatm/domain/entities/khatm_cycle.dart';
+import '../../../khatm/domain/repositories/khatm_cycle_repository.dart';
 import '../../../stats/data/stats_store.dart';
 import '../../../stats/data/study_session_providers.dart';
 import '../../../stats/domain/repositories/study_session_repository.dart';
@@ -81,6 +84,15 @@ class _ReadingScreenState extends ConsumerState<ReadingScreen> {
   final Stopwatch _sessionWatch = Stopwatch();
   late final StatsStore _statsStore;
   late final StudySessionRepository _studySessionRepository;
+  late final KhatmCycleRepository _khatmCycleRepository;
+
+  /// Chu kỳ Khatm đang đọc dở, nếu có — Sprint SF-Khatm. Đọc lại ở
+  /// `build()` (cùng lý do với [_opening]): `dispose()` không thể tự
+  /// `ref.watch` một `StreamProvider` lần đầu và mong có dữ liệu ngay —
+  /// nó chỉ thấy trạng thái đang tải, chưa emit. Giữ MỘT bản đã có sẵn
+  /// từ khung hình gần nhất, giống hệt cách [_opening] được giữ lại
+  /// cho các callback ngoài `build`.
+  KhatmCycle? _activeKhatmCycle;
 
   @override
   void initState() {
@@ -90,6 +102,7 @@ class _ReadingScreenState extends ConsumerState<ReadingScreen> {
     _positionsListener.itemPositions.addListener(_onPositionsChanged);
     _statsStore = ref.read(statsStoreProvider);
     _studySessionRepository = ref.read(studySessionRepositoryProvider);
+    _khatmCycleRepository = ref.read(khatmCycleRepositoryProvider);
     unawaited(_statsStore.markToday());
     _sessionWatch.start();
   }
@@ -106,15 +119,38 @@ class _ReadingScreenState extends ConsumerState<ReadingScreen> {
     // "< 5 giây bỏ qua" như StatsStore.addSeconds — lướt qua màn
     // hình không tính là một phiên đọc.
     if (seconds >= 5) {
+      final lastIndex = _lastSavedIndex ?? _initialAyahIndex;
       unawaited(
         _studySessionRepository.logSession(
           date: StatsStore.dayKey(DateTime.now()),
           surahId: widget.surahId,
           ayahFrom: _initialAyahIndex,
-          ayahTo: _lastSavedIndex ?? _initialAyahIndex,
+          ayahTo: lastIndex,
           durationSec: seconds,
         ),
       );
+      // Sprint SF-Khatm: tiến độ Khatm là một hành trình TUẦN TỰ, không
+      // phải vị trí đọc gần nhất — nên chỉ ghi khi phiên này thật sự
+      // nối tiếp biên của chu kỳ. Luật đó thuộc về Khatm, không thuộc
+      // trang đọc: ở đây chỉ nói "phiên đi từ đâu tới đâu" rồi để
+      // KhatmCycle.isExtendedBy quyết định.
+      //
+      // Dùng lại ĐÚNG hai đầu phiên vừa gửi cho study_sessions — không
+      // đo lại lần nữa, để hai nơi không thể nói khác nhau.
+      final cycle = _activeKhatmCycle;
+      if (cycle != null) {
+        final from = QuranAddress.fromZeroBasedAyahIndex(
+          widget.surahId,
+          _initialAyahIndex,
+        );
+        final to = QuranAddress.fromZeroBasedAyahIndex(
+          widget.surahId,
+          lastIndex,
+        );
+        if (cycle.isExtendedBy(from: from, to: to)) {
+          unawaited(_khatmCycleRepository.updateProgress(cycle.id, to));
+        }
+      }
     }
     super.dispose();
   }
@@ -229,6 +265,10 @@ class _ReadingScreenState extends ConsumerState<ReadingScreen> {
             surahId: widget.surahId,
             firstAyahText: loaded.ayahs.first.ayah.textUthmani,
           );
+
+    // Sprint SF-Khatm: cùng lý do giữ [_opening] một bản sẵn — xem
+    // doc comment của trường [_activeKhatmCycle].
+    _activeKhatmCycle = ref.watch(activeKhatmCycleProvider).valueOrNull;
 
     // Đang nghe audio -> tự cuộn đến Ayah đang phát (mục UX #5).
     ref.listen<AudioState>(audioControllerProvider, (prev, next) {

@@ -4,6 +4,12 @@ import '../../../../core/quran/quran_address.dart';
 /// Một chu kỳ đọc trọn vẹn Qur'an (Khatm) — Sprint 8, DR-2026-0003
 /// mục A. Vị trí đọc trong chu kỳ này độc lập với vị trí đọc tự do
 /// hằng ngày (ReadingPositionStore).
+///
+/// Sprint SF-Khatm làm rõ "độc lập" đó nghĩa là gì: [currentAyahId] là
+/// BIÊN của một hành trình đọc TUẦN TỰ, không phải "chỗ vừa đọc gần
+/// nhất". Hai thứ đó khác nhau, và chính [progressPercent] nói ra điều
+/// đó: chia cho [totalAyahs] chỉ là một con số ĐÚNG khi mọi Ayah trước
+/// biên đều đã đọc. Xem [isExtendedBy].
 class KhatmCycle {
   const KhatmCycle({
     required this.id,
@@ -40,6 +46,32 @@ class KhatmCycle {
   QuranAddress? get currentAddress => AyahOrdinal.tryFromOrdinal(
         currentAyahId,
       );
+
+  /// Phiên đọc từ [from] tới [to] có NỐI TIẾP hành trình này không —
+  /// Sprint SF-Khatm.
+  ///
+  /// Một phiên chỉ được tính khi nó vừa NỐI LIỀN phần đã đọc, vừa ĐẨY
+  /// XA thêm:
+  ///
+  /// - **nối liền** — phiên bắt đầu tại/trước biên, hoặc đúng ngay sau
+  ///   biên. Cái `+ 1` là chỗ vượt ranh giới Surah: biên ở 1:7 thì
+  ///   phiên bắt đầu ở 2:1 vẫn là đọc tiếp, không phải nhảy cóc. Nhờ
+  ///   điều kiện này, đọc Al-Kahf trong lúc biên đang ở 2:50 KHÔNG kéo
+  ///   tiến độ lên 34% — đó là đọc, nhưng không phải hành trình này.
+  /// - **đẩy xa** — phiên kết thúc sau biên. Đọc lại phần đã qua không
+  ///   làm tiến độ tụt lại.
+  ///
+  /// Cả hai vế so trên ordinal vì hệ đó cho phép hỏi "ngay sau" bằng
+  /// `+ 1`; [QuranAddress] cố ý không có phép lấy phần tử kế tiếp (F0
+  /// không có `Range`, cũng không có `next`).
+  ///
+  /// Địa chỉ không quy đổi được -> `false`: không đoán, không ghi.
+  bool isExtendedBy({required QuranAddress from, required QuranAddress to}) {
+    final start = AyahOrdinal.tryToOrdinal(from);
+    final end = AyahOrdinal.tryToOrdinal(to);
+    if (start == null || end == null) return false;
+    return start <= currentAyahId + 1 && end > currentAyahId;
+  }
 
   bool get isCompleted => completedAt != null;
 

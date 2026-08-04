@@ -158,4 +158,121 @@ void main() {
       expect(corrupted.currentAddress, isNull);
     });
   });
+
+  /// Sprint SF-Khatm — tiến độ Khatm là hành trình TUẦN TỰ.
+  ///
+  /// Đây là luật sản phẩm, không phải chi tiết của trang đọc: nó sống
+  /// trên chính thực thể, và test được mà không cần widget lẫn database.
+  group('KhatmCycle.isExtendedBy (đơn vị, luật tuần tự)', () {
+    /// Chu kỳ có biên đặt đúng tại [address].
+    KhatmCycle cycleAt(QuranAddress address) => KhatmCycle(
+          id: 'c',
+          name: 'x',
+          startedAt: 0,
+          currentAyahId: AyahOrdinal.tryToOrdinal(address)!,
+        );
+
+    test('đọc tiếp trong cùng Surah -> nối tiếp', () {
+      expect(
+        cycleAt(QuranAddress.ayah(2, 50)).isExtendedBy(
+          from: QuranAddress.ayah(2, 50),
+          to: QuranAddress.ayah(2, 80),
+        ),
+        isTrue,
+      );
+    });
+
+    test('vượt ranh giới Surah (biên 1:7 -> phiên bắt đầu 2:1) là ĐỌC TIẾP',
+        () {
+      // Chỗ này chính là lý do có `+ 1`: hết Al-Fatihah rồi sang
+      // Al-Baqarah là hành trình liền mạch, không phải nhảy cóc.
+      expect(
+        cycleAt(QuranAddress.ayah(1, 7)).isExtendedBy(
+          from: QuranAddress.ayah(2, 1),
+          to: QuranAddress.ayah(2, 5),
+        ),
+        isTrue,
+      );
+    });
+
+    test('đọc lại một đoạn đã qua rồi đi tiếp -> vẫn nối tiếp', () {
+      expect(
+        cycleAt(QuranAddress.ayah(2, 50)).isExtendedBy(
+          from: QuranAddress.ayah(2, 40),
+          to: QuranAddress.ayah(2, 80),
+        ),
+        isTrue,
+      );
+    });
+
+    test('NHẢY sang Surah khác -> KHÔNG tính (đây là luật của B2)', () {
+      // Đang ở 2:50 mà đọc Al-Kahf: đó là đọc thật, có vào
+      // study_sessions, nhưng không phải hành trình Khatm này. Mô hình
+      // B1 (đơn điệu) sẽ nhảy tiến độ lên ~34% ở đây.
+      expect(
+        cycleAt(QuranAddress.ayah(2, 50)).isExtendedBy(
+          from: QuranAddress.ayah(18, 1),
+          to: QuranAddress.ayah(18, 110),
+        ),
+        isFalse,
+      );
+    });
+
+    test('bỏ cách một quãng NGAY TRONG cùng Surah -> KHÔNG tính', () {
+      // 2:51..2:99 chưa đọc thì biên không được nhảy tới 2:120.
+      expect(
+        cycleAt(QuranAddress.ayah(2, 50)).isExtendedBy(
+          from: QuranAddress.ayah(2, 100),
+          to: QuranAddress.ayah(2, 120),
+        ),
+        isFalse,
+      );
+    });
+
+    test('đọc lại phần đã qua -> KHÔNG kéo tiến độ TỤT lại', () {
+      expect(
+        cycleAt(QuranAddress.ayah(2, 50)).isExtendedBy(
+          from: QuranAddress.ayah(1, 1),
+          to: QuranAddress.ayah(1, 7),
+        ),
+        isFalse,
+      );
+    });
+
+    test('phiên đứng yên đúng tại biên -> KHÔNG có gì để đẩy xa', () {
+      expect(
+        cycleAt(QuranAddress.ayah(2, 50)).isExtendedBy(
+          from: QuranAddress.ayah(2, 50),
+          to: QuranAddress.ayah(2, 50),
+        ),
+        isFalse,
+      );
+    });
+
+    test('địa chỉ không quy đổi được -> false, KHÔNG ném', () {
+      final cycle = cycleAt(QuranAddress.ayah(2, 50));
+      // Mức Surah và Ayah không tồn tại: cả hai đều không có ordinal.
+      expect(
+        () => cycle.isExtendedBy(
+          from: QuranAddress.surah(2),
+          to: QuranAddress.ayah(2, 80),
+        ),
+        returnsNormally,
+      );
+      expect(
+        cycle.isExtendedBy(
+          from: QuranAddress.surah(2),
+          to: QuranAddress.ayah(2, 80),
+        ),
+        isFalse,
+      );
+      expect(
+        cycle.isExtendedBy(
+          from: QuranAddress.ayah(2, 60),
+          to: QuranAddress.ayah(2, 999),
+        ),
+        isFalse,
+      );
+    });
+  });
 }

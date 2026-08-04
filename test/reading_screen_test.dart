@@ -8,6 +8,9 @@ import 'package:quran_companion/core/database/user/user_database.dart';
 import 'package:quran_companion/core/database/user/user_database_providers.dart';
 import 'package:quran_companion/core/quran/quran_address.dart';
 import 'package:quran_companion/core/storage/prefs_provider.dart';
+import 'package:quran_companion/features/khatm/data/khatm_cycle_providers.dart';
+import 'package:quran_companion/features/khatm/domain/entities/khatm_cycle.dart';
+import 'package:quran_companion/features/khatm/domain/repositories/khatm_cycle_repository.dart';
 import 'package:quran_companion/features/quran/data/quran_providers.dart';
 import 'package:quran_companion/features/quran/domain/entities/ayah.dart';
 import 'package:quran_companion/features/quran/domain/entities/ayah_content.dart';
@@ -72,6 +75,41 @@ class _SpyStudySessionRepository implements StudySessionRepository {
   Future<int> currentStreak({DateTime? today}) => throw UnimplementedError();
   @override
   Future<int> longestStreak() => throw UnimplementedError();
+}
+
+/// Chu kỳ Khatm "đang mở" giả lập + ghi lại mọi lời gọi updateProgress
+/// — Sprint SF-Khatm. [active] `null` mô phỏng "không có chu kỳ nào
+/// đang đọc dở"; khác `null` mô phỏng có một chu kỳ đang mở với đúng
+/// id đó.
+class _SpyKhatmCycleRepository implements KhatmCycleRepository {
+  _SpyKhatmCycleRepository({KhatmCycle? active}) : _active = active;
+
+  final KhatmCycle? _active;
+  final List<({String cycleId, QuranAddress address})> updateProgressCalls = [];
+
+  @override
+  Future<String> startCycle({required String name, String? targetDate}) =>
+      throw UnimplementedError();
+
+  @override
+  Stream<List<KhatmCycle>> watchAllCycles() => throw UnimplementedError();
+
+  // Phát lại giá trị hiện tại mỗi lần có subscriber mới — giống hành vi
+  // thật của Drift `.watch()` (cùng lý do đã ghi ở
+  // `khatm_cycle_providers_test.dart`).
+  @override
+  Stream<KhatmCycle?> watchActiveCycle() => Stream.value(_active);
+
+  @override
+  Future<void> updateProgress(String cycleId, QuranAddress address) async {
+    updateProgressCalls.add((cycleId: cycleId, address: address));
+  }
+
+  @override
+  Future<void> completeCycle(String cycleId) => throw UnimplementedError();
+
+  @override
+  Future<void> deleteCycle(String cycleId) => throw UnimplementedError();
 }
 
 const _surah = Surah(
@@ -589,6 +627,155 @@ void main() {
       expect(session.date, isNotEmpty);
       expect(session.durationSec, greaterThanOrEqualTo(5));
       expect(session.ayahFrom, 0);
+    });
+  });
+
+  /// Sprint SF-Khatm — nối KhatmCycleRepository.updateProgress vào cùng
+  /// luồng kết-thúc-phiên-đọc vừa kiểm ở nhóm "Sprint 8 Phase 5" bên
+  /// trên (cùng ngưỡng 5 giây, cùng dispose()).
+  group('Sprint SF-Khatm — tích hợp KhatmCycleRepository.updateProgress', () {
+    _testReading(
+        'không có chu kỳ Khatm đang mở -> KHÔNG gọi updateProgress dù '
+        'phiên đọc đủ 5 giây', (tester) async {
+      final khatmSpy = _SpyKhatmCycleRepository();
+      await tester.pumpWidget(
+        await _app(
+          _FakeRepo(),
+          extraOverrides: [
+            khatmCycleRepositoryProvider.overrideWithValue(khatmSpy),
+          ],
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      await tester.runAsync(
+        () => Future<void>.delayed(const Duration(milliseconds: 5200)),
+      );
+      await tester.pumpWidget(const SizedBox.shrink());
+      await tester.pump();
+
+      expect(khatmSpy.updateProgressCalls, isEmpty);
+    });
+
+    _testReading(
+        'phiên đọc < 5 giây, CÓ chu kỳ Khatm đang mở -> vẫn KHÔNG gọi '
+        'updateProgress (cùng ngưỡng logSession)', (tester) async {
+      final khatmSpy = _SpyKhatmCycleRepository(
+        active: const KhatmCycle(id: 'khatm-1', name: 'Ramadan', startedAt: 0),
+      );
+      await tester.pumpWidget(
+        await _app(
+          _FakeRepo(),
+          extraOverrides: [
+            khatmCycleRepositoryProvider.overrideWithValue(khatmSpy),
+          ],
+        ),
+      );
+      await tester.pumpAndSettle();
+      // _testReading tự dispose ngay sau khi thân test return — dưới
+      // 5 giây chắc chắn.
+
+      expect(khatmSpy.updateProgressCalls, isEmpty);
+    });
+
+    _testReading(
+        'phiên NỐI TIẾP biên của chu kỳ (hết Al-Fatihah -> sang '
+        'Al-Baqarah) -> gọi ĐÚNG MỘT lần updateProgress', (tester) async {
+      // Biên ở ordinal 7 = 1:7, tức vừa đọc xong Al-Fatihah. Mở
+      // Al-Baqarah là đi tiếp đúng thứ tự Mushaf — chính là chỗ luật
+      // `+ 1` của isExtendedBy phải cho qua, và là ranh giới dễ sai
+      // nhất nếu ai đó sau này siết điều kiện thành `<=` biên.
+      final khatmSpy = _SpyKhatmCycleRepository(
+        active: const KhatmCycle(
+          id: 'khatm-1',
+          name: 'Ramadan',
+          startedAt: 0,
+          currentAyahId: 7,
+        ),
+      );
+      await tester.pumpWidget(
+        await _app(
+          _FakeRepo(surahTwo: true),
+          surahId: 2,
+          extraOverrides: [
+            khatmCycleRepositoryProvider.overrideWithValue(khatmSpy),
+          ],
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      await tester.runAsync(
+        () => Future<void>.delayed(const Duration(milliseconds: 5200)),
+      );
+      await tester.pumpWidget(const SizedBox.shrink());
+      await tester.pump();
+
+      // Không có chỗ nào khác gọi updateProgress -> đúng một lần,
+      // không nhân đôi.
+      expect(khatmSpy.updateProgressCalls, hasLength(1));
+      final call = khatmSpy.updateProgressCalls.single;
+      expect(call.cycleId, 'khatm-1');
+      expect(call.address, QuranAddress.ayah(2, 1));
+    });
+
+    _testReading(
+        'NHẢY sang Surah khác -> KHÔNG ghi tiến độ Khatm, dù phiên đọc '
+        'đủ dài (đây là điểm khác giữa mô hình B2 và "vị trí gần nhất")',
+        (tester) async {
+      // Biên ở 1:1, người dùng mở thẳng Al-Baqarah: Al-Fatihah chưa
+      // đọc xong nên đây không phải hành trình Khatm này.
+      final khatmSpy = _SpyKhatmCycleRepository(
+        active: const KhatmCycle(id: 'khatm-1', name: 'Ramadan', startedAt: 0),
+      );
+      await tester.pumpWidget(
+        await _app(
+          _FakeRepo(surahTwo: true),
+          surahId: 2,
+          extraOverrides: [
+            khatmCycleRepositoryProvider.overrideWithValue(khatmSpy),
+          ],
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      await tester.runAsync(
+        () => Future<void>.delayed(const Duration(milliseconds: 5200)),
+      );
+      await tester.pumpWidget(const SizedBox.shrink());
+      await tester.pump();
+
+      expect(khatmSpy.updateProgressCalls, isEmpty);
+    });
+
+    _testReading(
+        'đọc lại phần đã qua -> KHÔNG ghi, tiến độ không bị kéo TỤT lại',
+        (tester) async {
+      // Biên đã ở ordinal 100 (2:93); người dùng quay lại Al-Fatihah.
+      final khatmSpy = _SpyKhatmCycleRepository(
+        active: const KhatmCycle(
+          id: 'khatm-1',
+          name: 'Ramadan',
+          startedAt: 0,
+          currentAyahId: 100,
+        ),
+      );
+      await tester.pumpWidget(
+        await _app(
+          _FakeRepo(),
+          extraOverrides: [
+            khatmCycleRepositoryProvider.overrideWithValue(khatmSpy),
+          ],
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      await tester.runAsync(
+        () => Future<void>.delayed(const Duration(milliseconds: 5200)),
+      );
+      await tester.pumpWidget(const SizedBox.shrink());
+      await tester.pump();
+
+      expect(khatmSpy.updateProgressCalls, isEmpty);
     });
   });
 

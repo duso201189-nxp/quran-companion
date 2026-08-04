@@ -395,6 +395,24 @@ void main() {
       await pickDevPreview(tester, 'Results');
     }
 
+    // Sprint SF-Khatm: ReadingScreen giờ watch thêm một
+    // `StreamProvider.autoDispose` Drift thật (activeKhatmCycleProvider)
+    // để biết có chu kỳ Khatm đang mở hay không. Bốn test dưới đây để
+    // ReadingScreen ĐANG MOUNT khi thân test return — lúc đó khung dọn
+    // cây widget của chính `testWidgets` mới hủy nó, và Drift đóng
+    // stream query bằng `Timer(0)`, không kịp chạy trước khi
+    // `flutter_test` kiểm bất biến "!timersPending" ngay sau khi
+    // callback return. Cùng nguyên nhân, cùng cách chữa mà
+    // `reading_screen_test.dart` (_testReading) đã dùng từ trước cho
+    // đúng loại vấn đề này: tự dỡ cây widget rồi bơm thêm khung hình
+    // có trôi thời gian TRƯỚC KHI thân test return, để Timer(0) chạy
+    // xong trong lúc còn "ở trong" test.
+    Future<void> flushPendingDriftTimers(WidgetTester tester) async {
+      await tester.pumpWidget(const SizedBox.shrink());
+      await tester.pump(const Duration(seconds: 1));
+      await tester.pump(const Duration(seconds: 1));
+    }
+
     testWidgets(
         'chạm ResultCard (Al-Fatihah 1:1) -> lưu đúng vị trí và mở '
         'ReadingScreen', (tester) async {
@@ -418,6 +436,8 @@ void main() {
         0,
       );
       expect(find.byType(ReadingScreen), findsOneWidget);
+
+      await flushPendingDriftTimers(tester);
     });
 
     testWidgets(
@@ -438,6 +458,8 @@ void main() {
         container.read(readingPositionStoreProvider).positionFor(55),
         1,
       );
+
+      await flushPendingDriftTimers(tester);
     });
 
     testWidgets(
@@ -458,6 +480,8 @@ void main() {
       final storeAfterTap = container.read(readingPositionStoreProvider);
       expect(identical(storeBeforeTap, storeAfterTap), isTrue);
       expect(storeAfterTap.positionFor(1), 0);
+
+      await flushPendingDriftTimers(tester);
     });
 
     testWidgets(
@@ -478,6 +502,8 @@ void main() {
       final screen = tester.widget<ReadingScreen>(find.byType(ReadingScreen));
       expect(screen.surahId, 1);
       expect(AppRoutes.read(1), '/read/1');
+
+      await flushPendingDriftTimers(tester);
     });
   });
 
