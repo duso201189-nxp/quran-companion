@@ -75,6 +75,18 @@ class KhatmCycle {
 
   bool get isCompleted => completedAt != null;
 
+  /// Biên ở [ordinal] có nghĩa là hành trình ĐÃ TRỌN VẸN chưa —
+  /// Sprint SF-Khatm Completion.
+  ///
+  /// Định nghĩa "hoàn thành" nằm ĐÚNG MỘT CHỖ là đây. Tầng lưu trữ hỏi
+  /// hàm này rồi đóng dấu `completedAt` trong CHÍNH lần ghi tiến độ đó
+  /// — không có lần ghi thứ hai nào để hỏi lại.
+  ///
+  /// `>=` chứ không phải `==`: nếu một dòng cũ nào đó có ordinal vượt
+  /// miền, nó vẫn phải được coi là đã xong thay vì kẹt vĩnh viễn ở
+  /// trạng thái "đang đọc".
+  static bool completesJourney(int ordinal) => ordinal >= totalAyahs;
+
   static const int totalAyahs = 6236;
 
   double get progressPercent =>

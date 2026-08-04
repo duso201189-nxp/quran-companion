@@ -95,11 +95,30 @@ class KhatmCycleRepositoryImpl implements KhatmCycleRepository {
       final ordinal = AyahOrdinal.tryToOrdinal(address);
       if (ordinal == null) return;
 
-      await (_db.update(_db.khatmCycles)..where((t) => t.id.equals(cycleId)))
+      final now = _nowMs();
+
+      // Sprint SF-Khatm Completion — đóng dấu hoàn thành NGAY TRONG lần
+      // ghi tiến độ này, không phải bằng một lời gọi thứ hai.
+      //
+      // Vì sao không gọi completeCycle() sau updateProgress: giữa hai
+      // lần ghi có một khe. Tiến trình chết đúng trong khe đó (bị kill,
+      // hết RAM) sẽ để lại `current_ayah_id = 6236` mà `completed_at`
+      // vẫn null — và trạng thái đó KHÔNG BAO GIỜ tự thoát được, vì
+      // lần ghi kế tiếp cần `end > 6236`, điều không tồn tại. Chu kỳ
+      // kẹt vĩnh viễn ở 100% mà vẫn "đang đọc", và người dùng không mở
+      // được chu kỳ mới. Một câu UPDATE thì không có khe nào.
+      final completesJourney = KhatmCycle.completesJourney(ordinal);
+
+      // `completed_at IS NULL` trong điều kiện lọc: một chu kỳ đã xong
+      // thì không nhận tiến độ nữa, và nhờ đó lần hoàn thành thứ hai
+      // khớp 0 dòng — không đóng dấu lại được lần nào nữa.
+      await (_db.update(_db.khatmCycles)
+            ..where((t) => t.id.equals(cycleId) & t.completedAt.isNull()))
           .write(
         KhatmCyclesCompanion(
           currentAyahId: Value(ordinal),
-          updatedAt: Value(_nowMs()),
+          completedAt: completesJourney ? Value(now) : const Value.absent(),
+          updatedAt: Value(now),
           isDirty: const Value(true),
         ),
       );

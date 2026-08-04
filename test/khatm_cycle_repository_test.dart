@@ -117,6 +117,83 @@ void main() {
     expect(cycles.single.currentAyahId, 1);
   });
 
+  /// Sprint SF-Khatm Completion — vòng đời khép kín.
+  ///
+  /// Trước sprint này `completeCycle()` có mã, có test, và KHÔNG có nơi
+  /// gọi: một chu kỳ đọc hết Qur'an vẫn mãi "đang đọc", nên người dùng
+  /// không bao giờ mở được chu kỳ thứ hai.
+  group('SF-Khatm Completion — hoàn thành hành trình', () {
+    /// Ayah cuối cùng của Mushaf — ordinal 6236.
+    final lastAyah = QuranAddress.ayah(114, 6);
+
+    test('đọc tới Ayah cuối -> hoàn thành trong CHÍNH lần ghi đó', () async {
+      final id = await repo.startCycle(name: 'Chu kỳ');
+      fakeNow = 9000;
+
+      await repo.updateProgress(id, lastAyah);
+
+      final cycle = (await repo.watchAllCycles().first).single;
+      // Một câu UPDATE đặt cả hai cột: không có khe nào để tiến trình
+      // chết vào giữa và bỏ lại 6236 + completedAt null.
+      expect(cycle.currentAyahId, KhatmCycle.totalAyahs);
+      expect(cycle.completedAt, 9000);
+      expect(cycle.isCompleted, isTrue);
+    });
+
+    test('hoàn thành -> mở được chu kỳ MỚI (vòng lặp hết bế tắc)', () async {
+      final first = await repo.startCycle(name: 'Ramadan 2026');
+      await repo.updateProgress(first, lastAyah);
+
+      // Chu kỳ xong rời khỏi "đang đọc" -> ActiveKhatmCard hiện trạng
+      // thái rỗng kèm nút bắt đầu, thay vì kẹt ở 100% mãi mãi.
+      expect(await repo.watchActiveCycle().first, isNull);
+
+      final second = await repo.startCycle(name: 'Khatm kế tiếp');
+      final active = await repo.watchActiveCycle().first;
+      expect(active, isNotNull);
+      expect(active!.id, second);
+      expect(active.currentAyahId, 1);
+    });
+
+    test('tiến độ chưa tới cuối -> KHÔNG đóng dấu hoàn thành', () async {
+      final id = await repo.startCycle(name: 'Chu kỳ');
+
+      await repo.updateProgress(id, QuranAddress.ayah(114, 5));
+
+      final cycle = (await repo.watchAllCycles().first).single;
+      expect(cycle.currentAyahId, KhatmCycle.totalAyahs - 1);
+      expect(cycle.completedAt, isNull);
+      expect(cycle.isCompleted, isFalse);
+    });
+
+    test('KHÔNG hoàn thành được hai lần — dấu thời gian không đổi', () async {
+      final id = await repo.startCycle(name: 'Chu kỳ');
+      fakeNow = 9000;
+      await repo.updateProgress(id, lastAyah);
+
+      // Lần thứ hai (vd. một phiên đọc khác chạy dispose muộn) khớp 0
+      // dòng vì điều kiện lọc đòi completed_at IS NULL.
+      fakeNow = 12345;
+      await repo.updateProgress(id, lastAyah);
+
+      final cycle = (await repo.watchAllCycles().first).single;
+      expect(cycle.completedAt, 9000);
+    });
+
+    test('chu kỳ đã xong KHÔNG nhận tiến độ mới nữa', () async {
+      final id = await repo.startCycle(name: 'Chu kỳ');
+      await repo.updateProgress(id, lastAyah);
+
+      // Đọc lại Al-Fatihah sau khi đã khatm xong: muốn tính thì bắt đầu
+      // chu kỳ mới, không kéo chu kỳ đã đóng về lại đầu Mushaf.
+      await repo.updateProgress(id, QuranAddress.ayah(1, 1));
+
+      final cycle = (await repo.watchAllCycles().first).single;
+      expect(cycle.currentAyahId, KhatmCycle.totalAyahs);
+      expect(cycle.isCompleted, isTrue);
+    });
+  });
+
   test('completeCycle đặt completedAt, loại khỏi watchActiveCycle', () async {
     final id = await repo.startCycle(name: 'Chu kỳ');
     fakeNow = 5000;
@@ -156,6 +233,26 @@ void main() {
         currentAyahId: 0,
       );
       expect(corrupted.currentAddress, isNull);
+    });
+  });
+
+  group('KhatmCycle.completesJourney (đơn vị, luật hoàn thành)', () {
+    test('chỉ đúng khi biên chạm Ayah cuối cùng', () {
+      expect(KhatmCycle.completesJourney(1), isFalse);
+      expect(KhatmCycle.completesJourney(KhatmCycle.totalAyahs - 1), isFalse);
+      expect(KhatmCycle.completesJourney(KhatmCycle.totalAyahs), isTrue);
+    });
+
+    test('ordinal vượt miền vẫn coi là xong, không kẹt "đang đọc"', () {
+      expect(KhatmCycle.completesJourney(KhatmCycle.totalAyahs + 1), isTrue);
+    });
+
+    test('totalAyahs khớp AyahOrdinal — luật hoàn thành phụ thuộc vào nó', () {
+      // Hai hằng số này nằm ở hai tệp. Chỉ AyahOrdinal.totalAyahs được
+      // đối chiếu với database thật (ayah_ordinal_real_data_test.dart);
+      // test này buộc bản sao bên KhatmCycle không được trôi khỏi nó,
+      // vì nếu trôi thì Khatm sẽ "hoàn thành" ở sai chỗ.
+      expect(KhatmCycle.totalAyahs, AyahOrdinal.totalAyahs);
     });
   });
 
