@@ -4,6 +4,8 @@ import 'package:uuid/uuid.dart';
 import '../../../core/database/user/user_database.dart';
 import '../../../core/logging/logger.dart';
 import '../../../core/logging/repository_boundary_logging.dart';
+import '../../../core/quran/ayah_ordinal.dart';
+import '../../../core/quran/quran_address.dart';
 import '../domain/entities/khatm_cycle.dart';
 import '../domain/repositories/khatm_cycle_repository.dart';
 
@@ -84,12 +86,19 @@ class KhatmCycleRepositoryImpl implements KhatmCycleRepository {
   }
 
   @override
-  Future<void> updateProgress(String cycleId, int currentAyahId) {
+  Future<void> updateProgress(String cycleId, QuranAddress address) {
     return withFailureLogging(_logger, 'updateProgress', () async {
+      // Biên repository: quy đổi địa chỉ -> ordinal lưu trữ. `null`
+      // nghĩa là [address] không chỉ đúng một Ayah có thật (mức Surah,
+      // hoặc Surah/Ayah không tồn tại) — no-op, KHÔNG ghi đè
+      // `current_ayah_id` đang lưu bằng dữ liệu sai, KHÔNG ném lỗi.
+      final ordinal = AyahOrdinal.tryToOrdinal(address);
+      if (ordinal == null) return;
+
       await (_db.update(_db.khatmCycles)..where((t) => t.id.equals(cycleId)))
           .write(
         KhatmCyclesCompanion(
-          currentAyahId: Value(currentAyahId),
+          currentAyahId: Value(ordinal),
           updatedAt: Value(_nowMs()),
           isDirty: const Value(true),
         ),

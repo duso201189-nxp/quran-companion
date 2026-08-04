@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
+import 'package:quran_companion/core/quran/quran_address.dart';
 import 'package:quran_companion/core/storage/prefs_provider.dart';
 import 'package:quran_companion/features/khatm/data/khatm_cycle_providers.dart';
 import 'package:quran_companion/features/khatm/domain/entities/khatm_cycle.dart';
@@ -76,7 +77,7 @@ class _FakeKhatmCycleRepository implements KhatmCycleRepository {
   Stream<KhatmCycle?> watchActiveCycle() => Stream.value(current);
 
   @override
-  Future<void> updateProgress(String cycleId, int currentAyahId) async {}
+  Future<void> updateProgress(String cycleId, QuranAddress address) async {}
 
   @override
   Future<void> completeCycle(String cycleId) async {}

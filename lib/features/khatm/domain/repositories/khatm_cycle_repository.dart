@@ -1,3 +1,4 @@
+import '../../../../core/quran/quran_address.dart';
 import '../entities/khatm_cycle.dart';
 
 /// Cổng dữ liệu chu kỳ Khatm (Sprint 8 — DR-2026-0003 mục A). Domain
@@ -14,7 +15,13 @@ abstract interface class KhatmCycleRepository {
   Stream<KhatmCycle?> watchActiveCycle();
 
   /// Cập nhật vị trí đọc hiện tại trong chu kỳ.
-  Future<void> updateProgress(String cycleId, int currentAyahId);
+  ///
+  /// Biên của repository nhận [QuranAddress] (Sprint SF3 Tier 1), quy
+  /// đổi sang ordinal lưu trữ qua `AyahOrdinal.tryToOrdinal` ở tầng
+  /// triển khai. Nếu [address] không đổi được (mức Surah, hoặc không
+  /// tồn tại thật — vd. `2:300`), đây là NO-OP: không ném lỗi, không
+  /// ghi đè vị trí đang lưu bằng dữ liệu sai.
+  Future<void> updateProgress(String cycleId, QuranAddress address);
 
   /// Đánh dấu hoàn thành — completedAt = hiện tại.
   Future<void> completeCycle(String cycleId);

@@ -3,7 +3,10 @@ import 'package:flutter_test/flutter_test.dart';
 
 import 'package:quran_companion/core/database/user/user_database.dart';
 import 'package:quran_companion/core/logging/console_logger.dart';
+import 'package:quran_companion/core/quran/ayah_ordinal.dart';
+import 'package:quran_companion/core/quran/quran_address.dart';
 import 'package:quran_companion/features/khatm/data/khatm_cycle_repository_impl.dart';
+import 'package:quran_companion/features/khatm/domain/entities/khatm_cycle.dart';
 
 void main() {
   late UserDatabase db;
@@ -65,12 +68,53 @@ void main() {
     expect(active!.id, activeId);
   });
 
-  test('updateProgress cập nhật currentAyahId', () async {
+  test(
+      'updateProgress: biên nhận QuranAddress, lưu xuống ordinal '
+      'giống hệt trước Sprint SF3', () async {
     final id = await repo.startCycle(name: 'Chu kỳ');
-    await repo.updateProgress(id, 512);
+    // 512 là ordinal đã dùng ở test này trước SF3 — An-Nisa 4:19 (tra
+    // bằng chính phép quy đổi để test không tự tay đoán số).
+    final address = AyahOrdinal.tryFromOrdinal(512)!;
+    expect(address, QuranAddress.ayah(4, 19));
+
+    await repo.updateProgress(id, address);
 
     final cycles = await repo.watchAllCycles().first;
+    // Biểu diễn trên đĩa KHÔNG đổi: vẫn là int ordinal 512.
     expect(cycles.single.currentAyahId, 512);
+    // Đọc lại qua biên cũng round-trip đúng.
+    expect(cycles.single.currentAddress, address);
+  });
+
+  test(
+      'updateProgress: mức Surah là no-op — KHÔNG ném lỗi, KHÔNG ghi '
+      'đè bằng Ayah đầu của Surah', () async {
+    final id = await repo.startCycle(name: 'Chu kỳ');
+
+    await expectLater(
+      repo.updateProgress(id, QuranAddress.surah(2)),
+      completes,
+    );
+
+    final cycles = await repo.watchAllCycles().first;
+    // Vẫn là giá trị mặc định lúc startCycle — không bị đổi ngữ nghĩa
+    // lặng lẽ thành "2:1".
+    expect(cycles.single.currentAyahId, 1);
+  });
+
+  test(
+      'updateProgress: địa chỉ đúng dạng nhưng không tồn tại là '
+      'no-op', () async {
+    final id = await repo.startCycle(name: 'Chu kỳ');
+
+    // Al-Baqarah chỉ có 286 Ayah.
+    await expectLater(
+      repo.updateProgress(id, QuranAddress.ayah(2, 999)),
+      completes,
+    );
+
+    final cycles = await repo.watchAllCycles().first;
+    expect(cycles.single.currentAyahId, 1);
   });
 
   test('completeCycle đặt completedAt, loại khỏi watchActiveCycle', () async {
@@ -89,5 +133,29 @@ void main() {
     await repo.deleteCycle(id);
 
     expect(await repo.watchAllCycles().first, isEmpty);
+  });
+
+  group('KhatmCycle.currentAddress (đơn vị, không cần database)', () {
+    test('quy đổi đúng currentAyahId hợp lệ', () {
+      const cycle = KhatmCycle(
+        id: 'c',
+        name: 'x',
+        startedAt: 0,
+        currentAyahId: 1,
+      );
+      expect(cycle.currentAddress, QuranAddress.ayah(1, 1));
+    });
+
+    test(
+        'null khi currentAyahId ngoài miền — repository không bao giờ '
+        'tạo ra giá trị này, nhưng getter vẫn phải an toàn nếu có', () {
+      const corrupted = KhatmCycle(
+        id: 'c',
+        name: 'x',
+        startedAt: 0,
+        currentAyahId: 0,
+      );
+      expect(corrupted.currentAddress, isNull);
+    });
   });
 }
