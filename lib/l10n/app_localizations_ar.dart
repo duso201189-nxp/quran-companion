@@ -146,6 +146,12 @@ class AppLocalizationsAr extends AppLocalizations {
   String get previousAyah => 'الآية السابقة';
 
   @override
+  String get audioOpeningLabel => 'الافتتاحية';
+
+  @override
+  String get openingSemanticLabel => 'افتتاحية السورة — البسملة';
+
+  @override
   String get repeatMode => 'وضع التكرار';
 
   @override

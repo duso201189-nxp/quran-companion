@@ -147,6 +147,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get previousAyah => 'Previous ayah';
 
   @override
+  String get audioOpeningLabel => 'Opening';
+
+  @override
+  String get openingSemanticLabel => 'Surah opening — Bismillah';
+
+  @override
   String get repeatMode => 'Repeat mode';
 
   @override

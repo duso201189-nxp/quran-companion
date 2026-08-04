@@ -147,6 +147,12 @@ class AppLocalizationsVi extends AppLocalizations {
   String get previousAyah => 'Ayah trước';
 
   @override
+  String get audioOpeningLabel => 'Mở đầu';
+
+  @override
+  String get openingSemanticLabel => 'Lời mở đầu Surah — Bismillah';
+
+  @override
   String get repeatMode => 'Chế độ lặp';
 
   @override

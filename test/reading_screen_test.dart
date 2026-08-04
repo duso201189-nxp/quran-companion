@@ -6,6 +6,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:quran_companion/core/audio/ayah_audio_player.dart';
 import 'package:quran_companion/core/database/user/user_database.dart';
 import 'package:quran_companion/core/database/user/user_database_providers.dart';
+import 'package:quran_companion/core/quran/quran_address.dart';
 import 'package:quran_companion/core/storage/prefs_provider.dart';
 import 'package:quran_companion/features/quran/data/quran_providers.dart';
 import 'package:quran_companion/features/quran/domain/entities/ayah.dart';
@@ -17,6 +18,7 @@ import 'package:quran_companion/features/quran/domain/entities/translation_sourc
 import 'package:quran_companion/features/quran/domain/repositories/quran_repository.dart';
 import 'package:quran_companion/features/quran/presentation/annotations/ayah_actions_sheet.dart'
     show kHighlightColorValues;
+import 'package:quran_companion/features/quran/presentation/audio/audio_controller.dart';
 import 'package:quran_companion/features/quran/presentation/reading/reading_screen.dart';
 import 'package:quran_companion/features/stats/data/study_session_providers.dart';
 import 'package:quran_companion/features/stats/domain/entities/study_session.dart';
@@ -111,18 +113,57 @@ List<AyahContent> _ayahs() => [
       ),
     ];
 
+/// Sprint BM1 — Al-Baqarah, một Surah CÓ phần mở đầu tách rời.
+/// Al-Fatihah (fixture mặc định) không có, nên không dùng nó để kiểm
+/// chuyện gì liên quan tới Basmalah trong playlist.
+const _surah2 = Surah(
+  id: 2,
+  nameArabic: 'البقرة',
+  nameLatin: 'Al-Baqarah',
+  nameVi: 'Con Bò',
+  nameEn: 'The Cow',
+  ayahCount: 3,
+  revelationPlace: RevelationPlace.madinah,
+  orderRevealed: 87,
+);
+
+List<AyahContent> _ayahs2() => [
+      for (var n = 1; n <= 3; n++)
+        AyahContent(
+          ayah: Ayah(
+            id: 100 + n,
+            surahId: 2,
+            ayahNumber: n,
+            textUthmani: n == 1
+                // Ayah 1 mang Basmalah dẫn đầu, đúng như dữ liệu thật.
+                ? 'بِسْمِ ٱللَّهِ ٱلرَّحْمَٰنِ ٱلرَّحِيمِ الٓمٓ'
+                : 'نص عربي $n',
+            juz: 1,
+          ),
+          texts: {'vi_main': 'bản việt $n'},
+        ),
+    ];
+
 class _FakeRepo implements QuranRepository {
-  _FakeRepo({this.surahExists = true, this.empty = false});
+  _FakeRepo({
+    this.surahExists = true,
+    this.empty = false,
+    this.surahTwo = false,
+  });
 
   final bool surahExists;
   final bool empty;
 
+  /// Trả Al-Baqarah thay cho Al-Fatihah (xem [_surah2]).
+  final bool surahTwo;
+
   @override
-  Future<Surah?> getSurahById(int id) async => surahExists ? _surah : null;
+  Future<Surah?> getSurahById(int id) async =>
+      surahExists ? (surahTwo ? _surah2 : _surah) : null;
 
   @override
   Future<List<AyahContent>> getAyahsOfSurah(int surahId) async =>
-      empty ? const [] : _ayahs();
+      empty ? const [] : (surahTwo ? _ayahs2() : _ayahs());
 
   @override
   Future<List<Surah>> getAllSurahs() async => [_surah];
@@ -548,6 +589,288 @@ void main() {
       expect(session.date, isNotEmpty);
       expect(session.durationSec, greaterThanOrEqualTo(5));
       expect(session.ayahFrom, 0);
+    });
+  });
+
+  /// Sprint BM2 — phần mở đầu là một HÀNG ĐỌC thật.
+  group('Sprint BM2 — hàng mở đầu', () {
+    const basmalah = 'بِسْمِ ٱللَّهِ ٱلرَّحْمَٰنِ ٱلرَّحِيمِ';
+
+    _testReading('Surah thường: Basmalah hiện ĐÚNG MỘT lần, ở hàng riêng',
+        (tester) async {
+      await tester.pumpWidget(
+        await _app(_FakeRepo(surahTwo: true), surahId: 2),
+      );
+      await tester.pumpAndSettle();
+
+      // Một lần duy nhất: header không còn vẽ nó nữa, và thẻ Ayah 1 đã
+      // bỏ phần Basmalah từ Sprint F2.
+      expect(find.text(basmalah), findsOneWidget);
+    });
+
+    _testReading('Al-Fatihah: KHÔNG có hàng mở đầu — Ayah 1 chính là nó',
+        (tester) async {
+      await tester.pumpWidget(await _app(_FakeRepo()));
+      await tester.pumpAndSettle();
+
+      // Al-Fatihah trong fixture có Ayah 1 = 'نص عربي ١', nên chỉ cần
+      // khẳng định không có hàng mở đầu nào được dựng.
+      expect(find.byKey(const ValueKey('opening-row')), findsNothing);
+    });
+
+    _testReading('hàng mở đầu có nhãn accessibility riêng', (tester) async {
+      // Cây semantics không được dựng trong test nếu không bật. Phải
+      // dispose NGAY TRONG thân test, không qua addTearDown — cùng lý
+      // do đã ghi ở `_testReading` cho UserDatabase.
+      final semantics = tester.ensureSemantics();
+
+      await tester.pumpWidget(
+        await _app(_FakeRepo(surahTwo: true), surahId: 2),
+      );
+      await tester.pumpAndSettle();
+
+      // Trước BM2 đây là một Text trần: trình đọc màn hình đọc ra tiếng
+      // Ả Rập thô, không nói được đó là cái gì.
+      // Khẳng định trên CÂY SEMANTICS thật — thứ trình đọc màn hình
+      // thực sự duyệt — chứ không trên cây widget.
+      //
+      // Basmalah nằm trong MỘT node có tên: nhãn trước, rồi tới chính
+      // câu Ả Rập. Cùng dạng `AyahCard` tạo ra ("Ayah 1\n1\n<Ả Rập>…"),
+      // nên người dùng trình đọc màn hình gặp một phần tử có danh tính,
+      // không phải một chuỗi ký tự Ả Rập trôi nổi giữa các Ayah.
+      final node = tester.getSemantics(find.text(basmalah));
+
+      expect(node.label, startsWith('Lời mở đầu Surah — Bismillah'));
+      expect(node.label, contains(basmalah));
+
+      semantics.dispose();
+    });
+
+    _testReading('Basmalah đang phát -> hàng mở đầu được tô sáng',
+        (tester) async {
+      await tester.pumpWidget(
+        await _app(_FakeRepo(surahTwo: true), surahId: 2),
+      );
+      await tester.pumpAndSettle();
+
+      final scheme =
+          Theme.of(tester.element(find.byType(AyahCard).first)).colorScheme;
+
+      Color openingColor() {
+        final container = tester.widget<AnimatedContainer>(
+          find
+              .ancestor(
+                of: find.text(basmalah),
+                matching: find.byType(AnimatedContainer),
+              )
+              .first,
+        );
+        return (container.decoration! as BoxDecoration).color!;
+      }
+
+      // Chưa phát -> không nền.
+      expect(openingColor(), Colors.transparent);
+
+      // Phát từ Ayah 1 -> BM1 bắt đầu ở mục mở đầu.
+      await tester.tap(find.byIcon(Icons.play_arrow_rounded).first);
+      await tester.pumpAndSettle();
+
+      expect(
+        openingColor(),
+        Color.alphaBlend(
+          scheme.primaryContainer.withValues(alpha: 0.35),
+          scheme.surfaceContainerLow,
+        ),
+      );
+    });
+  });
+
+  /// Sprint BM3 — phần mở đầu bấm được.
+  ///
+  /// BM2 cho nó một hàng; BM3 cho nó một NÚT, và nhờ đó tách được hai ý
+  /// định từng dồn vào một chỗ bấm.
+  group('Sprint BM3 — tương tác với hàng mở đầu', () {
+    const basmalah = 'بِسْمِ ٱللَّهِ ٱلرَّحْمَٰنِ ٱلرَّحِيمِ';
+
+    /// Nút phát nằm trong hàng mở đầu (không phải của thẻ Ayah nào).
+    Finder openingPlayButton() => find.descendant(
+          of: find
+              .ancestor(
+                of: find.text(basmalah),
+                matching: find.byType(AnimatedContainer),
+              )
+              .first,
+          matching: find.byIcon(Icons.play_arrow_rounded),
+        );
+
+    _testReading('hàng mở đầu có nút phát riêng', (tester) async {
+      await tester.pumpWidget(
+        await _app(_FakeRepo(surahTwo: true), surahId: 2),
+      );
+      await tester.pumpAndSettle();
+
+      expect(openingPlayButton(), findsOneWidget);
+    });
+
+    _testReading('bấm nút của hàng mở đầu -> phát TỪ Basmalah', (tester) async {
+      await tester.pumpWidget(
+        await _app(_FakeRepo(surahTwo: true), surahId: 2),
+      );
+      await tester.pumpAndSettle();
+
+      await tester.tap(openingPlayButton());
+      await tester.pumpAndSettle();
+
+      final audio = ProviderScope.containerOf(
+        tester.element(find.byType(AyahCard).first),
+      ).read<AudioState>(audioControllerProvider);
+
+      // Mức Surah = đang phát phần mở đầu, không phải Ayah nào.
+      expect(audio.currentAddress, QuranAddress.surah(2));
+      expect(audio.currentIndex, 0);
+    });
+
+    _testReading(
+        'bấm nút của thẻ Ayah 1 -> phát ĐÚNG Ayah 1, không chèn Basmalah',
+        (tester) async {
+      await tester.pumpWidget(
+        await _app(_FakeRepo(surahTwo: true), surahId: 2),
+      );
+      await tester.pumpAndSettle();
+
+      // Nút phát của thẻ Ayah đầu tiên — KHÔNG phải nút của hàng mở đầu.
+      final ayahPlay = find
+          .descendant(
+            of: find.byType(AyahCard).first,
+            matching: find.byIcon(Icons.play_arrow_rounded),
+          )
+          .first;
+      await tester.tap(ayahPlay);
+      await tester.pumpAndSettle();
+
+      final audio = ProviderScope.containerOf(
+        tester.element(find.byType(AyahCard).first),
+      ).read<AudioState>(audioControllerProvider);
+
+      // Trước BM3 chỗ này là mục 0 (Basmalah) — nút hứa Ayah 1 nhưng
+      // phát Basmalah. Giờ hai nút làm hai việc khác nhau.
+      expect(audio.currentAddress, QuranAddress.ayah(2, 1));
+      expect(audio.currentIndex, 1);
+    });
+
+    _testReading('lùi một bước từ Ayah 1 -> về phần mở đầu', (tester) async {
+      await tester.pumpWidget(
+        await _app(_FakeRepo(surahTwo: true), surahId: 2),
+      );
+      await tester.pumpAndSettle();
+
+      final container = ProviderScope.containerOf(
+        tester.element(find.byType(AyahCard).first),
+      );
+      final controller = container.read(audioControllerProvider.notifier);
+
+      await controller.playSurah(
+        ayahs: [for (final c in _ayahs2()) c.ayah],
+        from: QuranAddress.ayah(2, 1),
+      );
+      await tester.pumpAndSettle();
+      expect(
+        container.read(audioControllerProvider).currentAddress,
+        QuranAddress.ayah(2, 1),
+      );
+
+      await controller.previousAyah();
+      await tester.pumpAndSettle();
+
+      // Đi tới/lui giữa Basmalah và Ayah 1 là một bước, đúng thứ tự đọc.
+      expect(
+        container.read(audioControllerProvider).currentAddress,
+        QuranAddress.surah(2),
+      );
+
+      await controller.nextAyah();
+      await tester.pumpAndSettle();
+      expect(
+        container.read(audioControllerProvider).currentAddress,
+        QuranAddress.ayah(2, 1),
+      );
+    });
+  });
+
+  /// Sprint BM1 — BẤT BIẾN LƯU TRỮ.
+  ///
+  /// Thêm phần mở đầu vào playlist làm chỉ số playlist và chỉ số Ayah
+  /// tách đôi. Hai nơi tiêu thụ chỉ số Ayah GHI XUỐNG ĐĨA
+  /// (`ReadingPositionStore` và `study_sessions`), và cột
+  /// `study_sessions.ayah_from/to` **không có cột nào ghi lại hệ số của
+  /// chính nó** — ghi nhầm chỉ số playlist vào đó làm sai mọi thống kê
+  /// một cách âm thầm và không khôi phục được.
+  ///
+  /// Nhóm test này canh đúng điều đó, trên một Surah CÓ phần mở đầu.
+  group('Sprint BM1 — chỉ số playlist KHÔNG được rơi xuống đĩa', () {
+    _testReading(
+        'phát từ đầu Al-Baqarah (mục 0 = Basmalah) -> study_sessions vẫn '
+        'ghi chỉ số AYAH', (tester) async {
+      final spy = _SpyStudySessionRepository();
+      await tester.pumpWidget(
+        await _app(
+          _FakeRepo(surahTwo: true),
+          surahId: 2,
+          extraOverrides: [
+            studySessionRepositoryProvider.overrideWithValue(spy),
+          ],
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      // Bấm phát ở Ayah 1 -> playlist bắt đầu ở mục 0 (phần mở đầu).
+      await tester.tap(find.byIcon(Icons.play_arrow_rounded).first);
+      await tester.pumpAndSettle();
+
+      await tester.runAsync(
+        () => Future<void>.delayed(const Duration(milliseconds: 5200)),
+      );
+      await tester.pumpWidget(const SizedBox.shrink());
+      await tester.pump();
+
+      expect(spy.logged, hasLength(1));
+      final session = spy.logged.single;
+      expect(session.surahId, 2);
+      // 0 = Ayah ĐẦU TIÊN, không phải "mục phát số 0". Hai con số trùng
+      // nhau ở đây là tình cờ; điều được khẳng định là giá trị nằm
+      // trong hệ Ayah và không vượt số Ayah của Surah.
+      expect(session.ayahFrom, 0);
+      expect(session.ayahTo, lessThan(_surah2.ayahCount));
+      expect(session.ayahFrom, lessThan(_surah2.ayahCount));
+    });
+
+    _testReading('Basmalah đang phát -> KHÔNG thẻ Ayah nào bị tô sáng',
+        (tester) async {
+      await tester.pumpWidget(
+        await _app(_FakeRepo(surahTwo: true), surahId: 2),
+      );
+      await tester.pumpAndSettle();
+
+      final scheme =
+          Theme.of(tester.element(find.byType(AyahCard).first)).colorScheme;
+
+      await tester.tap(find.byIcon(Icons.play_arrow_rounded).first);
+      await tester.pumpAndSettle();
+
+      // Địa chỉ mức Surah != địa chỉ mức Ayah, nên phép so bằng ở
+      // AyahCard không khớp thẻ nào — kể cả thẻ Ayah 1.
+      final container = tester.widget<AnimatedContainer>(
+        find
+            .descendant(
+              of: find.byType(AyahCard).first,
+              matching: find.byType(AnimatedContainer),
+            )
+            .first,
+      );
+      expect(
+        (container.decoration! as BoxDecoration).color,
+        scheme.surfaceContainerLow,
+      );
     });
   });
 

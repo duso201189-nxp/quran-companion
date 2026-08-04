@@ -1,9 +1,19 @@
+import '../../domain/basmalah.dart';
+
 /// Bố cục HÀNG của danh sách đọc — "hệ C" trong
 /// `docs/knowledge/quran_index_conventions.md`.
 ///
 /// Hệ C là khái niệm của TRÌNH BÀY, không phải của nội dung: nó nói
 /// "hàng thứ mấy trong `ScrollablePositionedList`", không nói "Ayah thứ
 /// mấy". Vì thế tệp này nằm ở tầng presentation dù không import Flutter.
+///
+/// ## Bố cục
+///
+/// ```
+/// hàng 0            header Surah (tên, nơi giáng, số Ayah)
+/// hàng 1            phần mở đầu — CHỈ với Surah có Basmalah tách rời
+/// hàng kế tiếp...   từng Ayah một
+/// ```
 ///
 /// ## Sprint F2 — vì sao đáng có tên
 ///
@@ -15,35 +25,70 @@
 /// Điều đó đủ dùng cho tới khi Basmalah 2.0 biến phần mở đầu thành một
 /// HÀNG riêng — lúc ấy cả năm phải đổi, và bốn trong năm chỗ hỏng LẶNG
 /// LẼ: một `- 1` bị quên chỉ làm vị trí đọc lưu xuống đĩa lệch một Ayah,
-/// không ném lỗi, không có test nào đỏ. Cùng loại nguy hiểm với cảnh
-/// báo 0-based ở `study_sessions`.
+/// không ném lỗi, không có test nào đỏ.
 ///
-/// Sau F2, [leadingRows] là con số duy nhất phải đổi.
+/// ## Sprint BM2 — điều đó vừa xảy ra
+///
+/// Số hàng dẫn đầu giờ phụ thuộc [SurahOpening], nên [leadingRowsFor]
+/// thay cho hằng cũ. Nhờ F2 đã gom sẵn, đây là một lần đổi CHỮ KÝ ở một
+/// tệp, không phải một cuộc truy lùng năm chỗ.
 abstract final class ReadingRows {
-  /// Số hàng đứng TRƯỚC Ayah đầu tiên.
+  /// Header Surah — luôn đúng một hàng, mọi Surah, kể cả At-Tawbah.
+  static const int headerRows = 1;
+
+  /// Số hàng đứng TRƯỚC Ayah đầu tiên: header, cộng phần mở đầu nếu có.
   ///
-  /// Hôm nay: đúng một header Surah (kèm Basmalah trang trí nếu có).
-  /// Basmalah 2.0 sẽ nâng con số này lên 2 với các Surah có phần mở đầu
-  /// riêng — và khi đó nó phải thành một hàm của Surah, không còn là
-  /// hằng. Chỗ đó là đây, không phải năm chỗ trong `ReadingScreen`.
-  static const int leadingRows = 1;
+  /// Điều kiện "có phần mở đầu riêng" đi qua [hasSeparateOpening] —
+  /// cùng hàm mà playlist audio dùng, nên hai bên không thể lệch nhau.
+  static int leadingRowsFor(SurahOpening opening) =>
+      headerRows + (hasSeparateOpening(opening) ? 1 : 0);
 
-  /// Tổng số hàng cho danh sách có [ayahCount] Ayah.
-  static int rowCountFor(int ayahCount) => ayahCount + leadingRows;
+  /// Hàng của phần mở đầu — `null` nếu Surah không có phần mở đầu riêng.
+  ///
+  /// Luôn nằm ngay sau header, nên giá trị là [headerRows]. Trả về qua
+  /// hàm chứ không để bên gọi tự viết `1`: đó chính là loại hằng số ma
+  /// mà F2/BM2 đi gỡ.
+  static int? openingRowFor(SurahOpening opening) =>
+      hasSeparateOpening(opening) ? headerRows : null;
 
-  /// Chỉ số hàng cuối cùng. Danh sách luôn có ít nhất phần header, nên
-  /// giá trị nhỏ nhất là 0.
-  static int lastRowFor(int ayahCount) => rowCountFor(ayahCount) - 1;
+  /// Tổng số hàng.
+  static int rowCountFor({
+    required SurahOpening opening,
+    required int ayahCount,
+  }) =>
+      ayahCount + leadingRowsFor(opening);
 
-  /// Hàng này thuộc phần dẫn đầu (header) chứ không phải một Ayah?
-  static bool isLeading(int row) => row < leadingRows;
+  /// Chỉ số hàng cuối cùng. Danh sách luôn có ít nhất header, nên giá
+  /// trị nhỏ nhất là 0.
+  static int lastRowFor({
+    required SurahOpening opening,
+    required int ayahCount,
+  }) =>
+      rowCountFor(opening: opening, ayahCount: ayahCount) - 1;
+
+  /// Hàng này thuộc phần dẫn đầu (header hoặc phần mở đầu) chứ không
+  /// phải một Ayah?
+  static bool isLeading({
+    required SurahOpening opening,
+    required int row,
+  }) =>
+      row < leadingRowsFor(opening);
 
   /// Ayah thứ [ayahIndex] (0-based, hệ B) nằm ở hàng nào.
-  static int rowForAyahIndex(int ayahIndex) => ayahIndex + leadingRows;
+  static int rowForAyahIndex({
+    required SurahOpening opening,
+    required int ayahIndex,
+  }) =>
+      ayahIndex + leadingRowsFor(opening);
 
   /// Hàng [row] ứng với Ayah 0-based nào — `null` nếu đó là hàng dẫn
   /// đầu. Trả `null` thay vì một số âm: "đây không phải Ayah" là một
   /// câu trả lời, không phải một lỗi tính toán cần kẹp về 0.
-  static int? ayahIndexForRow(int row) =>
-      isLeading(row) ? null : row - leadingRows;
+  static int? ayahIndexForRow({
+    required SurahOpening opening,
+    required int row,
+  }) {
+    final leading = leadingRowsFor(opening);
+    return row < leading ? null : row - leading;
+  }
 }

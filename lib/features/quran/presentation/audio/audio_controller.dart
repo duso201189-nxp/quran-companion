@@ -8,8 +8,10 @@ import '../../../../core/audio/ayah_audio_player.dart';
 import '../../../../core/quran/quran_address.dart';
 import '../../../../core/storage/prefs_provider.dart';
 import '../../data/quran_providers.dart';
+import '../../domain/basmalah.dart';
 import '../../domain/entities/ayah.dart';
 import '../../domain/entities/reciter.dart';
+import '../../domain/reading_playlist.dart';
 
 /// Danh sách Qari (từ database nội dung).
 final recitersProvider = FutureProvider<List<Reciter>>(
@@ -24,6 +26,7 @@ class AudioState {
   const AudioState({
     this.surahId,
     this.currentIndex = 0,
+    this.currentAddress,
     this.playing = false,
     this.speed = 1.0,
     this.repeat = RepeatMode.off,
@@ -37,12 +40,17 @@ class AudioState {
   /// Surah đang phát; null = trình phát chưa hoạt động.
   final int? surahId;
 
-  /// Chỉ số Ayah **0-based** trong Surah đang phát.
+  /// Chỉ số **mục phát** 0-based trong playlist — KHÔNG phải chỉ số Ayah.
   ///
-  /// 0-based vì nó là chỉ số trong playlist (`_items`), không phải
-  /// số Ayah người đọc thấy. ĐỪNG so sánh trực tiếp với
-  /// `Ayah.ayahNumber` (1-based) — dùng [currentAddress] để phép quy
-  /// đổi có tên và có test. Xem `docs/knowledge/quran_index_conventions.md`.
+  /// ⚠️ Sprint BM1: hai hệ này từng là một, và giờ thì không. Surah có
+  /// phần mở đầu tách rời (112/114 Surah) có thêm một mục ở đầu
+  /// playlist, nên `currentIndex == 1` ở đó là **Ayah 1**, không phải
+  /// Ayah 2.
+  ///
+  /// ĐỪNG suy ra Ayah từ trường này. Dùng [currentAddress], hoặc
+  /// `ReadingPlaylist.ayahIndexForItem` nếu thật sự cần chỉ số. Đặc
+  /// biệt: **đừng bao giờ ghi giá trị này xuống đĩa** —
+  /// `ReadingPositionStore` và `study_sessions` đều thuần hệ Ayah.
   final int currentIndex;
   final bool playing;
   final double speed;
@@ -63,23 +71,24 @@ class AudioState {
 
   bool get active => surahId != null;
 
-  /// Địa chỉ Ayah đang phát, hoặc `null` khi trình phát chưa hoạt động.
+  /// Địa chỉ của mục đang phát — `null` khi chưa phát gì.
   ///
-  /// Sprint F0: điểm quy đổi DUY NHẤT giữa [currentIndex] (0-based, hệ
-  /// của playlist) và số Ayah 1-based mà phần còn lại của ứng dụng
-  /// dùng. Trước đây mỗi nơi tiêu thụ tự viết `currentIndex + 1` hoặc
-  /// `ayahNumber - 1`; giờ phép quy đổi nằm trong [QuranAddress] và
-  /// được test riêng. Xem `docs/adr/DR-2026-0017-universal-quran-address.md`.
-  /// Trả `null` — KHÔNG ném — khi trạng thái chưa dựng được địa chỉ
-  /// đúng dạng. Getter này chạy trong `select()` lúc build (xem
-  /// `AyahCard`); một ngoại lệ ở đó là màn hình trắng cho người dùng,
-  /// trong khi "chưa có Ayah nào đang phát" là câu trả lời đúng và vô
-  /// hại. Cùng tinh thần với [QuranAddress.tryParse].
-  QuranAddress? get currentAddress {
-    final id = surahId;
-    if (id == null || id < 1 || currentIndex < 0) return null;
-    return QuranAddress.fromZeroBasedAyahIndex(id, currentIndex);
-  }
+  /// Sprint F0 dựng nó bằng phép tính từ [currentIndex]. Sprint BM1 đổi
+  /// thành **trường được lưu**, lấy thẳng từ `AyahAudioItem` đang phát,
+  /// vì sau khi playlist có thêm phần mở đầu thì [currentIndex] không
+  /// còn suy ra được Ayah nữa. Mục phát vốn đã mang địa chỉ của chính
+  /// nó (Sprint B1) — hỏi nó là đúng nguồn, tính lại là đoán.
+  ///
+  /// **Hai mức, và sự khác nhau có ý nghĩa:**
+  /// - mức Ayah (`2:255`) — đang phát một Ayah;
+  /// - mức Surah (`2`) — đang phát PHẦN MỞ ĐẦU của Surah đó.
+  ///
+  /// `QuranAddress.surah(2) != QuranAddress.ayah(2, 1)` (F0 có test),
+  /// nên phép so bằng ở `AyahCard` không thể tô nhầm Ayah 1 khi
+  /// Basmalah đang phát. Và `zeroBasedAyahIndex` trả `null` ở mức
+  /// Surah — đó chính là dấu hiệu "chưa tới Ayah nào" mà phần cuộn
+  /// theo audio dùng.
+  final QuranAddress? currentAddress;
 
   double? get progress {
     final d = duration;
@@ -90,6 +99,7 @@ class AudioState {
   AudioState copyWith({
     int? surahId,
     int? currentIndex,
+    QuranAddress? currentAddress,
     bool? playing,
     double? speed,
     RepeatMode? repeat,
@@ -104,6 +114,7 @@ class AudioState {
     return AudioState(
       surahId: surahId ?? this.surahId,
       currentIndex: currentIndex ?? this.currentIndex,
+      currentAddress: currentAddress ?? this.currentAddress,
       playing: playing ?? this.playing,
       speed: speed ?? this.speed,
       repeat: repeat ?? this.repeat,
@@ -129,6 +140,14 @@ class AudioController extends Notifier<AudioState> {
 
   AyahAudioPlayer get _player => ref.read(ayahAudioPlayerProvider);
 
+  /// Địa chỉ của mục phát thứ [item] — `null` nếu ngoài playlist.
+  ///
+  /// Hỏi thẳng mục phát thay vì tính lại từ chỉ số: mục đã mang địa chỉ
+  /// của chính nó từ Sprint B1, và sau BM1 thì chỉ số không còn suy ra
+  /// được Ayah nữa.
+  QuranAddress? _addressAt(int item) =>
+      item >= 0 && item < _items.length ? _items[item].address : null;
+
   @override
   AudioState build() {
     ref.onDispose(() {
@@ -145,9 +164,13 @@ class AudioController extends Notifier<AudioState> {
     _subs.addAll([
       _player.currentIndexStream.listen((index) {
         if (index != null && index != state.currentIndex) {
-          // Ayah mới -> reset vị trí/thời lượng của thanh tiến độ.
+          // Mục phát mới -> reset vị trí/thời lượng của thanh tiến độ.
+          // Địa chỉ đi kèm luôn ở đây, cùng một lần đặt state: hai
+          // trường này rời nhau dù chỉ một khung hình là thanh phát và
+          // phần tô sáng nói hai chuyện khác nhau.
           state = state.copyWith(
             currentIndex: index,
+            currentAddress: _addressAt(index),
             position: Duration.zero,
             clearDuration: true,
           );
@@ -189,12 +212,20 @@ class AudioController extends Notifier<AudioState> {
     ]);
   }
 
-  /// Phát một Surah từ Ayah [startIndex].
+  /// Phát một Surah, bắt đầu tại [from].
+  ///
+  /// Sprint BM3: [from] thay cho `startIndex` cũ. Mức của địa chỉ mang
+  /// ý định — mức Surah là "đọc từ đầu" (có phần mở đầu), mức Ayah là
+  /// "phát đúng Ayah này". Trước BM3 cả hai cùng đi qua một chỉ số nên
+  /// không phân biệt được; xem `ReadingPlaylist.itemForAddress`.
+  ///
+  /// Surah lấy từ chính [from] chứ không nhận thêm tham số: hai nguồn
+  /// cho cùng một thông tin là hai thứ có thể lệch nhau.
   Future<void> playSurah({
-    required int surahId,
     required List<Ayah> ayahs,
-    int startIndex = 0,
+    required QuranAddress from,
   }) async {
+    final surahId = from.surah;
     final reciter = await _resolveReciter();
     if (reciter == null || ayahs.isEmpty) return;
 
@@ -205,8 +236,34 @@ class AudioController extends Notifier<AudioState> {
     // đường đã async sẵn và đã có trạng thái loading.
     final surahName = await _resolveSurahName(surahId);
 
-    _playlistLength = ayahs.length;
+    // Sprint BM1: Surah này mở đầu thế nào? Cùng khai báo mà `ReadingRows`
+    // dùng, nên playlist và danh sách hàng không thể lệch nhau.
+    final opening = resolveSurahOpening(
+      surahId: surahId,
+      firstAyahText: ayahs.first.textUthmani,
+    );
+
     _items = [
+      if (ReadingPlaylist.leadingItemsFor(opening) == 1)
+        AyahAudioItem(
+          // Mức SURAH, không phải Ayah: đây là thứ mở đầu Surah, không
+          // phải một Ayah của nó. F0 sắp mức Surah đứng trước mọi Ayah
+          // của chính nó, nên thứ tự playlist khớp thứ tự đọc mà không
+          // cần luật riêng.
+          address: QuranAddress.surah(surahId),
+          // Basmalah của MỌI Surah là Ayah 1 của Al-Fatihah — cùng Qari,
+          // cùng bitrate, cùng CDN. Không thêm tài nguyên, không thêm
+          // giấy phép: chỉ là địa chỉ một tệp đã có.
+          source: Uri.parse(
+            buildAyahAudioUrl(
+              template: reciter.audioUrlTemplate,
+              surahId: 1,
+              ayahNumber: 1,
+            ),
+          ),
+          surahName: surahName,
+          reciterName: reciter.name,
+        ),
       for (final a in ayahs)
         AyahAudioItem(
           address: QuranAddress.ayah(surahId, a.ayahNumber),
@@ -221,12 +278,21 @@ class AudioController extends Notifier<AudioState> {
           reciterName: reciter.name,
         ),
     ];
+    _playlistLength = _items.length;
+
+    // Địa chỉ -> mục phát. Mức Surah rơi vào mục 0 (phần mở đầu nếu
+    // có); mức Ayah rơi vào đúng Ayah đó.
+    final startItem = ReadingPlaylist.itemForAddress(
+      opening: opening,
+      from: from,
+    );
 
     _ensureSubscriptions();
 
     state = AudioState(
       surahId: surahId,
-      currentIndex: startIndex,
+      currentIndex: startItem,
+      currentAddress: _addressAt(startItem),
       playing: true,
       speed: state.speed,
       repeat: state.repeat,
@@ -234,7 +300,7 @@ class AudioController extends Notifier<AudioState> {
       loading: true,
     );
 
-    await _player.setPlaylist(_items, initialIndex: startIndex);
+    await _player.setPlaylist(_items, initialIndex: startItem);
     await _player.setSpeed(state.speed);
     await _player.setRepeatMode(state.repeat);
     await _player.play();
@@ -261,19 +327,25 @@ class AudioController extends Notifier<AudioState> {
     state = state.copyWith(playing: !state.playing);
   }
 
+  /// Mục phát kế. Biên là độ dài PLAYLIST, không phải số Ayah — với
+  /// Surah có phần mở đầu, hai con số đó lệch nhau 1.
   Future<void> nextAyah() async {
     if (!state.active) return;
     final next = state.currentIndex + 1;
-    if (next >= _playlistLength) return; // đã ở Ayah cuối
-    state = state.copyWith(currentIndex: next);
+    if (next >= _playlistLength) return; // đã ở mục cuối
+    state =
+        state.copyWith(currentIndex: next, currentAddress: _addressAt(next));
     await _player.seekToIndex(next);
   }
 
+  /// Mục phát trước. Từ Ayah 1 của Surah có phần mở đầu, lùi một bước
+  /// là về chính Basmalah — đúng thứ tự người đọc đi qua.
   Future<void> previousAyah() async {
     if (!state.active) return;
     final prev = state.currentIndex - 1;
     if (prev < 0) return;
-    state = state.copyWith(currentIndex: prev);
+    state =
+        state.copyWith(currentIndex: prev, currentAddress: _addressAt(prev));
     await _player.seekToIndex(prev);
   }
 

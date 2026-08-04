@@ -115,6 +115,21 @@ final class OpeningPrefixesFirstAyah extends SurahOpening {
   String toString() => 'OpeningPrefixesFirstAyah($containingAyah)';
 }
 
+/// Surah này có phần mở đầu **tách rời** — một phần tử đứng riêng,
+/// không phải một Ayah — hay không?
+///
+/// Sprint BM2: đây là NGUỒN DUY NHẤT của câu hỏi đó. Cả playlist audio
+/// (`ReadingPlaylist.leadingItemsFor`) lẫn danh sách hàng
+/// (`ReadingRows.leadingRowsFor`) đều hỏi ở đây, nên hai bên không thể
+/// bất đồng về việc Surah nào có phần mở đầu.
+///
+/// `false` cho Al-Fatihah (phần mở đầu CHÍNH LÀ Ayah 1 — đã là một phần
+/// tử rồi) và cho At-Tawbah (không có). Hai lý do ngược nhau, cùng một
+/// kết luận "không thêm phần tử nào" — và kiểu `sealed` giữ cho hai lý
+/// do ấy vẫn phân biệt được ở mọi nơi khác.
+bool hasSeparateOpening(SurahOpening opening) =>
+    opening is OpeningPrefixesFirstAyah;
+
 /// Kết quả tách Basmalah khỏi văn bản Ayah 1.
 typedef BasmalahSplit = ({String basmalah, String rest});
 

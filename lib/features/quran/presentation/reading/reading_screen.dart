@@ -65,6 +65,14 @@ class _ReadingScreenState extends ConsumerState<ReadingScreen> {
   /// `shouldFollowPlayback`. `null` = chưa cuộn lần nào trong phiên này.
   DateTime? _lastManualScrollAt;
 
+  /// Surah này mở đầu thế nào — `null` khi chưa có dữ liệu.
+  ///
+  /// Sprint BM2: mọi phép quy đổi Ayah ↔ hàng cần giá trị này, kể cả ở
+  /// những callback không nằm trong `build` (`_onPositionsChanged`, bộ
+  /// lắng nghe audio). Giữ MỘT bản đã phân giải ở đây thay vì phân giải
+  /// lại ở từng chỗ — hai lần phân giải là hai cơ hội lệch nhau.
+  SurahOpening? _opening;
+
   // pinch-zoom
   double _pinchBaseScale = 1.0;
   int _maxPointers = 1;
@@ -113,12 +121,18 @@ class _ReadingScreenState extends ConsumerState<ReadingScreen> {
 
   /// Ayah đầu tiên đang hiển thị -> lưu làm vị trí đọc.
   void _onPositionsChanged() {
+    final opening = _opening;
+    // Chưa có dữ liệu thì chưa có vị trí nào đáng lưu. Không đoán bằng
+    // "coi như không có phần mở đầu": đoán sai là ghi lệch một Ayah
+    // xuống đĩa.
+    if (opening == null) return;
     final positions = _positionsListener.itemPositions.value;
     final visible = positions.where((p) => p.itemTrailingEdge > 0);
     if (visible.isEmpty) return;
     final minItemIndex = visible.map((p) => p.index).reduce(min);
-    // Hàng header -> coi như đang ở Ayah đầu tiên.
-    final ayahIndex = ReadingRows.ayahIndexForRow(minItemIndex) ?? 0;
+    // Hàng dẫn đầu (header hoặc phần mở đầu) -> coi như đang ở Ayah đầu.
+    final ayahIndex =
+        ReadingRows.ayahIndexForRow(opening: opening, row: minItemIndex) ?? 0;
     if (ayahIndex == _lastSavedIndex) return;
     _lastSavedIndex = ayahIndex;
     unawaited(
@@ -206,6 +220,16 @@ class _ReadingScreenState extends ConsumerState<ReadingScreen> {
     final settings = ref.watch(readingSettingsProvider);
     final reading = ref.watch(surahReadingProvider(widget.surahId));
 
+    // Sprint BM2: phân giải MỘT lần cho cả khung hình. Các callback bên
+    // dưới (cuộn, vị trí đọc) đọc lại trường này chứ không tự phân giải.
+    final loaded = reading.valueOrNull;
+    _opening = loaded == null || loaded.ayahs.isEmpty
+        ? null
+        : resolveSurahOpening(
+            surahId: widget.surahId,
+            firstAyahText: loaded.ayahs.first.ayah.textUthmani,
+          );
+
     // Đang nghe audio -> tự cuộn đến Ayah đang phát (mục UX #5).
     ref.listen<AudioState>(audioControllerProvider, (prev, next) {
       final sameAyah = prev?.currentIndex == next.currentIndex &&
@@ -225,8 +249,22 @@ class _ReadingScreenState extends ConsumerState<ReadingScreen> {
       )) {
         return;
       }
+      // Sprint BM1: `currentIndex` là chỉ số PLAYLIST, không còn là chỉ
+      // số Ayah. Hỏi địa chỉ thay vì tính: `zeroBasedAyahIndex` trả
+      // `null` ở mức Surah, và mức Surah nghĩa là đang phát phần mở đầu.
+      //
+      // Sprint BM2: phần mở đầu giờ có HÀNG riêng, nên cuộn thẳng tới
+      // nó — trước BM2 chỉ cuộn được về header.
+      final opening = _opening;
+      if (opening == null) return;
+      final ayahIndex = next.currentAddress?.zeroBasedAyahIndex;
       _itemScrollController.scrollTo(
-        index: ReadingRows.rowForAyahIndex(next.currentIndex),
+        index: ayahIndex == null
+            ? ReadingRows.openingRowFor(opening) ?? 0
+            : ReadingRows.rowForAyahIndex(
+                opening: opening,
+                ayahIndex: ayahIndex,
+              ),
         alignment: 0.15,
         duration: const Duration(milliseconds: 350),
         curve: Curves.easeOutCubic,
@@ -329,6 +367,7 @@ class _ReadingScreenState extends ConsumerState<ReadingScreen> {
                           surah: data.surah,
                           ayahs: data.ayahs,
                           surahId: widget.surahId,
+                          opening: _opening!,
                           focus: _focusMode,
                           // Vị trí 0 = chưa đọc dở -> mở từ ĐẦU trang
                           // (kèm header Surah); đọc dở -> nhảy thẳng
@@ -337,9 +376,13 @@ class _ReadingScreenState extends ConsumerState<ReadingScreen> {
                               ? 0
                               : min(
                                   ReadingRows.rowForAyahIndex(
-                                    _initialAyahIndex,
+                                    opening: _opening!,
+                                    ayahIndex: _initialAyahIndex,
                                   ),
-                                  ReadingRows.lastRowFor(data.ayahs.length),
+                                  ReadingRows.lastRowFor(
+                                    opening: _opening!,
+                                    ayahCount: data.ayahs.length,
+                                  ),
                                 ),
                           itemScrollController: _itemScrollController,
                           itemPositionsListener: _positionsListener,
@@ -374,10 +417,14 @@ class _ReadingScreenState extends ConsumerState<ReadingScreen> {
     if (data == null || data.ayahs.isEmpty) return;
     unawaited(
       controller.playSurah(
-        surahId: widget.surahId,
         ayahs: [for (final a in data.ayahs) a.ayah],
-        startIndex: (_lastSavedIndex ?? _initialAyahIndex)
-            .clamp(0, data.ayahs.length - 1),
+        // Tiếp tục ở đúng Ayah đang đọc dở — mức Ayah, vì người dùng
+        // đang ở giữa Surah chứ không yêu cầu đọc lại từ đầu.
+        from: QuranAddress.fromZeroBasedAyahIndex(
+          widget.surahId,
+          (_lastSavedIndex ?? _initialAyahIndex)
+              .clamp(0, data.ayahs.length - 1),
+        ),
       ),
     );
   }
@@ -407,6 +454,7 @@ class _AyahListView extends ConsumerWidget {
     required this.surah,
     required this.ayahs,
     required this.surahId,
+    required this.opening,
     required this.focus,
     required this.initialScrollIndex,
     required this.itemScrollController,
@@ -416,6 +464,9 @@ class _AyahListView extends ConsumerWidget {
   final Surah surah;
   final List<AyahContent> ayahs;
   final int surahId;
+
+  /// Cách Surah này mở đầu — phân giải một lần ở `ReadingScreen`.
+  final SurahOpening opening;
   final bool focus;
   final int initialScrollIndex;
   final ItemScrollController itemScrollController;
@@ -440,38 +491,56 @@ class _AyahListView extends ConsumerWidget {
             horizontal: horizontal,
             vertical: 12,
           ),
-          itemCount: ReadingRows.rowCountFor(ayahs.length),
+          itemCount: ReadingRows.rowCountFor(
+            opening: opening,
+            ayahCount: ayahs.length,
+          ),
           itemBuilder: (context, row) {
-            final ayahIndex = ReadingRows.ayahIndexForRow(row);
+            final ayahIndex = ReadingRows.ayahIndexForRow(
+              opening: opening,
+              row: row,
+            );
             if (ayahIndex == null) {
-              // Sprint F2: header hỏi Surah này MỞ ĐẦU thế nào, không
-              // còn hỏi "số Surah có khác 1 và 9 không".
-              final basmalah = ayahs.isEmpty
-                  ? null
-                  : switch (resolveSurahOpening(
-                      surahId: surahId,
-                      firstAyahText: ayahs.first.ayah.textUthmani,
-                    )) {
-                      // Basmalah nằm trong Ayah 1 -> tách lên header.
-                      OpeningPrefixesFirstAyah(:final text) => text,
-                      // Ayah 1 LÀ Basmalah (Surah 1): thẻ Ayah 1 vẽ nó,
-                      // header vẽ nữa là thành hai. Không có phần mở
-                      // đầu (Surah 9): không có gì để vẽ.
-                      OpeningIsFirstAyah() || NoOpening() => null,
-                    };
-              return focus
-                  ? const SizedBox.shrink()
-                  : _SurahHeader(surah: surah, basmalah: basmalah);
+              // Hàng dẫn đầu: header, hoặc phần mở đầu nếu Surah có.
+              //
+              // Sprint BM2: Basmalah rời khỏi header thành HÀNG riêng.
+              // Giữ cả hai chỗ là vẽ nó hai lần; và chỉ khi đứng riêng
+              // nó mới nhận được trang trí "đang phát" cùng nhãn
+              // accessibility của chính mình.
+              if (focus) return const SizedBox.shrink();
+              // Biến cục bộ để kiểu được thăng hạng (trường của widget
+              // thì không).
+              final surahOpening = opening;
+              if (row == ReadingRows.openingRowFor(opening) &&
+                  surahOpening is OpeningPrefixesFirstAyah) {
+                return _OpeningRow(
+                  surahId: surahId,
+                  text: surahOpening.text,
+                  // Mức SURAH = "đọc Surah này từ đầu" -> bắt đầu ở
+                  // chính phần mở đầu.
+                  onPlay: () =>
+                      ref.read(audioControllerProvider.notifier).playSurah(
+                    ayahs: [for (final a in ayahs) a.ayah],
+                    from: QuranAddress.surah(surahId),
+                  ),
+                );
+              }
+              return _SurahHeader(surah: surah);
             }
             return AyahCard(
               content: ayahs[ayahIndex],
               focus: focus,
+              // Mức AYAH = người dùng chỉ đúng Ayah này. Sprint BM3:
+              // trước đây thẻ Ayah 1 truyền chỉ số 0 và lại nghe
+              // Basmalah — nút hứa một đằng, phát một nẻo.
               onPlay: () =>
                   ref.read(audioControllerProvider.notifier).playSurah(
-                        surahId: surahId,
-                        ayahs: [for (final a in ayahs) a.ayah],
-                        startIndex: ayahIndex,
-                      ),
+                ayahs: [for (final a in ayahs) a.ayah],
+                from: QuranAddress.ayah(
+                  surahId,
+                  ayahs[ayahIndex].ayah.ayahNumber,
+                ),
+              ),
             );
           },
         );
@@ -572,15 +641,13 @@ class _MushafViewState extends State<_MushafView> {
 // ==================== THÀNH PHẦN CHUNG ====================
 
 class _SurahHeader extends StatelessWidget {
-  const _SurahHeader({required this.surah, this.basmalah});
+  const _SurahHeader({required this.surah});
 
   final Surah surah;
 
-  /// Basmalah trang trí (lấy TỪ DỮ LIỆU Ayah 1) — hiển thị bên dưới
-  /// thẻ tên Surah, thuần hình ảnh: không đánh số, không chọn /
-  /// bookmark / yêu thích / highlight / chia sẻ. null = không hiển
-  /// thị (Surah 1 & 9).
-  final String? basmalah;
+  // Sprint BM2: header chỉ còn tên Surah, nơi giáng và số Ayah.
+  // Basmalah đã ra `_OpeningRow` — một hàng thật, có trang trí và có
+  // nhãn accessibility riêng.
 
   @override
   Widget build(BuildContext context) {
@@ -651,24 +718,115 @@ class _SurahHeader extends StatelessWidget {
           ),
         ),
 
-        // Basmalah trang trí (thuần hình ảnh) — đúng luật Mushaf.
-        // Lấy từ dữ liệu Ayah 1 (tách sẵn); null với Surah 1 & 9.
-        if (basmalah != null)
-          Padding(
-            padding: const EdgeInsets.only(top: 22, bottom: 4),
-            child: Text(
-              basmalah!,
-              textDirection: TextDirection.rtl,
-              textAlign: TextAlign.center,
-              style: quranTextStyle(
-                fontSize: 28,
-                color: scheme.onSurface.withValues(alpha: 0.85),
-                height: 1.8,
-              ),
-            ),
-          ),
+        // Sprint BM2: Basmalah KHÔNG còn ở đây. Nó là một hàng riêng
+        // (`_OpeningRow`) để nhận được trang trí "đang phát" và nhãn
+        // accessibility của chính nó.
         const SizedBox(height: 18),
       ],
+    );
+  }
+}
+
+/// Phần mở đầu Surah như một HÀNG ĐỌC riêng — Sprint BM2 (Basmalah 2.0).
+///
+/// Chỉ dựng cho Surah có `OpeningPrefixesFirstAyah`. Al-Fatihah không
+/// cần (Basmalah của nó LÀ Ayah 1, thẻ Ayah 1 vẽ rồi) và At-Tawbah
+/// không có gì để vẽ — cả hai được `ReadingRows.openingRowFor` loại từ
+/// trước, nên widget này không chứa `if` nào về số Surah.
+///
+/// Địa chỉ của nó là `QuranAddress.surah(surahId)` — cùng địa chỉ mà
+/// BM1 gán cho mục phát tương ứng. Nhờ vậy phần tô sáng ở đây và phần
+/// phát audio nói về đúng một thứ, không cần bảng tra nào ở giữa.
+class _OpeningRow extends ConsumerWidget {
+  const _OpeningRow({
+    required this.surahId,
+    required this.text,
+    required this.onPlay,
+  });
+
+  final int surahId;
+  final String text;
+
+  /// Sprint BM3: phát Surah TỪ phần mở đầu. Trước BM3 hàng này chỉ nhìn
+  /// được — nghe được Basmalah là nhờ phát cả Surah từ đầu, không phải
+  /// nhờ chỉ vào nó.
+  final VoidCallback onPlay;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context);
+    final scheme = Theme.of(context).colorScheme;
+
+    // Cùng cách so sánh mà `AyahCard` dùng, chỉ khác MỨC địa chỉ. F0 bảo
+    // đảm `surah(N) != ayah(N, 1)`, nên khi Basmalah đang phát thì thẻ
+    // Ayah 1 KHÔNG sáng theo, và ngược lại.
+    final thisOpening = QuranAddress.surah(surahId);
+    final isPlayingThis = ref.watch(
+      audioControllerProvider.select((s) => s.currentAddress == thisOpening),
+    );
+
+    // Tầng trang trí của F1, dùng lại nguyên vẹn. Phần mở đầu không tô
+    // màu được (không có bản ghi chú thích cho nó), nên tập màu rỗng —
+    // và luật ưu tiên vẫn là luật cũ, không có nhánh mới nào.
+    final decoration = resolveAyahDecoration(
+      isPlaying: isPlayingThis,
+      highlightColors: const {},
+    );
+    final background = switch (decoration) {
+      PlayingDecoration() => Color.alphaBlend(
+          scheme.primaryContainer.withValues(alpha: 0.35),
+          scheme.surfaceContainerLow,
+        ),
+      NoDecoration() || UserHighlightDecoration() => Colors.transparent,
+    };
+
+    return Semantics(
+      // `container: true`: phần mở đầu là MỘT phần tử, nên trình đọc
+      // màn hình phải gặp một nút duy nhất mang nhãn của nó — không
+      // phải một chuỗi ký tự Ả Rập trôi nổi giữa các Ayah. Không có cờ
+      // này thì nhãn chỉ là chú thích, có thể bị gộp vào node khác.
+      container: true,
+      label: l10n.openingSemanticLabel,
+      child: Padding(
+        padding: const EdgeInsets.only(bottom: 24),
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 250),
+          padding: const EdgeInsets.symmetric(vertical: 18, horizontal: 16),
+          decoration: BoxDecoration(
+            color: background,
+            borderRadius: BorderRadius.circular(16),
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              // Cùng nút, cùng tooltip, cùng cách đổi icon khi đang phát
+              // như thẻ Ayah — phần mở đầu hành xử như một phần tử đọc,
+              // không phải một món trang trí đặc biệt.
+              Align(
+                alignment: AlignmentDirectional.centerEnd,
+                child: _ActionIcon(
+                  tooltip: l10n.playFromHere,
+                  icon: isPlayingThis
+                      ? Icons.graphic_eq_rounded
+                      : Icons.play_arrow_rounded,
+                  color: scheme.primary,
+                  onPressed: onPlay,
+                ),
+              ),
+              Text(
+                text,
+                textDirection: TextDirection.rtl,
+                textAlign: TextAlign.center,
+                style: quranTextStyle(
+                  fontSize: 28,
+                  color: scheme.onSurface.withValues(alpha: 0.85),
+                  height: 1.8,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
     );
   }
 }

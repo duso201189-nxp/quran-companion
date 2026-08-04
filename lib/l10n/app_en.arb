@@ -71,6 +71,8 @@
   "pause": "Pause",
   "nextAyah": "Next ayah",
   "previousAyah": "Previous ayah",
+  "audioOpeningLabel": "Opening",
+  "openingSemanticLabel": "Surah opening — Bismillah",
   "repeatMode": "Repeat mode",
   "stopAudio": "Stop audio",
   "selectReciter": "Select reciter",

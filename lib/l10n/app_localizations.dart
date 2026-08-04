@@ -358,6 +358,18 @@ abstract class AppLocalizations {
   /// **'Ayah trước'**
   String get previousAyah;
 
+  /// No description provided for @audioOpeningLabel.
+  ///
+  /// In vi, this message translates to:
+  /// **'Mở đầu'**
+  String get audioOpeningLabel;
+
+  /// No description provided for @openingSemanticLabel.
+  ///
+  /// In vi, this message translates to:
+  /// **'Lời mở đầu Surah — Bismillah'**
+  String get openingSemanticLabel;
+
   /// No description provided for @repeatMode.
   ///
   /// In vi, this message translates to:

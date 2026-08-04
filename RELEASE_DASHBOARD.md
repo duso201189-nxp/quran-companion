@@ -496,6 +496,58 @@ precedent, accepted here as time-boxed and reversed by Phase 2.
 **Still unverifiable here:** whether audio actually keeps playing when
 the screen locks. That needs hardware — roadmap B4.
 
+### Phase 4 — Sprint B2 (background audio, Phase 2)
+
+Completes what B1 deliberately stopped short of. `AudioService.init()` is
+now called, and the platform configuration it requires is declared. The
+permission set — the product decision B1 was waiting on — was approved
+for this sprint.
+
+**Android.** Three permissions, each for a different reason: `WAKE_LOCK`
+(the CPU may sleep between audio buffers with the screen off — the exact
+failure background audio exists to prevent), `FOREGROUND_SERVICE`
+(playing while not foregrounded *is* a foreground service), and
+`FOREGROUND_SERVICE_MEDIA_PLAYBACK` (API 34 split the previous one into
+typed permissions; without the matching type the service throws
+`SecurityException` at playback start). Plus the `audio_service`
+`<service>` and the `MediaButtonReceiver` for headset and Bluetooth
+media keys. `MainActivity` now extends `AudioServiceActivity` so tapping
+the notification reattaches the *existing* engine instead of building a
+new one and losing the session.
+
+**iOS.** `UIBackgroundModes: audio`, and only that — App Review checks
+that a claimed mode is actually used.
+
+**Platform selection is tested, not assumed.** Web is excluded *even
+when* `defaultTargetPlatform` reports android/iOS, because on web it
+reports the **browser's** OS. Conflating those two signals would have
+crashed the working web build at startup. macOS is excluded because B2
+was not authorised to configure it, and enabling a platform whose
+configuration you cannot declare ships a runtime crash.
+
+**Two defects from the B1 report closed.** `skipToNext` was unbounded
+while `skipToPrevious` was bounded — on the last āyah the lock-screen
+button sought past the end of the playlist. Queue population supplies
+the length, so the two scope items resolved each other. And
+`AyahAudioItem`'s declared equality, previously 1/11 lines covered, now
+has tests; it is load-bearing because retry-after-error reuses the
+stored playlist.
+
+**884 tests** (+18). Coverage 81.71% → **81.86%**. Playback behaviour
+with the app open is unchanged.
+
+**Verification status is split, deliberately.** Compile- and
+machine-verified: the *merged* manifest contains all three permissions,
+the service with `foregroundServiceType="mediaPlayback"`, and the
+receiver (read back from `build/app/intermediates/merged_manifest/`
+after a successful `flutter build apk --debug`); `Info.plist` parses and
+declares exactly `['audio']`; `MainActivity : AudioServiceActivity()`
+compiles. **Not verified:** whether audio actually survives a screen
+lock. No Android or iOS device is attached to this environment
+(`flutter devices` shows only Windows/Chrome/Edge). An 11-item device
+checklist is in `docs/AUDIO.md` — that work is roadmap **B4** and
+remains open.
+
 ---
 
 ## 3. Remaining blockers

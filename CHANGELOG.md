@@ -5,6 +5,43 @@ Phiên bản theo [Semantic Versioning](https://semver.org/lang/vi/).
 
 ## [Unreleased]
 
+### Added — Phase 4 Sprint B2: Phát nền hoàn chỉnh (2026-08-04)
+
+Nối nốt phần Sprint B1 cố ý dừng lại: `AudioService.init()` giờ được gọi
+thật, và cấu hình nền tảng đã khai báo.
+
+- **Android** — `AndroidManifest.xml` thêm `WAKE_LOCK`,
+  `FOREGROUND_SERVICE`, `FOREGROUND_SERVICE_MEDIA_PLAYBACK` (bắt buộc từ
+  API 34), khai báo `<service>` của `audio_service` với
+  `foregroundServiceType="mediaPlayback"`, và `<receiver>`
+  `MediaButtonReceiver` cho phím media trên tai nghe/Bluetooth.
+  `MainActivity` kế thừa `AudioServiceActivity` để chạm vào thông báo
+  mở lại đúng engine đang giữ phiên phát, thay vì dựng engine mới và
+  làm mất trạng thái.
+- **iOS** — `Info.plist` khai `UIBackgroundModes: audio`. Đúng một mode:
+  App Review có kiểm tra mode đã khai có thực sự được dùng không.
+- **Chọn nền tảng có kiểm chứng** — `backgroundAudioSupported`. Web bị
+  loại KỂ CẢ khi `defaultTargetPlatform` báo android/iOS, vì trên web nó
+  trả về hệ điều hành của TRÌNH DUYỆT; không tách hai chiều đó là bản
+  web đang chạy tốt sẽ chết ngay lúc khởi động.
+- **Hàng đợi** — `QuranAudioHandler` publish `queue`. Đây cũng là nguồn
+  DUY NHẤT biết playlist dài bao nhiêu, nên không có trường `_length`
+  riêng để lệch pha.
+- **Sửa lỗi: nút "Ayah kế" nhảy ra ngoài playlist.** Trước B2,
+  `skipToNext` cộng 1 vô điều kiện và `seekToIndex` cũng không chặn, nên
+  ở Ayah cuối, nút trên màn hình khoá tìm một mục không tồn tại. Giờ hết
+  danh sách thì không làm gì — kẹp về mục cuối sẽ phát lại chính Ayah
+  đang nghe từ đầu.
+- **`AyahAudioItem` có test bằng-nhau-theo-giá-trị.** B1 khai `==`/
+  `hashCode` mà không test dòng nào (độ phủ 1/11). Ngữ nghĩa này có tải
+  trọng thật: "Thử lại" sau lỗi mạng dùng lại đúng danh sách cũ.
+- **884 test** (+18). Coverage 81.71% → 81.86%. Hành vi phát khi app
+  đang mở giữ nguyên.
+
+Chưa kiểm được: audio có thật sự tiếp tục khi khoá màn hình không — môi
+trường phát triển không có máy Android/iOS nào. Danh sách 11 mục cần
+kiểm trên thiết bị nằm ở `docs/AUDIO.md`.
+
 ### Added — Sprint B1 (Phase 0–1): Nền móng phát nền (2026-08-03)
 
 Hai phần đầu của phát-nền. **Người dùng chưa thấy gì đổi**: audio vẫn

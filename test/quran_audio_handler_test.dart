@@ -26,6 +26,17 @@ void main() {
     reciterName: 'Alafasy',
   );
 
+  /// Playlist [count] Ayah đầu của Al-Baqarah.
+  List<AyahAudioItem> playlistOf(int count) => [
+        for (var n = 1; n <= count; n++)
+          AyahAudioItem(
+            address: QuranAddress.ayah(2, n),
+            source: Uri.parse('https://a.test/002-$n.mp3'),
+            surahName: 'Al-Baqarah',
+            reciterName: 'Alafasy',
+          ),
+      ];
+
   group('B1 — mô tả cho thông báo hệ điều hành', () {
     test('màn hình khoá hiện số Ayah, tên Surah, tên Qari', () {
       final media = mediaItemFor(item);
@@ -48,6 +59,44 @@ void main() {
         reciterName: 'Husary',
       );
       expect(mediaItemFor(otherReciter).id, mediaItemFor(item).id);
+    });
+
+    /// Sprint BM4 — lỗi tìm thấy khi chạy trên máy Android thật.
+    ///
+    /// Tái hiện: mở Al-Kahf, bấm nút phát của HÀNG MỞ ĐẦU, đọc
+    /// `adb shell dumpsys media_session` trong lúc Basmalah còn đang
+    /// phát. Trước bản sửa:
+    ///
+    ///     active item id=0
+    ///     metadata: description=Ayah null, Mishary Rashid Alafasy, Al-Kahf
+    ///
+    /// Tức màn hình khoá hiện đúng chữ "Ayah null". Lỗi sinh ra ở BM1
+    /// (mục mở đầu mang địa chỉ mức Surah) nhưng nằm trong hàm của B1,
+    /// vốn viết khi mọi mục phát đều là Ayah nên `.ayah` không bao giờ
+    /// null.
+    group('BM4 — mục mở đầu có tên riêng trên thông báo', () {
+      test('địa chỉ mức Surah -> "Bismillah", KHÔNG phải "Ayah null"', () {
+        final opening = AyahAudioItem(
+          address: QuranAddress.surah(18),
+          source: Uri.parse('https://a.test/001001.mp3'),
+          surahName: 'Al-Kahf',
+          reciterName: 'Alafasy',
+        );
+
+        final media = mediaItemFor(opening);
+
+        expect(media.title, 'Bismillah');
+        expect(media.title, isNot(contains('null')));
+        // Surah và Qari vẫn hiện như mọi mục khác.
+        expect(media.album, 'Al-Kahf');
+        expect(media.artist, 'Alafasy');
+        // Danh tính là địa chỉ mức Surah.
+        expect(media.id, '18');
+      });
+
+      test('địa chỉ mức Ayah vẫn hiện số Ayah như cũ', () {
+        expect(mediaItemFor(item).title, 'Ayah 255');
+      });
     });
 
     test('số Ayah là số 1-based người đọc thấy, không phải chỉ số', () {
@@ -97,6 +146,10 @@ void main() {
     });
 
     test('Ayah kế / Ayah trước nhảy đúng chỉ số', () async {
+      // Sprint B2: phải nạp playlist trước. Trước B2, `skipToNext` cộng
+      // 1 vô điều kiện nên test này chạy được với hàng đợi rỗng — đó
+      // chính là lỗi B2 đi sửa, không phải một tiện lợi của test.
+      await player.setPlaylist(playlistOf(5));
       player.indexController.add(2);
       await settle();
 
@@ -105,6 +158,28 @@ void main() {
 
       await handler.skipToPrevious();
       expect(player.seekedTo, 1);
+    });
+
+    test('Ayah kế ở CUỐI playlist KHÔNG nhảy ra ngoài', () async {
+      await player.setPlaylist(playlistOf(3));
+      player.indexController.add(2); // mục cuối
+      await settle();
+
+      await handler.skipToNext();
+
+      // Không seek gì cả. Kẹp về chính mục cuối cũng sai: nó phát lại
+      // từ đầu đúng Ayah người dùng đang nghe. Im lặng là đúng, và là
+      // cách mọi trình phát nhạc hành xử ở cuối danh sách.
+      expect(player.seekedTo, isNull);
+    });
+
+    test('chưa nạp playlist -> Ayah kế không làm gì', () async {
+      player.indexController.add(0);
+      await settle();
+
+      await handler.skipToNext();
+
+      expect(player.seekedTo, isNull);
     });
 
     test('Ayah trước ở đầu playlist KHÔNG lùi về số âm', () async {
@@ -167,6 +242,59 @@ void main() {
     });
   });
 
+  /// Sprint B2 — hàng đợi. Nó phục vụ hai việc, và việc thứ hai mới là
+  /// lý do nó tồn tại ở sprint này: hàng đợi là NGUỒN DUY NHẤT biết
+  /// playlist dài bao nhiêu, nên `skipToNext` chặn biên dựa vào nó.
+  group('B2 — hàng đợi cho thông báo', () {
+    late FakeAyahAudioPlayer player;
+    late QuranAudioHandler handler;
+
+    Future<void> settle() => Future<void>.delayed(Duration.zero);
+
+    setUp(() {
+      player = FakeAyahAudioPlayer();
+      handler = QuranAudioHandler(player);
+    });
+
+    tearDown(() async {
+      await handler.close();
+      await player.dispose();
+    });
+
+    test('nạp playlist -> hàng đợi đủ mục, đúng thứ tự đọc', () async {
+      await player.setPlaylist(playlistOf(3));
+      await settle();
+
+      expect(
+        handler.queue.value.map((m) => m.id).toList(),
+        ['2:1', '2:2', '2:3'],
+      );
+    });
+
+    test('nạp playlist mới -> hàng đợi THAY hẳn, không cộng dồn', () async {
+      await player.setPlaylist(playlistOf(3));
+      await settle();
+      await player.setPlaylist(playlistOf(2));
+      await settle();
+
+      expect(handler.queue.value, hasLength(2));
+    });
+
+    test('playlist nạp TRƯỚC khi adapter dựng -> hàng đợi vẫn đầy', () async {
+      // Cùng lý do như currentItem: stream broadcast không phát lại giá
+      // trị cũ, nên phải hỏi thẳng trình phát một lần lúc dựng.
+      final started = FakeAyahAudioPlayer();
+      await started.setPlaylist(playlistOf(4));
+      final lateHandler = QuranAudioHandler(started);
+      addTearDown(() async {
+        await lateHandler.close();
+        await started.dispose();
+      });
+
+      expect(lateHandler.queue.value, hasLength(4));
+    });
+  });
+
   group('B1 — trạng thái phát cho thông báo', () {
     PlaybackState stateWith({
       required bool playing,
@@ -202,6 +330,61 @@ void main() {
         expect(controls, contains(MediaControl.skipToPrevious));
         expect(controls, contains(MediaControl.skipToNext));
       }
+    });
+
+    /// Sprint B3 — lỗi tìm thấy khi chạy trên máy Android thật (emulator
+    /// API 37), không phải giả định.
+    ///
+    /// Tái hiện: phát hết một Surah rồi để yên. Trước bản sửa, thông báo
+    /// còn lại nút "Tạm dừng" cho thứ đã im, KHÔNG vuốt bỏ được, và
+    /// foreground service bị giữ vô thời hạn — xác nhận bằng
+    /// `dumpsys notification` (`flags=ONGOING_EVENT|NO_CLEAR|NO_DISMISS`,
+    /// action `[1] "Pause"`) và `dumpsys activity services`
+    /// (`isForeground=true`).
+    ///
+    /// Nguyên nhân: `playing` của just_audio nghĩa là "đã được lệnh
+    /// phát", không phải "đang ra tiếng", nên nó vẫn `true` sau khi hết
+    /// playlist. `AudioController` đã tự chữa từ lâu; adapter thông báo
+    /// thì chưa — hai bên nói khác nhau về cùng một trình phát.
+    group('B3 — hết playlist thì KHÔNG còn là đang phát', () {
+      test('completed + playing=true -> thông báo hiện nút PHÁT', () {
+        final state = playbackStateFor(
+          playing: true, // just_audio vẫn báo true sau khi hết
+          processing: AyahPlayerProcessing.completed,
+          position: const Duration(seconds: 13),
+          index: 6,
+        );
+
+        expect(state.playing, isFalse);
+        expect(state.controls, contains(MediaControl.play));
+        expect(state.controls, isNot(contains(MediaControl.pause)));
+      });
+
+      test('completed vẫn được báo đúng là completed', () {
+        // Sửa cờ `playing` KHÔNG được nuốt mất trạng thái xử lý: hệ
+        // điều hành cần biết đây là "hết bài", không phải "tạm dừng".
+        expect(
+          playbackStateFor(
+            playing: true,
+            processing: AyahPlayerProcessing.completed,
+            position: Duration.zero,
+            index: 6,
+          ).processingState,
+          AudioProcessingState.completed,
+        );
+      });
+
+      test('đang phát bình thường KHÔNG bị ảnh hưởng', () {
+        final state = playbackStateFor(
+          playing: true,
+          processing: AyahPlayerProcessing.ready,
+          position: Duration.zero,
+          index: 0,
+        );
+
+        expect(state.playing, isTrue);
+        expect(state.controls, contains(MediaControl.pause));
+      });
     });
 
     test('bốn trạng thái xử lý ánh xạ đúng, không nhập nhằng', () {

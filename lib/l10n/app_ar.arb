@@ -71,6 +71,8 @@
   "pause": "إيقاف مؤقت",
   "nextAyah": "الآية التالية",
   "previousAyah": "الآية السابقة",
+  "audioOpeningLabel": "الافتتاحية",
+  "openingSemanticLabel": "افتتاحية السورة — البسملة",
   "repeatMode": "وضع التكرار",
   "stopAudio": "إيقاف الصوت",
   "selectReciter": "اختر القارئ",

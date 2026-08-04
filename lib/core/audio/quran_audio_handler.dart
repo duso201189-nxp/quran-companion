@@ -58,12 +58,14 @@ class QuranAudioHandler extends BaseAudioHandler with SeekHandler {
         _position = value;
         _publish();
       }),
+      _player.playlistStream.listen(_publishQueue),
     ]);
 
     // Trình phát có thể đã chạy trước khi lớp này được dựng; stream
     // broadcast không phát lại giá trị cũ nên phải hỏi thẳng một lần.
     _item = _player.currentItem;
     if (_item != null) mediaItem.add(mediaItemFor(_item!));
+    _publishQueue(_player.playlist);
     _publish();
   }
 
@@ -85,6 +87,12 @@ class QuranAudioHandler extends BaseAudioHandler with SeekHandler {
         ),
       );
 
+  /// Sprint B2: hàng đợi cũng là NGUỒN DUY NHẤT biết playlist dài bao
+  /// nhiêu — [skipToNext] chặn biên dựa vào nó, nên không có trường
+  /// `_length` riêng để lệch pha.
+  void _publishQueue(List<AyahAudioItem> items) =>
+      queue.add([for (final item in items) mediaItemFor(item)]);
+
   // ---------- nút bấm trên thông báo / màn hình khoá ----------
 
   @override
@@ -96,15 +104,30 @@ class QuranAudioHandler extends BaseAudioHandler with SeekHandler {
   @override
   Future<void> stop() => _player.stop();
 
+  /// Sprint B2: KHÔNG tiến quá cuối playlist.
+  ///
+  /// Trước B2 đây là `seekToIndex(_index + 1)` trần, còn
+  /// `JustAudioAyahPlayer.seekToIndex` chuyển thẳng xuống
+  /// `just_audio.seek(index:)` cũng không chặn — nên ở Ayah cuối, nút
+  /// "kế tiếp" trên màn hình khoá tìm một mục không tồn tại.
+  ///
+  /// Hết danh sách thì KHÔNG làm gì, thay vì kẹp về mục cuối: kẹp sẽ
+  /// phát lại Ayah người dùng đang nghe từ đầu — im lặng còn đỡ hơn.
+  /// Khác với [skipToPrevious] một cách có chủ ý, và đó cũng là cách
+  /// mọi trình phát nhạc hành xử.
   @override
-  Future<void> skipToNext() => _player.seekToIndex(_index + 1);
+  Future<void> skipToNext() async {
+    final last = queue.value.length - 1;
+    if (last < 0 || _index >= last) return;
+    await _player.seekToIndex(_index + 1);
+  }
 
+  /// Lùi ở mục đầu -> phát lại chính nó từ đầu, đúng quy ước "previous"
+  /// của trình phát nhạc. Không lùi ra ngoài playlist: hệ điều hành vẫn
+  /// vẽ nút, người dùng vẫn bấm được — chặn ở đây rẻ hơn là tin vào nó.
   @override
-  Future<void> skipToPrevious() => _player.seekToIndex(
-        // Không lùi quá đầu playlist. Hệ điều hành vẫn vẽ nút, người
-        // dùng vẫn bấm được — chặn ở đây rẻ hơn là tin vào nó.
-        _index > 0 ? _index - 1 : 0,
-      );
+  Future<void> skipToPrevious() =>
+      _player.seekToIndex(_index > 0 ? _index - 1 : 0);
 
   @override
   Future<void> skipToQueueItem(int index) => _player.seekToIndex(index);
@@ -129,7 +152,22 @@ class QuranAudioHandler extends BaseAudioHandler with SeekHandler {
 ///   `QuranAddress` chứ không phải chỉ số playlist.
 MediaItem mediaItemFor(AyahAudioItem item) => MediaItem(
       id: '${item.address}',
-      title: 'Ayah ${item.address.ayah}',
+      // Sprint BM4 — sửa lỗi thấy trên máy thật.
+      //
+      // Địa chỉ mức Surah KHÔNG có số Ayah, nên `'Ayah ${...ayah}'` in
+      // ra đúng chữ "Ayah null" trên màn hình khoá suốt lúc Basmalah
+      // phát. Lỗi có từ BM1 (mục mở đầu là mục phát đầu tiên mang địa
+      // chỉ mức Surah) nhưng nằm trong hàm của B1, vốn viết khi mọi mục
+      // đều là Ayah.
+      //
+      // Nhãn để nguyên tiếng Latin như `title` cũ và như `album`
+      // (tên Surah Latin): thông báo hệ điều hành không có ngôn ngữ
+      // giao diện của ứng dụng, và "Bismillah" là dạng người nghe
+      // Qur'an nhận ra được bất kể họ đọc bản dịch nào.
+      title: switch (item.address.ayah) {
+        final ayahNumber? => 'Ayah $ayahNumber',
+        null => 'Bismillah',
+      },
       album: item.surahName,
       artist: item.reciterName,
     );
@@ -143,22 +181,43 @@ PlaybackState playbackStateFor({
   required AyahPlayerProcessing processing,
   required Duration position,
   required int index,
-}) =>
-    PlaybackState(
-      controls: [
-        MediaControl.skipToPrevious,
-        if (playing) MediaControl.pause else MediaControl.play,
-        MediaControl.skipToNext,
-      ],
-      systemActions: const {MediaAction.seek},
-      androidCompactActionIndices: const [0, 1, 2],
-      processingState: switch (processing) {
-        AyahPlayerProcessing.idle => AudioProcessingState.idle,
-        AyahPlayerProcessing.loading => AudioProcessingState.loading,
-        AyahPlayerProcessing.ready => AudioProcessingState.ready,
-        AyahPlayerProcessing.completed => AudioProcessingState.completed,
-      },
-      playing: playing,
-      updatePosition: position,
-      queueIndex: index,
-    );
+}) {
+  // Sprint B3 — sửa lỗi phát hiện khi chạy trên máy.
+  //
+  // Hết playlist, just_audio VẪN để `playing == true`: cờ đó nghĩa là
+  // "đã được lệnh phát", không phải "đang ra tiếng". Trước B3, thông
+  // báo tin thẳng cờ ấy, nên khi đọc xong Surah người dùng còn lại một
+  // thông báo hiện nút "Tạm dừng" cho thứ đã im, KHÔNG vuốt bỏ được
+  // (`androidNotificationOngoing`), và ứng dụng giữ foreground service
+  // vô thời hạn.
+  //
+  // `AudioController` đã tự chữa chỗ này từ lâu (xem
+  // `audio_controller.dart`, nhánh `processing == completed` ép
+  // `playing = false`) — nên trước B3 giao diện trong app và thông báo
+  // ngoài màn hình khoá nói hai điều khác nhau về cùng một trình phát.
+  // Đây là chỗ khớp chúng lại, và là bất biến mà `DR-2026-0019` muốn:
+  // một trạng thái, mọi bên đọc ra như nhau.
+  //
+  // Đặt `playing: false` cũng là thứ khiến `androidStopForegroundOnPause`
+  // nhả foreground service, nên thông báo vuốt bỏ được trở lại.
+  final active = playing && processing != AyahPlayerProcessing.completed;
+
+  return PlaybackState(
+    controls: [
+      MediaControl.skipToPrevious,
+      if (active) MediaControl.pause else MediaControl.play,
+      MediaControl.skipToNext,
+    ],
+    systemActions: const {MediaAction.seek},
+    androidCompactActionIndices: const [0, 1, 2],
+    processingState: switch (processing) {
+      AyahPlayerProcessing.idle => AudioProcessingState.idle,
+      AyahPlayerProcessing.loading => AudioProcessingState.loading,
+      AyahPlayerProcessing.ready => AudioProcessingState.ready,
+      AyahPlayerProcessing.completed => AudioProcessingState.completed,
+    },
+    playing: active,
+    updatePosition: position,
+    queueIndex: index,
+  );
+}

@@ -1,8 +1,29 @@
-<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
     <!-- Audio streaming (just_audio) and content/data-version checks
          need network access in release builds, not just debug/profile. -->
     <uses-permission android:name="android.permission.INTERNET"/>
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+
+    <!-- Sprint B2 — background audio (audio_service 0.18.19).
+         Each of the three is required, for a different reason:
+
+         WAKE_LOCK: without it the CPU may sleep between audio buffers
+         once the screen is off, so playback stutters or stops — the
+         exact failure background audio exists to prevent.
+
+         FOREGROUND_SERVICE: playing while the app is not in the
+         foreground IS a foreground service on Android. The permission
+         is normal-level, granted at install, never prompted.
+
+         FOREGROUND_SERVICE_MEDIA_PLAYBACK: Android 14 (API 34) split
+         the above into typed permissions and requires the type that
+         matches the service's foregroundServiceType. targetSdk here is
+         Flutter's default (>= 34), so it is mandatory — without it the
+         service throws SecurityException the moment playback starts. -->
+    <uses-permission android:name="android.permission.WAKE_LOCK"/>
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK"/>
     <application
         android:label="quran_companion"
         android:name="${applicationName}"
@@ -29,6 +50,41 @@
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
+        <!-- Sprint B2 — the two components audio_service needs declared.
+             Both are classes inside the plugin, not ours; tools:ignore
+             silences lint's "Instantiatable" check, which cannot see
+             that an AAR provides them. Copied from the package's own
+             example manifest (audio_service-0.18.19).
+
+             AudioService: the foreground service that owns playback
+             while the activity is gone. foregroundServiceType must be
+             mediaPlayback to match FOREGROUND_SERVICE_MEDIA_PLAYBACK
+             above. The MediaBrowserService intent-filter is what makes
+             the session discoverable to the system — and to Android
+             Auto and Wear later, at no extra cost now. -->
+        <service
+            android:name="com.ryanheise.audioservice.AudioService"
+            android:foregroundServiceType="mediaPlayback"
+            android:exported="true"
+            tools:ignore="Instantiatable">
+            <intent-filter>
+                <action android:name="android.media.browse.MediaBrowserService"/>
+            </intent-filter>
+        </service>
+
+        <!-- MediaButtonReceiver: routes hardware media keys — headset
+             pause button, Bluetooth car controls, keyboard media keys —
+             into the session. Without it those buttons do nothing while
+             the screen is locked. -->
+        <receiver
+            android:name="com.ryanheise.audioservice.MediaButtonReceiver"
+            android:exported="true"
+            tools:ignore="Instantiatable">
+            <intent-filter>
+                <action android:name="android.intent.action.MEDIA_BUTTON"/>
+            </intent-filter>
+        </receiver>
+
         <!-- Don't delete the meta-data below.
              This is used by the Flutter tool to generate GeneratedPluginRegistrant.java -->
         <meta-data

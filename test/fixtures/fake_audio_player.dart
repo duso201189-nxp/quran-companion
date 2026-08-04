@@ -14,9 +14,11 @@ class FakeAyahAudioPlayer implements AyahAudioPlayer {
       StreamController<AyahPlayerProcessing>.broadcast();
   final errorController = StreamController<String>.broadcast();
   final itemController = StreamController<AyahAudioItem?>.broadcast();
+  final playlistController = StreamController<List<AyahAudioItem>>.broadcast();
 
   AyahAudioItem? _item;
 
+  @override
   List<AyahAudioItem> playlist = const [];
   int initialIndex = 0;
   bool playing = false;
@@ -51,11 +53,15 @@ class FakeAyahAudioPlayer implements AyahAudioPlayer {
   Stream<AyahAudioItem?> get currentItemStream => itemController.stream;
 
   @override
+  Stream<List<AyahAudioItem>> get playlistStream => playlistController.stream;
+
+  @override
   Future<void> setPlaylist(
     List<AyahAudioItem> items, {
     int initialIndex = 0,
   }) async {
     playlist = items;
+    playlistController.add(items);
     this.initialIndex = initialIndex;
     _item = initialIndex >= 0 && initialIndex < items.length
         ? items[initialIndex]
@@ -101,5 +107,6 @@ class FakeAyahAudioPlayer implements AyahAudioPlayer {
     await processingController.close();
     await errorController.close();
     await itemController.close();
+    await playlistController.close();
   }
 }

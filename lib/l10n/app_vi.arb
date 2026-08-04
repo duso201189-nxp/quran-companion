@@ -71,6 +71,8 @@
   "pause": "Tạm dừng",
   "nextAyah": "Ayah kế",
   "previousAyah": "Ayah trước",
+  "audioOpeningLabel": "Mở đầu",
+  "openingSemanticLabel": "Lời mở đầu Surah — Bismillah",
   "repeatMode": "Chế độ lặp",
   "stopAudio": "Dừng nghe",
   "selectReciter": "Chọn Qari",

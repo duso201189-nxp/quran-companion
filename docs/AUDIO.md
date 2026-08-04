@@ -42,33 +42,71 @@ AudioBar (UI) ──> AudioController (Riverpod, business logic)
 3. **`audio_service: ^0.18.19`** trong pubspec. Sàn Dart nâng 3.4 → 3.6
    theo yêu cầu của gói.
 
-### CHƯA xong (Phase 2) — chưa nối, và cố ý
+### Đã xong (Phase 2 — Sprint B2)
 
-`AudioService.init()` **chưa** được gọi ở `main.dart`. Gọi nó khi
-AndroidManifest chưa khai báo service là lỗi lúc CHẠY, nên nối sớm sẽ
-làm hỏng app trên Android. Còn lại:
+`AudioService.init()` đã được nối ở `main.dart`, **có điều kiện theo
+nền tảng**.
 
-1. Android: `FOREGROUND_SERVICE` + `FOREGROUND_SERVICE_MEDIA_PLAYBACK`
-   (Android 14+), `<service>` và `<receiver>` trong AndroidManifest.xml.
-2. iOS: `UIBackgroundModes: audio` trong Info.plist.
-3. `main.dart`: gọi `AudioService.init` CÓ ĐIỀU KIỆN theo nền tảng.
+1. **Android** — `AndroidManifest.xml`: ba quyền (`WAKE_LOCK`,
+   `FOREGROUND_SERVICE`, `FOREGROUND_SERVICE_MEDIA_PLAYBACK`), khai báo
+   `<service>` `com.ryanheise.audioservice.AudioService` với
+   `foregroundServiceType="mediaPlayback"`, và `<receiver>`
+   `MediaButtonReceiver` cho phím media phần cứng. `MainActivity` đổi
+   sang kế thừa `AudioServiceActivity` để chạm vào thông báo mở lại
+   đúng engine đang giữ phiên phát.
+2. **iOS** — `Info.plist`: `UIBackgroundModes: audio`. Chỉ khai đúng
+   một mode; App Review có kiểm tra mode đã khai có thực sự dùng không.
+3. **`main.dart`** — `backgroundAudioSupported(isWeb:, platform:)` quyết
+   định có gọi `init()` hay không. Web bị loại **kể cả khi**
+   `defaultTargetPlatform` báo android/iOS: trên web nó trả về hệ điều
+   hành của TRÌNH DUYỆT.
+4. **Hàng đợi** — `QuranAudioHandler` publish `queue`, và đó cũng là
+   nguồn duy nhất biết playlist dài bao nhiêu, nên `skipToNext` chặn
+   được biên cuối.
 
-Bộ quyền là một **cam kết với cửa hàng ứng dụng**, không phải một thay
-đổi mã: gỡ ra sau khi đã phát hành là sửa hồ sơ trên store. Vì thế
-Phase 2 chờ quyết định của chủ sản phẩm.
+**Nền tảng bật/tắt:**
 
-**Hiện trạng người dùng:** audio phát bình thường khi app đang mở, y
-như trước B1. Không có thay đổi hành vi nào.
+| Nền tảng | `AudioService.init()` | Vì sao |
+|---|---|---|
+| Android, iOS | **có** | Mục tiêu của B2; cấu hình gốc đã khai báo |
+| macOS | không | `audio_service` hỗ trợ, nhưng B2 không được phép cấu hình gốc cho macOS |
+| Web | không | Không có "phát nền" theo nghĩa này; bản web đang chạy tốt mà không cần |
+| Windows, Linux | không | `audio_service` không hỗ trợ; dùng `JustAudioAyahPlayer` như cũ |
 
 ### Kiểm chứng
 
-Nội dung trên màn hình khoá, nút nào sáng, và việc nút có nối đúng
-xuống trình phát hay không — **đều có test** (`quran_audio_handler_test.dart`).
-`BaseAudioHandler` dựng được trong test thường vì nó chỉ tạo vài
-`BehaviorSubject`; chỉ `AudioService.init()` mới cần nền tảng thật.
+**Đã kiểm bằng máy** (không cần thiết bị):
 
-Điều **không** kiểm được ở đây: audio có thực sự tiếp tục phát khi khoá
-màn hình không. Việc đó cần thiết bị thật — roadmap B4.
+- Nội dung màn hình khoá, nút nào sáng, nút nối đúng xuống trình phát,
+  hàng đợi, và chặn biên `skipToNext` — `quran_audio_handler_test.dart`.
+- Nền tảng nào được gọi `init()` — `background_audio_support_test.dart`,
+  duyệt cả sáu `TargetPlatform` × web/không-web.
+- Manifest **đã hợp nhất** chứa đủ ba quyền, service kèm
+  `foregroundServiceType="mediaPlayback"`, và receiver — đọc ra từ
+  `build/app/intermediates/merged_manifest/` sau `flutter build apk`.
+- `Info.plist` phân tích được và khai đúng `['audio']`.
+- `MainActivity : AudioServiceActivity()` biên dịch được (APK debug
+  build thành công).
+
+**CHƯA kiểm được — cần thiết bị thật (roadmap B4):**
+
+Không có máy Android/iOS nào nối vào môi trường phát triển hiện tại
+(`flutter devices` chỉ thấy Windows/Chrome/Edge). Những điều dưới đây là
+**giả định đã cấu hình đúng**, chưa phải sự thật đã quan sát:
+
+| # | Cần kiểm trên máy thật | Kỳ vọng |
+|---|---|---|
+| 1 | Phát một Surah, khoá màn hình | Audio tiếp tục, không ngắt |
+| 2 | Nhìn màn hình khoá | Hiện "Ayah N", tên Surah, tên Qari |
+| 3 | Bấm Tạm dừng / Phát trên thông báo | Trạng thái đổi, và khớp với thanh phát trong app |
+| 4 | Bấm Ayah kế / Ayah trước trên thông báo | Nhảy đúng Ayah |
+| 5 | **Ở Ayah CUỐI, bấm Ayah kế** | Không có gì xảy ra, không văng lỗi |
+| 6 | Vuốt bỏ thông báo khi đang phát | Không bỏ được (ongoing) |
+| 7 | Tạm dừng rồi vuốt thông báo | Bỏ được, phát dừng hẳn |
+| 8 | Chạm vào thông báo | Mở lại app đúng màn hình đang đọc, KHÔNG mất trạng thái |
+| 9 | Nút pause trên tai nghe / Bluetooth xe | Dừng/phát đúng (đường `MediaButtonReceiver`) |
+| 10 | Android 14+ (API 34+) | Không có `SecurityException` lúc bắt đầu phát |
+| 11 | Chạy bản Windows | Phát bình thường, không có thông báo, không lỗi thiếu plugin |
 
 ## Kết nối CacheManager với trình phát (Bước 5b)
 

@@ -28,8 +28,19 @@ class AudioBar extends ConsumerWidget {
 
     if (!audio.active) return const SizedBox.shrink();
 
-    // Không null sau lệnh chặn ở trên (active == surahId != null).
-    final address = audio.currentAddress!;
+    // Sprint BM1: tham chiếu hiển thị. Địa chỉ mức Ayah -> "2:255";
+    // mức Surah nghĩa là đang phát PHẦN MỞ ĐẦU, và "2" trần thì vô
+    // nghĩa với người đọc, nên hiện nhãn thay vì con số.
+    //
+    // `currentAddress` là trường được lưu (không còn tính từ chỉ số),
+    // nên về nguyên tắc có thể null trong một khoảnh khắc chuyển tiếp;
+    // chuỗi rỗng an toàn hơn một dấu `!`.
+    final address = audio.currentAddress;
+    final reference = address == null
+        ? ''
+        : address.isAyahLevel
+            ? '$address'
+            : l10n.audioOpeningLabel;
 
     return Material(
       color: scheme.surfaceContainerHigh,
@@ -104,8 +115,8 @@ class AudioBar extends ConsumerWidget {
                           // nhánh; giờ lấy từ QuranAddress.toString() —
                           // cùng một dạng chuỗi, một chỗ quy đổi.
                           audio.duration == null
-                              ? '$address'
-                              : '$address'
+                              ? reference
+                              : '$reference'
                                   ' · ${_fmtTime(audio.position)}'
                                   ' / ${_fmtTime(audio.duration!)}',
                           style: textTheme.labelSmall

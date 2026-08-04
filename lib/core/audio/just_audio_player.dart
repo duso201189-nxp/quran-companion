@@ -25,6 +25,8 @@ class JustAudioAyahPlayer implements AyahAudioPlayer {
 
   final AudioPlayer _player;
   final StreamController<String> _errors = StreamController.broadcast();
+  final StreamController<List<AyahAudioItem>> _playlists =
+      StreamController.broadcast();
   StreamSubscription<PlaybackEvent>? _eventSub;
 
   /// Playlist đang nạp — nguồn của [currentItem]/[currentItemStream].
@@ -81,11 +83,21 @@ class JustAudioAyahPlayer implements AyahAudioPlayer {
       _player.currentIndexStream.map(_itemAt);
 
   @override
+  List<AyahAudioItem> get playlist => _items;
+
+  @override
+  Stream<List<AyahAudioItem>> get playlistStream => _playlists.stream;
+
+  @override
   Future<void> setPlaylist(
     List<AyahAudioItem> items, {
     int initialIndex = 0,
   }) async {
     _items = List.unmodifiable(items);
+    // Phát TRƯỚC khi nạp nguồn: nếu setAudioSource lỗi, hàng đợi vẫn
+    // đúng với thứ người dùng vừa yêu cầu, và Thử lại dùng lại chính
+    // danh sách này.
+    _playlists.add(_items);
     try {
       await _player.setAudioSource(
         ConcatenatingAudioSource(
@@ -127,6 +139,7 @@ class JustAudioAyahPlayer implements AyahAudioPlayer {
   Future<void> dispose() async {
     await _eventSub?.cancel();
     await _errors.close();
+    await _playlists.close();
     await _player.dispose();
   }
 }

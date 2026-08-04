@@ -44,6 +44,25 @@ abstract interface class AyahAudioPlayer {
   /// nhạc đã chạy): một stream broadcast không phát lại giá trị cũ.
   AyahAudioItem? get currentItem;
 
+  /// Toàn bộ playlist đang nạp — rỗng khi chưa nạp.
+  ///
+  /// Sprint B2: thông báo của hệ điều hành cần cả DANH SÁCH, không chỉ
+  /// mục đang phát, vì hai việc:
+  ///
+  /// 1. vẽ hàng đợi (`MediaBrowserService` / Android Auto);
+  /// 2. biết đâu là mục CUỐI. Không có nó, nút "kế tiếp" trên màn hình
+  ///    khoá nhảy ra ngoài playlist — hệ điều hành vẫn vẽ nút đó dù đã
+  ///    hết bài.
+  List<AyahAudioItem> get playlist;
+
+  /// Phát mỗi lần [setPlaylist] đổi danh sách.
+  ///
+  /// Tách khỏi [currentItemStream] có chủ ý: nạp playlist mới mà chỉ số
+  /// đầu trùng chỉ số cũ thì mục hiện tại KHÔNG đổi, nhưng hàng đợi thì
+  /// có. Suy hàng đợi từ mục đang phát là một hợp đồng ngầm, đúng tình
+  /// cờ — đúng loại ràng buộc Sprint F2 vừa đi gỡ.
+  Stream<List<AyahAudioItem>> get playlistStream;
+
   Future<void> setPlaylist(List<AyahAudioItem> items, {int initialIndex = 0});
 
   Future<void> play();

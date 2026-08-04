@@ -47,6 +47,16 @@
 			</array>
 		</dict>
 	</dict>
+	<!-- Sprint B2 — background audio. Without this key iOS suspends the
+	     app a few seconds after the screen locks and playback simply
+	     stops; the entitlement is what lets AVAudioSession keep running.
+	     "audio" is the only mode claimed: no location, no VoIP, no
+	     fetch. App Review checks that a claimed mode is actually used,
+	     and audio playback is the app's own feature. -->
+	<key>UIBackgroundModes</key>
+	<array>
+		<string>audio</string>
+	</array>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
 	<key>UILaunchStoryboardName</key>
