@@ -57,6 +57,16 @@ not the release-blocking gaps themselves).
 > maintained in `docs/release/PRODUCT_READINESS_REVIEW.md` and updated
 > post-R3b in `docs/release/PHASE3_EPIC_CLOSEOUT_REPORT.md` — consult
 > those for current numbers; treat this table as directional only.
+>
+> **Note (post-B3/BM4 update, 2026-08-04)**: also predates Sprint B3
+> (background-audio device verification, one defect found and fixed),
+> and Basmalah 2.0 BM1–BM4 (opening as a first-class reading element:
+> audio, highlight, navigation, verified on the shipped database and
+> on a real Android image — see §2). Same convention as above: the
+> weighted model is **not** recalculated here. Both close real items
+> under "v1.0-specific release blockers" (Verification gaps) and
+> "Known engineering gaps"; treat 58% as understating current progress
+> until a full refresh is run.
 
 ---
 
@@ -493,8 +503,10 @@ so it waits on a decision. Consequence, stated plainly:
 code against this project's own "no provider without a consumer"
 precedent, accepted here as time-boxed and reversed by Phase 2.
 
-**Still unverifiable here:** whether audio actually keeps playing when
-the screen locks. That needs hardware — roadmap B4.
+**Was unverifiable at the time this entry was written** — no hardware
+was attached to the development environment. Resolved in Sprint B3
+(below): an Android emulator became available and 14 of 16 scenarios
+passed directly, including screen-off playback.
 
 ### Phase 4 — Sprint B2 (background audio, Phase 2)
 
@@ -542,11 +554,79 @@ the service with `foregroundServiceType="mediaPlayback"`, and the
 receiver (read back from `build/app/intermediates/merged_manifest/`
 after a successful `flutter build apk --debug`); `Info.plist` parses and
 declares exactly `['audio']`; `MainActivity : AudioServiceActivity()`
-compiles. **Not verified:** whether audio actually survives a screen
-lock. No Android or iOS device is attached to this environment
-(`flutter devices` shows only Windows/Chrome/Edge). An 11-item device
-checklist is in `docs/AUDIO.md` — that work is roadmap **B4** and
-remains open.
+compiles.
+
+**Device verification status at the time this entry was written:** not
+verified — no Android or iOS device was attached to this environment
+(`flutter devices` showed only Windows/Chrome/Edge). An 11-item device
+checklist was recorded in `docs/AUDIO.md`. Resolved for Android in
+Sprint B3 immediately below; iOS remains open.
+
+### Sprint B3 — background-audio device verification
+
+An Android emulator (Pixel 8, Android 17 / API 37) became available in
+this environment and was used to verify B2 against real platform
+behaviour rather than compiled artifacts alone.
+
+**14 of 16 Android scenarios passed directly**: screen-off playback,
+lock-screen controls (render and function, via the media-button path),
+notification controls, phone-call interruption and automatic resume,
+notification tap reattaching the existing activity (not a new one —
+confirms the `AudioServiceActivity` change), both queue boundaries,
+queue population, lock-screen metadata, and no crashes across the
+session. Bluetooth and wired-headset buttons are **partial**: the code
+path (`MediaButtonReceiver`, `KEYCODE_MEDIA_*` dispatch) is verified;
+the physical transport is not, because no such hardware exists in this
+environment.
+
+**One defect found and fixed.** Finishing a surah left the notification
+offering "Pause" for silence, un-swipeable
+(`ONGOING_EVENT|NO_CLEAR|NO_DISMISS`), with the foreground service held
+indefinitely — `just_audio`'s `playing` flag means "told to play", not
+"making sound", and stays `true` after completion. `AudioController`
+had already compensated for this; the notification adapter (B1) had
+not. Fixed in `playbackStateFor`: completion now reports not-playing,
+matching the in-app state. Verified against the same reproduction
+after the fix: correct button, foreground service released.
+
+**887 tests** (+3 from B2). Coverage unchanged at 81.86%.
+
+**iOS remains entirely unverified — 0%.** iOS builds require macOS,
+unavailable in this environment. Every device result above is Android.
+Full matrix and reproduction steps: `docs/release/PHASE4_SPRINT_B3_REPORT.md`.
+
+### Basmalah 2.0 — BM1 through BM4 (opening as a first-class reading element)
+
+Closes the last "dishonest surface" class this project has been
+removing since Sprint R3b: for 112 of 114 surahs, the Basmalah was
+**displayed but never audible** — measured directly against the
+reciter audio (`002001.mp3` is ~7.7s, too short to contain the 9.2s
+Basmalah). Delivered across four sprints, each independently gated:
+
+| Sprint | Delivered |
+|---|---|
+| **BM1** | Audio foundation. `ReadingPlaylist` (mirrors `ReadingRows`, both reading from one `hasSeparateOpening` predicate — the guard against the two ever disagreeing). Basmalah audio reuses `001001.mp3` (Al-Fātiḥah's āyah 1 *is* the Basmalah) — no new assets, no licensing. The opening's address is `QuranAddress.surah(N)` (Sprint F0) — its *role*, not its text — so **no Word Address was needed**. |
+| **BM2** | The opening becomes a reading row: rendered once (moved out of the decorative header), highlighted by the existing F1 decoration layer, given a screen-reader label as one semantics node. `ReadingRows.leadingRows` (a constant) became `leadingRowsFor(SurahOpening)` (a function) — the five call sites Sprint F2 had already consolidated changed in one pass. |
+| **BM3** | The opening gets its own play button, which fixed an ambiguity BM1 had introduced: `playSurah` took an āyah index and guessed intent from `index == 0`, so pressing play on āyah 1 played the Basmalah first. It now takes a `QuranAddress` whose *level* carries the intent — surah-level starts at the opening, āyah-level starts at that āyah. |
+| **BM4** | Verification at three levels: pure unit tests; a new real-data test opening the **shipped** `quran.sqlite` and checking all 114 surahs (exactly one Basmalah each, At-Tawbah none, **An-Naml 27:30 — the one genuine mid-surah Basmalah, in Sulaymān's letter — returned byte-for-byte unchanged**); and the same Android emulator used in B3. One defect found: the lock screen read literal text **"Ayah null"** while the Basmalah played, because `mediaItemFor` (written in B1, when every playlist item was āyah-level) interpolated a null āyah number. Fixed: surah-level items now show "Bismillah". |
+
+**Architecture invariant held throughout — no schema change, no data
+migration.** Adding a playlist item and a reading row shifted two
+index spaces that used to coincide with the āyah index; both
+`ReadingPositionStore` and `study_sessions` remain purely āyah-based,
+verified on-device (`reading.pos.18` reads back as an āyah index, not
+a playlist index) as well as in tests. Al-Fātiḥah and At-Tawbah are
+excluded by the `sealed SurahOpening` type from Sprint F2 — no
+surah-number `if` was written anywhere in this arc.
+
+**Tests: 887 → 930 (+43 across the four sprints). Coverage: 81.86% →
+82.04%.** Full architecture review, sprint-by-sprint reports and
+device evidence: `docs/release/PHASE4_BASMALAH_2_0_PLAN.md` and
+`docs/release/PHASE4_SPRINT_BM{1,2,3,4}_REPORT.md`.
+
+**iOS unverified**, same caveat as B3 — this arc added no
+platform-specific code, so the risk is inherited rather than new, but
+it is still open.
 
 ---
 

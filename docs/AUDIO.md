@@ -88,25 +88,55 @@ nền tảng**.
 - `MainActivity : AudioServiceActivity()` biên dịch được (APK debug
   build thành công).
 
-**CHƯA kiểm được — cần thiết bị thật (roadmap B4):**
+### Đã kiểm trên thiết bị (Sprint B3, 2026-08-04)
 
-Không có máy Android/iOS nào nối vào môi trường phát triển hiện tại
-(`flutter devices` chỉ thấy Windows/Chrome/Edge). Những điều dưới đây là
-**giả định đã cấu hình đúng**, chưa phải sự thật đã quan sát:
+Emulator Pixel 8 (Android 17 / API 37) đã dùng được trong môi trường
+này — cập nhật bảng 11 mục ở trên bằng KẾT QUẢ THẬT thay vì giả định.
+Chi tiết đầy đủ, kèm lệnh `adb` và log: `docs/release/PHASE4_SPRINT_B3_REPORT.md`.
 
-| # | Cần kiểm trên máy thật | Kỳ vọng |
-|---|---|---|
-| 1 | Phát một Surah, khoá màn hình | Audio tiếp tục, không ngắt |
-| 2 | Nhìn màn hình khoá | Hiện "Ayah N", tên Surah, tên Qari |
-| 3 | Bấm Tạm dừng / Phát trên thông báo | Trạng thái đổi, và khớp với thanh phát trong app |
-| 4 | Bấm Ayah kế / Ayah trước trên thông báo | Nhảy đúng Ayah |
-| 5 | **Ở Ayah CUỐI, bấm Ayah kế** | Không có gì xảy ra, không văng lỗi |
-| 6 | Vuốt bỏ thông báo khi đang phát | Không bỏ được (ongoing) |
-| 7 | Tạm dừng rồi vuốt thông báo | Bỏ được, phát dừng hẳn |
-| 8 | Chạm vào thông báo | Mở lại app đúng màn hình đang đọc, KHÔNG mất trạng thái |
-| 9 | Nút pause trên tai nghe / Bluetooth xe | Dừng/phát đúng (đường `MediaButtonReceiver`) |
-| 10 | Android 14+ (API 34+) | Không có `SecurityException` lúc bắt đầu phát |
-| 11 | Chạy bản Windows | Phát bình thường, không có thông báo, không lỗi thiếu plugin |
+| # | Kịch bản | Kết quả | Bằng chứng |
+|---|---|---|---|
+| 1 | Phát một Surah, khoá màn hình | ✅ **PASS** | `mWakefulness=Asleep`, `state=PLAYING`, vị trí phát vẫn tăng |
+| 2 | Nhìn màn hình khoá | ✅ **PASS** | Card hiện "Ayah N", tên Surah, tên Qari |
+| 3 | Tạm dừng / Phát trên thông báo | ✅ **PASS** (qua đường phím media) | `MEDIA_PAUSE`→`PAUSED`, `MEDIA_PLAY`→`PLAYING`, khớp thanh phát trong app. Chạm tay trực tiếp vào nút không tự động hoá được trên emulator; đường phím media dùng chung một cơ chế `MediaSession` nên xác nhận cùng đường mã nguồn |
+| 4 | Ayah kế / Ayah trước trên thông báo | ✅ **PASS** | Nhảy đúng Ayah qua `MEDIA_NEXT`/`MEDIA_PREVIOUS` |
+| 5 | Ở Ayah CUỐI, bấm Ayah kế | ✅ **PASS** | Xác nhận trên máy: không có gì xảy ra, không crash — đúng lỗi B2 đã sửa |
+| 6 | Vuốt bỏ thông báo khi đang phát | ✅ **PASS** | `flags=ONGOING_EVENT\|NO_CLEAR\|NO_DISMISS` khi đang phát — đúng thiết kế |
+| 7 | Tạm dừng/hết bài rồi vuốt thông báo | ⚠️ **CÒN MỘT PHẦN** | Sau bản sửa B3, service foreground được nhả và nút đúng ("Phát"), nhưng thông báo vẫn còn `NO_DISMISS` — chưa vuốt bỏ được. Không phải lỗi tài nguyên (đã đóng), chỉ còn là thẩm mỹ. Xem R2 trong báo cáo B3 |
+| 8 | Chạm vào thông báo | ✅ **PASS** | Cùng `ActivityRecord` trước/sau — mở lại đúng activity đang giữ phiên phát, không mất trạng thái |
+| 9 | Nút pause trên tai nghe / Bluetooth xe | ⚠️ **MỘT PHẦN** | Đường mã nguồn (`MediaButtonReceiver`, `KEYCODE_MEDIA_*`) xác nhận được; phần cứng Bluetooth/tai nghe thật thì KHÔNG — không có thiết bị |
+| 10 | Android 14+ (API 34+) | ✅ **PASS** (đo ở API 37) | `isForeground=true types=0x00000002` (MEDIA_PLAYBACK), không `SecurityException`. API 37 áp luật nghiêm hơn 34, nên PASS ở đây suy ra được cho 34 — nhưng 34 chưa đo trực tiếp |
+| 11 | Chạy bản Windows | — chưa đo lại | Không đổi từ trước B2: `JustAudioAyahPlayer` không có nhánh nào cho `audio_service` |
+
+**Một lỗi tìm thấy VÀ ĐÃ SỬA trong Sprint B3**: nghe hết một Surah để
+đó, thông báo còn lại nút "Tạm dừng" cho thứ đã im, không vuốt bỏ được,
+và foreground service bị giữ vô thời hạn — vì `just_audio` báo
+`playing == true` ngay cả sau khi hết playlist. `AudioController` đã
+tự chữa từ lâu; `playbackStateFor` (adapter thông báo) thì chưa. Đã
+sửa và xác nhận lại trên máy.
+
+**iOS: 0% kiểm chứng.** Cần macOS, không có trong môi trường này. Toàn
+bộ bảng trên chỉ là Android.
+
+### Basmalah 2.0 và hàng đợi (Sprint BM1–BM4, 2026-08-04)
+
+Basmalah 2.0 thêm một mục MỞ ĐẦU vào đầu playlist cho 112/114 Surah
+(xem `docs/release/PHASE4_BASMALAH_2_0_PLAN.md`). Ảnh hưởng tới bảng
+kiểm chứng ở trên:
+
+- **Độ dài hàng đợi đổi**: `queue size` giờ là `số Ayah + 1` cho Surah
+  có phần mở đầu (đo trên máy: Al-Kahf 110 Ayah → hàng đợi 111 mục).
+  Al-Fatihah và At-Tawbah không đổi (không có phần mở đầu).
+- **Lỗi tìm thấy VÀ ĐÃ SỬA (BM4)**: màn hình khoá hiện đúng chữ
+  **"Ayah null"** trong lúc Basmalah phát, vì `mediaItemFor` (viết ở
+  B1, lúc mọi mục playlist đều là Ayah) không xử lý mục mức Surah. Đã
+  sửa: mục mở đầu hiện "Bismillah".
+- **Kiểm lại mục 5 (biên playlist) và mục 8 (chạm thông báo) trên
+  Al-Kahf** — cả hai vẫn đúng với hàng đợi đã dài thêm một mục; xem
+  `docs/release/PHASE4_SPRINT_BM4_REPORT.md`.
+- Vị trí đọc lưu trên đĩa (`reading.pos.*`) xác nhận trên máy vẫn là
+  chỉ số Ayah, không lệch sang chỉ số playlist — không có thay đổi nào
+  tới `ReadingPositionStore` hay `study_sessions`.
 
 ## Kết nối CacheManager với trình phát (Bước 5b)
 

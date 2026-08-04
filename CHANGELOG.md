@@ -5,6 +5,133 @@ Phiên bản theo [Semantic Versioning](https://semver.org/lang/vi/).
 
 ## [Unreleased]
 
+### Added — Basmalah 2.0 BM4: Kiểm chứng cuối + sửa lỗi trên máy thật (2026-08-04)
+
+Kiểm chứng BM1–BM3 ở ba tầng: thuần, dữ liệu thật (asset
+`quran.sqlite`, cả 114 Surah), và thiết bị thật (Pixel 8, Android
+17/API 37). Tìm thấy và sửa **một lỗi thật**.
+
+- **Lỗi: màn hình khoá hiện chữ "Ayah null"** trong lúc Basmalah đang
+  phát. `mediaItemFor` (viết ở Sprint B1, lúc mọi mục playlist đều là
+  Ayah) ghép chuỗi `'Ayah ${item.address.ayah}'`; mục mở đầu (BM1) có
+  địa chỉ mức Surah, `.ayah` là `null`, và Dart nội suy `null` thành
+  đúng chữ "null". Sửa: mức Surah hiện "Bismillah" thay vì số Ayah.
+  Xác nhận lại trên máy: `description=Bismillah`, không còn "null".
+- **Kiểm chứng dữ liệu thật, không chỉ fixture**: `basmalah_real_data_test.dart`
+  mở thẳng `assets/database/quran.sqlite`, chạy đúng hàm production
+  cho cả 114 Surah — đúng một Basmalah mỗi Surah (trừ At-Tawbah),
+  Al-Fatihah không có hàng mở đầu, và **An-Naml 27:30 (Basmalah trong
+  thư Sulayman) giữ nguyên từng byte** — bằng chứng phần mở đầu là một
+  VAI TRÒ theo vị trí, không phải khớp chuỗi.
+- **Kiểm chứng trên máy thật**: hàng đợi Al-Kahf đúng 111 mục (110 Ayah
+  + 1 mở đầu); vị trí đọc lưu trên đĩa (`reading.pos.18`) vẫn là chỉ số
+  Ayah, không lệch sang chỉ số playlist; tô sáng, thông báo, và vị trí
+  đều đúng khi bước qua lại giữa phần mở đầu và Ayah 1.
+- **930 test** (+10). Coverage giữ nguyên 82.04% (test mới chạy qua
+  code đã có, đúng vai trò của một sprint kiểm chứng).
+
+Rủi ro còn lại: **iOS hoàn toàn chưa kiểm chứng** — mọi kết quả trên
+đều từ Android; cần macOS mới chạy được. Xem
+`docs/release/PHASE4_SPRINT_BM4_REPORT.md`.
+
+### Added — Basmalah 2.0 BM3: Tương tác — phát từ phần mở đầu (2026-08-04)
+
+Cho hàng mở đầu một nút phát riêng, và sửa một mập mờ do BM1 để lại.
+
+- **Lỗi BM1 để lại, nay đã sửa**: `playSurah` trước đây nhận chỉ số
+  Ayah rồi ĐOÁN ý định từ `ayahIndex == 0` — nên bấm nút phát trên thẻ
+  Ayah 1 lại nghe Basmalah trước, dù nút chỉ hứa Ayah 1. Giờ `playSurah`
+  nhận thẳng `QuranAddress`, và MỨC của địa chỉ mang ý định: mức Surah
+  = đọc từ đầu (có phần mở đầu), mức Ayah = phát đúng Ayah đó. Mỗi nút
+  giờ làm đúng điều nó hứa.
+- **Hàng mở đầu có nút phát riêng**, dùng lại đúng `_ActionIcon` và
+  nhãn `playFromHere` của thẻ Ayah — không thêm khái niệm mới.
+- **920 test** (+5). Coverage 81.98% → 82.04%.
+
+### Added — Basmalah 2.0 BM2: Phần mở đầu thành một hàng đọc thật (2026-08-04)
+
+Basmalah rời khỏi header trang trí, trở thành một hàng đọc có địa chỉ,
+có trang trí, có nhãn accessibility riêng.
+
+- **`ReadingRows.leadingRows` (hằng số)** → `leadingRowsFor(SurahOpening)`
+  (hàm) — số hàng dẫn đầu giờ phụ thuộc Surah (header, hoặc header +
+  phần mở đầu). Cả năm chỗ dùng chỉ số hàng mà Sprint F2 đã gom về một
+  module được đổi trong một lần, đúng như F2 dự tính.
+  `hasSeparateOpening` là NGUỒN DUY NHẤT cho câu hỏi "Surah này có phần
+  mở đầu tách rời không" — cả `ReadingRows` lẫn `ReadingPlaylist`
+  (BM1) cùng hỏi ở đó.
+- **Basmalah chỉ còn hiện MỘT lần**: header bỏ hẳn phần Basmalah trang
+  trí; hàng mở đầu thay thế nó.
+- **Tô sáng dùng lại nguyên vẹn tầng F1** (`resolveAyahDecoration`) —
+  không thêm nhánh nào; phần mở đầu tô màu bằng cùng công thức
+  "đang phát" như thẻ Ayah.
+- **Nhãn accessibility**: trước BM2 Basmalah là `Text` trần, trình đọc
+  màn hình đọc ra tiếng Ả Rập thô không rõ là gì. Giờ là một node
+  semantics có tên (`"Lời mở đầu Surah — Bismillah\n..."`), cùng dạng
+  `AyahCard` tạo ra.
+- **915 test** (+11). Coverage 81.89% → 81.98%.
+
+### Added — Basmalah 2.0 BM1: Nền tảng audio (2026-08-04)
+
+Với 112/114 Surah, Basmalah TRƯỚC ĐÂY hiện trên màn hình nhưng KHÔNG
+BAO GIỜ được phát — đo trực tiếp trên file audio: `002001.mp3`
+(Al-Baqarah 2:1) chỉ dài ~7.7 giây, không đủ chứa 9.2 giây của chính
+Basmalah. Sprint này chữa đúng khoảng trống đó.
+
+- **`ReadingPlaylist`** (mới) — song sinh với `ReadingRows`, quy đổi
+  Ayah ↔ mục phát khi playlist có thêm phần mở đầu. Đây là chỗ chặn
+  RỦI RO LỚN NHẤT của cả chuỗi Basmalah 2.0: thêm một mục vào playlist
+  làm chỉ số playlist và chỉ số Ayah tách đôi, mà hai nơi tiêu thụ chỉ
+  số Ayah (`ReadingPositionStore`, `study_sessions`) GHI XUỐNG ĐĨA. Cả
+  hai giữ nguyên thuần hệ Ayah, không đổi gì — **không schema, không
+  migration**.
+- **Audio Basmalah không tốn tài nguyên mới**: Ayah 1 của Al-Fatihah
+  CHÍNH LÀ Basmalah, nên `001001.mp3` là bản ghi Basmalah có sẵn cho
+  MỌI Qari, cùng CDN, cùng bitrate. Xác nhận HTTP 200 cho cả 5 Qari.
+  Không tải mới, không giấy phép mới.
+- **Địa chỉ phần mở đầu là `QuranAddress.surah(N)`** (Sprint F0) — vai
+  trò của nó, không phải văn bản của nó — nên KHÔNG cần Word Address.
+  Ba tính chất sẵn có của F0 gánh toàn bộ thiết kế: mức Surah khác mức
+  Ayah 1 (tô sáng không nhầm), mức Surah không có `zeroBasedAyahIndex`
+  (dấu hiệu "chưa tới Ayah nào"), mức Surah sắp trước mọi Ayah của nó
+  (đúng thứ tự playlist mà không cần luật riêng).
+- **Al-Fatihah và At-Tawbah không có `if` số Surah nào** — kiểu
+  `sealed SurahOpening` (Sprint F2) tự loại cả hai: Al-Fatihah vì
+  Ayah 1 CHÍNH LÀ Basmalah (thêm mục là phát hai lần), At-Tawbah vì
+  không có Basmalah.
+- **904 test** (+17). Coverage 81.86% → 81.89%.
+
+Chi tiết kiến trúc đầy đủ: `docs/release/PHASE4_BASMALAH_2_0_PLAN.md`
+và bốn báo cáo sprint `PHASE4_SPRINT_BM{1,2,3,4}_REPORT.md`.
+
+### Fixed — Sprint B3: Kiểm chứng phát nền trên máy thật + sửa lỗi (2026-08-04)
+
+Chạy được emulator Pixel 8 (Android 17/API 37) — điều môi trường phát
+triển trước đó không có. Tìm thấy và sửa **một lỗi thật khi chạy trên
+máy**.
+
+- **Lỗi: nghe hết một Surah để đó thì thông báo bị kẹt.** Sau khi
+  playlist phát xong, `just_audio` vẫn báo `playing == true` (cờ này
+  nghĩa là "đã được lệnh phát", không phải "đang ra tiếng"). Thông báo
+  vì thế còn nút "Tạm dừng" cho thứ đã im, **không vuốt bỏ được**
+  (`NO_DISMISS`), và ứng dụng giữ foreground service **vô thời hạn**.
+  `AudioController` đã tự chữa từ lâu; adapter thông báo (B1) thì chưa
+  — hai bên nói khác nhau về cùng một trình phát. Sửa: `playbackStateFor`
+  giờ coi `processing == completed` là KHÔNG còn phát, đồng bộ với
+  `AudioController`.
+- **14/16 kịch bản Android PASS trực tiếp trên máy**: phát khi khoá
+  màn hình, nút trên màn hình khoá (qua đường phím media), nút trên
+  thông báo, cuộc gọi đến làm tạm dừng và tự phát lại, chạm thông báo
+  mở đúng lại activity đang giữ phiên phát (không mất trạng thái),
+  chặn biên `skipToNext`/`skipToPrevious` (xác nhận sửa lỗi B2), không
+  crash trong suốt phiên. Bluetooth/tai nghe dây: chỉ xác nhận được
+  đường mã nguồn (`MediaButtonReceiver`), không xác nhận được phần
+  cứng thật (không có thiết bị).
+- **887 test** (+3). Coverage giữ nguyên 81.86%.
+
+Rủi ro còn lại: **iOS chưa kiểm chứng — 0%**, cần macOS. Chi tiết:
+`docs/release/PHASE4_SPRINT_B3_REPORT.md`.
+
 ### Added — Phase 4 Sprint B2: Phát nền hoàn chỉnh (2026-08-04)
 
 Nối nốt phần Sprint B1 cố ý dừng lại: `AudioService.init()` giờ được gọi
@@ -38,9 +165,9 @@ thật, và cấu hình nền tảng đã khai báo.
 - **884 test** (+18). Coverage 81.71% → 81.86%. Hành vi phát khi app
   đang mở giữ nguyên.
 
-Chưa kiểm được: audio có thật sự tiếp tục khi khoá màn hình không — môi
-trường phát triển không có máy Android/iOS nào. Danh sách 11 mục cần
-kiểm trên thiết bị nằm ở `docs/AUDIO.md`.
+Lúc viết entry này chưa kiểm được trên thiết bị thật. Đã kiểm ở Sprint
+B3 (xem phía trên) — Android PASS 14/16 kịch bản qua emulator; iOS vẫn
+chưa kiểm.
 
 ### Added — Sprint B1 (Phase 0–1): Nền móng phát nền (2026-08-03)
 
