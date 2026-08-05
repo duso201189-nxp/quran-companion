@@ -190,6 +190,8 @@
   "khatmDefaultName": "ختمتي",
   "khatmProgressLabel": "التقدم",
   "khatmContinueReading": "متابعة القراءة",
+  "khatmCompletedTitle": "اكتملت الختمة!",
+  "khatmCompletedBody": "لقد أتممت قراءة القرآن الكريم كاملاً في هذه الختمة.",
   "khatmAyahPosition": "الآية {current} / {total}",
   "@khatmAyahPosition": {
     "placeholders": {

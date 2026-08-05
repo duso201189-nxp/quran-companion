@@ -237,7 +237,16 @@ class _ContinueReadingCard extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        surah == null
+                        // Sprint 5.1 (Finding 2) — KHÔNG dùng `surah ==
+                        // null`: `lastSurah` luôn có giá trị nhờ fallback
+                        // `?? surahById[1]` ở HomeScreen (để card có tên
+                        // Surah gợi ý ngay cả khi chưa đọc gì), nên điều
+                        // kiện đó luôn đúng và không bao giờ hiện
+                        // "Bắt đầu đọc" trên một máy mới cài. `lastAyahIndex`
+                        // mới là tín hiệu thật của "đã từng đọc" — nó chỉ
+                        // null khi chưa có vị trí nào được lưu, và dòng vị
+                        // trí Ayah bên dưới đã dùng đúng tín hiệu này.
+                        lastAyahIndex == null
                             ? l10n.startReading
                             : l10n.continueReading,
                         style: textTheme.labelLarge?.copyWith(

@@ -430,6 +430,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get khatmContinueReading => 'Continue reading';
 
   @override
+  String get khatmCompletedTitle => 'Khatm completed!';
+
+  @override
+  String get khatmCompletedBody => 'You read the entire Qur\'an in this cycle.';
+
+  @override
   String khatmAyahPosition(int current, int total) {
     return 'Ayah $current / $total';
   }

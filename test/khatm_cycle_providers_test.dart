@@ -21,7 +21,8 @@ class _FakeKhatmCycleRepository implements KhatmCycleRepository {
       throw UnimplementedError();
 
   @override
-  Stream<List<KhatmCycle>> watchAllCycles() => throw UnimplementedError();
+  Stream<List<KhatmCycle>> watchAllCycles() =>
+      Stream.value(_current == null ? [] : [_current!]);
 
   @override
   Stream<KhatmCycle?> watchActiveCycle() => Stream.value(_current);
@@ -72,28 +73,47 @@ void main() {
     expect(result.currentAyahId, 100);
   });
 
+  test('latestKhatmCycleProvider: null khi không có chu kỳ nào', () async {
+    fakeRepo.emitActive(null);
+    expect(await container.read(latestKhatmCycleProvider.future), isNull);
+  });
+
   test(
-      'khatmProgressProvider đọc KhatmCycle.progressPercent — không tính '
-      'lại công thức phần trăm', () async {
+      'latestKhatmCycleProvider: trả về chu kỳ ĐÃ HOÀN THÀNH — đây chính '
+      'là lý do Sprint 5.1 Finding 3 cần một provider riêng, không mở '
+      'rộng activeKhatmCycleProvider (provider đó cố ý loại chu kỳ đã '
+      'hoàn thành ngay ở tầng repository thật — xem doc comment tại '
+      'định nghĩa của nó)', () async {
     const cycle = KhatmCycle(
       id: 'c1',
       name: 'Ramadan',
       startedAt: 1000,
-      currentAyahId: 3118, // ~50% của 6236
+      currentAyahId: 6236,
+      completedAt: 2000,
     );
     fakeRepo.emitActive(cycle);
-    // Chạm provider nguồn trước để stream có giá trị.
-    await container.read(activeKhatmCycleProvider.future);
 
-    final progress = container.read(khatmProgressProvider);
-    expect(progress, cycle.progressPercent);
-    expect(progress, closeTo(50.0, 0.1));
+    final result = await container.read(latestKhatmCycleProvider.future);
+    expect(result, isNotNull);
+    expect(result!.id, 'c1');
+    expect(result.isCompleted, isTrue);
   });
 
-  test('khatmProgressProvider = null khi không có chu kỳ đang mở', () async {
-    fakeRepo.emitActive(null);
-    await container.read(activeKhatmCycleProvider.future);
+  test(
+      'latestKhatmCycleProvider: trả về chu kỳ đang đọc dở y hệt '
+      'activeKhatmCycleProvider khi chưa hoàn thành', () async {
+    const cycle = KhatmCycle(
+      id: 'c1',
+      name: 'Ramadan',
+      startedAt: 1000,
+      currentAyahId: 100,
+    );
+    fakeRepo.emitActive(cycle);
 
-    expect(container.read(khatmProgressProvider), isNull);
+    final result = await container.read(latestKhatmCycleProvider.future);
+    expect(result, isNotNull);
+    expect(result!.name, 'Ramadan');
+    expect(result.currentAyahId, 100);
+    expect(result.isCompleted, isFalse);
   });
 }

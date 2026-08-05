@@ -428,6 +428,13 @@ class AppLocalizationsVi extends AppLocalizations {
   String get khatmContinueReading => 'Tiếp tục đọc';
 
   @override
+  String get khatmCompletedTitle => 'Đã hoàn thành Khatm!';
+
+  @override
+  String get khatmCompletedBody =>
+      'Bạn đã đọc trọn vẹn Qur\'an trong chu kỳ này.';
+
+  @override
   String khatmAyahPosition(int current, int total) {
     return 'Ayah $current / $total';
   }

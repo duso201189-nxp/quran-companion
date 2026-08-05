@@ -190,6 +190,8 @@
   "khatmDefaultName": "Khatm của tôi",
   "khatmProgressLabel": "Tiến độ",
   "khatmContinueReading": "Tiếp tục đọc",
+  "khatmCompletedTitle": "Đã hoàn thành Khatm!",
+  "khatmCompletedBody": "Bạn đã đọc trọn vẹn Qur'an trong chu kỳ này.",
   "khatmAyahPosition": "Ayah {current} / {total}",
   "@khatmAyahPosition": {
     "placeholders": {

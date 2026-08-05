@@ -427,6 +427,13 @@ class AppLocalizationsAr extends AppLocalizations {
   String get khatmContinueReading => 'متابعة القراءة';
 
   @override
+  String get khatmCompletedTitle => 'اكتملت الختمة!';
+
+  @override
+  String get khatmCompletedBody =>
+      'لقد أتممت قراءة القرآن الكريم كاملاً في هذه الختمة.';
+
+  @override
   String khatmAyahPosition(int current, int total) {
     return 'الآية $current / $total';
   }

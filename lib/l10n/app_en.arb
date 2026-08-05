@@ -190,6 +190,8 @@
   "khatmDefaultName": "My Khatm",
   "khatmProgressLabel": "Progress",
   "khatmContinueReading": "Continue reading",
+  "khatmCompletedTitle": "Khatm completed!",
+  "khatmCompletedBody": "You read the entire Qur'an in this cycle.",
   "khatmAyahPosition": "Ayah {current} / {total}",
   "@khatmAyahPosition": {
     "placeholders": {

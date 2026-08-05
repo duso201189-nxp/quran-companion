@@ -898,6 +898,18 @@ abstract class AppLocalizations {
   /// **'Tiếp tục đọc'**
   String get khatmContinueReading;
 
+  /// No description provided for @khatmCompletedTitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Đã hoàn thành Khatm!'**
+  String get khatmCompletedTitle;
+
+  /// No description provided for @khatmCompletedBody.
+  ///
+  /// In vi, this message translates to:
+  /// **'Bạn đã đọc trọn vẹn Qur\'an trong chu kỳ này.'**
+  String get khatmCompletedBody;
+
   /// No description provided for @khatmAyahPosition.
   ///
   /// In vi, this message translates to:

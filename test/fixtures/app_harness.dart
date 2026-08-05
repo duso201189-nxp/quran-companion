@@ -1,6 +1,7 @@
 import 'package:drift/native.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_test/flutter_test.dart';
 import 'package:quran_companion/app/app.dart';
 import 'package:quran_companion/core/database/user/user_database.dart';
 import 'package:quran_companion/core/database/user/user_database_providers.dart';
@@ -68,10 +69,25 @@ class FakeQuranRepo implements QuranRepository {
       ];
 }
 
+/// Ghim ngôn ngữ THIẾT BỊ (không phải SharedPreferences) về tiếng Việt
+/// cho test — Sprint 5.1. LocaleController giờ thử ngôn ngữ thiết bị
+/// trước khi rơi về mặc định khi chưa có lựa chọn nào được lưu; không
+/// ghim thì các test dưới đây phụ thuộc vào ngôn ngữ THẬT của máy
+/// chạy test (không xác định, không tái lập được). Không ảnh hưởng
+/// test nào tự đặt `LocaleController.prefsKey` riêng — SharedPreferences
+/// vẫn được ưu tiên trước ngôn ngữ thiết bị, y hệt thứ tự thật.
+void _pinDeviceLocaleToVietnamese() {
+  final dispatcher =
+      TestWidgetsFlutterBinding.ensureInitialized().platformDispatcher;
+  dispatcher.localeTestValue = const Locale('vi');
+  addTearDown(dispatcher.clearLocaleTestValue);
+}
+
 /// Tạo ProviderContainer với SharedPreferences giả cho unit test.
 Future<ProviderContainer> makeContainer({
   Map<String, Object> prefs = const {},
 }) async {
+  _pinDeviceLocaleToVietnamese();
   SharedPreferences.setMockInitialValues(prefs);
   final sp = await SharedPreferences.getInstance();
   final container = ProviderContainer(
@@ -82,6 +98,7 @@ Future<ProviderContainer> makeContainer({
 
 /// Dựng app hoàn chỉnh cho widget test.
 Future<Widget> makeApp({Map<String, Object> prefs = const {}}) async {
+  _pinDeviceLocaleToVietnamese();
   SharedPreferences.setMockInitialValues(prefs);
   final sp = await SharedPreferences.getInstance();
   return ProviderScope(
