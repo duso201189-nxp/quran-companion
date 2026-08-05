@@ -11,10 +11,10 @@ import '../../quran/domain/entities/ayah_content.dart';
 import '../../quran/domain/entities/surah.dart';
 import '../../quran/presentation/reading/reading_position_store.dart';
 import '../../quran/presentation/surah_list_controller.dart';
-import '../../stats/data/daily_goal_providers.dart';
 import '../../stats/data/daily_goal_store.dart';
 import '../../stats/data/stats_store.dart';
 import '../../stats/data/study_session_providers.dart';
+import '../../stats/presentation/widgets/daily_goal_card.dart';
 import '../../stats/presentation/widgets/daily_goal_dialog.dart';
 
 /// Câu Qur'an trong ngày — chọn luân phiên theo ngày từ danh sách
@@ -105,7 +105,7 @@ class HomeScreen extends ConsumerWidget {
                   currentStreak: currentStreak,
                 ),
                 const SizedBox(height: 16),
-                _DailyGoalCard(l10n: l10n),
+                const DailyGoalCard(),
                 const SizedBox(height: 16),
                 _TodaysVerseCard(l10n: l10n),
                 const SizedBox(height: 20),
@@ -523,73 +523,6 @@ class _StatChip extends StatelessWidget {
             textAlign: TextAlign.center,
           ),
         ],
-      ),
-    );
-  }
-}
-
-/// Thẻ "Mục tiêu học" — CHỈ đọc từ dailyGoalProgressProvider, không
-/// tự tính gì ở tầng UI (DR-2026-0004 mục 2). Chạm để đặt/đổi chỉ
-/// tiêu qua DailyGoalDialog. Ẩn khi provider chưa có dữ liệu, cùng
-/// quy ước với _TodaysVerseCard.
-class _DailyGoalCard extends ConsumerWidget {
-  const _DailyGoalCard({required this.l10n});
-
-  final AppLocalizations l10n;
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final scheme = Theme.of(context).colorScheme;
-    final textTheme = Theme.of(context).textTheme;
-    final progress = ref.watch(dailyGoalProgressProvider);
-
-    if (progress == null) return const SizedBox.shrink();
-
-    final minutesTarget = progress.minutesTarget;
-    return Material(
-      color: scheme.surfaceContainerLow,
-      borderRadius: BorderRadius.circular(16),
-      child: InkWell(
-        borderRadius: BorderRadius.circular(16),
-        onTap: () => DailyGoalDialog.show(context),
-        child: Padding(
-          padding: const EdgeInsets.all(14),
-          child: Row(
-            children: [
-              Icon(Icons.flag_rounded, color: scheme.primary),
-              const SizedBox(width: 12),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      l10n.profileGoal,
-                      style: textTheme.labelLarge
-                          ?.copyWith(fontWeight: FontWeight.w700),
-                    ),
-                    const SizedBox(height: 2),
-                    Text(
-                      minutesTarget != null
-                          ? l10n.dailyGoalMinutesProgress(
-                              progress.minutesToday,
-                              minutesTarget,
-                            )
-                          : l10n.dailyGoalNotSet,
-                      style: textTheme.bodySmall
-                          ?.copyWith(color: scheme.onSurfaceVariant),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                  ],
-                ),
-              ),
-              Icon(
-                Icons.chevron_right_rounded,
-                color: scheme.onSurfaceVariant,
-              ),
-            ],
-          ),
-        ),
       ),
     );
   }

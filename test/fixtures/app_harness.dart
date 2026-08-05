@@ -119,8 +119,16 @@ Future<ProviderContainer> makeContainer({
   return container;
 }
 
-/// Dựng app hoàn chỉnh cho widget test.
-Future<Widget> makeApp({Map<String, Object> prefs = const {}}) async {
+/// Dựng app hoàn chỉnh cho widget test. [extraOverrides] nối thêm SAU
+/// 3 override mặc định — dùng khi một test cần ghi đè thêm một
+/// provider cụ thể (vd Sprint 6.3: né truy vấn Drift thật chậm/không
+/// ổn định của `todayStudySummaryProvider` trong môi trường test khi
+/// bài test chỉ quan tâm `dailyGoalStoreProvider`, không quan tâm dữ
+/// liệu phiên đọc).
+Future<Widget> makeApp({
+  Map<String, Object> prefs = const {},
+  List<Override> extraOverrides = const [],
+}) async {
   _pinDeviceLocaleToVietnamese();
   SharedPreferences.setMockInitialValues(prefs);
   final sp = await SharedPreferences.getInstance();
@@ -134,6 +142,7 @@ Future<Widget> makeApp({Map<String, Object> prefs = const {}}) async {
       userDatabaseProvider.overrideWithValue(
         UserDatabase(NativeDatabase.memory()),
       ),
+      ...extraOverrides,
     ],
     child: const QuranCompanionApp(),
   );

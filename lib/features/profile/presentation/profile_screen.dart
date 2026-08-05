@@ -26,7 +26,9 @@ final packageInfoProvider = FutureProvider<PackageInfo>(
 /// đang chạy thật — xem `lib/features/stats/data/daily_goal_providers.dart`
 /// — nên ô này bị GỠ khỏi màn hình thay vì đổi nhãn: đổi thành "Sắp ra
 /// mắt" vẫn sẽ là một câu sai, chỉ đổi loại sai. Vào mục tiêu qua màn
-/// Thống kê (widget goal đã có ở đó).
+/// Thống kê (`DailyGoalCard`, đặt ở đó từ Sprint 6.3 — cùng widget
+/// dùng chung với Trang chủ, xem `stats/presentation/widgets/
+/// daily_goal_card.dart`).
 class ProfileScreen extends ConsumerWidget {
   const ProfileScreen({super.key});
 

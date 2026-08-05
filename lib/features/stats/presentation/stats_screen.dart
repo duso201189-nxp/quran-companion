@@ -8,6 +8,7 @@ import '../../../shared/widgets/stat_card.dart';
 import '../../khatm/presentation/active_khatm_card.dart';
 import '../data/stats_store.dart';
 import '../data/study_session_providers.dart';
+import 'widgets/daily_goal_card.dart';
 import 'widgets/reading_stats_section.dart';
 
 /// Màn hình Thống kê — số liệu cục bộ (không cần backend):
@@ -105,6 +106,8 @@ class StatsScreen extends ConsumerWidget {
                       ),
                   ],
                 ),
+                const SizedBox(height: 20),
+                const DailyGoalCard(),
                 const SizedBox(height: 20),
                 _WeeklyChartCard(
                   title: l10n.statsWeeklyActivity,
