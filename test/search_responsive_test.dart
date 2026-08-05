@@ -27,6 +27,8 @@ void main() {
 
         expect(find.byType(SearchEmptyState), findsOneWidget);
         expect(tester.takeException(), isNull);
+
+        await flushPendingDriftTimers(tester);
       });
 
       testWidgets(
@@ -37,6 +39,8 @@ void main() {
 
         expect(find.byType(ResultCard), findsWidgets);
         expect(tester.takeException(), isNull);
+
+        await flushPendingDriftTimers(tester);
       });
 
       testWidgets('${entry.key}: Loading + Error preview không lỗi',
@@ -48,6 +52,8 @@ void main() {
 
         await pickDevPreview(tester, 'Error');
         expect(tester.takeException(), isNull);
+
+        await flushPendingDriftTimers(tester);
       });
     }
 
@@ -69,6 +75,8 @@ void main() {
 
       await pickDevPreview(tester, 'Results');
       expect(tester.takeException(), isNull);
+
+      await flushPendingDriftTimers(tester);
     });
   });
 
@@ -99,6 +107,8 @@ void main() {
         ),
       );
       expect(clearButton.right, lessThanOrEqualTo(320));
+
+      await flushPendingDriftTimers(tester);
     });
   });
 

@@ -219,6 +219,18 @@ class AppLocalizationsVi extends AppLocalizations {
   String get startReading => 'Bắt đầu đọc';
 
   @override
+  String get gettingStartedTitle => 'Bắt đầu';
+
+  @override
+  String get gettingStartedTaskRead => 'Đọc Ayah đầu tiên';
+
+  @override
+  String get gettingStartedTaskDailyGoal => 'Đặt Mục tiêu học';
+
+  @override
+  String get gettingStartedTaskKhatm => 'Bắt đầu Khatm đầu tiên';
+
+  @override
   String get todaysVerse => 'Câu Qur\'an hôm nay';
 
   @override

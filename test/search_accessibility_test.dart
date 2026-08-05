@@ -42,6 +42,8 @@ void main() {
       );
       expect(size.width, greaterThanOrEqualTo(_minTouchTarget));
       expect(size.height, greaterThanOrEqualTo(_minTouchTarget));
+
+      await flushPendingDriftTimers(tester);
     });
 
     testWidgets('nút dev preview trên AppBar', (tester) async {
@@ -52,6 +54,8 @@ void main() {
       );
       expect(size.width, greaterThanOrEqualTo(_minTouchTarget));
       expect(size.height, greaterThanOrEqualTo(_minTouchTarget));
+
+      await flushPendingDriftTimers(tester);
     });
 
     testWidgets('chiều cao ResultCard (toàn thẻ là vùng chạm)', (tester) async {
@@ -60,6 +64,8 @@ void main() {
 
       final size = tester.getSize(find.byType(ResultCard).first);
       expect(size.height, greaterThanOrEqualTo(_minTouchTarget));
+
+      await flushPendingDriftTimers(tester);
     });
   });
 
@@ -73,6 +79,8 @@ void main() {
 
       final context = tester.element(find.byType(Scaffold).first);
       expect(Directionality.of(context), TextDirection.rtl);
+
+      await flushPendingDriftTimers(tester);
     });
 
     testWidgets(
@@ -109,6 +117,8 @@ void main() {
 
       expect(find.byType(SearchEmptyState), findsOneWidget);
       expect(tester.takeException(), isNull);
+
+      await flushPendingDriftTimers(tester);
     });
 
     testWidgets('Results preview (nội dung dày nhất) ở text scale 200%',
@@ -128,6 +138,8 @@ void main() {
 
       expect(find.byType(ResultCard), findsWidgets);
       expect(tester.takeException(), isNull);
+
+      await flushPendingDriftTimers(tester);
     });
   });
 
@@ -148,6 +160,8 @@ void main() {
       final emptyStateY = tester.getTopLeft(find.byType(SearchEmptyState)).dy;
 
       expect(queryFieldY, lessThan(emptyStateY));
+
+      await flushPendingDriftTimers(tester);
     });
   });
 
@@ -174,6 +188,7 @@ void main() {
       expect(subtitle.flagsCollection.isHeader, isFalse);
 
       handle.dispose();
+      await flushPendingDriftTimers(tester);
     });
 
     testWidgets('SearchResultSection: tiêu đề là header semantics',

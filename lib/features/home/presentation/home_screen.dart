@@ -5,12 +5,14 @@ import 'package:quran_companion/l10n/app_localizations.dart';
 
 import '../../../app/router.dart';
 import '../../../app/theme/app_theme.dart';
+import '../../khatm/data/khatm_cycle_providers.dart';
 import '../../quran/data/quran_providers.dart';
 import '../../quran/domain/entities/ayah_content.dart';
 import '../../quran/domain/entities/surah.dart';
 import '../../quran/presentation/reading/reading_position_store.dart';
 import '../../quran/presentation/surah_list_controller.dart';
 import '../../stats/data/daily_goal_providers.dart';
+import '../../stats/data/daily_goal_store.dart';
 import '../../stats/data/stats_store.dart';
 import '../../stats/data/study_session_providers.dart';
 import '../../stats/presentation/widgets/daily_goal_dialog.dart';
@@ -94,6 +96,8 @@ class HomeScreen extends ConsumerWidget {
                       ? null
                       : positions.positionFor(positions.lastSurahId!),
                 ),
+                const SizedBox(height: 16),
+                const _GettingStartedCard(),
                 const SizedBox(height: 16),
                 _StatChipsRow(
                   l10n: l10n,
@@ -281,6 +285,148 @@ class _ContinueReadingCard extends StatelessWidget {
                 ),
               ],
             ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+/// Thẻ "Bắt đầu" — ba việc gợi ý cho người dùng lần đầu (Sprint 6.2).
+///
+/// KHÔNG phải trình hướng dẫn/carousel — Sprint 6.1 đã loại hai
+/// phương án đó vì chúng cần trạng thái "đã xem"/"đã đóng" riêng.
+/// Thẻ này không lưu gì cả: "xong" hay chưa được suy THẲNG từ dữ liệu
+/// thật (vị trí đọc / mục tiêu ngày / chu kỳ Khatm) mỗi lần build —
+/// cùng MỘT nguồn sự thật với chính các thẻ khác trên Trang chủ, chỉ
+/// đọc lại chứ không tạo bản sao. Khi cả ba việc đã xong, hàm build
+/// trả `SizedBox.shrink()` — không có cờ "đã ẩn" nào cần nhớ, tự động
+/// biến mất và tự động HIỆN LẠI nếu dữ liệu quay về trạng thái trống
+/// (vd cài lại app), đúng nghĩa "One Source of Truth".
+class _GettingStartedCard extends ConsumerWidget {
+  const _GettingStartedCard();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context);
+    final scheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
+
+    // Ba nguồn sự thật ĐÃ CÓ SẴN, không nguồn nào được tạo mới cho thẻ
+    // này:
+    // - readingPositionStoreProvider: cùng tín hiệu Sprint 5.1
+    //   Finding 2 đã xác minh là đúng cho "đã từng đọc" (lastSurahId
+    //   != null), không phải việc "có Surah gợi ý để vẽ".
+    // - dailyGoalStoreProvider: nguồn thô của mục tiêu ngày — đọc
+    //   thẳng thay vì qua dailyGoalProgressProvider, vì provider đó
+    //   còn phụ thuộc dữ liệu hôm nay đã tải xong, không liên quan gì
+    //   tới câu hỏi "đã ĐẶT mục tiêu chưa".
+    // - latestKhatmCycleProvider: thêm ở Sprint 5.1 Finding 3 — chu kỳ
+    //   gần đây nhất bất kể còn dở hay đã hoàn thành, đúng nghĩa "đã
+    //   BẮT ĐẦU một Khatm" mà việc này cần hỏi (activeKhatmCycleProvider
+    //   sẽ SAI ở đây: một Khatm vừa hoàn thành sẽ khiến việc này hiện
+    //   lại là "chưa xong", dù người dùng rõ ràng đã bắt đầu và hoàn
+    //   thành nó).
+    final hasRead = ref.watch(readingPositionStoreProvider).lastSurahId != null;
+    final goal = ref.watch(dailyGoalStoreProvider);
+    final hasGoal = goal.minutesPerDay != null || goal.ayahsPerDay != null;
+    final hasKhatm = ref.watch(latestKhatmCycleProvider).valueOrNull != null;
+
+    if (hasRead && hasGoal && hasKhatm) {
+      return const SizedBox.shrink();
+    }
+
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: scheme.surfaceContainerLow,
+        borderRadius: BorderRadius.circular(16),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            l10n.gettingStartedTitle,
+            style: textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w700),
+          ),
+          const SizedBox(height: 4),
+          _GettingStartedTask(
+            done: hasRead,
+            label: l10n.gettingStartedTaskRead,
+            onTap: () => context.push(AppRoutes.surahReading(1)),
+          ),
+          _GettingStartedTask(
+            done: hasGoal,
+            label: l10n.gettingStartedTaskDailyGoal,
+            onTap: () => DailyGoalDialog.show(context),
+          ),
+          _GettingStartedTask(
+            done: hasKhatm,
+            label: l10n.gettingStartedTaskKhatm,
+            // Đưa người dùng tới nơi ĐÃ có nút "Bắt đầu Khatm" thật
+            // (tab Thống kê — ActiveKhatmCard) thay vì tự gọi
+            // startCycle() thẳng từ đây: người dùng nên THẤY chu kỳ
+            // vừa tạo, không phải nó lặng lẽ xuất hiện. Route có sẵn,
+            // không route mới — cùng cách LearningSummaryScreen đã
+            // quay lại tab Học (context.go(AppRoutes.study)).
+            onTap: () => context.go(AppRoutes.stats),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+/// Một dòng việc-cần-làm trong [_GettingStartedCard]. Đã xong thì gạch
+/// ngang, đổi dấu tích, và không bấm được nữa — không có lý do điều
+/// hướng lại tới việc đã hoàn thành.
+class _GettingStartedTask extends StatelessWidget {
+  const _GettingStartedTask({
+    required this.done,
+    required this.label,
+    required this.onTap,
+  });
+
+  final bool done;
+  final String label;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
+
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        borderRadius: BorderRadius.circular(12),
+        onTap: done ? null : onTap,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 8),
+          child: Row(
+            children: [
+              Icon(
+                done ? Icons.check_circle_rounded : Icons.circle_outlined,
+                color: done ? scheme.primary : scheme.onSurfaceVariant,
+                size: 22,
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Text(
+                  label,
+                  style: textTheme.bodyMedium?.copyWith(
+                    color: done ? scheme.onSurfaceVariant : scheme.onSurface,
+                    decoration: done ? TextDecoration.lineThrough : null,
+                  ),
+                ),
+              ),
+              if (!done)
+                Icon(
+                  Icons.chevron_right_rounded,
+                  color: scheme.onSurfaceVariant,
+                ),
+            ],
           ),
         ),
       ),

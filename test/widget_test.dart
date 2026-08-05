@@ -14,5 +14,7 @@ void main() {
 
     expect(tester.takeException(), isNull);
     expect(find.text('Trang chủ'), findsWidgets);
+
+    await flushPendingDriftTimers(tester);
   });
 }

@@ -219,6 +219,18 @@ class AppLocalizationsEn extends AppLocalizations {
   String get startReading => 'Start reading';
 
   @override
+  String get gettingStartedTitle => 'Getting started';
+
+  @override
+  String get gettingStartedTaskRead => 'Read your first ayah';
+
+  @override
+  String get gettingStartedTaskDailyGoal => 'Set a Daily Goal';
+
+  @override
+  String get gettingStartedTaskKhatm => 'Start your first Khatm';
+
+  @override
   String get todaysVerse => 'Today\'s verse';
 
   @override

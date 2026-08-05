@@ -109,6 +109,8 @@ void main() {
         ),
         findsOneWidget,
       );
+
+      await flushPendingDriftTimers(tester);
     });
   });
 
@@ -123,6 +125,8 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(find.byType(SearchScreen), findsOneWidget);
+
+      await flushPendingDriftTimers(tester);
     });
   });
 
@@ -149,6 +153,8 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(find.byType(SearchScreen), findsOneWidget);
+
+      await flushPendingDriftTimers(tester);
     });
   });
 
@@ -169,6 +175,8 @@ void main() {
 
       expect(find.text("Tìm kiếm trong Qur'an..."), findsOneWidget);
       expect(clearButton(), findsNothing);
+
+      await flushPendingDriftTimers(tester);
     });
 
     testWidgets('gõ chữ -> hiện nút xoá; bấm xoá -> rỗng lại trở về ẩn',
@@ -186,6 +194,8 @@ void main() {
 
       expect(find.text('mercy'), findsNothing);
       expect(clearButton(), findsNothing);
+
+      await flushPendingDriftTimers(tester);
     });
 
     testWidgets(
@@ -206,6 +216,8 @@ void main() {
       expect(find.byType(SearchResultSection), findsNothing);
       expect(find.byType(SearchEmptyState), findsNothing);
       expect(tester.takeException(), isNull);
+
+      await flushPendingDriftTimers(tester);
     });
   });
 
@@ -220,6 +232,8 @@ void main() {
         ),
         findsOneWidget,
       );
+
+      await flushPendingDriftTimers(tester);
     });
 
     testWidgets('gõ chữ -> Empty State biến mất; xoá hết -> quay lại',
@@ -248,6 +262,8 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(find.text('Tìm điều bạn cần trong Qur\'an'), findsOneWidget);
+
+      await flushPendingDriftTimers(tester);
     });
   });
 
@@ -308,6 +324,8 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(find.byType(SearchLoadingSkeleton), findsNothing);
+
+      await flushPendingDriftTimers(tester);
     });
   });
 
@@ -318,6 +336,8 @@ void main() {
       await openSearchScreen(tester);
 
       expect(find.byIcon(Icons.bug_report_outlined), findsOneWidget);
+
+      await flushPendingDriftTimers(tester);
     });
 
     testWidgets('chọn Loading -> hiện SearchLoadingSkeleton, ẩn Empty State',
@@ -327,6 +347,8 @@ void main() {
 
       expect(find.byType(SearchLoadingSkeleton), findsOneWidget);
       expect(find.byType(SearchEmptyState), findsNothing);
+
+      await flushPendingDriftTimers(tester);
     });
 
     testWidgets(
@@ -338,6 +360,8 @@ void main() {
       expect(find.byType(SearchResultSection), findsOneWidget);
       expect(find.byType(ResultCard), findsNWidgets(3));
       expect(find.byType(SearchEmptyState), findsNothing);
+
+      await flushPendingDriftTimers(tester);
     });
 
     testWidgets(
@@ -354,6 +378,8 @@ void main() {
 
       expect(find.byType(SearchErrorState), findsNothing);
       expect(find.byType(SearchEmptyState), findsOneWidget);
+
+      await flushPendingDriftTimers(tester);
     });
 
     testWidgets('chọn Empty tường minh -> vẫn là SearchEmptyState',
@@ -365,6 +391,8 @@ void main() {
       await pickDevPreview(tester, 'Empty');
       expect(find.byType(SearchLoadingSkeleton), findsNothing);
       expect(find.byType(SearchEmptyState), findsOneWidget);
+
+      await flushPendingDriftTimers(tester);
     });
 
     testWidgets(
@@ -377,6 +405,8 @@ void main() {
       await pickDevPreview(tester, 'Off (real)');
       expect(find.byType(ResultCard), findsNothing);
       expect(find.byType(SearchEmptyState), findsOneWidget);
+
+      await flushPendingDriftTimers(tester);
     });
 
     testWidgets('chuyển qua lại các trạng thái không lỗi', (tester) async {
@@ -386,6 +416,8 @@ void main() {
       await pickDevPreview(tester, 'Loading');
 
       expect(tester.takeException(), isNull);
+
+      await flushPendingDriftTimers(tester);
     });
   });
 

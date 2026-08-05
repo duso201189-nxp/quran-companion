@@ -10,6 +10,7 @@ import 'package:quran_companion/features/search/presentation/widgets/search_erro
 import 'package:quran_companion/features/search/presentation/widgets/search_result_section.dart';
 import 'package:quran_companion/l10n/app_localizations.dart';
 
+import 'fixtures/app_harness.dart';
 import 'fixtures/search_test_harness.dart';
 
 /// Độ chói tương đối theo công thức WCAG 2.1 (sRGB -> linear -> luminance).
@@ -146,6 +147,8 @@ void main() {
         await pickDevPreview(tester, label);
         expect(tester.takeException(), isNull, reason: 'trạng thái $label');
       }
+
+      await flushPendingDriftTimers(tester);
     });
   });
 }

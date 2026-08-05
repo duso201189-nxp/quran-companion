@@ -83,6 +83,29 @@ void _pinDeviceLocaleToVietnamese() {
   addTearDown(dispatcher.clearLocaleTestValue);
 }
 
+/// Dỡ cây widget hiện tại rồi bơm đủ khung hình có trôi thời gian để
+/// mọi Timer(0) mà Drift dùng để đóng stream query chạy xong TRƯỚC
+/// khi flutter_test tự dỡ cây ở cuối test và kiểm bất biến
+/// "!timersPending" — cần gọi (thường qua `addTearDown`, ngay sau khi
+/// dựng cây widget) ở BẤT KỲ test nào dựng cả app qua [makeApp], vì
+/// từ Sprint 6.2, HomeScreen luôn dựng `_GettingStartedCard`, watch
+/// `latestKhatmCycleProvider` — một `StreamProvider.autoDispose` Drift
+/// THẬT qua `userDatabaseProvider` mà [makeApp] gắn. Cùng nguyên nhân,
+/// cùng cách chữa đã dùng cục bộ trong `reading_screen_test.dart` cho
+/// `activeKhatmCycleProvider` (Sprint SF-Khatm), gom về một chỗ dùng
+/// chung vì Sprint 6.2 khiến vấn đề này xuất hiện ở MỌI test dựng app
+/// đầy đủ, không riêng ReadingScreen nữa. Không dùng `runApp`/
+/// `TestWidgetsFlutterBinding.pump` thẳng thay cho `tester`: `runApp`
+/// gọi `scheduleAttachRootWidget` (hoãn qua một Timer khác), không
+/// đồng bộ như `attachRootWidget` mà `tester.pumpWidget` dùng — thử
+/// nghiệm cho thấy cách đó KHÔNG đáng tin cậy, vẫn còn Timer treo ở
+/// một số test.
+Future<void> flushPendingDriftTimers(WidgetTester tester) async {
+  await tester.pumpWidget(const SizedBox.shrink());
+  await tester.pump(const Duration(seconds: 1));
+  await tester.pump(const Duration(seconds: 1));
+}
+
 /// Tạo ProviderContainer với SharedPreferences giả cho unit test.
 Future<ProviderContainer> makeContainer({
   Map<String, Object> prefs = const {},

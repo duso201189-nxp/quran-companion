@@ -218,6 +218,18 @@ class AppLocalizationsAr extends AppLocalizations {
   String get startReading => 'ابدأ القراءة';
 
   @override
+  String get gettingStartedTitle => 'ابدأ الآن';
+
+  @override
+  String get gettingStartedTaskRead => 'اقرأ أول آية';
+
+  @override
+  String get gettingStartedTaskDailyGoal => 'حدد هدفًا يوميًا';
+
+  @override
+  String get gettingStartedTaskKhatm => 'ابدأ أول ختمة';
+
+  @override
   String get todaysVerse => 'آية اليوم';
 
   @override

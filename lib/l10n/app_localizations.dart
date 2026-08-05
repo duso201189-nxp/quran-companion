@@ -502,6 +502,30 @@ abstract class AppLocalizations {
   /// **'Bắt đầu đọc'**
   String get startReading;
 
+  /// No description provided for @gettingStartedTitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Bắt đầu'**
+  String get gettingStartedTitle;
+
+  /// No description provided for @gettingStartedTaskRead.
+  ///
+  /// In vi, this message translates to:
+  /// **'Đọc Ayah đầu tiên'**
+  String get gettingStartedTaskRead;
+
+  /// No description provided for @gettingStartedTaskDailyGoal.
+  ///
+  /// In vi, this message translates to:
+  /// **'Đặt Mục tiêu học'**
+  String get gettingStartedTaskDailyGoal;
+
+  /// No description provided for @gettingStartedTaskKhatm.
+  ///
+  /// In vi, this message translates to:
+  /// **'Bắt đầu Khatm đầu tiên'**
+  String get gettingStartedTaskKhatm;
+
   /// No description provided for @todaysVerse.
   ///
   /// In vi, this message translates to:

@@ -104,6 +104,8 @@ void main() {
       expect(find.text('Học'), findsWidgets);
       expect(find.text('Thống kê'), findsWidgets);
       expect(find.text('Hồ sơ'), findsWidgets);
+
+      await flushPendingDriftTimers(tester);
     });
 
     testWidgets('đi qua đủ 5 tab, mỗi tab hiển thị nội dung riêng',
@@ -131,17 +133,7 @@ void main() {
       expect(find.text('Giao diện'), findsOneWidget);
       expect(find.text('Ngôn ngữ'), findsOneWidget);
 
-      // Tab Thống kê mở stream Drift thật (UserDatabase bộ nhớ).
-      // Drift debounce việc đóng mỗi query stream bằng 1 Timer
-      // duration-zero, CHỈ được tạo khi ProviderScope thật sự dispose
-      // (huỷ StreamProvider) — điều này bình thường xảy ra SAU khi
-      // hàm test kết thúc (dọn cây widget tự động), quá muộn để
-      // pump() bên trong test bắt kịp. Chủ động thay cây bằng widget
-      // rỗng NGAY TRONG test rồi pump thêm 1 nhịp để timer đó được
-      // tạo VÀ chạy xong trước khi flutter_test kiểm tra
-      // "không còn Timer treo" lúc kết thúc test.
-      await tester.pumpWidget(const SizedBox.shrink());
-      await tester.pump(const Duration(milliseconds: 1));
+      await flushPendingDriftTimers(tester);
     });
 
     testWidgets('chọn chế độ Tối đổi themeMode của MaterialApp',
@@ -157,6 +149,8 @@ void main() {
 
       final app = tester.widget<MaterialApp>(find.byType(MaterialApp));
       expect(app.themeMode, ThemeMode.dark);
+
+      await flushPendingDriftTimers(tester);
     });
 
     testWidgets('đổi ngôn ngữ sang English cập nhật toàn bộ nhãn',
@@ -173,6 +167,8 @@ void main() {
       expect(find.text('Profile'), findsWidgets);
       expect(find.text('Appearance'), findsOneWidget);
       expect(find.text('Home'), findsWidgets);
+
+      await flushPendingDriftTimers(tester);
     });
 
     testWidgets('màn hình hẹp (< 800px) dùng NavigationBar dưới đáy',
@@ -187,6 +183,8 @@ void main() {
 
       expect(find.byType(NavigationBar), findsOneWidget);
       expect(find.byType(NavigationRail), findsNothing);
+
+      await flushPendingDriftTimers(tester);
     });
 
     testWidgets('màn hình rộng (>= 800px) dùng NavigationRail bên trái',
@@ -201,6 +199,8 @@ void main() {
 
       expect(find.byType(NavigationRail), findsOneWidget);
       expect(find.byType(NavigationBar), findsNothing);
+
+      await flushPendingDriftTimers(tester);
     });
   });
 }
