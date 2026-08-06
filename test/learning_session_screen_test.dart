@@ -22,6 +22,7 @@ import 'package:quran_companion/features/quran/domain/entities/reciter.dart';
 import 'package:quran_companion/features/quran/domain/entities/surah.dart';
 import 'package:quran_companion/features/quran/domain/entities/translation_source.dart';
 import 'package:quran_companion/features/quran/domain/repositories/quran_repository.dart';
+import 'package:quran_companion/features/quran/presentation/reading/reading_position_store.dart';
 import 'package:quran_companion/features/study/presentation/study_screen.dart';
 import 'package:quran_companion/l10n/app_localizations.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -149,7 +150,17 @@ void main() {
   setUp(() async {
     db = UserDatabase(NativeDatabase.memory());
     fakeScheduler = _FakeSchedulerRepository();
-    SharedPreferences.setMockInitialValues({});
+    // Sprint 7.1 (Assessment Scoping) — quizContentPoolProvider giờ
+    // chỉ dựng pool Quiz từ những gì ReadingPositionStore ghi nhận là
+    // đã đọc tới (xem doc comment tại quiz_providers.dart). File này
+    // kiểm luồng ĐIỀU PHỐI của Learning Session (Review -> Quiz ->
+    // Flashcard -> Summary), không kiểm scoping — seed "đã đọc hết cả
+    // 6 Surah giả" để hoạt động Quiz trong phiên vẫn có đủ 10 câu hỏi
+    // như trước Sprint 7.1, giữ nguyên mọi kỳ vọng hiện có của các
+    // test bên dưới.
+    SharedPreferences.setMockInitialValues({
+      for (var s = 1; s <= 6; s++) ReadingPositionStore.posKey(s): 2,
+    });
     prefs = await SharedPreferences.getInstance();
   });
 

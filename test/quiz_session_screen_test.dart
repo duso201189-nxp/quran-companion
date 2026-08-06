@@ -3,9 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
-
 import 'package:quran_companion/core/database/user/user_database.dart';
 import 'package:quran_companion/core/database/user/user_database_providers.dart';
+import 'package:quran_companion/core/storage/prefs_provider.dart';
 import 'package:quran_companion/features/quiz/presentation/quiz_session_screen.dart';
 import 'package:quran_companion/features/quran/data/quran_providers.dart';
 import 'package:quran_companion/features/quran/domain/entities/ayah.dart';
@@ -15,7 +15,9 @@ import 'package:quran_companion/features/quran/domain/entities/reciter.dart';
 import 'package:quran_companion/features/quran/domain/entities/surah.dart';
 import 'package:quran_companion/features/quran/domain/entities/translation_source.dart';
 import 'package:quran_companion/features/quran/domain/repositories/quran_repository.dart';
+import 'package:quran_companion/features/quran/presentation/reading/reading_position_store.dart';
 import 'package:quran_companion/l10n/app_localizations.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 /// 6 Surah giả, mỗi Surah 3 Ayah kèm bản dịch — đủ dữ liệu cho cả 4
 /// loại câu hỏi, cùng mẫu với test/quiz_providers_test.dart.
@@ -78,7 +80,20 @@ void main() {
 
   tearDown(() => db.close());
 
-  Widget wrap() {
+  // Sprint 7.1 (Assessment Scoping) — quizContentPoolProvider giờ chỉ
+  // dựng pool từ những gì ReadingPositionStore ghi nhận là đã đọc tới
+  // (xem doc comment tại quiz_providers.dart). Màn hình này chỉ kiểm
+  // hành vi phiên Quiz (sinh câu hỏi/chấm điểm/hoàn thành/restart),
+  // không kiểm scoping (đã có test/quiz_providers_test.dart riêng cho
+  // việc đó) — seed "đã đọc hết cả 6 Surah giả" để pool đầy đủ như
+  // trước Sprint 7.1, giữ nguyên mọi kỳ vọng hiện có của các test bên
+  // dưới.
+  Future<Widget> wrap() async {
+    SharedPreferences.setMockInitialValues({
+      for (var s = 1; s <= 6; s++) ReadingPositionStore.posKey(s): 2,
+    });
+    final sp = await SharedPreferences.getInstance();
+
     final router = GoRouter(
       initialLocation: '/',
       routes: [
@@ -92,6 +107,7 @@ void main() {
       overrides: [
         userDatabaseProvider.overrideWithValue(db),
         quranRepositoryProvider.overrideWithValue(_FakeQuranRepo()),
+        sharedPreferencesProvider.overrideWithValue(sp),
       ],
       child: MaterialApp.router(
         locale: const Locale('en'),
@@ -110,7 +126,7 @@ void main() {
   testWidgets(
       'phiên bắt đầu -> hiện câu hỏi 1/10 kèm đủ 4 lựa chọn '
       '(question generation)', (tester) async {
-    await tester.pumpWidget(wrap());
+    await tester.pumpWidget(await wrap());
     await tester.pumpAndSettle();
 
     expect(find.text('Question 1/10'), findsOneWidget);
@@ -122,7 +138,7 @@ void main() {
   testWidgets(
       'chọn 1 đáp án -> hiện phản hồi đúng/sai và chuyển sang câu 2/10 '
       '(scoring + next-question transition)', (tester) async {
-    await tester.pumpWidget(wrap());
+    await tester.pumpWidget(await wrap());
     await tester.pumpAndSettle();
 
     await tester.tap(find.byKey(const ValueKey('quiz_option_0')));
@@ -144,7 +160,7 @@ void main() {
 
   testWidgets('trả lời hết 10 câu -> hiện màn hình kết quả (quiz completion)',
       (tester) async {
-    await tester.pumpWidget(wrap());
+    await tester.pumpWidget(await wrap());
     await tester.pumpAndSettle();
 
     for (var i = 0; i < 10; i++) {
@@ -160,7 +176,7 @@ void main() {
   testWidgets(
       'bấm Retry sau khi hoàn thành -> phiên mới bắt đầu lại từ '
       'câu 1/10', (tester) async {
-    await tester.pumpWidget(wrap());
+    await tester.pumpWidget(await wrap());
     await tester.pumpAndSettle();
 
     for (var i = 0; i < 10; i++) {
