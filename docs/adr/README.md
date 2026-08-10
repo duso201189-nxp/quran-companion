@@ -18,6 +18,7 @@ record's own "Relationship to" note) DR.
 | [DR-2026-0017](DR-2026-0017-universal-quran-address.md) | The Universal Qur'an Address | proposed | 2026-08-03 |
 | [DR-2026-0018](DR-2026-0018-reading-session-architecture.md) | Reading Session architecture | proposed | 2026-08-03 |
 | [DR-2026-0019](DR-2026-0019-reading-engine-architecture.md) | Reading Engine architecture | proposed | 2026-08-03 |
+| [DR-2026-0020](DR-2026-0020-governance-model-for-verified-quranic-explanatory-content.md) | Governance model for verified Qur'anic explanatory content | proposed | 2026-08-10 |
 | [DR-2026-0021](DR-2026-0021-automatic-retention-seeding.md) | Automatic Retention Seeding: Revision Queue eligibility amendment (amends DR-2026-0004) | accepted | 2026-08-10 |
 
 `DR-2026-0017` is partially implemented: Sprint F0 (Phase 4) shipped its
