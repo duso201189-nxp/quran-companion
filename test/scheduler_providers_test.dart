@@ -2,14 +2,22 @@ import 'package:drift/native.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import 'package:quran_companion/core/database/app_database.dart';
+import 'package:quran_companion/core/database/database_providers.dart';
 import 'package:quran_companion/core/database/user/user_database.dart';
 import 'package:quran_companion/core/database/user/user_database_providers.dart';
+import 'package:quran_companion/core/storage/prefs_provider.dart';
 import 'package:quran_companion/features/learning/data/scheduler_providers.dart';
 import 'package:quran_companion/features/learning/domain/entities/srs_card.dart';
 import 'package:quran_companion/features/learning/domain/scheduling_algorithm.dart';
 import 'package:quran_companion/features/learning/domain/sm2_scheduling_algorithm.dart';
+import 'package:quran_companion/features/quran/data/retention_seeding_store.dart';
 import 'package:quran_companion/features/quran/data/user_content_providers.dart';
 import 'package:quran_companion/features/quran/domain/entities/ayah_annotation.dart';
+import 'package:quran_companion/features/stats/data/study_session_providers.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
+import 'fixtures/content_fixtures.dart';
 
 SrsCard _card({
   required String id,
@@ -114,18 +122,36 @@ void main() {
 
   group('provider layer (ProviderContainer + UserDatabase thật in-memory)', () {
     late UserDatabase db;
+    late AppDatabase appDb;
     late ProviderContainer container;
 
-    setUp(() {
+    // Sprint 7.3 (Automatic Retention Seeding) — schedulerSyncProvider giờ
+    // phụ thuộc gián tiếp vào revisionEligibleAyahsProvider, cần cả
+    // appDatabaseProvider (QuranRepository) và sharedPreferencesProvider
+    // (mốc kích hoạt) sẵn sàng để build() không treo/lỗi — các test dưới
+    // đây chỉ gắn cờ THỦ CÔNG (không logSession) nên không thật sự tra
+    // Group A, nhưng revisionEligibleAyahsProvider vẫn cần cả hai
+    // provider tồn tại để dựng được.
+    setUp(() async {
       db = UserDatabase(NativeDatabase.memory());
+      appDb = AppDatabase(NativeDatabase.memory());
+      SharedPreferences.setMockInitialValues({
+        RetentionSeedingActivation.key: 0,
+      });
+      final sp = await SharedPreferences.getInstance();
       container = ProviderContainer(
-        overrides: [userDatabaseProvider.overrideWithValue(db)],
+        overrides: [
+          userDatabaseProvider.overrideWithValue(db),
+          appDatabaseProvider.overrideWithValue(appDb),
+          sharedPreferencesProvider.overrideWithValue(sp),
+        ],
       );
     });
 
     tearDown(() {
       container.dispose();
       db.close();
+      appDb.close();
     });
 
     test('schedulingAlgorithmProvider mặc định là SM2SchedulingAlgorithm', () {
@@ -254,6 +280,70 @@ void main() {
         (cards) => !cards.any((c) => c.itemId == 30),
       );
       expect(afterReview.map((c) => c.itemId), isNot(contains(30)));
+    });
+  });
+
+  group(
+      'schedulerSyncProvider + Sprint 7.3 (Automatic Retention Seeding) — '
+      'M: Scheduler nhận Ayah đủ điều kiện TỰ ĐỘNG y hệt Ayah gắn cờ thủ '
+      'công, không cần biết nguồn gốc (provenance-blind)', () {
+    test(
+        'Ayah được ĐỌC (không gắn cờ thủ công) sau mốc kích hoạt -> vẫn '
+        'tự tạo thẻ SRS qua schedulerSyncProvider', () async {
+      final appDb = AppDatabase(NativeDatabase.memory());
+      await seedTestContent(appDb);
+      final userDb = UserDatabase(NativeDatabase.memory());
+
+      SharedPreferences.setMockInitialValues({
+        RetentionSeedingActivation.key: 0, // xa quá khứ -> mọi phiên đọc
+        // trong test này đều tính là "sau mốc kích hoạt".
+      });
+      final sp = await SharedPreferences.getInstance();
+
+      final container = ProviderContainer(
+        overrides: [
+          appDatabaseProvider.overrideWithValue(appDb),
+          userDatabaseProvider.overrideWithValue(userDb),
+          sharedPreferencesProvider.overrideWithValue(sp),
+        ],
+      );
+      addTearDown(() async {
+        container.dispose();
+        await appDb.close();
+        await userDb.close();
+      });
+
+      final sub = container.listen(schedulerSyncProvider, (_, __) {});
+      addTearDown(sub.close);
+
+      // Ayah 1 của Surah 1 (fixture) — ĐỌC, không gọi setStatus() nào.
+      await container.read(studySessionRepositoryProvider).logSession(
+            date: '2026-08-10',
+            surahId: 1,
+            ayahFrom: 0,
+            ayahTo: 0,
+            durationSec: 60,
+          );
+
+      final cards = await _waitFor(
+        () => container
+            .read(schedulerRepositoryProvider)
+            .watchAllCards(LearningItemType.ayah)
+            .first,
+        (cards) => cards.any((c) => c.itemId == 1),
+      );
+      expect(
+        cards.map((c) => c.itemId),
+        contains(1),
+        reason: 'Scheduler tạo thẻ cho Ayah đủ điều kiện TỰ ĐỘNG, đúng '
+            'như với Ayah gắn cờ thủ công — không cần thay đổi gì ở '
+            'SchedulerRepository/SchedulingAlgorithm.',
+      );
+
+      // Xác nhận KHÔNG có bản ghi ayah_statuses nào được tạo — đủ điều
+      // kiện tự động không đi qua đường ghi thủ công.
+      final statusRows = await userDb.select(userDb.ayahStatuses).get();
+      expect(statusRows, isEmpty);
     });
   });
 }

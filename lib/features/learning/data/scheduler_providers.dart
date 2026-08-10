@@ -24,26 +24,31 @@ final schedulerRepositoryProvider = Provider<SchedulerRepository>(
   ),
 );
 
-/// Orchestration thuần (DR-2026-0005 mục 2/3): theo dõi Revision Queue
-/// (UserContentRepository.watchAllReviewAyahs()) và gọi
-/// SchedulerRepository.syncWithReviewQueue() mỗi khi Queue đổi. KHÔNG
-/// tính toán lịch trình, KHÔNG chứa logic scheduling — chỉ chuyển
-/// tiếp danh sách ayah_id giữa 2 repository độc lập, đúng vai trò
-/// "phối hợp" của tầng Provider (Scheduler không phụ thuộc
-/// UserContentRepository, xem SchedulerRepository).
+/// Orchestration thuần (DR-2026-0005 mục 2/3): theo dõi Ayah đủ điều
+/// kiện Revision (Sprint 7.3 — `revisionEligibleAyahsProvider`, thủ
+/// công HỢP tự động; trước Sprint 7.3 là
+/// UserContentRepository.watchAllReviewAyahs() thuần) và gọi
+/// SchedulerRepository.syncWithReviewQueue() mỗi khi danh sách đổi.
+/// KHÔNG tính toán lịch trình, KHÔNG chứa logic scheduling, KHÔNG biết
+/// (và không cần biết) một Ayah vào danh sách bằng cách thủ công hay
+/// tự động — chỉ chuyển tiếp danh sách ayah_id giữa các repository độc
+/// lập, đúng vai trò "phối hợp" của tầng Provider (Scheduler vẫn
+/// không phụ thuộc UserContentRepository, xem SchedulerRepository —
+/// Scheduler provenance-blind, không đổi bởi Sprint 7.3).
 ///
 /// autoDispose: chỉ chạy khi có provider/UI đang watch nó (vd.
 /// dueReviewCardsProvider) — không tự đồng bộ nền khi không ai cần.
 final schedulerSyncProvider = StreamProvider.autoDispose<void>((ref) async* {
-  final reviewAyahs =
-      ref.watch(userContentRepositoryProvider).watchAllReviewAyahs();
+  // ref.watch(...future) thay cho .stream (deprecated, xem
+  // deprecated_member_use) — cùng ngữ nghĩa reactive: mỗi lần
+  // revisionEligibleAyahsProvider phát giá trị mới, toàn bộ builder
+  // này chạy lại từ đầu.
+  final items = await ref.watch(revisionEligibleAyahsProvider.future);
   final schedulerRepo = ref.watch(schedulerRepositoryProvider);
-  await for (final items in reviewAyahs) {
-    await schedulerRepo.syncWithReviewQueue(
-      [for (final item in items) item.ayahId],
-    );
-    yield null;
-  }
+  await schedulerRepo.syncWithReviewQueue(
+    [for (final item in items) item.ayahId],
+  );
+  yield null;
 });
 
 /// Lọc + sắp xếp + khử trùng lặp thẻ đến hạn — hàm thuần tách riêng

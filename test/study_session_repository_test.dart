@@ -199,4 +199,118 @@ void main() {
       expect(await repo.longestStreak(), 3);
     });
   });
+
+  group(
+      'watchAyahRangesCoveredSince (Sprint 7.3 — Automatic Retention '
+      'Seeding)', () {
+    test('phiên tạo TRƯỚC cutoff -> KHÔNG xuất hiện trong kết quả', () async {
+      fakeNow = 1000;
+      await repo.logSession(
+        date: '2026-07-18',
+        surahId: 1,
+        ayahFrom: 0,
+        ayahTo: 6,
+        durationSec: 60,
+      );
+
+      final ranges = await repo.watchAyahRangesCoveredSince(2000).first;
+      expect(ranges, isEmpty);
+    });
+
+    test('phiên tạo ĐÚNG lúc cutoff -> CÓ xuất hiện (>=, không phải >)',
+        () async {
+      fakeNow = 2000;
+      await repo.logSession(
+        date: '2026-07-18',
+        surahId: 1,
+        ayahFrom: 0,
+        ayahTo: 6,
+        durationSec: 60,
+      );
+
+      final ranges = await repo.watchAyahRangesCoveredSince(2000).first;
+      expect(ranges, hasLength(1));
+      expect(ranges.single.surahId, 1);
+      expect(ranges.single.ayahFrom, 0);
+      expect(ranges.single.ayahTo, 6);
+    });
+
+    test('phiên tạo SAU cutoff -> CÓ xuất hiện', () async {
+      fakeNow = 5000;
+      await repo.logSession(
+        date: '2026-07-19',
+        surahId: 2,
+        ayahFrom: 3,
+        ayahTo: 9,
+        durationSec: 120,
+      );
+
+      final ranges = await repo.watchAyahRangesCoveredSince(2000).first;
+      expect(ranges, hasLength(1));
+      expect(ranges.single.surahId, 2);
+    });
+
+    test(
+        'nhiều phiên trước VÀ sau cutoff -> chỉ trả phạm vi của phiên '
+        'sau cutoff (không nạp lại lịch sử trước kích hoạt)', () async {
+      fakeNow = 1000;
+      await repo.logSession(
+        date: '2026-07-01',
+        surahId: 1,
+        ayahFrom: 0,
+        ayahTo: 6,
+        durationSec: 60,
+      );
+      fakeNow = 3000;
+      await repo.logSession(
+        date: '2026-07-18',
+        surahId: 2,
+        ayahFrom: 0,
+        ayahTo: 4,
+        durationSec: 60,
+      );
+      fakeNow = 4000;
+      await repo.logSession(
+        date: '2026-07-19',
+        surahId: 3,
+        ayahFrom: 1,
+        ayahTo: 2,
+        durationSec: 60,
+      );
+
+      final ranges = await repo.watchAyahRangesCoveredSince(3000).first;
+      expect(ranges.map((r) => r.surahId).toSet(), {2, 3});
+    });
+
+    test(
+        'nhiều phiên cùng 1 Surah (đọc rải rác nhiều lần) -> trả về ĐỦ '
+        'từng phạm vi riêng, không tự gộp (gộp/khử trùng lặp Ayah.id là '
+        'việc của tầng Provider, không phải repository)', () async {
+      fakeNow = 2000;
+      await repo.logSession(
+        date: '2026-07-18',
+        surahId: 1,
+        ayahFrom: 0,
+        ayahTo: 2,
+        durationSec: 60,
+      );
+      fakeNow = 2500;
+      await repo.logSession(
+        date: '2026-07-18',
+        surahId: 1,
+        ayahFrom: 2,
+        ayahTo: 5,
+        durationSec: 60,
+      );
+
+      final ranges = await repo.watchAyahRangesCoveredSince(1000).first;
+      expect(ranges, hasLength(2));
+      expect(ranges.every((r) => r.surahId == 1), isTrue);
+    });
+
+    test('không có phiên nào -> kết quả rỗng', () async {
+      final ranges = await repo.watchAyahRangesCoveredSince(0).first;
+      expect(ranges, isEmpty);
+    });
+  });
 }

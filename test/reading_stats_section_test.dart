@@ -42,6 +42,10 @@ class _FakeStudySessionRepository implements StudySessionRepository {
 
   @override
   Future<int> longestStreak() async => longestStreakValue;
+
+  @override
+  Stream<List<({int surahId, int ayahFrom, int ayahTo})>>
+      watchAyahRangesCoveredSince(int cutoffMs) => Stream.value(const []);
 }
 
 void main() {

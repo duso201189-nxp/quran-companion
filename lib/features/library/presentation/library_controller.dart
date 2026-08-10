@@ -88,21 +88,30 @@ final libraryItemsProvider = StreamProvider.autoDispose
             ),
           );
     case LibraryKind.review:
-      return userRepo.watchAllReviewAyahs().asyncMap(
-            (rows) => _buildItems(
-              quranRepo,
-              headerCache,
-              [
-                for (final r in rows)
-                  (
-                    ayahId: r.ayahId,
-                    savedAt: r.savedAt,
-                    note: null,
-                    colors: const <String>{},
-                  ),
-              ],
-            ),
-          );
+      // Sprint 7.3 (Automatic Retention Seeding) — nguồn đổi từ
+      // userRepo.watchAllReviewAyahs() (chỉ thủ công) sang
+      // revisionEligibleAyahsProvider (thủ công HỢP tự động, xem doc
+      // comment tại provider đó); cùng hình dạng dữ liệu thô, không
+      // đổi gì khác trong case này. ref.watch(...future) thay cho
+      // .stream (deprecated) — Stream.fromFuture + rebuild theo dõi
+      // của Riverpod tái tạo đúng ngữ nghĩa reactive cũ.
+      return Stream.fromFuture(
+        ref.watch(revisionEligibleAyahsProvider.future),
+      ).asyncMap(
+        (rows) => _buildItems(
+          quranRepo,
+          headerCache,
+          [
+            for (final r in rows)
+              (
+                ayahId: r.ayahId,
+                savedAt: r.savedAt,
+                note: null,
+                colors: const <String>{},
+              ),
+          ],
+        ),
+      );
   }
 });
 

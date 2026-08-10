@@ -72,6 +72,11 @@ class _CountingStudySessionRepository implements StudySessionRepository {
 
   @override
   Future<int> longestStreak() => _inner.longestStreak();
+
+  @override
+  Stream<List<({int surahId, int ayahFrom, int ayahTo})>>
+      watchAyahRangesCoveredSince(int cutoffMs) =>
+          _inner.watchAyahRangesCoveredSince(cutoffMs);
 }
 
 /// Test tổng hợp AnalyticsRepositoryImpl (Sprint 14 Phase 1) — dùng

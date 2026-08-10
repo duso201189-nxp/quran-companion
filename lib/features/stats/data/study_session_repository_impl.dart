@@ -161,4 +161,25 @@ class StudySessionRepositoryImpl implements StudySessionRepository {
       return longest;
     });
   }
+
+  @override
+  Stream<List<({int surahId, int ayahFrom, int ayahTo})>>
+      watchAyahRangesCoveredSince(int cutoffMs) {
+    final q = _db.select(_db.studySessions)
+      ..where(
+        (t) =>
+            t.createdAt.isBiggerOrEqualValue(cutoffMs) & t.deletedAt.isNull(),
+      );
+    final stream = q.watch().map(
+          (rows) => [
+            for (final r in rows)
+              (surahId: r.surahId, ayahFrom: r.ayahFrom, ayahTo: r.ayahTo),
+          ],
+        );
+    return withFailureLoggingStream(
+      _logger,
+      'watchAyahRangesCoveredSince',
+      stream,
+    );
+  }
 }

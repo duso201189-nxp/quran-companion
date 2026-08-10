@@ -34,4 +34,18 @@ abstract interface class StudySessionRepository {
 
   /// Chuỗi ngày liên tiếp dài nhất trong toàn bộ lịch sử.
   Future<int> longestStreak();
+
+  /// Mọi phạm vi Ayah đã đọc (theo study_sessions) được ghi TỪ
+  /// [cutoffMs] (epoch ms UTC) TRỞ ĐI — nguồn "đã đọc" cho Automatic
+  /// Retention Seeding (Sprint 7.3 — DR-2026-0021).
+  ///
+  /// Trả về phạm vi THÔ: Surah + chỉ số Ayah 0-based `ayahFrom`/
+  /// `ayahTo` (khớp ReadingPositionStore/study_sessions) — KHÔNG phân
+  /// giải thành Ayah.id toàn cục. StudySessionRepository chỉ biết
+  /// UserDatabase (nhóm B); phân giải sang Ayah.id (cần QuranRepository,
+  /// nhóm A) là việc của tầng Provider (xem
+  /// `revisionEligibleAyahsProvider`, user_content_providers.dart) —
+  /// không repository nào được phép biết cả hai database (PROJ-P-002).
+  Stream<List<({int surahId, int ayahFrom, int ayahTo})>>
+      watchAyahRangesCoveredSince(int cutoffMs);
 }

@@ -10,6 +10,7 @@ import 'core/audio/background_audio_support.dart';
 import 'core/audio/just_audio_player.dart';
 import 'core/audio/quran_audio_handler.dart';
 import 'core/storage/prefs_provider.dart';
+import 'features/quran/data/retention_seeding_store.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -18,6 +19,18 @@ Future<void> main() async {
   // để theme và ngôn ngữ đã lưu áp dụng ngay, không bị nháy.
   // SharedPreferences rất nhẹ, không ảnh hưởng mục tiêu mở app < 2s.
   final prefs = await SharedPreferences.getInstance();
+
+  // Sprint 7.3 (Automatic Retention Seeding) — sửa lỗi kiểm chứng
+  // cuối sprint: kích hoạt mốc NGAY LÚC mở app, không đợi tới lần đầu
+  // người dùng vào Revision Queue/Review Session/Learning Session (lúc
+  // đó mới lười khởi tạo thì các phiên đọc trước đó bị loại vĩnh viễn
+  // khỏi seeding tự động — xem doc comment tại
+  // RetentionSeedingActivation.ensureActivated). An toàn gọi ở đây dù
+  // ProviderScope bên dưới còn dùng NotifierProvider bình thường —
+  // ensureActivated() ghi/đọc thẳng SharedPreferences, idempotent,
+  // build() của Notifier sau này chỉ đọc lại đúng giá trị đã ghi ở
+  // đây, không ghi đè lần hai.
+  RetentionSeedingActivation.ensureActivated(prefs);
 
   // Trình phát là MỘT, dùng chung cho mọi nền tảng. Sprint B2 chỉ thêm
   // một lớp quan sát ở trên nó trên các nền tảng có phát nền.

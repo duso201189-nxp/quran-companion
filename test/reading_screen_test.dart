@@ -75,6 +75,9 @@ class _SpyStudySessionRepository implements StudySessionRepository {
   Future<int> currentStreak({DateTime? today}) => throw UnimplementedError();
   @override
   Future<int> longestStreak() => throw UnimplementedError();
+  @override
+  Stream<List<({int surahId, int ayahFrom, int ayahTo})>>
+      watchAyahRangesCoveredSince(int cutoffMs) => throw UnimplementedError();
 }
 
 /// Chu kỳ Khatm "đang mở" giả lập + ghi lại mọi lời gọi updateProgress
