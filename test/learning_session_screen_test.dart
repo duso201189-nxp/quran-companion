@@ -158,7 +158,17 @@ void main() {
     // 6 Surah giả" để hoạt động Quiz trong phiên vẫn có đủ 10 câu hỏi
     // như trước Sprint 7.1, giữ nguyên mọi kỳ vọng hiện có của các
     // test bên dưới.
+    //
+    // Sprint 7.2 (Foundation-First Session Default) — StudyScreen giờ
+    // đọc thêm ReadingPositionStore.lastSurahId (kLastSurah) để quyết
+    // định nút "Start Learning Session" vào thẳng Learning Session hay
+    // đi đọc trước. File này kiểm luồng ĐIỀU PHỐI bên trong Learning
+    // Session (giả định người dùng ĐÃ CÓ lịch sử đọc, không kiểm nhánh
+    // "chưa đọc gì" của Sprint 7.2 — xem study_screen_test.dart riêng
+    // cho việc đó) — seed thêm kLastSurah để giữ nguyên hành vi "vào
+    // thẳng Learning Session" mọi test bên dưới đã kỳ vọng từ trước.
     SharedPreferences.setMockInitialValues({
+      ReadingPositionStore.kLastSurah: 1,
       for (var s = 1; s <= 6; s++) ReadingPositionStore.posKey(s): 2,
     });
     prefs = await SharedPreferences.getInstance();

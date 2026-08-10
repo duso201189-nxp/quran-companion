@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:quran_companion/l10n/app_localizations.dart';
 
 import '../../../app/router.dart';
+import '../../quran/presentation/reading/reading_position_store.dart';
 
 /// Màn hình Học — điểm vào chính "Bắt đầu buổi học" (Sprint 11 Phase
 /// 3, Learning Session) phía trên, bốn công cụ truy cập trực tiếp
@@ -13,12 +15,31 @@ import '../../../app/router.dart';
 /// 3 — LƯU Ý: Lexicon (nhóm A) hiện CHƯA có dữ liệu Lemma thật (xem
 /// Sprint 12 Phase 3 §5), nên màn hình Duyệt/Thêm sẽ trống cho tới khi
 /// dữ liệu thật được nạp; đây là hạn chế dữ liệu, không phải lỗi UI.
-class StudyScreen extends StatelessWidget {
+///
+/// Sprint 7.2 (Foundation-First Session Default — Study Architecture
+/// Constitution §15 "Foundation First"): nút "Bắt đầu buổi học" không
+/// còn vào thẳng Learning Session vô điều kiện. Quyết định "vào
+/// Learning Session hay đi đọc trước" nằm Ở ĐÂY — TRƯỚC khi phiên học
+/// bắt đầu — dựa trên đúng MỘT tín hiệu đã có sẵn:
+/// `ReadingPositionStore.lastSurahId` (cùng tín hiệu "đã từng đọc"
+/// _GettingStartedCard trên Trang chủ đã dùng từ Sprint 6.2, không
+/// phát minh tín hiệu mới). `lastSurahId == null` (chưa từng đọc Ayah
+/// nào) -> đi đọc Al-Fatihah thay vì vào Learning Session, nơi
+/// LearningPlanner (không đổi bởi sprint này) sẽ luôn chọn Quiz đầu
+/// tiên cho người dùng này và gặp ngay trạng thái rỗng (Quiz đã được
+/// Sprint 7.1 giới hạn đúng nội dung đã đọc — với người chưa đọc gì,
+/// nghĩa là không có gì để hỏi). `lastSurahId != null` -> vào Learning
+/// Session như cũ, không đổi hành vi (Sprint 7.3 đã khiến Review được
+/// chọn trước Quiz một cách tự nhiên cho người có lịch sử đọc, xem
+/// schedulerSyncProvider/revisionEligibleAyahsProvider — sprint này
+/// không cần và không đụng tới LearningPlanner).
+class StudyScreen extends ConsumerWidget {
   const StudyScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context);
+    final hasRead = ref.watch(readingPositionStoreProvider).lastSurahId != null;
 
     final tools = <({
       IconData icon,
@@ -79,7 +100,11 @@ class StudyScreen extends StatelessWidget {
                 SizedBox(
                   width: double.infinity,
                   child: FilledButton.icon(
-                    onPressed: () => context.push(AppRoutes.learningSession),
+                    onPressed: () => context.push(
+                      hasRead
+                          ? AppRoutes.learningSession
+                          : AppRoutes.surahReading(1),
+                    ),
                     icon: const Icon(Icons.auto_stories_rounded),
                     label: Text(l10n.learningSessionStart),
                     style: FilledButton.styleFrom(
