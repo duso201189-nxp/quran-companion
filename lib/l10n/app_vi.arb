@@ -227,6 +227,32 @@
   "collectionAssignTitle": "Thêm vào bộ sưu tập",
   "libraryOrganizeTooltip": "Sắp xếp vào bộ sưu tập",
   "revisionQueueEmpty": "Chưa có Ayah nào cần ôn tập.",
+  "boundaryRevisionTitle": "Ôn lại {surah}",
+  "@boundaryRevisionTitle": {
+    "placeholders": {
+      "surah": {
+        "type": "String"
+      }
+    }
+  },
+  "boundaryRevisionBody": "Bạn đã đọc hết Surah này. {count} Ayah của nó sẵn sàng để ôn lại khi bạn muốn.",
+  "@boundaryRevisionBody": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "boundaryRevisionOpen": "Ôn lại Surah này",
+  "boundaryRevisionDismiss": "Để sau",
+  "revisionQueueSurahTitle": "Ôn tập — {surah}",
+  "@revisionQueueSurahTitle": {
+    "placeholders": {
+      "surah": {
+        "type": "String"
+      }
+    }
+  },
   "dailyGoalMinutesHint": "Phút mỗi ngày",
   "dailyGoalAyahsHint": "Ayah mỗi ngày",
   "dailyGoalNotSet": "Chưa đặt mục tiêu — chạm để đặt.",

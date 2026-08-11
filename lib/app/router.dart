@@ -47,6 +47,12 @@ abstract final class AppRoutes {
   /// [collections]. Không phải route lồng trong shell.
   static const String revisionQueue = '/revision-queue';
 
+  /// Ôn tập gom sau khi đọc trọn một Surah (Sprint 7.4 — DR-2026-0023
+  /// mục 9): CÙNG màn hình [revisionQueue], chỉ giới hạn phạm vi bằng
+  /// tham số truy vấn. Không có route/màn hình ôn tập thứ hai.
+  static String revisionQueueForSurah(int surahId) =>
+      '$revisionQueue?surah=$surahId';
+
   /// Phiên ôn tập SM-2 (Sprint 10 Phase 3 — DR-2026-0005) — push
   /// full-screen từ tab Học, cùng mẫu với [revisionQueue]. Độc lập với
   /// Revision Queue (Quyết định 1): đây là phiên ôn có lịch trình
@@ -267,7 +273,11 @@ final routerProvider = Provider<GoRouter>((ref) {
 
       GoRoute(
         path: AppRoutes.revisionQueue,
-        builder: (context, state) => const RevisionQueueScreen(),
+        // `?surah=N` (Sprint 7.4) — thiếu/không hợp lệ thì rơi về hàng
+        // đợi đầy đủ, không dựng màn hình lỗi vì một tham số hỏng.
+        builder: (context, state) => RevisionQueueScreen(
+          surahId: int.tryParse(state.uri.queryParameters['surah'] ?? ''),
+        ),
       ),
 
       GoRoute(

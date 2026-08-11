@@ -493,6 +493,27 @@ class AppLocalizationsAr extends AppLocalizations {
   String get revisionQueueEmpty => 'لا توجد آيات بحاجة للمراجعة بعد.';
 
   @override
+  String boundaryRevisionTitle(String surah) {
+    return 'العودة إلى $surah';
+  }
+
+  @override
+  String boundaryRevisionBody(int count) {
+    return 'لقد قرأت هذه السورة كاملة. $count من آياتها جاهزة للمراجعة متى شئت.';
+  }
+
+  @override
+  String get boundaryRevisionOpen => 'مراجعة هذه السورة';
+
+  @override
+  String get boundaryRevisionDismiss => 'ليس الآن';
+
+  @override
+  String revisionQueueSurahTitle(String surah) {
+    return 'مراجعة — $surah';
+  }
+
+  @override
   String get dailyGoalMinutesHint => 'دقائق في اليوم';
 
   @override

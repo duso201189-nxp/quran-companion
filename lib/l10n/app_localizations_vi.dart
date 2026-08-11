@@ -494,6 +494,27 @@ class AppLocalizationsVi extends AppLocalizations {
   String get revisionQueueEmpty => 'Chưa có Ayah nào cần ôn tập.';
 
   @override
+  String boundaryRevisionTitle(String surah) {
+    return 'Ôn lại $surah';
+  }
+
+  @override
+  String boundaryRevisionBody(int count) {
+    return 'Bạn đã đọc hết Surah này. $count Ayah của nó sẵn sàng để ôn lại khi bạn muốn.';
+  }
+
+  @override
+  String get boundaryRevisionOpen => 'Ôn lại Surah này';
+
+  @override
+  String get boundaryRevisionDismiss => 'Để sau';
+
+  @override
+  String revisionQueueSurahTitle(String surah) {
+    return 'Ôn tập — $surah';
+  }
+
+  @override
   String get dailyGoalMinutesHint => 'Phút mỗi ngày';
 
   @override

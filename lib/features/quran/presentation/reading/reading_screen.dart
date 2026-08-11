@@ -18,6 +18,8 @@ import '../../../khatm/domain/repositories/khatm_cycle_repository.dart';
 import '../../../stats/data/stats_store.dart';
 import '../../../stats/data/study_session_providers.dart';
 import '../../../stats/domain/repositories/study_session_repository.dart';
+import '../../../study/data/boundary_completion_store.dart';
+import '../../../study/domain/surah_completion.dart';
 import '../../data/user_content_providers.dart';
 import '../../domain/ayah_decoration.dart';
 import '../../domain/basmalah.dart';
@@ -64,6 +66,28 @@ class _ReadingScreenState extends ConsumerState<ReadingScreen> {
   int _initialAyahIndex = 0;
   int? _lastSavedIndex;
 
+  /// Chỉ số Ayah **xa nhất** từng hiện ra trong phiên này — Sprint 7.4
+  /// (DR-2026-0023 mục 5).
+  ///
+  /// KHÔNG thay [_lastSavedIndex] và không thay thứ gì nó nuôi:
+  /// [_lastSavedIndex] là Ayah TRÊN CÙNG đang nhìn thấy (vị trí đọc,
+  /// để mở lại đúng chỗ) và vẫn là thứ duy nhất đi vào
+  /// `logSession(ayahTo:)`, `ReadingPositionStore`, và tiến độ Khatm.
+  /// Trường này chỉ trả lời một câu hỏi khác hẳn — "đã đọc tới đâu xa
+  /// nhất" — mà vị trí trên cùng không trả lời được (nó luôn báo
+  /// thiếu). Chỉ sống trong RAM của phiên, không ghi xuống đâu cả.
+  ///
+  /// **KHÔNG mồi bằng [_initialAyahIndex]** (bản sửa sau kiểm toán
+  /// cuối Sprint 7.4). [_initialAyahIndex] đến từ
+  /// `ReadingPositionStore` — tức là từ một phiên TRƯỚC, hoặc từ chính
+  /// `openAyahInReadingScreen`, hàm LƯU vị trí trước khi mở trang đọc.
+  /// Mồi bằng nó thì mở thẳng Ayah cuối của một Surah từ Tìm kiếm/Thư
+  /// viện/Hàng đợi ôn tập sẽ đóng dấu "đã đọc trọn" cho một Surah người
+  /// dùng vừa nhảy vào đúng một Ayah — và vì dấu là VĨNH VIỄN, lần đọc
+  /// trọn thật về sau sẽ không còn mời ôn được nữa. Mốc này phải là
+  /// tiến trình của CHÍNH phiên này, nên bắt đầu từ 0.
+  int _maxAyahIndexReached = 0;
+
   /// Lần gần nhất người dùng TỰ cuộn — đầu vào của
   /// `shouldFollowPlayback`. `null` = chưa cuộn lần nào trong phiên này.
   DateTime? _lastManualScrollAt;
@@ -86,6 +110,10 @@ class _ReadingScreenState extends ConsumerState<ReadingScreen> {
   late final StudySessionRepository _studySessionRepository;
   late final KhatmCycleRepository _khatmCycleRepository;
 
+  /// Sprint 7.4 — bắt sẵn ở `initState` để `dispose()` gọi được mà
+  /// KHÔNG `ref.read` (ref có thể đã bị huỷ), đúng mẫu ba trường trên.
+  late final BoundaryCompletionController _boundaryCompletion;
+
   /// Chu kỳ Khatm đang đọc dở, nếu có — Sprint SF-Khatm. Đọc lại ở
   /// `build()` (cùng lý do với [_opening]): `dispose()` không thể tự
   /// `ref.watch` một `StreamProvider` lần đầu và mong có dữ liệu ngay —
@@ -103,6 +131,7 @@ class _ReadingScreenState extends ConsumerState<ReadingScreen> {
     _statsStore = ref.read(statsStoreProvider);
     _studySessionRepository = ref.read(studySessionRepositoryProvider);
     _khatmCycleRepository = ref.read(khatmCycleRepositoryProvider);
+    _boundaryCompletion = ref.read(boundaryCompletionProvider.notifier);
     unawaited(_statsStore.markToday());
     _sessionWatch.start();
   }
@@ -151,6 +180,30 @@ class _ReadingScreenState extends ConsumerState<ReadingScreen> {
           unawaited(_khatmCycleRepository.updateProgress(cycle.id, to));
         }
       }
+
+      // Sprint 7.4 (Boundary-Triggered Revision Moments — DR-2026-0023):
+      // đọc trọn một Surah -> đặt DẤU, không mở giao diện nào ở đây.
+      // dispose() không được dựng UI, và cắt ngang lúc người dùng vừa
+      // rời văn bản là đúng thứ Worship First không cho phép; lời mời
+      // hiện sau, lặng lẽ, ở màn hình Học.
+      //
+      // Dùng _maxAyahIndexReached chứ KHÔNG dùng lastIndex ở trên: xem
+      // doc của trường đó — lastIndex là vị trí trên cùng, luôn báo
+      // thiếu so với phần thực sự đã đọc.
+      //
+      // `> _initialAyahIndex` là vế thứ hai, thêm sau kiểm toán cuối:
+      // phiên phải THẬT SỰ đi tới đâu đó xa hơn chỗ nó bắt đầu. Không
+      // có vế này thì mở thẳng Ayah cuối (Tìm kiếm/Thư viện/Hàng đợi ôn
+      // tập, xem `openAyahInReadingScreen`) rồi ngồi yên 5 giây cũng
+      // thành "đã đọc trọn Surah". Năm giây chỉ chứng minh phiên có
+      // thật, KHÔNG chứng minh người dùng vừa đi qua Ayah cuối.
+      if (_maxAyahIndexReached > _initialAyahIndex &&
+          SurahCompletion.completed(
+            surahId: widget.surahId,
+            maxAyahIndex: _maxAyahIndexReached,
+          )) {
+        unawaited(_boundaryCompletion.markSurahCompleted(widget.surahId));
+      }
     }
     super.dispose();
   }
@@ -165,6 +218,17 @@ class _ReadingScreenState extends ConsumerState<ReadingScreen> {
     final positions = _positionsListener.itemPositions.value;
     final visible = positions.where((p) => p.itemTrailingEdge > 0);
     if (visible.isEmpty) return;
+    // Sprint 7.4 — mốc XA NHẤT, tính TRƯỚC lần thoát sớm bên dưới:
+    // cuộn thêm mà Ayah trên cùng không đổi (Ayah dài, màn hình rộng)
+    // vẫn phải đẩy mốc này lên, nếu không một Surah đọc hết vẫn không
+    // bao giờ tính là xong.
+    final maxItemIndex = visible.map((p) => p.index).reduce(max);
+    final furthestAyahIndex =
+        ReadingRows.ayahIndexForRow(opening: opening, row: maxItemIndex);
+    if (furthestAyahIndex != null && furthestAyahIndex > _maxAyahIndexReached) {
+      _maxAyahIndexReached = furthestAyahIndex;
+    }
+
     final minItemIndex = visible.map((p) => p.index).reduce(min);
     // Hàng dẫn đầu (header hoặc phần mở đầu) -> coi như đang ở Ayah đầu.
     final ayahIndex =

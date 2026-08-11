@@ -1018,6 +1018,36 @@ abstract class AppLocalizations {
   /// **'Chưa có Ayah nào cần ôn tập.'**
   String get revisionQueueEmpty;
 
+  /// No description provided for @boundaryRevisionTitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Ôn lại {surah}'**
+  String boundaryRevisionTitle(String surah);
+
+  /// No description provided for @boundaryRevisionBody.
+  ///
+  /// In vi, this message translates to:
+  /// **'Bạn đã đọc hết Surah này. {count} Ayah của nó sẵn sàng để ôn lại khi bạn muốn.'**
+  String boundaryRevisionBody(int count);
+
+  /// No description provided for @boundaryRevisionOpen.
+  ///
+  /// In vi, this message translates to:
+  /// **'Ôn lại Surah này'**
+  String get boundaryRevisionOpen;
+
+  /// No description provided for @boundaryRevisionDismiss.
+  ///
+  /// In vi, this message translates to:
+  /// **'Để sau'**
+  String get boundaryRevisionDismiss;
+
+  /// No description provided for @revisionQueueSurahTitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Ôn tập — {surah}'**
+  String revisionQueueSurahTitle(String surah);
+
   /// No description provided for @dailyGoalMinutesHint.
   ///
   /// In vi, this message translates to:

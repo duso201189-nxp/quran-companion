@@ -17,12 +17,21 @@ class LibraryTabView extends ConsumerWidget {
     required this.emptyIcon,
     required this.emptyMessage,
     required this.onOpen,
+    this.filter,
   });
 
   final LibraryKind kind;
   final IconData emptyIcon;
   final String emptyMessage;
   final void Function(LibraryItem item) onOpen;
+
+  /// Thu hẹp danh sách hiển thị — Sprint 7.4 (DR-2026-0023 mục 9),
+  /// dùng cho Revision Queue giới hạn trong MỘT Surah. `null` (mặc
+  /// định) = hiện tất cả, đúng hành vi cũ của mọi nơi đang gọi.
+  ///
+  /// Chỉ lọc phần TRÌNH BÀY: nguồn dữ liệu và luật đủ-điều-kiện vẫn là
+  /// `libraryItemsProvider`, không đổi.
+  final bool Function(LibraryItem item)? filter;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -35,7 +44,10 @@ class LibraryTabView extends ConsumerWidget {
         l10n: l10n,
         onRetry: () => ref.invalidate(libraryItemsProvider(kind)),
       ),
-      data: (items) {
+      data: (all) {
+        final localFilter = filter;
+        final items =
+            localFilter == null ? all : all.where(localFilter).toList();
         if (items.isEmpty) {
           return _EmptyState(icon: emptyIcon, message: emptyMessage);
         }

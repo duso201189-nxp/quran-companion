@@ -227,6 +227,32 @@
   "collectionAssignTitle": "Add to collection",
   "libraryOrganizeTooltip": "Organize into collection",
   "revisionQueueEmpty": "No ayahs need review yet.",
+  "boundaryRevisionTitle": "Revisit {surah}",
+  "@boundaryRevisionTitle": {
+    "placeholders": {
+      "surah": {
+        "type": "String"
+      }
+    }
+  },
+  "boundaryRevisionBody": "You have read through this Surah. {count} of its ayahs are ready to revise whenever you are.",
+  "@boundaryRevisionBody": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "boundaryRevisionOpen": "Revise this Surah",
+  "boundaryRevisionDismiss": "Not now",
+  "revisionQueueSurahTitle": "Review — {surah}",
+  "@revisionQueueSurahTitle": {
+    "placeholders": {
+      "surah": {
+        "type": "String"
+      }
+    }
+  },
   "dailyGoalMinutesHint": "Minutes per day",
   "dailyGoalAyahsHint": "Ayahs per day",
   "dailyGoalNotSet": "No goal set yet — tap to set one.",

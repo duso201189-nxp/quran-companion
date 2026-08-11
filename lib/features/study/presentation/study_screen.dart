@@ -5,6 +5,8 @@ import 'package:quran_companion/l10n/app_localizations.dart';
 
 import '../../../app/router.dart';
 import '../../quran/presentation/reading/reading_position_store.dart';
+import '../data/boundary_completion_store.dart';
+import '../data/surah_revision_target_providers.dart';
 
 /// Màn hình Học — điểm vào chính "Bắt đầu buổi học" (Sprint 11 Phase
 /// 3, Learning Session) phía trên, bốn công cụ truy cập trực tiếp
@@ -97,6 +99,7 @@ class StudyScreen extends ConsumerWidget {
             return ListView(
               padding: EdgeInsets.fromLTRB(horizontal, 12, horizontal, 24),
               children: [
+                const _BoundaryRevisionCard(),
                 SizedBox(
                   width: double.infinity,
                   child: FilledButton.icon(
@@ -134,6 +137,90 @@ class StudyScreen extends ConsumerWidget {
               ],
             );
           },
+        ),
+      ),
+    );
+  }
+}
+
+/// Lời mời ôn gom sau khi đọc trọn một Surah — Sprint 7.4
+/// (DR-2026-0023 mục 9/10).
+///
+/// Cố ý KHÔNG có: huy hiệu, điểm số, chuỗi ngày, bộ đếm, hiệu ứng chúc
+/// mừng. Hiến pháp §3.7 nói hoàn thành là một MỐC, không phải phần
+/// thưởng — nên câu chữ ở đây mời quay lại ôn, không khen. Thẻ bỏ qua
+/// được và không bao giờ chặn đường người dùng.
+///
+/// Không có lời mời (hoặc Surah đó không còn Ayah nào cần ôn) -> không
+/// chiếm chỗ nào trên màn hình.
+class _BoundaryRevisionCard extends ConsumerWidget {
+  const _BoundaryRevisionCard();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final invitation = ref.watch(surahRevisionInvitationProvider).valueOrNull;
+    if (invitation == null) return const SizedBox.shrink();
+
+    final l10n = AppLocalizations.of(context);
+    final scheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
+
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 18),
+      child: Container(
+        width: double.infinity,
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: scheme.surfaceContainerLow,
+          borderRadius: BorderRadius.circular(16),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Icon(
+                  Icons.menu_book_outlined,
+                  size: 20,
+                  color: scheme.onSurfaceVariant,
+                ),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Semantics(
+                    header: true,
+                    child: Text(
+                      l10n.boundaryRevisionTitle(invitation.surahName),
+                      style: textTheme.titleMedium
+                          ?.copyWith(fontWeight: FontWeight.w700),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 6),
+            Text(
+              l10n.boundaryRevisionBody(invitation.ayahCount),
+              style: textTheme.bodyMedium
+                  ?.copyWith(color: scheme.onSurfaceVariant),
+            ),
+            const SizedBox(height: 12),
+            Row(
+              children: [
+                FilledButton.tonal(
+                  onPressed: () => context.push(
+                    AppRoutes.revisionQueueForSurah(invitation.surahId),
+                  ),
+                  child: Text(l10n.boundaryRevisionOpen),
+                ),
+                const SizedBox(width: 8),
+                TextButton(
+                  onPressed: () =>
+                      ref.read(boundaryCompletionProvider.notifier).dismiss(),
+                  child: Text(l10n.boundaryRevisionDismiss),
+                ),
+              ],
+            ),
+          ],
         ),
       ),
     );

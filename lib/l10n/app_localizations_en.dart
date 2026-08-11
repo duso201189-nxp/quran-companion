@@ -495,6 +495,27 @@ class AppLocalizationsEn extends AppLocalizations {
   String get revisionQueueEmpty => 'No ayahs need review yet.';
 
   @override
+  String boundaryRevisionTitle(String surah) {
+    return 'Revisit $surah';
+  }
+
+  @override
+  String boundaryRevisionBody(int count) {
+    return 'You have read through this Surah. $count of its ayahs are ready to revise whenever you are.';
+  }
+
+  @override
+  String get boundaryRevisionOpen => 'Revise this Surah';
+
+  @override
+  String get boundaryRevisionDismiss => 'Not now';
+
+  @override
+  String revisionQueueSurahTitle(String surah) {
+    return 'Review — $surah';
+  }
+
+  @override
   String get dailyGoalMinutesHint => 'Minutes per day';
 
   @override
