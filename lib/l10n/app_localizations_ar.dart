@@ -182,13 +182,13 @@ class AppLocalizationsAr extends AppLocalizations {
   String get statusReview => 'للمراجعة';
 
   @override
-  String get noteLabel => 'ملاحظة';
+  String get noteLabel => 'تدبر';
 
   @override
-  String get addNote => 'إضافة ملاحظة';
+  String get addNote => 'إضافة تدبر';
 
   @override
-  String get editNote => 'تعديل الملاحظة';
+  String get editNote => 'تعديل التدبر';
 
   @override
   String get noteHint => 'يدعم **غامق** و *مائل*';

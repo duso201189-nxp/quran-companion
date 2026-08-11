@@ -548,7 +548,7 @@ void main() {
 
     await tester.longPress(find.textContaining('نص عربي ١'));
     await tester.pumpAndSettle();
-    await tester.tap(find.text('Thêm ghi chú'));
+    await tester.tap(find.text('Thêm suy ngẫm'));
     await tester.pumpAndSettle();
 
     await tester.enterText(find.byType(TextField), 'ghi chú của tôi');

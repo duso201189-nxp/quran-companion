@@ -183,13 +183,13 @@ class AppLocalizationsEn extends AppLocalizations {
   String get statusReview => 'To review';
 
   @override
-  String get noteLabel => 'Note';
+  String get noteLabel => 'Reflection';
 
   @override
-  String get addNote => 'Add note';
+  String get addNote => 'Add reflection';
 
   @override
-  String get editNote => 'Edit note';
+  String get editNote => 'Edit reflection';
 
   @override
   String get noteHint => 'Supports **bold** and *italic*';

@@ -183,13 +183,13 @@ class AppLocalizationsVi extends AppLocalizations {
   String get statusReview => 'Cần ôn';
 
   @override
-  String get noteLabel => 'Ghi chú';
+  String get noteLabel => 'Suy ngẫm';
 
   @override
-  String get addNote => 'Thêm ghi chú';
+  String get addNote => 'Thêm suy ngẫm';
 
   @override
-  String get editNote => 'Sửa ghi chú';
+  String get editNote => 'Sửa suy ngẫm';
 
   @override
   String get noteHint => 'Hỗ trợ **đậm** và *nghiêng*';

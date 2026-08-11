@@ -19,6 +19,19 @@ const Map<String, Color> kHighlightColorValues = {
 /// Sheet thao tác một Ayah (mở bằng nhấn giữ): bookmark, highlight
 /// 6 màu, trạng thái học, ghi chú. Watch provider -> phản ánh
 /// realtime ngay khi bấm.
+///
+/// Sprint 7.5 (Reflection Practice — Study Architecture Constitution
+/// §6/§13): mục "ghi chú" bên dưới CHÍNH LÀ điểm vào Suy ngẫm
+/// (Reflection/Tadabbur) đọc-liền-kề mà roadmap yêu cầu — không có cơ
+/// chế/dữ liệu mới nào được thêm. §13 đã xác nhận Notes là "hạ tầng
+/// Suy ngẫm" từ trước; sprint này chỉ đổi NHÃN hiển thị (noteLabel/
+/// addNote/editNote trong app_{vi,en,ar}.arb) để năng lực đã có mang
+/// đúng danh tính Suy ngẫm mà Hiến pháp mô tả — cơ chế lưu trữ
+/// (saveNote/watchAllNotes, một ghi chú/Ayah) và mặt Thư viện > Ghi
+/// chú (LibraryKind.notes) giữ NGUYÊN, không đổi tên (quyết định sản
+/// phẩm: chỉ đổi danh tính ở điểm vào đọc-liền-kề này). Suy ngẫm vẫn
+/// hoàn toàn tuỳ chọn, không AI, không điểm số, không "câu trả lời
+/// đúng" — chỉ là văn bản người dùng tự viết, y hệt Ghi chú trước đây.
 class AyahActionsSheet extends ConsumerWidget {
   const AyahActionsSheet({
     super.key,
@@ -146,7 +159,7 @@ class AyahActionsSheet extends ConsumerWidget {
             ),
             const SizedBox(height: 8),
 
-            // ---- Ghi chú ----
+            // ---- Ghi chú / Suy ngẫm (Sprint 7.5) ----
             ListTile(
               contentPadding: EdgeInsets.zero,
               leading: Icon(

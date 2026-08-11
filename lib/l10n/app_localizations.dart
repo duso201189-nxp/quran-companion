@@ -433,19 +433,19 @@ abstract class AppLocalizations {
   /// No description provided for @noteLabel.
   ///
   /// In vi, this message translates to:
-  /// **'Ghi chú'**
+  /// **'Suy ngẫm'**
   String get noteLabel;
 
   /// No description provided for @addNote.
   ///
   /// In vi, this message translates to:
-  /// **'Thêm ghi chú'**
+  /// **'Thêm suy ngẫm'**
   String get addNote;
 
   /// No description provided for @editNote.
   ///
   /// In vi, this message translates to:
-  /// **'Sửa ghi chú'**
+  /// **'Sửa suy ngẫm'**
   String get editNote;
 
   /// No description provided for @noteHint.
