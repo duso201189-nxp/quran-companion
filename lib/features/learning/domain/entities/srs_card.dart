@@ -1,7 +1,18 @@
 /// Loại mục được lên lịch ôn tập. [ayah] — Sprint 10 (Revision Queue).
 /// [lemma] — Sprint 13 Phase 2 (Flashcard, itemId = Lemma.id trực
 /// tiếp, xem lib/features/lexicon/domain/entities/lemma.dart).
-enum LearningItemType { ayah, lemma }
+/// [hifz] — Sprint 7.7a (học thuộc, itemId = ordinal Ayah toàn cục,
+/// CÙNG hệ số với [ayah]).
+///
+/// [ayah] và [hifz] cố ý là hai loại KHÁC NHAU dù trỏ tới cùng một
+/// Ayah. `UNIQUE(item_type, item_id)` của `srs_cards` khiến mỗi cặp
+/// (loại, id) là một thẻ riêng, nên ôn tập thường và học thuộc có hai
+/// lịch trình độc lập — đúng yêu cầu "biểu diễn được cả hai mà không
+/// trộn lẫn" (Hiến pháp Study §10). Dùng CHUNG một loại sẽ khiến hai
+/// nguồn thành viên (`revisionEligibleAyahsProvider` và tập hợp kế
+/// hoạch Hifz) xoá mềm thẻ của nhau ở mỗi lần đồng bộ — xem vòng lặp
+/// dọn dẹp cuối `SchedulerRepositoryImpl.syncItemsForType`.
+enum LearningItemType { ayah, lemma, hifz }
 
 /// Trạng thái thẻ SRS, mô hình Anki-style (new/learning/review/lapsed).
 /// 'new' là từ khoá dành riêng của Dart nên dùng [newCard] — ánh xạ

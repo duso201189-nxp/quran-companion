@@ -2224,7 +2224,23 @@ class StudySessionRow extends DataClass implements Insertable<StudySessionRow> {
   final String date;
   final int surahId;
 
-  /// Chỉ số Ayah 0-based trong Surah — khớp ReadingPositionStore.
+  /// Chỉ số Ayah **0-based** trong Surah — khớp ReadingPositionStore.
+  ///
+  /// ⚠️ **KHÔNG đổi sang 1-based nếu không kèm mốc `data_version` mới.**
+  ///
+  /// Mọi dòng đã lưu đều 0-based và KHÔNG có cột nào ghi lại hệ số của
+  /// chính nó. Nếu ai đó đổi bên GHI sang 1-based mà không đánh dấu
+  /// phiên bản, dòng cũ và dòng mới trở nên không phân biệt được — và
+  /// vì streak/tổng phút được TÍNH TRÊN TRUY VẤN từ bảng này (xem doc
+  /// comment ở đầu bảng), toàn bộ thống kê sẽ sai một cách âm thầm,
+  /// không thể khôi phục: dữ liệu thô để tính lại không tồn tại.
+  ///
+  /// Cách đúng khi cần đổi: bump `data_version`, migrate dòng cũ một
+  /// lần, HOẶC giữ 0-based ở tầng lưu trữ và quy đổi ở ranh giới
+  /// repository (đây là hướng `DR-2026-0017` quy tắc 2 chọn — dùng
+  /// [QuranAddress.fromZeroBasedAyahIndex] để quy đổi có tên, có test).
+  ///
+  /// Xem `docs/knowledge/quran_index_conventions.md`.
   final int ayahFrom;
   final int ayahTo;
   final int durationSec;
@@ -5586,6 +5602,525 @@ class FlashcardsCompanion extends UpdateCompanion<FlashcardRow> {
   }
 }
 
+class $HifzPlansTable extends HifzPlans
+    with TableInfo<$HifzPlansTable, HifzPlanRow> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $HifzPlansTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+      'id', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  static const VerificationMeta _userIdMeta = const VerificationMeta('userId');
+  @override
+  late final GeneratedColumn<String> userId = GeneratedColumn<String>(
+      'user_id', aliasedName, true,
+      type: DriftSqlType.string, requiredDuringInsert: false);
+  static const VerificationMeta _updatedAtMeta =
+      const VerificationMeta('updatedAt');
+  @override
+  late final GeneratedColumn<int> updatedAt = GeneratedColumn<int>(
+      'updated_at', aliasedName, false,
+      type: DriftSqlType.int, requiredDuringInsert: true);
+  static const VerificationMeta _deletedAtMeta =
+      const VerificationMeta('deletedAt');
+  @override
+  late final GeneratedColumn<int> deletedAt = GeneratedColumn<int>(
+      'deleted_at', aliasedName, true,
+      type: DriftSqlType.int, requiredDuringInsert: false);
+  static const VerificationMeta _isDirtyMeta =
+      const VerificationMeta('isDirty');
+  @override
+  late final GeneratedColumn<bool> isDirty = GeneratedColumn<bool>(
+      'is_dirty', aliasedName, false,
+      type: DriftSqlType.bool,
+      requiredDuringInsert: false,
+      defaultConstraints:
+          GeneratedColumn.constraintIsAlways('CHECK ("is_dirty" IN (0, 1))'),
+      defaultValue: const Constant(true));
+  static const VerificationMeta _ayahFromMeta =
+      const VerificationMeta('ayahFrom');
+  @override
+  late final GeneratedColumn<int> ayahFrom = GeneratedColumn<int>(
+      'ayah_from', aliasedName, false,
+      type: DriftSqlType.int, requiredDuringInsert: true);
+  static const VerificationMeta _ayahToMeta = const VerificationMeta('ayahTo');
+  @override
+  late final GeneratedColumn<int> ayahTo = GeneratedColumn<int>(
+      'ayah_to', aliasedName, false,
+      type: DriftSqlType.int, requiredDuringInsert: true);
+  static const VerificationMeta _statusMeta = const VerificationMeta('status');
+  @override
+  late final GeneratedColumn<String> status = GeneratedColumn<String>(
+      'status', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  static const VerificationMeta _startedAtMeta =
+      const VerificationMeta('startedAt');
+  @override
+  late final GeneratedColumn<int> startedAt = GeneratedColumn<int>(
+      'started_at', aliasedName, false,
+      type: DriftSqlType.int, requiredDuringInsert: true);
+  static const VerificationMeta _completedAtMeta =
+      const VerificationMeta('completedAt');
+  @override
+  late final GeneratedColumn<int> completedAt = GeneratedColumn<int>(
+      'completed_at', aliasedName, true,
+      type: DriftSqlType.int, requiredDuringInsert: false);
+  @override
+  List<GeneratedColumn> get $columns => [
+        id,
+        userId,
+        updatedAt,
+        deletedAt,
+        isDirty,
+        ayahFrom,
+        ayahTo,
+        status,
+        startedAt,
+        completedAt
+      ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'hifz_plans';
+  @override
+  VerificationContext validateIntegrity(Insertable<HifzPlanRow> instance,
+      {bool isInserting = false}) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    } else if (isInserting) {
+      context.missing(_idMeta);
+    }
+    if (data.containsKey('user_id')) {
+      context.handle(_userIdMeta,
+          userId.isAcceptableOrUnknown(data['user_id']!, _userIdMeta));
+    }
+    if (data.containsKey('updated_at')) {
+      context.handle(_updatedAtMeta,
+          updatedAt.isAcceptableOrUnknown(data['updated_at']!, _updatedAtMeta));
+    } else if (isInserting) {
+      context.missing(_updatedAtMeta);
+    }
+    if (data.containsKey('deleted_at')) {
+      context.handle(_deletedAtMeta,
+          deletedAt.isAcceptableOrUnknown(data['deleted_at']!, _deletedAtMeta));
+    }
+    if (data.containsKey('is_dirty')) {
+      context.handle(_isDirtyMeta,
+          isDirty.isAcceptableOrUnknown(data['is_dirty']!, _isDirtyMeta));
+    }
+    if (data.containsKey('ayah_from')) {
+      context.handle(_ayahFromMeta,
+          ayahFrom.isAcceptableOrUnknown(data['ayah_from']!, _ayahFromMeta));
+    } else if (isInserting) {
+      context.missing(_ayahFromMeta);
+    }
+    if (data.containsKey('ayah_to')) {
+      context.handle(_ayahToMeta,
+          ayahTo.isAcceptableOrUnknown(data['ayah_to']!, _ayahToMeta));
+    } else if (isInserting) {
+      context.missing(_ayahToMeta);
+    }
+    if (data.containsKey('status')) {
+      context.handle(_statusMeta,
+          status.isAcceptableOrUnknown(data['status']!, _statusMeta));
+    } else if (isInserting) {
+      context.missing(_statusMeta);
+    }
+    if (data.containsKey('started_at')) {
+      context.handle(_startedAtMeta,
+          startedAt.isAcceptableOrUnknown(data['started_at']!, _startedAtMeta));
+    } else if (isInserting) {
+      context.missing(_startedAtMeta);
+    }
+    if (data.containsKey('completed_at')) {
+      context.handle(
+          _completedAtMeta,
+          completedAt.isAcceptableOrUnknown(
+              data['completed_at']!, _completedAtMeta));
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  HifzPlanRow map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return HifzPlanRow(
+      id: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}id'])!,
+      userId: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}user_id']),
+      updatedAt: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}updated_at'])!,
+      deletedAt: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}deleted_at']),
+      isDirty: attachedDatabase.typeMapping
+          .read(DriftSqlType.bool, data['${effectivePrefix}is_dirty'])!,
+      ayahFrom: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}ayah_from'])!,
+      ayahTo: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}ayah_to'])!,
+      status: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}status'])!,
+      startedAt: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}started_at'])!,
+      completedAt: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}completed_at']),
+    );
+  }
+
+  @override
+  $HifzPlansTable createAlias(String alias) {
+    return $HifzPlansTable(attachedDatabase, alias);
+  }
+}
+
+class HifzPlanRow extends DataClass implements Insertable<HifzPlanRow> {
+  final String id;
+  final String? userId;
+  final int updatedAt;
+  final int? deletedAt;
+  final bool isDirty;
+
+  /// Ordinal Ayah TOÀN CỤC 1..6236 — xem doc lớp.
+  final int ayahFrom;
+  final int ayahTo;
+
+  /// 'active' | 'paused' | 'completed'.
+  ///
+  /// Cả ba đều là kế hoạch CÒN SỐNG và đều góp Ayah vào tập hợp lên
+  /// lịch Hifz. Chỉ `deleted_at` mới đưa một kế hoạch ra khỏi tập hợp
+  /// đó — tạm dừng là bộ lọc "đến hạn", hoàn thành là một cột mốc,
+  /// không cái nào được phép xoá thẻ (Hiến pháp Study §3.7/§10).
+  final String status;
+  final int startedAt;
+
+  /// NULL = chưa hoàn thành.
+  final int? completedAt;
+  const HifzPlanRow(
+      {required this.id,
+      this.userId,
+      required this.updatedAt,
+      this.deletedAt,
+      required this.isDirty,
+      required this.ayahFrom,
+      required this.ayahTo,
+      required this.status,
+      required this.startedAt,
+      this.completedAt});
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<String>(id);
+    if (!nullToAbsent || userId != null) {
+      map['user_id'] = Variable<String>(userId);
+    }
+    map['updated_at'] = Variable<int>(updatedAt);
+    if (!nullToAbsent || deletedAt != null) {
+      map['deleted_at'] = Variable<int>(deletedAt);
+    }
+    map['is_dirty'] = Variable<bool>(isDirty);
+    map['ayah_from'] = Variable<int>(ayahFrom);
+    map['ayah_to'] = Variable<int>(ayahTo);
+    map['status'] = Variable<String>(status);
+    map['started_at'] = Variable<int>(startedAt);
+    if (!nullToAbsent || completedAt != null) {
+      map['completed_at'] = Variable<int>(completedAt);
+    }
+    return map;
+  }
+
+  HifzPlansCompanion toCompanion(bool nullToAbsent) {
+    return HifzPlansCompanion(
+      id: Value(id),
+      userId:
+          userId == null && nullToAbsent ? const Value.absent() : Value(userId),
+      updatedAt: Value(updatedAt),
+      deletedAt: deletedAt == null && nullToAbsent
+          ? const Value.absent()
+          : Value(deletedAt),
+      isDirty: Value(isDirty),
+      ayahFrom: Value(ayahFrom),
+      ayahTo: Value(ayahTo),
+      status: Value(status),
+      startedAt: Value(startedAt),
+      completedAt: completedAt == null && nullToAbsent
+          ? const Value.absent()
+          : Value(completedAt),
+    );
+  }
+
+  factory HifzPlanRow.fromJson(Map<String, dynamic> json,
+      {ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return HifzPlanRow(
+      id: serializer.fromJson<String>(json['id']),
+      userId: serializer.fromJson<String?>(json['userId']),
+      updatedAt: serializer.fromJson<int>(json['updatedAt']),
+      deletedAt: serializer.fromJson<int?>(json['deletedAt']),
+      isDirty: serializer.fromJson<bool>(json['isDirty']),
+      ayahFrom: serializer.fromJson<int>(json['ayahFrom']),
+      ayahTo: serializer.fromJson<int>(json['ayahTo']),
+      status: serializer.fromJson<String>(json['status']),
+      startedAt: serializer.fromJson<int>(json['startedAt']),
+      completedAt: serializer.fromJson<int?>(json['completedAt']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<String>(id),
+      'userId': serializer.toJson<String?>(userId),
+      'updatedAt': serializer.toJson<int>(updatedAt),
+      'deletedAt': serializer.toJson<int?>(deletedAt),
+      'isDirty': serializer.toJson<bool>(isDirty),
+      'ayahFrom': serializer.toJson<int>(ayahFrom),
+      'ayahTo': serializer.toJson<int>(ayahTo),
+      'status': serializer.toJson<String>(status),
+      'startedAt': serializer.toJson<int>(startedAt),
+      'completedAt': serializer.toJson<int?>(completedAt),
+    };
+  }
+
+  HifzPlanRow copyWith(
+          {String? id,
+          Value<String?> userId = const Value.absent(),
+          int? updatedAt,
+          Value<int?> deletedAt = const Value.absent(),
+          bool? isDirty,
+          int? ayahFrom,
+          int? ayahTo,
+          String? status,
+          int? startedAt,
+          Value<int?> completedAt = const Value.absent()}) =>
+      HifzPlanRow(
+        id: id ?? this.id,
+        userId: userId.present ? userId.value : this.userId,
+        updatedAt: updatedAt ?? this.updatedAt,
+        deletedAt: deletedAt.present ? deletedAt.value : this.deletedAt,
+        isDirty: isDirty ?? this.isDirty,
+        ayahFrom: ayahFrom ?? this.ayahFrom,
+        ayahTo: ayahTo ?? this.ayahTo,
+        status: status ?? this.status,
+        startedAt: startedAt ?? this.startedAt,
+        completedAt: completedAt.present ? completedAt.value : this.completedAt,
+      );
+  HifzPlanRow copyWithCompanion(HifzPlansCompanion data) {
+    return HifzPlanRow(
+      id: data.id.present ? data.id.value : this.id,
+      userId: data.userId.present ? data.userId.value : this.userId,
+      updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
+      deletedAt: data.deletedAt.present ? data.deletedAt.value : this.deletedAt,
+      isDirty: data.isDirty.present ? data.isDirty.value : this.isDirty,
+      ayahFrom: data.ayahFrom.present ? data.ayahFrom.value : this.ayahFrom,
+      ayahTo: data.ayahTo.present ? data.ayahTo.value : this.ayahTo,
+      status: data.status.present ? data.status.value : this.status,
+      startedAt: data.startedAt.present ? data.startedAt.value : this.startedAt,
+      completedAt:
+          data.completedAt.present ? data.completedAt.value : this.completedAt,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('HifzPlanRow(')
+          ..write('id: $id, ')
+          ..write('userId: $userId, ')
+          ..write('updatedAt: $updatedAt, ')
+          ..write('deletedAt: $deletedAt, ')
+          ..write('isDirty: $isDirty, ')
+          ..write('ayahFrom: $ayahFrom, ')
+          ..write('ayahTo: $ayahTo, ')
+          ..write('status: $status, ')
+          ..write('startedAt: $startedAt, ')
+          ..write('completedAt: $completedAt')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(id, userId, updatedAt, deletedAt, isDirty,
+      ayahFrom, ayahTo, status, startedAt, completedAt);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is HifzPlanRow &&
+          other.id == this.id &&
+          other.userId == this.userId &&
+          other.updatedAt == this.updatedAt &&
+          other.deletedAt == this.deletedAt &&
+          other.isDirty == this.isDirty &&
+          other.ayahFrom == this.ayahFrom &&
+          other.ayahTo == this.ayahTo &&
+          other.status == this.status &&
+          other.startedAt == this.startedAt &&
+          other.completedAt == this.completedAt);
+}
+
+class HifzPlansCompanion extends UpdateCompanion<HifzPlanRow> {
+  final Value<String> id;
+  final Value<String?> userId;
+  final Value<int> updatedAt;
+  final Value<int?> deletedAt;
+  final Value<bool> isDirty;
+  final Value<int> ayahFrom;
+  final Value<int> ayahTo;
+  final Value<String> status;
+  final Value<int> startedAt;
+  final Value<int?> completedAt;
+  final Value<int> rowid;
+  const HifzPlansCompanion({
+    this.id = const Value.absent(),
+    this.userId = const Value.absent(),
+    this.updatedAt = const Value.absent(),
+    this.deletedAt = const Value.absent(),
+    this.isDirty = const Value.absent(),
+    this.ayahFrom = const Value.absent(),
+    this.ayahTo = const Value.absent(),
+    this.status = const Value.absent(),
+    this.startedAt = const Value.absent(),
+    this.completedAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  HifzPlansCompanion.insert({
+    required String id,
+    this.userId = const Value.absent(),
+    required int updatedAt,
+    this.deletedAt = const Value.absent(),
+    this.isDirty = const Value.absent(),
+    required int ayahFrom,
+    required int ayahTo,
+    required String status,
+    required int startedAt,
+    this.completedAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  })  : id = Value(id),
+        updatedAt = Value(updatedAt),
+        ayahFrom = Value(ayahFrom),
+        ayahTo = Value(ayahTo),
+        status = Value(status),
+        startedAt = Value(startedAt);
+  static Insertable<HifzPlanRow> custom({
+    Expression<String>? id,
+    Expression<String>? userId,
+    Expression<int>? updatedAt,
+    Expression<int>? deletedAt,
+    Expression<bool>? isDirty,
+    Expression<int>? ayahFrom,
+    Expression<int>? ayahTo,
+    Expression<String>? status,
+    Expression<int>? startedAt,
+    Expression<int>? completedAt,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (userId != null) 'user_id': userId,
+      if (updatedAt != null) 'updated_at': updatedAt,
+      if (deletedAt != null) 'deleted_at': deletedAt,
+      if (isDirty != null) 'is_dirty': isDirty,
+      if (ayahFrom != null) 'ayah_from': ayahFrom,
+      if (ayahTo != null) 'ayah_to': ayahTo,
+      if (status != null) 'status': status,
+      if (startedAt != null) 'started_at': startedAt,
+      if (completedAt != null) 'completed_at': completedAt,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  HifzPlansCompanion copyWith(
+      {Value<String>? id,
+      Value<String?>? userId,
+      Value<int>? updatedAt,
+      Value<int?>? deletedAt,
+      Value<bool>? isDirty,
+      Value<int>? ayahFrom,
+      Value<int>? ayahTo,
+      Value<String>? status,
+      Value<int>? startedAt,
+      Value<int?>? completedAt,
+      Value<int>? rowid}) {
+    return HifzPlansCompanion(
+      id: id ?? this.id,
+      userId: userId ?? this.userId,
+      updatedAt: updatedAt ?? this.updatedAt,
+      deletedAt: deletedAt ?? this.deletedAt,
+      isDirty: isDirty ?? this.isDirty,
+      ayahFrom: ayahFrom ?? this.ayahFrom,
+      ayahTo: ayahTo ?? this.ayahTo,
+      status: status ?? this.status,
+      startedAt: startedAt ?? this.startedAt,
+      completedAt: completedAt ?? this.completedAt,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (userId.present) {
+      map['user_id'] = Variable<String>(userId.value);
+    }
+    if (updatedAt.present) {
+      map['updated_at'] = Variable<int>(updatedAt.value);
+    }
+    if (deletedAt.present) {
+      map['deleted_at'] = Variable<int>(deletedAt.value);
+    }
+    if (isDirty.present) {
+      map['is_dirty'] = Variable<bool>(isDirty.value);
+    }
+    if (ayahFrom.present) {
+      map['ayah_from'] = Variable<int>(ayahFrom.value);
+    }
+    if (ayahTo.present) {
+      map['ayah_to'] = Variable<int>(ayahTo.value);
+    }
+    if (status.present) {
+      map['status'] = Variable<String>(status.value);
+    }
+    if (startedAt.present) {
+      map['started_at'] = Variable<int>(startedAt.value);
+    }
+    if (completedAt.present) {
+      map['completed_at'] = Variable<int>(completedAt.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('HifzPlansCompanion(')
+          ..write('id: $id, ')
+          ..write('userId: $userId, ')
+          ..write('updatedAt: $updatedAt, ')
+          ..write('deletedAt: $deletedAt, ')
+          ..write('isDirty: $isDirty, ')
+          ..write('ayahFrom: $ayahFrom, ')
+          ..write('ayahTo: $ayahTo, ')
+          ..write('status: $status, ')
+          ..write('startedAt: $startedAt, ')
+          ..write('completedAt: $completedAt, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
 abstract class _$UserDatabase extends GeneratedDatabase {
   _$UserDatabase(QueryExecutor e) : super(e);
   $UserDatabaseManager get managers => $UserDatabaseManager(this);
@@ -5602,6 +6137,7 @@ abstract class _$UserDatabase extends GeneratedDatabase {
   late final $QuizResultsTable quizResults = $QuizResultsTable(this);
   late final $FlashcardDecksTable flashcardDecks = $FlashcardDecksTable(this);
   late final $FlashcardsTable flashcards = $FlashcardsTable(this);
+  late final $HifzPlansTable hifzPlans = $HifzPlansTable(this);
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
@@ -5618,7 +6154,8 @@ abstract class _$UserDatabase extends GeneratedDatabase {
         srsCards,
         quizResults,
         flashcardDecks,
-        flashcards
+        flashcards,
+        hifzPlans
       ];
 }
 
@@ -8365,6 +8902,246 @@ typedef $$FlashcardsTableProcessedTableManager = ProcessedTableManager<
     ),
     FlashcardRow,
     PrefetchHooks Function()>;
+typedef $$HifzPlansTableCreateCompanionBuilder = HifzPlansCompanion Function({
+  required String id,
+  Value<String?> userId,
+  required int updatedAt,
+  Value<int?> deletedAt,
+  Value<bool> isDirty,
+  required int ayahFrom,
+  required int ayahTo,
+  required String status,
+  required int startedAt,
+  Value<int?> completedAt,
+  Value<int> rowid,
+});
+typedef $$HifzPlansTableUpdateCompanionBuilder = HifzPlansCompanion Function({
+  Value<String> id,
+  Value<String?> userId,
+  Value<int> updatedAt,
+  Value<int?> deletedAt,
+  Value<bool> isDirty,
+  Value<int> ayahFrom,
+  Value<int> ayahTo,
+  Value<String> status,
+  Value<int> startedAt,
+  Value<int?> completedAt,
+  Value<int> rowid,
+});
+
+class $$HifzPlansTableFilterComposer
+    extends Composer<_$UserDatabase, $HifzPlansTable> {
+  $$HifzPlansTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get id => $composableBuilder(
+      column: $table.id, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get userId => $composableBuilder(
+      column: $table.userId, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<int> get updatedAt => $composableBuilder(
+      column: $table.updatedAt, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<int> get deletedAt => $composableBuilder(
+      column: $table.deletedAt, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<bool> get isDirty => $composableBuilder(
+      column: $table.isDirty, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<int> get ayahFrom => $composableBuilder(
+      column: $table.ayahFrom, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<int> get ayahTo => $composableBuilder(
+      column: $table.ayahTo, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get status => $composableBuilder(
+      column: $table.status, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<int> get startedAt => $composableBuilder(
+      column: $table.startedAt, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<int> get completedAt => $composableBuilder(
+      column: $table.completedAt, builder: (column) => ColumnFilters(column));
+}
+
+class $$HifzPlansTableOrderingComposer
+    extends Composer<_$UserDatabase, $HifzPlansTable> {
+  $$HifzPlansTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get id => $composableBuilder(
+      column: $table.id, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get userId => $composableBuilder(
+      column: $table.userId, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<int> get updatedAt => $composableBuilder(
+      column: $table.updatedAt, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<int> get deletedAt => $composableBuilder(
+      column: $table.deletedAt, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<bool> get isDirty => $composableBuilder(
+      column: $table.isDirty, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<int> get ayahFrom => $composableBuilder(
+      column: $table.ayahFrom, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<int> get ayahTo => $composableBuilder(
+      column: $table.ayahTo, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get status => $composableBuilder(
+      column: $table.status, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<int> get startedAt => $composableBuilder(
+      column: $table.startedAt, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<int> get completedAt => $composableBuilder(
+      column: $table.completedAt, builder: (column) => ColumnOrderings(column));
+}
+
+class $$HifzPlansTableAnnotationComposer
+    extends Composer<_$UserDatabase, $HifzPlansTable> {
+  $$HifzPlansTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get userId =>
+      $composableBuilder(column: $table.userId, builder: (column) => column);
+
+  GeneratedColumn<int> get updatedAt =>
+      $composableBuilder(column: $table.updatedAt, builder: (column) => column);
+
+  GeneratedColumn<int> get deletedAt =>
+      $composableBuilder(column: $table.deletedAt, builder: (column) => column);
+
+  GeneratedColumn<bool> get isDirty =>
+      $composableBuilder(column: $table.isDirty, builder: (column) => column);
+
+  GeneratedColumn<int> get ayahFrom =>
+      $composableBuilder(column: $table.ayahFrom, builder: (column) => column);
+
+  GeneratedColumn<int> get ayahTo =>
+      $composableBuilder(column: $table.ayahTo, builder: (column) => column);
+
+  GeneratedColumn<String> get status =>
+      $composableBuilder(column: $table.status, builder: (column) => column);
+
+  GeneratedColumn<int> get startedAt =>
+      $composableBuilder(column: $table.startedAt, builder: (column) => column);
+
+  GeneratedColumn<int> get completedAt => $composableBuilder(
+      column: $table.completedAt, builder: (column) => column);
+}
+
+class $$HifzPlansTableTableManager extends RootTableManager<
+    _$UserDatabase,
+    $HifzPlansTable,
+    HifzPlanRow,
+    $$HifzPlansTableFilterComposer,
+    $$HifzPlansTableOrderingComposer,
+    $$HifzPlansTableAnnotationComposer,
+    $$HifzPlansTableCreateCompanionBuilder,
+    $$HifzPlansTableUpdateCompanionBuilder,
+    (HifzPlanRow, BaseReferences<_$UserDatabase, $HifzPlansTable, HifzPlanRow>),
+    HifzPlanRow,
+    PrefetchHooks Function()> {
+  $$HifzPlansTableTableManager(_$UserDatabase db, $HifzPlansTable table)
+      : super(TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$HifzPlansTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$HifzPlansTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$HifzPlansTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback: ({
+            Value<String> id = const Value.absent(),
+            Value<String?> userId = const Value.absent(),
+            Value<int> updatedAt = const Value.absent(),
+            Value<int?> deletedAt = const Value.absent(),
+            Value<bool> isDirty = const Value.absent(),
+            Value<int> ayahFrom = const Value.absent(),
+            Value<int> ayahTo = const Value.absent(),
+            Value<String> status = const Value.absent(),
+            Value<int> startedAt = const Value.absent(),
+            Value<int?> completedAt = const Value.absent(),
+            Value<int> rowid = const Value.absent(),
+          }) =>
+              HifzPlansCompanion(
+            id: id,
+            userId: userId,
+            updatedAt: updatedAt,
+            deletedAt: deletedAt,
+            isDirty: isDirty,
+            ayahFrom: ayahFrom,
+            ayahTo: ayahTo,
+            status: status,
+            startedAt: startedAt,
+            completedAt: completedAt,
+            rowid: rowid,
+          ),
+          createCompanionCallback: ({
+            required String id,
+            Value<String?> userId = const Value.absent(),
+            required int updatedAt,
+            Value<int?> deletedAt = const Value.absent(),
+            Value<bool> isDirty = const Value.absent(),
+            required int ayahFrom,
+            required int ayahTo,
+            required String status,
+            required int startedAt,
+            Value<int?> completedAt = const Value.absent(),
+            Value<int> rowid = const Value.absent(),
+          }) =>
+              HifzPlansCompanion.insert(
+            id: id,
+            userId: userId,
+            updatedAt: updatedAt,
+            deletedAt: deletedAt,
+            isDirty: isDirty,
+            ayahFrom: ayahFrom,
+            ayahTo: ayahTo,
+            status: status,
+            startedAt: startedAt,
+            completedAt: completedAt,
+            rowid: rowid,
+          ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ));
+}
+
+typedef $$HifzPlansTableProcessedTableManager = ProcessedTableManager<
+    _$UserDatabase,
+    $HifzPlansTable,
+    HifzPlanRow,
+    $$HifzPlansTableFilterComposer,
+    $$HifzPlansTableOrderingComposer,
+    $$HifzPlansTableAnnotationComposer,
+    $$HifzPlansTableCreateCompanionBuilder,
+    $$HifzPlansTableUpdateCompanionBuilder,
+    (HifzPlanRow, BaseReferences<_$UserDatabase, $HifzPlansTable, HifzPlanRow>),
+    HifzPlanRow,
+    PrefetchHooks Function()>;
 
 class $UserDatabaseManager {
   final _$UserDatabase _db;
@@ -8393,4 +9170,6 @@ class $UserDatabaseManager {
       $$FlashcardDecksTableTableManager(_db, _db.flashcardDecks);
   $$FlashcardsTableTableManager get flashcards =>
       $$FlashcardsTableTableManager(_db, _db.flashcards);
+  $$HifzPlansTableTableManager get hifzPlans =>
+      $$HifzPlansTableTableManager(_db, _db.hifzPlans);
 }

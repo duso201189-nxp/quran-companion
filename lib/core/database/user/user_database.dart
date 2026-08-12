@@ -21,13 +21,14 @@ part 'user_database.g.dart';
     QuizResults,
     FlashcardDecks,
     Flashcards,
+    HifzPlans,
   ],
 )
 class UserDatabase extends _$UserDatabase {
   UserDatabase(super.executor);
 
   @override
-  int get schemaVersion => 6;
+  int get schemaVersion => 7;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -72,6 +73,14 @@ class UserDatabase extends _$UserDatabase {
           if (from < 6) {
             await m.createTable(flashcardDecks);
             await m.createTable(flashcards);
+          }
+          // v7: Sprint 7.7a — hifz_plans. Cam kết học thuộc một ĐOẠN
+          // (ordinal toàn cục 1..6236), tách hẳn khỏi trạng thái lịch
+          // trình trong srs_cards. KHÔNG backfill: cam kết Hifz là
+          // hành động chủ động của người dùng, không có dữ liệu "trước
+          // đó" nào để suy ra — cùng lý do đã ghi cho flashcards ở v6.
+          if (from < 7) {
+            await m.createTable(hifzPlans);
           }
         },
         beforeOpen: (details) async {

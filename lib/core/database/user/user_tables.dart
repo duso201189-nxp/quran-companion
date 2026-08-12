@@ -331,3 +331,65 @@ class QuizResults extends Table with SyncColumns {
   @override
   Set<Column<Object>> get primaryKey => {id};
 }
+
+/// Cam kết học thuộc một ĐOẠN (Sprint 7.7a — Hifz Foundation).
+///
+/// Một dòng = một lần người dùng CHỦ ĐỘNG nói "tôi cam kết học thuộc
+/// đoạn này". Nó KHÔNG có nghĩa "tôi đã thuộc đoạn này": tiến trình
+/// thuộc từng Ayah nằm ở `srs_cards(item_type='hifz')`, không ở đây.
+///
+/// ## Vì sao cần bảng riêng, không dùng lại bảng nào đang có
+///
+/// - `ayah_statuses` unique theo `ayah_id` -> mỗi Ayah đúng MỘT trạng
+///   thái. Mượn `learning`/`learned` cho Hifz sẽ ĐẨY `review` ra, và
+///   ngược lại — hai khái niệm mà Hiến pháp Study §10 yêu cầu "biểu
+///   diễn được cả hai mà không trộn lẫn" sẽ trộn lẫn.
+/// - `srs_cards` là TRẠNG THÁI LỊCH TRÌNH, không phải ý định người
+///   dùng: `syncItemsForType` xoá mềm/hồi sinh nó theo nguồn thành
+///   viên, và hồi sinh RESET về `initialState()`. Ý định người dùng
+///   không được sống trong một bảng mà cơ chế đồng bộ có quyền xoá.
+/// - `khatm_cycles` là chu kỳ ĐỌC trọn bộ, một con trỏ vị trí — không
+///   phải một đoạn, và trộn hai khái niệm hạng nhất.
+///
+/// ## Hệ toạ độ: ordinal TOÀN CỤC
+///
+/// [ayahFrom]/[ayahTo] là **số thứ tự Ayah trong toàn bộ Mushaf**,
+/// 1..6236, CÙNG hệ với `srs_cards.item_id` (loại 'ayah'/'hifz') và
+/// `khatm_cycles.current_ayah_id` — KHÔNG phải chỉ số 0-based trong
+/// Surah như `study_sessions.ayah_from/ayah_to`. Nhờ cùng hệ với
+/// `item_id`, việc trải đoạn thành thẻ là phép đếm số nguyên thuần,
+/// không quy đổi, và một đoạn vắt qua nhiều Surah (Juz sau này) biểu
+/// diễn được mà không đổi mô hình. Bất biến: `1 <= ayahFrom <= ayahTo
+/// <= 6236`, do tầng repository bảo đảm (không có CHECK ở database,
+/// cùng lý do không có FK: hai tệp SQLite riêng).
+@DataClassName('HifzPlanRow')
+class HifzPlans extends Table with SyncColumns {
+  @override
+  String get tableName => 'hifz_plans';
+
+  /// Ordinal Ayah TOÀN CỤC 1..6236 — xem doc lớp.
+  IntColumn get ayahFrom => integer().named('ayah_from')();
+  IntColumn get ayahTo => integer().named('ayah_to')();
+
+  /// 'active' | 'paused' | 'completed'.
+  ///
+  /// Cả ba đều là kế hoạch CÒN SỐNG và đều góp Ayah vào tập hợp lên
+  /// lịch Hifz. Chỉ `deleted_at` mới đưa một kế hoạch ra khỏi tập hợp
+  /// đó — tạm dừng là bộ lọc "đến hạn", hoàn thành là một cột mốc,
+  /// không cái nào được phép xoá thẻ (Hiến pháp Study §3.7/§10).
+  TextColumn get status => text()();
+
+  IntColumn get startedAt => integer().named('started_at')();
+
+  /// NULL = chưa hoàn thành.
+  IntColumn get completedAt => integer().named('completed_at').nullable()();
+
+  @override
+  Set<Column<Object>> get primaryKey => {id};
+
+  // KHÔNG unique theo (ayah_from, ayah_to): kế hoạch chồng lấn được
+  // phép (quyết định 24) — mở rộng một đoạn đã thuộc là hành vi hợp lệ.
+  // Chồng lấn không nhân đôi việc ôn: UNIQUE(item_type, item_id) của
+  // srs_cards cộng với tập hợp HỢP (union) khiến mỗi Ayah luôn chỉ có
+  // đúng một thẻ Hifz.
+}
