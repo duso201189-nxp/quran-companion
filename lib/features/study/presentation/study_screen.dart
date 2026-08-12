@@ -74,6 +74,12 @@ class StudyScreen extends ConsumerWidget {
         onTap: () => context.push(AppRoutes.revisionQueue),
       ),
       (
+        icon: Icons.psychology_rounded,
+        title: l10n.studyHifz,
+        subtitle: l10n.studyHifzDesc,
+        onTap: () => context.push(AppRoutes.hifzPlans),
+      ),
+      (
         icon: Icons.insights_rounded,
         title: l10n.studyProgress,
         subtitle: l10n.studyProgressDesc,

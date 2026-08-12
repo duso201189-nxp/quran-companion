@@ -124,6 +124,37 @@
   "studyQuizDesc": "اختبارات سريعة لكل سورة",
   "studyDailyReview": "مراجعة يومية",
   "studyDailyReviewDesc": "آيات مستحقة للمراجعة اليوم",
+  "studyHifz": "التحفيظ",
+  "studyHifzDesc": "التزم بحفظ مقطع محدد",
+  "hifzPlansTitle": "خطط الحفظ",
+  "hifzPlansEmpty": "لا توجد خطط حفظ بعد.",
+  "hifzPlanCreate": "خطة جديدة",
+  "hifzStatusActive": "نشطة",
+  "hifzStatusPaused": "متوقفة مؤقتًا",
+  "hifzStatusCompleted": "مكتملة",
+  "hifzActionPause": "إيقاف مؤقت",
+  "hifzActionResume": "استئناف",
+  "hifzActionComplete": "وضع علامة مكتمل",
+  "hifzActionDelete": "حذف",
+  "hifzPlanActionsTooltip": "إجراءات الخطة",
+  "hifzPlanDeleteConfirmTitle": "حذف هذه الخطة؟",
+  "hifzPlanDeleteConfirmBody": "سيُفقد جدول المراجعة الخاص بها. إضافة النطاق نفسه مرة أخرى يبدأ من جديد، ولا يكمل من حيث توقف.",
+  "hifzFormSurahLabel": "السورة",
+  "hifzFormSurahHint": "اختر سورة",
+  "hifzFormAyahFromLabel": "من الآية",
+  "hifzFormAyahToLabel": "إلى الآية",
+  "hifzFormSurahRequired": "اختر سورة أولاً",
+  "hifzFormAyahInvalidNumber": "أدخل رقمًا صحيحًا",
+  "hifzFormAyahFromBelowOne": "يجب أن يكون 1 أو أكبر",
+  "hifzFormAyahToAboveSurahCount": "هذه السورة تحتوي على {count} آية فقط",
+  "@hifzFormAyahToAboveSurahCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "hifzFormAyahFromAfterAyahTo": "\"من\" يجب ألا يكون بعد \"إلى\"",
   "comingSoon": "قريباً",
   "statsReadingDays": "أيام القراءة",
   "statsAyahsRead": "الآيات المقروءة",

@@ -287,6 +287,81 @@ class AppLocalizationsVi extends AppLocalizations {
   String get studyDailyReviewDesc => 'Danh sách Ayah cần ôn hôm nay';
 
   @override
+  String get studyHifz => 'Học thuộc';
+
+  @override
+  String get studyHifzDesc => 'Cam kết học thuộc một đoạn cụ thể';
+
+  @override
+  String get hifzPlansTitle => 'Kế hoạch Hifz';
+
+  @override
+  String get hifzPlansEmpty => 'Chưa có kế hoạch Hifz nào.';
+
+  @override
+  String get hifzPlanCreate => 'Kế hoạch mới';
+
+  @override
+  String get hifzStatusActive => 'Đang học';
+
+  @override
+  String get hifzStatusPaused => 'Tạm dừng';
+
+  @override
+  String get hifzStatusCompleted => 'Đã hoàn thành';
+
+  @override
+  String get hifzActionPause => 'Tạm dừng';
+
+  @override
+  String get hifzActionResume => 'Tiếp tục';
+
+  @override
+  String get hifzActionComplete => 'Đánh dấu hoàn thành';
+
+  @override
+  String get hifzActionDelete => 'Xoá';
+
+  @override
+  String get hifzPlanActionsTooltip => 'Thao tác kế hoạch';
+
+  @override
+  String get hifzPlanDeleteConfirmTitle => 'Xoá kế hoạch này?';
+
+  @override
+  String get hifzPlanDeleteConfirmBody =>
+      'Lịch ôn của kế hoạch này sẽ mất. Thêm lại đúng đoạn này sẽ bắt đầu lại từ đầu, không tiếp tục từ chỗ cũ.';
+
+  @override
+  String get hifzFormSurahLabel => 'Surah';
+
+  @override
+  String get hifzFormSurahHint => 'Chọn một Surah';
+
+  @override
+  String get hifzFormAyahFromLabel => 'Từ Ayah';
+
+  @override
+  String get hifzFormAyahToLabel => 'Đến Ayah';
+
+  @override
+  String get hifzFormSurahRequired => 'Hãy chọn một Surah trước';
+
+  @override
+  String get hifzFormAyahInvalidNumber => 'Nhập một số hợp lệ';
+
+  @override
+  String get hifzFormAyahFromBelowOne => 'Phải từ 1 trở lên';
+
+  @override
+  String hifzFormAyahToAboveSurahCount(int count) {
+    return 'Surah này chỉ có $count Ayah';
+  }
+
+  @override
+  String get hifzFormAyahFromAfterAyahTo => '\"Từ\" không được sau \"Đến\"';
+
+  @override
   String get comingSoon => 'Sắp ra mắt';
 
   @override

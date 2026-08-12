@@ -289,6 +289,81 @@ class AppLocalizationsEn extends AppLocalizations {
   String get studyDailyReviewDesc => 'Ayahs due for review today';
 
   @override
+  String get studyHifz => 'Hifz';
+
+  @override
+  String get studyHifzDesc => 'Commit specific passages to memory';
+
+  @override
+  String get hifzPlansTitle => 'Hifz plans';
+
+  @override
+  String get hifzPlansEmpty => 'No Hifz plans yet.';
+
+  @override
+  String get hifzPlanCreate => 'New plan';
+
+  @override
+  String get hifzStatusActive => 'Active';
+
+  @override
+  String get hifzStatusPaused => 'Paused';
+
+  @override
+  String get hifzStatusCompleted => 'Completed';
+
+  @override
+  String get hifzActionPause => 'Pause';
+
+  @override
+  String get hifzActionResume => 'Resume';
+
+  @override
+  String get hifzActionComplete => 'Mark complete';
+
+  @override
+  String get hifzActionDelete => 'Delete';
+
+  @override
+  String get hifzPlanActionsTooltip => 'Plan actions';
+
+  @override
+  String get hifzPlanDeleteConfirmTitle => 'Delete this plan?';
+
+  @override
+  String get hifzPlanDeleteConfirmBody =>
+      'Its review schedule will be lost. Adding the same range again starts fresh — it does not continue where this left off.';
+
+  @override
+  String get hifzFormSurahLabel => 'Surah';
+
+  @override
+  String get hifzFormSurahHint => 'Choose a Surah';
+
+  @override
+  String get hifzFormAyahFromLabel => 'From Ayah';
+
+  @override
+  String get hifzFormAyahToLabel => 'To Ayah';
+
+  @override
+  String get hifzFormSurahRequired => 'Choose a Surah first';
+
+  @override
+  String get hifzFormAyahInvalidNumber => 'Enter a valid number';
+
+  @override
+  String get hifzFormAyahFromBelowOne => 'Must be 1 or greater';
+
+  @override
+  String hifzFormAyahToAboveSurahCount(int count) {
+    return 'This Surah only has $count ayahs';
+  }
+
+  @override
+  String get hifzFormAyahFromAfterAyahTo => '\"From\" must not be after \"To\"';
+
+  @override
   String get comingSoon => 'Coming soon';
 
   @override

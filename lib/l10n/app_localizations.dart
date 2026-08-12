@@ -634,6 +634,150 @@ abstract class AppLocalizations {
   /// **'Danh sách Ayah cần ôn hôm nay'**
   String get studyDailyReviewDesc;
 
+  /// No description provided for @studyHifz.
+  ///
+  /// In vi, this message translates to:
+  /// **'Học thuộc'**
+  String get studyHifz;
+
+  /// No description provided for @studyHifzDesc.
+  ///
+  /// In vi, this message translates to:
+  /// **'Cam kết học thuộc một đoạn cụ thể'**
+  String get studyHifzDesc;
+
+  /// No description provided for @hifzPlansTitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Kế hoạch Hifz'**
+  String get hifzPlansTitle;
+
+  /// No description provided for @hifzPlansEmpty.
+  ///
+  /// In vi, this message translates to:
+  /// **'Chưa có kế hoạch Hifz nào.'**
+  String get hifzPlansEmpty;
+
+  /// No description provided for @hifzPlanCreate.
+  ///
+  /// In vi, this message translates to:
+  /// **'Kế hoạch mới'**
+  String get hifzPlanCreate;
+
+  /// No description provided for @hifzStatusActive.
+  ///
+  /// In vi, this message translates to:
+  /// **'Đang học'**
+  String get hifzStatusActive;
+
+  /// No description provided for @hifzStatusPaused.
+  ///
+  /// In vi, this message translates to:
+  /// **'Tạm dừng'**
+  String get hifzStatusPaused;
+
+  /// No description provided for @hifzStatusCompleted.
+  ///
+  /// In vi, this message translates to:
+  /// **'Đã hoàn thành'**
+  String get hifzStatusCompleted;
+
+  /// No description provided for @hifzActionPause.
+  ///
+  /// In vi, this message translates to:
+  /// **'Tạm dừng'**
+  String get hifzActionPause;
+
+  /// No description provided for @hifzActionResume.
+  ///
+  /// In vi, this message translates to:
+  /// **'Tiếp tục'**
+  String get hifzActionResume;
+
+  /// No description provided for @hifzActionComplete.
+  ///
+  /// In vi, this message translates to:
+  /// **'Đánh dấu hoàn thành'**
+  String get hifzActionComplete;
+
+  /// No description provided for @hifzActionDelete.
+  ///
+  /// In vi, this message translates to:
+  /// **'Xoá'**
+  String get hifzActionDelete;
+
+  /// No description provided for @hifzPlanActionsTooltip.
+  ///
+  /// In vi, this message translates to:
+  /// **'Thao tác kế hoạch'**
+  String get hifzPlanActionsTooltip;
+
+  /// No description provided for @hifzPlanDeleteConfirmTitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Xoá kế hoạch này?'**
+  String get hifzPlanDeleteConfirmTitle;
+
+  /// No description provided for @hifzPlanDeleteConfirmBody.
+  ///
+  /// In vi, this message translates to:
+  /// **'Lịch ôn của kế hoạch này sẽ mất. Thêm lại đúng đoạn này sẽ bắt đầu lại từ đầu, không tiếp tục từ chỗ cũ.'**
+  String get hifzPlanDeleteConfirmBody;
+
+  /// No description provided for @hifzFormSurahLabel.
+  ///
+  /// In vi, this message translates to:
+  /// **'Surah'**
+  String get hifzFormSurahLabel;
+
+  /// No description provided for @hifzFormSurahHint.
+  ///
+  /// In vi, this message translates to:
+  /// **'Chọn một Surah'**
+  String get hifzFormSurahHint;
+
+  /// No description provided for @hifzFormAyahFromLabel.
+  ///
+  /// In vi, this message translates to:
+  /// **'Từ Ayah'**
+  String get hifzFormAyahFromLabel;
+
+  /// No description provided for @hifzFormAyahToLabel.
+  ///
+  /// In vi, this message translates to:
+  /// **'Đến Ayah'**
+  String get hifzFormAyahToLabel;
+
+  /// No description provided for @hifzFormSurahRequired.
+  ///
+  /// In vi, this message translates to:
+  /// **'Hãy chọn một Surah trước'**
+  String get hifzFormSurahRequired;
+
+  /// No description provided for @hifzFormAyahInvalidNumber.
+  ///
+  /// In vi, this message translates to:
+  /// **'Nhập một số hợp lệ'**
+  String get hifzFormAyahInvalidNumber;
+
+  /// No description provided for @hifzFormAyahFromBelowOne.
+  ///
+  /// In vi, this message translates to:
+  /// **'Phải từ 1 trở lên'**
+  String get hifzFormAyahFromBelowOne;
+
+  /// No description provided for @hifzFormAyahToAboveSurahCount.
+  ///
+  /// In vi, this message translates to:
+  /// **'Surah này chỉ có {count} Ayah'**
+  String hifzFormAyahToAboveSurahCount(int count);
+
+  /// No description provided for @hifzFormAyahFromAfterAyahTo.
+  ///
+  /// In vi, this message translates to:
+  /// **'\"Từ\" không được sau \"Đến\"'**
+  String get hifzFormAyahFromAfterAyahTo;
+
   /// No description provided for @comingSoon.
   ///
   /// In vi, this message translates to:

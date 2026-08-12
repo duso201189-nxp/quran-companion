@@ -9,6 +9,8 @@ import '../features/flashcards/presentation/flashcard_browse_screen.dart';
 import '../features/flashcards/presentation/flashcard_decks_screen.dart';
 import '../features/flashcards/presentation/flashcard_review_screen.dart';
 import '../features/flashcards/presentation/smart_deck_screen.dart';
+import '../features/hifz/presentation/hifz_plan_form_screen.dart';
+import '../features/hifz/presentation/hifz_plans_screen.dart';
 import '../features/home/presentation/home_screen.dart';
 import '../features/learning/presentation/review_session_screen.dart';
 import '../features/learning_journey/presentation/learning_journey_screen.dart';
@@ -124,6 +126,14 @@ abstract final class AppRoutes {
   /// SmartLearningScreen._StudySummaryEntryCard), cùng mẫu
   /// [progressDashboard]/[aiTutor]/[learningJourney]/[smartLearning].
   static const String studySummary = '/study-summary';
+
+  /// Danh sách + quản lý kế hoạch Hifz (Sprint 7.7b-ii) — push
+  /// full-screen từ tab Học, cùng mẫu [flashcards]/[library].
+  static const String hifzPlans = '/hifz';
+
+  /// Tạo kế hoạch Hifz mới — push từ [hifzPlans], cùng mẫu
+  /// [addFlashcard].
+  static const String hifzPlanForm = '/hifz/create';
 
   /// Trang đọc trong tab Qur'an (giữ thanh điều hướng): /quran/surah/2
   static String surahReading(int surahId) => '/quran/surah/$surahId';
@@ -283,6 +293,16 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: AppRoutes.reviewSession,
         builder: (context, state) => const ReviewSessionScreen(),
+      ),
+
+      GoRoute(
+        path: AppRoutes.hifzPlans,
+        builder: (context, state) => const HifzPlansScreen(),
+      ),
+
+      GoRoute(
+        path: AppRoutes.hifzPlanForm,
+        builder: (context, state) => const HifzPlanFormScreen(),
       ),
 
       GoRoute(

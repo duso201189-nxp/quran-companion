@@ -124,6 +124,37 @@
   "studyQuizDesc": "Kiểm tra nhanh kiến thức Surah",
   "studyDailyReview": "Ôn tập hằng ngày",
   "studyDailyReviewDesc": "Danh sách Ayah cần ôn hôm nay",
+  "studyHifz": "Học thuộc",
+  "studyHifzDesc": "Cam kết học thuộc một đoạn cụ thể",
+  "hifzPlansTitle": "Kế hoạch Hifz",
+  "hifzPlansEmpty": "Chưa có kế hoạch Hifz nào.",
+  "hifzPlanCreate": "Kế hoạch mới",
+  "hifzStatusActive": "Đang học",
+  "hifzStatusPaused": "Tạm dừng",
+  "hifzStatusCompleted": "Đã hoàn thành",
+  "hifzActionPause": "Tạm dừng",
+  "hifzActionResume": "Tiếp tục",
+  "hifzActionComplete": "Đánh dấu hoàn thành",
+  "hifzActionDelete": "Xoá",
+  "hifzPlanActionsTooltip": "Thao tác kế hoạch",
+  "hifzPlanDeleteConfirmTitle": "Xoá kế hoạch này?",
+  "hifzPlanDeleteConfirmBody": "Lịch ôn của kế hoạch này sẽ mất. Thêm lại đúng đoạn này sẽ bắt đầu lại từ đầu, không tiếp tục từ chỗ cũ.",
+  "hifzFormSurahLabel": "Surah",
+  "hifzFormSurahHint": "Chọn một Surah",
+  "hifzFormAyahFromLabel": "Từ Ayah",
+  "hifzFormAyahToLabel": "Đến Ayah",
+  "hifzFormSurahRequired": "Hãy chọn một Surah trước",
+  "hifzFormAyahInvalidNumber": "Nhập một số hợp lệ",
+  "hifzFormAyahFromBelowOne": "Phải từ 1 trở lên",
+  "hifzFormAyahToAboveSurahCount": "Surah này chỉ có {count} Ayah",
+  "@hifzFormAyahToAboveSurahCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "hifzFormAyahFromAfterAyahTo": "\"Từ\" không được sau \"Đến\"",
   "comingSoon": "Sắp ra mắt",
   "statsReadingDays": "Ngày đọc",
   "statsAyahsRead": "Ayah đã đọc",

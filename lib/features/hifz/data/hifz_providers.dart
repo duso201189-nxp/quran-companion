@@ -8,6 +8,8 @@ import '../../learning/domain/entities/srs_card.dart';
 import '../../learning/domain/hifz_scheduling_algorithm.dart';
 import '../../learning/domain/repositories/scheduler_repository.dart';
 import '../../learning/domain/scheduling_algorithm.dart';
+import '../../quran/data/quran_providers.dart';
+import '../../quran/domain/entities/ayah_search_result.dart';
 import '../domain/entities/hifz_plan.dart';
 import '../domain/repositories/hifz_plan_repository.dart';
 import 'hifz_plan_repository_impl.dart';
@@ -119,4 +121,36 @@ final dueHifzCardsProvider =
     for (final card in selectDueCardsOrdered(cards, DateTime.now()))
       if (activeIds.contains(card.itemId)) card,
   ];
+});
+
+/// Một mục ôn tập Hifz để hiển thị: thẻ SRS + nội dung Ayah đã giải
+/// quyết — Sprint 7.7b-i. CÙNG hình dạng `ReviewSessionItem`
+/// (`review_session_providers.dart`), cố ý không dùng chung kiểu đó:
+/// hai màn hình review (thường/Hifz) phải là hai bề mặt tách biệt
+/// (xem doc [hifzSchedulerRepositoryProvider]), dùng chung kiểu dữ
+/// liệu hiển thị không kéo theo dùng chung nguồn thẻ hay nguồn lịch
+/// trình.
+typedef HifzReviewItem = ({SrsCard card, AyahSearchResult ayah});
+
+/// Mục ôn Hifz hiện tại — thẻ ĐẦU TIÊN của [dueHifzCardsProvider] (đã
+/// sắp theo hạn gần nhất qua `selectDueCardsOrdered`, cùng luật thứ tự
+/// ôn tập thường đang dùng — KHÔNG tự đặt luật thứ tự mới), kèm nội
+/// dung Ayah đã giải quyết. `null` = không có thẻ Hifz nào đến hạn.
+///
+/// An toàn loại thẻ (Sprint 7.7a): [dueHifzCardsProvider] chỉ đọc từ
+/// `hifzSchedulerRepositoryProvider.watchAllCards(LearningItemType.hifz)`
+/// — CHƯA từng, và không thể, lẫn vào thẻ `item_type='ayah'`. Provider
+/// này chỉ chọn phần tử đầu và giải quyết nội dung hiển thị, không
+/// thêm nguồn thẻ mới, không tự tính lịch trình.
+final currentHifzReviewItemProvider =
+    FutureProvider.autoDispose<HifzReviewItem?>((ref) async {
+  final dueCards = await ref.watch(dueHifzCardsProvider.future);
+  if (dueCards.isEmpty) return null;
+
+  final card = dueCards.first;
+  final results =
+      await ref.watch(quranRepositoryProvider).getAyahsByIds([card.itemId]);
+  if (results.isEmpty) return null;
+
+  return (card: card, ayah: results.first);
 });

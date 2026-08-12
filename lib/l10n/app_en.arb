@@ -124,6 +124,37 @@
   "studyQuizDesc": "Quick knowledge checks per Surah",
   "studyDailyReview": "Daily review",
   "studyDailyReviewDesc": "Ayahs due for review today",
+  "studyHifz": "Hifz",
+  "studyHifzDesc": "Commit specific passages to memory",
+  "hifzPlansTitle": "Hifz plans",
+  "hifzPlansEmpty": "No Hifz plans yet.",
+  "hifzPlanCreate": "New plan",
+  "hifzStatusActive": "Active",
+  "hifzStatusPaused": "Paused",
+  "hifzStatusCompleted": "Completed",
+  "hifzActionPause": "Pause",
+  "hifzActionResume": "Resume",
+  "hifzActionComplete": "Mark complete",
+  "hifzActionDelete": "Delete",
+  "hifzPlanActionsTooltip": "Plan actions",
+  "hifzPlanDeleteConfirmTitle": "Delete this plan?",
+  "hifzPlanDeleteConfirmBody": "Its review schedule will be lost. Adding the same range again starts fresh — it does not continue where this left off.",
+  "hifzFormSurahLabel": "Surah",
+  "hifzFormSurahHint": "Choose a Surah",
+  "hifzFormAyahFromLabel": "From Ayah",
+  "hifzFormAyahToLabel": "To Ayah",
+  "hifzFormSurahRequired": "Choose a Surah first",
+  "hifzFormAyahInvalidNumber": "Enter a valid number",
+  "hifzFormAyahFromBelowOne": "Must be 1 or greater",
+  "hifzFormAyahToAboveSurahCount": "This Surah only has {count} ayahs",
+  "@hifzFormAyahToAboveSurahCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "hifzFormAyahFromAfterAyahTo": "\"From\" must not be after \"To\"",
   "comingSoon": "Coming soon",
   "statsReadingDays": "Reading days",
   "statsAyahsRead": "Ayahs read",

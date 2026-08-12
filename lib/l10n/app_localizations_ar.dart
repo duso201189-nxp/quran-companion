@@ -286,6 +286,81 @@ class AppLocalizationsAr extends AppLocalizations {
   String get studyDailyReviewDesc => 'آيات مستحقة للمراجعة اليوم';
 
   @override
+  String get studyHifz => 'التحفيظ';
+
+  @override
+  String get studyHifzDesc => 'التزم بحفظ مقطع محدد';
+
+  @override
+  String get hifzPlansTitle => 'خطط الحفظ';
+
+  @override
+  String get hifzPlansEmpty => 'لا توجد خطط حفظ بعد.';
+
+  @override
+  String get hifzPlanCreate => 'خطة جديدة';
+
+  @override
+  String get hifzStatusActive => 'نشطة';
+
+  @override
+  String get hifzStatusPaused => 'متوقفة مؤقتًا';
+
+  @override
+  String get hifzStatusCompleted => 'مكتملة';
+
+  @override
+  String get hifzActionPause => 'إيقاف مؤقت';
+
+  @override
+  String get hifzActionResume => 'استئناف';
+
+  @override
+  String get hifzActionComplete => 'وضع علامة مكتمل';
+
+  @override
+  String get hifzActionDelete => 'حذف';
+
+  @override
+  String get hifzPlanActionsTooltip => 'إجراءات الخطة';
+
+  @override
+  String get hifzPlanDeleteConfirmTitle => 'حذف هذه الخطة؟';
+
+  @override
+  String get hifzPlanDeleteConfirmBody =>
+      'سيُفقد جدول المراجعة الخاص بها. إضافة النطاق نفسه مرة أخرى يبدأ من جديد، ولا يكمل من حيث توقف.';
+
+  @override
+  String get hifzFormSurahLabel => 'السورة';
+
+  @override
+  String get hifzFormSurahHint => 'اختر سورة';
+
+  @override
+  String get hifzFormAyahFromLabel => 'من الآية';
+
+  @override
+  String get hifzFormAyahToLabel => 'إلى الآية';
+
+  @override
+  String get hifzFormSurahRequired => 'اختر سورة أولاً';
+
+  @override
+  String get hifzFormAyahInvalidNumber => 'أدخل رقمًا صحيحًا';
+
+  @override
+  String get hifzFormAyahFromBelowOne => 'يجب أن يكون 1 أو أكبر';
+
+  @override
+  String hifzFormAyahToAboveSurahCount(int count) {
+    return 'هذه السورة تحتوي على $count آية فقط';
+  }
+
+  @override
+  String get hifzFormAyahFromAfterAyahTo => '\"من\" يجب ألا يكون بعد \"إلى\"';
+
+  @override
   String get comingSoon => 'قريباً';
 
   @override
