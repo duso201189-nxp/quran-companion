@@ -361,6 +361,19 @@ class AppLocalizationsAr extends AppLocalizations {
   String get hifzFormAyahFromAfterAyahTo => '\"من\" يجب ألا يكون بعد \"إلى\"';
 
   @override
+  String get hifzReviewTooltip => 'مراجعة التحفيظ المستحقة';
+
+  @override
+  String get hifzReviewTitle => 'مراجعة التحفيظ';
+
+  @override
+  String get hifzReviewComplete => 'لا توجد مراجعة تحفيظ مستحقة';
+
+  @override
+  String get hifzReviewCompleteSubtitle =>
+      'عد عندما تستحق المقاطع المحفوظة مراجعة مجددًا.';
+
+  @override
   String get comingSoon => 'قريباً';
 
   @override

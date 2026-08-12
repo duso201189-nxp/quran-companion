@@ -362,6 +362,19 @@ class AppLocalizationsVi extends AppLocalizations {
   String get hifzFormAyahFromAfterAyahTo => '\"Từ\" không được sau \"Đến\"';
 
   @override
+  String get hifzReviewTooltip => 'Ôn Hifz đến hạn';
+
+  @override
+  String get hifzReviewTitle => 'Ôn Hifz';
+
+  @override
+  String get hifzReviewComplete => 'Không có Hifz nào đến hạn';
+
+  @override
+  String get hifzReviewCompleteSubtitle =>
+      'Quay lại khi các đoạn đã học thuộc đến hạn ôn tiếp.';
+
+  @override
   String get comingSoon => 'Sắp ra mắt';
 
   @override

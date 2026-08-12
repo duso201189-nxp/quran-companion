@@ -155,6 +155,10 @@
     }
   },
   "hifzFormAyahFromAfterAyahTo": "\"Từ\" không được sau \"Đến\"",
+  "hifzReviewTooltip": "Ôn Hifz đến hạn",
+  "hifzReviewTitle": "Ôn Hifz",
+  "hifzReviewComplete": "Không có Hifz nào đến hạn",
+  "hifzReviewCompleteSubtitle": "Quay lại khi các đoạn đã học thuộc đến hạn ôn tiếp.",
   "comingSoon": "Sắp ra mắt",
   "statsReadingDays": "Ngày đọc",
   "statsAyahsRead": "Ayah đã đọc",

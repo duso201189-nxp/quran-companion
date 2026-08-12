@@ -364,6 +364,19 @@ class AppLocalizationsEn extends AppLocalizations {
   String get hifzFormAyahFromAfterAyahTo => '\"From\" must not be after \"To\"';
 
   @override
+  String get hifzReviewTooltip => 'Review due Hifz';
+
+  @override
+  String get hifzReviewTitle => 'Hifz review';
+
+  @override
+  String get hifzReviewComplete => 'No Hifz review due';
+
+  @override
+  String get hifzReviewCompleteSubtitle =>
+      'Come back when your memorized passages are due again.';
+
+  @override
   String get comingSoon => 'Coming soon';
 
   @override

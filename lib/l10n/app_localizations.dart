@@ -778,6 +778,30 @@ abstract class AppLocalizations {
   /// **'\"Từ\" không được sau \"Đến\"'**
   String get hifzFormAyahFromAfterAyahTo;
 
+  /// No description provided for @hifzReviewTooltip.
+  ///
+  /// In vi, this message translates to:
+  /// **'Ôn Hifz đến hạn'**
+  String get hifzReviewTooltip;
+
+  /// No description provided for @hifzReviewTitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Ôn Hifz'**
+  String get hifzReviewTitle;
+
+  /// No description provided for @hifzReviewComplete.
+  ///
+  /// In vi, this message translates to:
+  /// **'Không có Hifz nào đến hạn'**
+  String get hifzReviewComplete;
+
+  /// No description provided for @hifzReviewCompleteSubtitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Quay lại khi các đoạn đã học thuộc đến hạn ôn tiếp.'**
+  String get hifzReviewCompleteSubtitle;
+
   /// No description provided for @comingSoon.
   ///
   /// In vi, this message translates to:

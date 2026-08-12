@@ -109,18 +109,27 @@ final hifzActiveAyahIdsProvider = FutureProvider.autoDispose<Set<int>>(
 ///    không viết lại luật "đến hạn".
 /// 2. chỉ giữ Ayah thuộc kế hoạch đang hoạt động — tạm dừng/hoàn thành
 ///    vẫn còn thẻ và còn tiến trình, chỉ không hỏi tới.
+///
+/// StreamProvider (Sprint 7.7b-iii, không phải FutureProvider như bản
+/// gốc 7.7a) — CÙNG mẫu [dueReviewCardsProvider]: `watchAllCards()` là
+/// một Drift `.watch()` sống, chỉ lấy `.first` thì mỗi lần applyReview()
+/// cập nhật due_date sẽ KHÔNG tự đẩy thẻ tiếp theo lên màn hình ôn Hifz
+/// (HifzReviewScreen) — người dùng chấm xong sẽ thấy màn hình đứng yên
+/// thay vì tự chuyển thẻ. `yield*` giữ đăng ký sống, đúng cách
+/// dueReviewCardsProvider đã làm cho ôn tập thường.
 final dueHifzCardsProvider =
-    FutureProvider.autoDispose<List<SrsCard>>((ref) async {
+    StreamProvider.autoDispose<List<SrsCard>>((ref) async* {
   await ref.watch(hifzSchedulerSyncProvider.future);
   final activeIds = await ref.watch(hifzActiveAyahIdsProvider.future);
-  final cards = await ref
+  yield* ref
       .watch(hifzSchedulerRepositoryProvider)
       .watchAllCards(LearningItemType.hifz)
-      .first;
-  return [
-    for (final card in selectDueCardsOrdered(cards, DateTime.now()))
-      if (activeIds.contains(card.itemId)) card,
-  ];
+      .map(
+        (cards) => [
+          for (final card in selectDueCardsOrdered(cards, DateTime.now()))
+            if (activeIds.contains(card.itemId)) card,
+        ],
+      );
 });
 
 /// Một mục ôn tập Hifz để hiển thị: thẻ SRS + nội dung Ayah đã giải

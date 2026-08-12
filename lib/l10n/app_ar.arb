@@ -155,6 +155,10 @@
     }
   },
   "hifzFormAyahFromAfterAyahTo": "\"من\" يجب ألا يكون بعد \"إلى\"",
+  "hifzReviewTooltip": "مراجعة التحفيظ المستحقة",
+  "hifzReviewTitle": "مراجعة التحفيظ",
+  "hifzReviewComplete": "لا توجد مراجعة تحفيظ مستحقة",
+  "hifzReviewCompleteSubtitle": "عد عندما تستحق المقاطع المحفوظة مراجعة مجددًا.",
   "comingSoon": "قريباً",
   "statsReadingDays": "أيام القراءة",
   "statsAyahsRead": "الآيات المقروءة",

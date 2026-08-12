@@ -155,6 +155,10 @@
     }
   },
   "hifzFormAyahFromAfterAyahTo": "\"From\" must not be after \"To\"",
+  "hifzReviewTooltip": "Review due Hifz",
+  "hifzReviewTitle": "Hifz review",
+  "hifzReviewComplete": "No Hifz review due",
+  "hifzReviewCompleteSubtitle": "Come back when your memorized passages are due again.",
   "comingSoon": "Coming soon",
   "statsReadingDays": "Reading days",
   "statsAyahsRead": "Ayahs read",

@@ -27,7 +27,16 @@ class HifzPlansScreen extends ConsumerWidget {
     final plansAsync = ref.watch(hifzPlansProvider);
 
     return Scaffold(
-      appBar: AppBar(title: Text(l10n.hifzPlansTitle)),
+      appBar: AppBar(
+        title: Text(l10n.hifzPlansTitle),
+        actions: [
+          IconButton(
+            tooltip: l10n.hifzReviewTooltip,
+            icon: const Icon(Icons.menu_book_rounded),
+            onPressed: () => context.push(AppRoutes.hifzReview),
+          ),
+        ],
+      ),
       body: SafeArea(
         child: plansAsync.when(
           loading: () => const Center(child: CircularProgressIndicator()),
