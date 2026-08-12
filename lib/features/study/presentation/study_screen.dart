@@ -128,7 +128,12 @@ class StudyScreen extends ConsumerWidget {
                   crossAxisCount: wide ? 2 : 1,
                   mainAxisSpacing: 14,
                   crossAxisSpacing: 14,
-                  childAspectRatio: wide ? 2.9 : 3.4,
+                  // Bảy thẻ thay vì sáu (Sprint 7.7b-ii thêm Hifz) nghĩa
+                  // là thêm một hàng — nén nhẹ mỗi thẻ để tổng chiều cao
+                  // lưới không tăng, giữ nhiều thẻ hơn hiện trên màn hình
+                  // đầu (không cuộn) trên MỌI kích thước, không riêng gì
+                  // khi kiểm thử.
+                  childAspectRatio: wide ? 4.0 : 4.7,
                   children: [
                     for (final t in tools)
                       _StudyToolCard(
