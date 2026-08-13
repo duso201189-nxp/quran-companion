@@ -6,7 +6,11 @@ plus every other file that declares a top-level `final xProvider = ...`
 (screens/controllers that mix DI with UI state). 79 providers found
 across 6 core infrastructure providers, 3 app-level providers, and 70
 feature providers spanning 18 feature directories (`search/` and
-`study/` currently declare none — see §3).
+`study/` currently declare none — see §3). A `hifz/` feature directory
+was added in a later sprint and declares at least one provider of its
+own; it is **not yet catalogued below** — cataloguing it needs the same
+file-by-file read this document's own count was generated from, not an
+estimate.
 
 **How to read the tables**: `Type` gives the exact Riverpod provider
 class plus modifiers (`.autoDispose`, `.family<Arg>`) as written in

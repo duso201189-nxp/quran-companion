@@ -1,7 +1,8 @@
 # MODULE_CATALOG.md
 
-Written after PR #19. 18 feature directories exist under
-`lib/features/`: `ai_tutor, analytics, flashcards, home, khatm,
+Written after PR #19. 18 feature directories existed under
+`lib/features/` at that time and are catalogued below by name:
+`ai_tutor, analytics, flashcards, home, khatm,
 learning, learning_journey, learning_session, lexicon, library,
 profile, quiz, quran, read_model, search, smart_learning, stats,
 study`. Each entry below was verified against that feature's own
@@ -9,6 +10,11 @@ repository/screen doc comments and actual cross-feature
 `import '../../<feature>/...'` statements (not guessed from the
 directory name), plus `lib/app/router.dart` for routes. See
 `MASTER_ARCHITECTURE.md` for the architectural rules these all follow.
+
+A 19th directory, `hifz`, was added in a later sprint and is **not yet
+catalogued below** — its own entry needs the same verification pass
+(dependencies, entry points, router wiring) as the 18 below, not a
+guess from the directory name.
 
 ---
 

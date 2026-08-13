@@ -10,7 +10,9 @@ useful for historical design rationale.
 
 Qur'an Companion is a Flutter app organized as a **feature-first,
 three-layer architecture**: `presentation → domain ← data`, applied
-independently inside each of the 18 directories under `lib/features/`.
+independently inside each of the 19 directories under `lib/features/`
+(18 at the time of this writing plus `hifz`, added in a later sprint;
+see `MODULE_CATALOG.md`'s own note on `hifz`).
 This is not a top-down textbook layering imposed once at the app root —
 it is repeated per feature, and verified here directly against two
 representative features (`lib/features/flashcards/` and
@@ -31,7 +33,7 @@ lib/
 │  ├─ logging/             # Logger / CrashReporter / ConsoleLogger / repository_boundary_logging
 │  ├─ storage/             # SharedPreferences provider (settings, not Drift)
 │  ├─ audio/, cache/, env/ # audio playback, download cache, dev/staging/prod config
-├─ features/<name>/       # 18 feature modules, each own presentation/domain/data
+├─ features/<name>/       # 19 feature modules, each own presentation/domain/data
 ├─ shared/widgets/, shared/utils/  # cross-feature reusable UI + pure helpers
 └─ l10n/                  # app_vi.arb (default) / app_en.arb / app_ar.arb (RTL)
 ```

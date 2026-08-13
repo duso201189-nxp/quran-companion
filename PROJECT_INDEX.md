@@ -18,7 +18,8 @@ page resolves which one wins.
 3. [docs/architecture/MASTER_ARCHITECTURE.md](docs/architecture/MASTER_ARCHITECTURE.md)
    — the shape of the codebase.
 4. [docs/architecture/MODULE_CATALOG.md](docs/architecture/MODULE_CATALOG.md)
-   — what each of the 18 features does.
+   — what each of the 18 catalogued features does (`hifz`, added
+   later, is not yet catalogued there — see that file's own note).
 5. [CONTRIBUTING.md](CONTRIBUTING.md) — how to make a change here.
 6. [docs/testing/TESTING_GUIDE.md](docs/testing/TESTING_GUIDE.md) —
    how to test it.
@@ -122,7 +123,9 @@ for the index. These are narrower and more granular than
 
 Point-in-time technical deep-dives on a specific subsystem, created
 when something genuinely needed one (not pre-emptively — see
-`CLAUDE.md`). Currently: [reliability_architecture.md](docs/knowledge/reliability_architecture.md).
+`CLAUDE.md`). Currently:
+[quran_index_conventions.md](docs/knowledge/quran_index_conventions.md),
+[reliability_architecture.md](docs/knowledge/reliability_architecture.md).
 
 ### `docs/verification/` — Constitution conformance records
 

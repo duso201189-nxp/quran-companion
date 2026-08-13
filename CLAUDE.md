@@ -95,4 +95,5 @@ there). `docs/verification/` — Verification Records; created at Phase
 10 (EIS Core's own build) when this project's Constitution was first
 checked for real. `docs/knowledge/` — deep-dive docs on a specific
 subsystem, created the first time something real needs one, not
-pre-emptively (currently: `reliability_architecture.md`).
+pre-emptively (currently: `quran_index_conventions.md`,
+`reliability_architecture.md`).
