@@ -79,9 +79,13 @@ current). Short version:
 `docs/architecture/` — current architecture reference (overview,
 per-feature catalog, database schema, provider map, data flow traces,
 consolidated architecture-decision summary), verified against the
-actual current code. `docs/testing/` — current testing strategy/
+actual current code — includes `STUDY_ARCHITECTURE_CONSTITUTION.md`,
+the governing architectural principles and constraints for the Study
+module. `docs/testing/` — current testing strategy/
 conventions. `docs/release/` — current release plan, open technical
-debt, product roadmap. `docs/adr/` — individual, dated Decision
+debt, product roadmap — includes `MILESTONE_7_STUDY_ROADMAP.md`, the
+authoritative sequencing reference for Milestone 7 Study sprints.
+`docs/adr/` — individual, dated Decision
 Records for this project (first one: adopting EIS itself).
 `docs/reports/` — point-in-time deep-dive reports, archived once
 superseded (`SPRINT2_REPORT.md`, `TRANSLITERATION_REPORT.md`, plus
