@@ -16,6 +16,16 @@ import 'entities/tutor_suggestion.dart';
 /// AITutorRepositoryImpl) suy ra gợi ý/nhận định bằng ĐIỀU KIỆN/NGƯỠNG
 /// đơn giản, KHÔNG gọi AI/LLM nào ("No AI model integration yet",
 /// "Foundation only").
+///
+/// Mô hình miền chính thống (Sprint 7.6 — Sequencing Consolidation):
+/// [TutorSuggestion] LÀ mô hình dữ liệu chính thống DUY NHẤT cho toàn
+/// bộ chuỗi Sequencing mà Study Architecture Constitution §13 xem là
+/// MỘT năng lực logic (AI Tutor -> Learning Journey -> Smart
+/// Learning). Tầng này sở hữu việc SINH RA [TutorSuggestion] — không
+/// tầng nào phía dưới được định nghĩa một mô hình gợi ý song song/thay
+/// thế; chúng chỉ được phép bọc lại hoặc biến đổi chính
+/// [TutorSuggestion] này (xem doc comment LearningJourneyRepository/
+/// SmartLearningRepository).
 abstract interface class AITutorRepository {
   /// Bối cảnh học tập gói lại từ AnalyticsRepository — dùng trực tiếp
   /// (vd hiển thị tổng quan) hoặc làm nền cho [getSuggestions]/

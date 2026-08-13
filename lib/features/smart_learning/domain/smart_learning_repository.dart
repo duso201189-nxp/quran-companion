@@ -16,6 +16,15 @@ import 'entities/smart_learning_session.dart';
 /// Phase 1 CHỈ là nền kiến trúc — "Foundation" (đúng tên Sprint): đề
 /// xuất sinh ra bằng QUY TẮC thuần (ánh xạ loại gợi ý -> chiến lược),
 /// KHÔNG AI/mạng ("No AI SDK", "No networking").
+///
+/// Mô hình miền chính thống (Sprint 7.6 — Sequencing Consolidation):
+/// `TutorSuggestion` (định nghĩa ở AITutorRepository) vẫn LÀ mô hình
+/// dữ liệu chính thống của chuỗi Sequencing. `SessionStrategy`/
+/// `LearningRecommendation` ở đây KHÔNG phải một mô hình gợi ý cạnh
+/// tranh — đó là một GÓC NHÌN trình bày riêng, có lý do chính đáng
+/// (nhóm theo chiến lược phiên học), suy ra TỪ `TutorSuggestion.kind`
+/// của các bước Learning Journey đã có, không thêm nguồn dữ liệu hay
+/// quy tắc đủ điều kiện mới nào.
 abstract interface class SmartLearningRepository {
   /// Phiên học thông minh hôm nay — đề xuất chiến lược ĐÃ xếp hạng,
   /// suy từ LearningJourney hiện có.

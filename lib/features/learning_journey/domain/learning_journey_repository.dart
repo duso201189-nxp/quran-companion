@@ -16,6 +16,14 @@ import 'entities/learning_journey.dart';
 /// Phase 1 CHỈ là nền kiến trúc — "Foundation" (đúng tên Sprint): kế
 /// hoạch sinh ra bằng QUY TẮC/NGƯỠNG thuần (thứ tự ưu tiên), KHÔNG có
 /// AI/LLM nào ("No AI model", "No networking").
+///
+/// Mô hình miền chính thống (Sprint 7.6 — Sequencing Consolidation):
+/// `TutorSuggestion` (định nghĩa ở AITutorRepository) LÀ mô hình dữ
+/// liệu chính thống DUY NHẤT của chuỗi Sequencing. Vai trò của tầng
+/// này CHỈ là SẮP XẾP (ưu tiên) các `TutorSuggestion` đã có — không tự
+/// định nghĩa một mô hình gợi ý mới nào đại diện cho cùng khái niệm;
+/// `JourneyStep` chỉ bọc lại (không sao chép) đúng `TutorSuggestion`
+/// gốc kèm vị trí sau khi sắp xếp.
 abstract interface class LearningJourneyRepository {
   /// Bức tranh tổng thể — bối cảnh (TutorContext) + kế hoạch hôm nay +
   /// nhận định (TutorInsight), gói lại từ AITutorRepository.
