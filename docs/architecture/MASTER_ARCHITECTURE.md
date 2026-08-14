@@ -76,14 +76,14 @@ database).`
 - **`UserDatabase`** (`lib/core/database/user/user_database.dart:10-25`)
   — a **separate** Drift database, opened via a separate connection
   (`user_database_providers.dart:6-10`), currently at
-  `schemaVersion = 6` with 12 tables (`Bookmarks, Highlights, Notes,
+  `schemaVersion = 7` with 13 tables (`Bookmarks, Highlights, Notes,
   Favorites, AyahStatuses, StudySessions, KhatmCycles,
   BookmarkCollections, SrsCards, QuizResults, FlashcardDecks,
-  Flashcards`). Migrations are strictly additive — the doc comment is
-  explicit: `KHÔNG BAO GIỜ drop dữ liệu người dùng` ("NEVER drop user
-  data", `user_database.dart:37`), and every `onUpgrade` step only calls
-  `createTable`/`addColumn` (`user_database.dart:38-75`). Every Group B
-  table mixes in `SyncColumns` (`user_tables.dart:10-17`) —
+  Flashcards, HifzPlans`). Migrations are strictly additive — the doc
+  comment is explicit: `KHÔNG BAO GIỜ drop dữ liệu người dùng` ("NEVER
+  drop user data", `user_database.dart:37`), and every `onUpgrade` step
+  only calls `createTable`/`addColumn` (`user_database.dart:38-75`).
+  Every Group B table mixes in `SyncColumns` (`user_tables.dart:10-17`) —
   client-generated UUID `id`, nullable `user_id`, `updated_at`,
   nullable `deleted_at` (soft delete), `is_dirty` — preparing for a
   not-yet-built cloud sync engine without any sync code existing yet.
