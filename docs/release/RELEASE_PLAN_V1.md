@@ -205,9 +205,18 @@ plus this engagement's `UPDATED_TECHNICAL_DEBT.md`.
   (see `RELEASE_DASHBOARD.md` §2 "Sprint R3b"). Re-adding an AI mode is
   now a build-from-scratch decision for whenever real AI search exists
   (v2.0), not a matter of wiring up scaffolding already in place.
-- Hifz mode and the "Nhật ký" (journal) feature named in early roadmap
-  notes were never concretely specified beyond a name — treat as v2.0
-  candidates, not v1.0 scope creep.
+- The "Nhật ký" (journal) feature named in early roadmap notes was
+  never concretely specified beyond a name — treat as a v2.0 candidate,
+  not v1.0 scope creep. **Stale claim corrected 2026-08-14**: this
+  bullet previously grouped Hifz mode with it under the same
+  never-specified/v2.0 framing. Hifz was subsequently specified and
+  built as Milestone 7 Sprint 7.7
+  (`docs/release/MILESTONE_7_STUDY_ROADMAP.md`), and is now part of the
+  v1.0 product surface, reachable from the Study tab. Shipped scope:
+  plan management (create, range selection, active/paused/completed
+  lifecycle, soft delete), a Hifz-specific scheduling algorithm, and
+  SRS-backed review with grading. Hifz-specific progress/history
+  reporting is **not** implemented — Hifz is shipped, not complete.
 
 ## 4. Recommended release checklist (sequenced)
 

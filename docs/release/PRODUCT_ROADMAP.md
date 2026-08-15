@@ -121,11 +121,19 @@ unchanged in substance from `ROADMAP.md`'s original framing:
   locked UI affordance in Search) or RAG-based study companion would
   be new capability, not a continuation of existing infrastructure —
   budget it as such.
-- **Hifz mode** — named as a future direction as far back as early
-  schema design (a general-purpose `srs_cards.item_type` was
-  deliberately kept extensible for exactly this) but never concretely
-  specified. Needs real product definition before engineering scoping,
-  not just a name carried forward from old notes.
+- **Hifz progress/history reporting** — the only part of Hifz still
+  unbuilt. **Corrected 2026-08-14**: this entry previously listed *Hifz
+  mode* itself as an unbuilt v2.0 direction that had "never been
+  concretely specified." That is no longer true — Hifz was specified
+  and built as Milestone 7 Sprint 7.7
+  (`docs/release/MILESTONE_7_STUDY_ROADMAP.md`) and now ships as part
+  of v1.0: plan management (create, range selection, active/paused/
+  completed lifecycle, soft delete), a Hifz-specific scheduling
+  algorithm, and SRS-backed review with grading, reachable from the
+  Study tab. It used exactly the extensibility seam the early schema
+  reserved for it (the general-purpose `srs_cards.item_type`). What
+  remains genuinely future work is a Hifz-specific progress/history
+  surface — no such view exists today.
 - **Platform expansion** — native widgets (home-screen widgets,
   lock-screen controls) mentioned in the original roadmap's v2.0 line;
   genuinely new platform-integration work, sequenced last because it

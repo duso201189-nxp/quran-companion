@@ -765,9 +765,18 @@ selection so engineering is never idle waiting on them.
   UI were removed entirely (R3b Close-out Patch, §2) rather than kept
   as scaffolding — when this is actually built, it starts from
   nothing, not from resurrected placeholders.
-- **Hifz mode, "Nhật ký"** — named as future directions, never
-  concretely specified; v2.0 candidates per `PRODUCT_ROADMAP.md`, not
-  a v1.0 gap.
+- **"Nhật ký"** — named as a future direction, never concretely
+  specified; a v2.0 candidate per `PRODUCT_ROADMAP.md`, not a v1.0 gap.
+  No route, screen, or localized string for it exists in the
+  repository.
+- **Hifz progress/history reporting** — the remaining unbuilt part of
+  Hifz. **Corrected 2026-08-14**: this entry previously grouped *Hifz
+  mode* with "Nhật ký" as a never-specified v2.0 candidate. Hifz
+  itself shipped as Milestone 7 Sprint 7.7 — plan management,
+  Hifz-specific scheduling, and SRS-backed review with grading are
+  built and reachable from the Study tab, so Hifz is part of the v1.0
+  product surface. Only a Hifz-specific progress/history view is still
+  missing: Hifz is shipped, not complete.
 
 ---
 
