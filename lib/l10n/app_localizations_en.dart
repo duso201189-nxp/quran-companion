@@ -313,6 +313,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get hifzStatusCompleted => 'Completed';
 
   @override
+  String get hifzPlanActionViewProgress => 'View progress';
+
+  @override
   String get hifzActionPause => 'Pause';
 
   @override
@@ -375,6 +378,72 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get hifzReviewCompleteSubtitle =>
       'Come back when your memorized passages are due again.';
+
+  @override
+  String get hifzProgressTitle => 'Hifz progress';
+
+  @override
+  String get hifzProgressLoading => 'Loading progress...';
+
+  @override
+  String get hifzProgressPlanNotFound => 'This plan could not be found.';
+
+  @override
+  String get hifzProgressStartedLabel => 'Started';
+
+  @override
+  String get hifzProgressCompletedLabel => 'Completed';
+
+  @override
+  String get hifzProgressOverviewTitle => 'Overview';
+
+  @override
+  String get hifzProgressAyahCountLabel => 'Ayahs';
+
+  @override
+  String get hifzProgressStableLabel => 'Stable';
+
+  @override
+  String get hifzProgressDueNowLabel => 'Due now';
+
+  @override
+  String get hifzProgressReviewedLabel => 'Reviewed';
+
+  @override
+  String get hifzProgressNextDueLabel => 'Next review';
+
+  @override
+  String get hifzProgressNoScheduleYet => 'None yet';
+
+  @override
+  String get hifzProgressStateSectionTitle => 'Current review state';
+
+  @override
+  String hifzProgressTrackedNote(int tracked, int total) {
+    return '$tracked/$total ayahs have a review schedule.';
+  }
+
+  @override
+  String get hifzProgressSnapshotNote =>
+      'This is a current snapshot, not a review history.';
+
+  @override
+  String get hifzProgressPaceSectionTitle => 'Review pace';
+
+  @override
+  String get hifzProgressAverageEaseLabel => 'Average ease factor';
+
+  @override
+  String get hifzProgressAverageIntervalLabel => 'Average review interval';
+
+  @override
+  String hifzProgressIntervalDaysValue(int days) {
+    return '$days days';
+  }
+
+  @override
+  String get hifzProgressNoReviewsYet =>
+      'No reviews yet. Start reviewing to see your pace.';
 
   @override
   String get comingSoon => 'Coming soon';

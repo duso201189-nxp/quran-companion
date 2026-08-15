@@ -10,7 +10,7 @@ import '../../quran/presentation/surah_list_controller.dart'
 import '../data/hifz_providers.dart';
 import '../domain/entities/hifz_plan.dart';
 
-enum _PlanAction { pause, resume, complete, delete }
+enum _PlanAction { viewProgress, pause, resume, complete, delete }
 
 /// Danh sách + quản lý kế hoạch Hifz — Sprint 7.7b-ii. Cùng khuôn
 /// FlashcardDecksScreen (Sprint 13 Phase 3): danh sách qua
@@ -143,6 +143,10 @@ class _PlanTile extends ConsumerWidget {
           tooltip: l10n.hifzPlanActionsTooltip,
           onSelected: (action) => _handle(context, ref, action),
           itemBuilder: (_) => [
+            PopupMenuItem(
+              value: _PlanAction.viewProgress,
+              child: Text(l10n.hifzPlanActionViewProgress),
+            ),
             if (plan.status == HifzPlanStatus.active)
               PopupMenuItem(
                 value: _PlanAction.pause,
@@ -176,6 +180,8 @@ class _PlanTile extends ConsumerWidget {
     final l10n = AppLocalizations.of(context);
     final repo = ref.read(hifzPlanRepositoryProvider);
     switch (action) {
+      case _PlanAction.viewProgress:
+        await context.push(AppRoutes.hifzProgress(plan.id));
       case _PlanAction.pause:
         await repo.setStatus(plan.id, HifzPlanStatus.paused);
       case _PlanAction.resume:

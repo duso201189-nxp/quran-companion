@@ -11,6 +11,7 @@ import '../features/flashcards/presentation/flashcard_review_screen.dart';
 import '../features/flashcards/presentation/smart_deck_screen.dart';
 import '../features/hifz/presentation/hifz_plan_form_screen.dart';
 import '../features/hifz/presentation/hifz_plans_screen.dart';
+import '../features/hifz/presentation/hifz_progress_screen.dart';
 import '../features/hifz/presentation/hifz_review_screen.dart';
 import '../features/home/presentation/home_screen.dart';
 import '../features/learning/presentation/review_session_screen.dart';
@@ -140,6 +141,12 @@ abstract final class AppRoutes {
   /// [reviewSession]/[flashcardReview] (bề mặt ôn tập riêng, engine
   /// riêng — xem HifzReviewScreen).
   static const String hifzReview = '/hifz/review';
+
+  /// Ảnh chụp tiến độ MỘT kế hoạch Hifz (Sprint 7.7c-A) — push từ
+  /// [hifzPlans] (menu "Xem tiến độ" trên mỗi dòng kế hoạch). Nhận
+  /// [planId] qua path segment (id kế hoạch là UUID TEXT, không phải
+  /// ordinal — khác [surahReading]).
+  static String hifzProgress(String planId) => '/hifz/progress/$planId';
 
   /// Trang đọc trong tab Qur'an (giữ thanh điều hướng): /quran/surah/2
   static String surahReading(int surahId) => '/quran/surah/$surahId';
@@ -314,6 +321,13 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: AppRoutes.hifzReview,
         builder: (context, state) => const HifzReviewScreen(),
+      ),
+
+      GoRoute(
+        path: '/hifz/progress/:id',
+        builder: (context, state) => HifzProgressScreen(
+          planId: state.pathParameters['id'] ?? '',
+        ),
       ),
 
       GoRoute(

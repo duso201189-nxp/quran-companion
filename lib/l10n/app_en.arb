@@ -132,6 +132,7 @@
   "hifzStatusActive": "Active",
   "hifzStatusPaused": "Paused",
   "hifzStatusCompleted": "Completed",
+  "hifzPlanActionViewProgress": "View progress",
   "hifzActionPause": "Pause",
   "hifzActionResume": "Resume",
   "hifzActionComplete": "Mark complete",
@@ -159,6 +160,43 @@
   "hifzReviewTitle": "Hifz review",
   "hifzReviewComplete": "No Hifz review due",
   "hifzReviewCompleteSubtitle": "Come back when your memorized passages are due again.",
+  "hifzProgressTitle": "Hifz progress",
+  "hifzProgressLoading": "Loading progress...",
+  "hifzProgressPlanNotFound": "This plan could not be found.",
+  "hifzProgressStartedLabel": "Started",
+  "hifzProgressCompletedLabel": "Completed",
+  "hifzProgressOverviewTitle": "Overview",
+  "hifzProgressAyahCountLabel": "Ayahs",
+  "hifzProgressStableLabel": "Stable",
+  "hifzProgressDueNowLabel": "Due now",
+  "hifzProgressReviewedLabel": "Reviewed",
+  "hifzProgressNextDueLabel": "Next review",
+  "hifzProgressNoScheduleYet": "None yet",
+  "hifzProgressStateSectionTitle": "Current review state",
+  "hifzProgressTrackedNote": "{tracked}/{total} ayahs have a review schedule.",
+  "@hifzProgressTrackedNote": {
+    "placeholders": {
+      "tracked": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "hifzProgressSnapshotNote": "This is a current snapshot, not a review history.",
+  "hifzProgressPaceSectionTitle": "Review pace",
+  "hifzProgressAverageEaseLabel": "Average ease factor",
+  "hifzProgressAverageIntervalLabel": "Average review interval",
+  "hifzProgressIntervalDaysValue": "{days} days",
+  "@hifzProgressIntervalDaysValue": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "hifzProgressNoReviewsYet": "No reviews yet. Start reviewing to see your pace.",
   "comingSoon": "Coming soon",
   "statsReadingDays": "Reading days",
   "statsAyahsRead": "Ayahs read",

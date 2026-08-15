@@ -132,6 +132,7 @@
   "hifzStatusActive": "نشطة",
   "hifzStatusPaused": "متوقفة مؤقتًا",
   "hifzStatusCompleted": "مكتملة",
+  "hifzPlanActionViewProgress": "عرض التقدم",
   "hifzActionPause": "إيقاف مؤقت",
   "hifzActionResume": "استئناف",
   "hifzActionComplete": "وضع علامة مكتمل",
@@ -159,6 +160,43 @@
   "hifzReviewTitle": "مراجعة التحفيظ",
   "hifzReviewComplete": "لا توجد مراجعة تحفيظ مستحقة",
   "hifzReviewCompleteSubtitle": "عد عندما تستحق المقاطع المحفوظة مراجعة مجددًا.",
+  "hifzProgressTitle": "تقدم الحفظ",
+  "hifzProgressLoading": "جارٍ تحميل التقدم...",
+  "hifzProgressPlanNotFound": "لم يتم العثور على هذه الخطة.",
+  "hifzProgressStartedLabel": "بدأت",
+  "hifzProgressCompletedLabel": "اكتملت",
+  "hifzProgressOverviewTitle": "نظرة عامة",
+  "hifzProgressAyahCountLabel": "عدد الآيات",
+  "hifzProgressStableLabel": "مستقرة",
+  "hifzProgressDueNowLabel": "مستحقة الآن",
+  "hifzProgressReviewedLabel": "تمت مراجعتها",
+  "hifzProgressNextDueLabel": "المراجعة التالية",
+  "hifzProgressNoScheduleYet": "لا يوجد بعد",
+  "hifzProgressStateSectionTitle": "حالة المراجعة الحالية",
+  "hifzProgressTrackedNote": "{tracked}/{total} آية لها جدول مراجعة.",
+  "@hifzProgressTrackedNote": {
+    "placeholders": {
+      "tracked": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "hifzProgressSnapshotNote": "هذه لقطة حالية، وليست سجلاً للمراجعات.",
+  "hifzProgressPaceSectionTitle": "وتيرة المراجعة",
+  "hifzProgressAverageEaseLabel": "متوسط معامل السهولة",
+  "hifzProgressAverageIntervalLabel": "متوسط فترة المراجعة",
+  "hifzProgressIntervalDaysValue": "{days} يوم",
+  "@hifzProgressIntervalDaysValue": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "hifzProgressNoReviewsYet": "لا توجد مراجعات بعد. ابدأ المراجعة لرؤية وتيرتك.",
   "comingSoon": "قريباً",
   "statsReadingDays": "أيام القراءة",
   "statsAyahsRead": "الآيات المقروءة",

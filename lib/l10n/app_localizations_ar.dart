@@ -310,6 +310,9 @@ class AppLocalizationsAr extends AppLocalizations {
   String get hifzStatusCompleted => 'مكتملة';
 
   @override
+  String get hifzPlanActionViewProgress => 'عرض التقدم';
+
+  @override
   String get hifzActionPause => 'إيقاف مؤقت';
 
   @override
@@ -372,6 +375,72 @@ class AppLocalizationsAr extends AppLocalizations {
   @override
   String get hifzReviewCompleteSubtitle =>
       'عد عندما تستحق المقاطع المحفوظة مراجعة مجددًا.';
+
+  @override
+  String get hifzProgressTitle => 'تقدم الحفظ';
+
+  @override
+  String get hifzProgressLoading => 'جارٍ تحميل التقدم...';
+
+  @override
+  String get hifzProgressPlanNotFound => 'لم يتم العثور على هذه الخطة.';
+
+  @override
+  String get hifzProgressStartedLabel => 'بدأت';
+
+  @override
+  String get hifzProgressCompletedLabel => 'اكتملت';
+
+  @override
+  String get hifzProgressOverviewTitle => 'نظرة عامة';
+
+  @override
+  String get hifzProgressAyahCountLabel => 'عدد الآيات';
+
+  @override
+  String get hifzProgressStableLabel => 'مستقرة';
+
+  @override
+  String get hifzProgressDueNowLabel => 'مستحقة الآن';
+
+  @override
+  String get hifzProgressReviewedLabel => 'تمت مراجعتها';
+
+  @override
+  String get hifzProgressNextDueLabel => 'المراجعة التالية';
+
+  @override
+  String get hifzProgressNoScheduleYet => 'لا يوجد بعد';
+
+  @override
+  String get hifzProgressStateSectionTitle => 'حالة المراجعة الحالية';
+
+  @override
+  String hifzProgressTrackedNote(int tracked, int total) {
+    return '$tracked/$total آية لها جدول مراجعة.';
+  }
+
+  @override
+  String get hifzProgressSnapshotNote =>
+      'هذه لقطة حالية، وليست سجلاً للمراجعات.';
+
+  @override
+  String get hifzProgressPaceSectionTitle => 'وتيرة المراجعة';
+
+  @override
+  String get hifzProgressAverageEaseLabel => 'متوسط معامل السهولة';
+
+  @override
+  String get hifzProgressAverageIntervalLabel => 'متوسط فترة المراجعة';
+
+  @override
+  String hifzProgressIntervalDaysValue(int days) {
+    return '$days يوم';
+  }
+
+  @override
+  String get hifzProgressNoReviewsYet =>
+      'لا توجد مراجعات بعد. ابدأ المراجعة لرؤية وتيرتك.';
 
   @override
   String get comingSoon => 'قريباً';

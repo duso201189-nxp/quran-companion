@@ -311,6 +311,9 @@ class AppLocalizationsVi extends AppLocalizations {
   String get hifzStatusCompleted => 'Đã hoàn thành';
 
   @override
+  String get hifzPlanActionViewProgress => 'Xem tiến độ';
+
+  @override
   String get hifzActionPause => 'Tạm dừng';
 
   @override
@@ -373,6 +376,72 @@ class AppLocalizationsVi extends AppLocalizations {
   @override
   String get hifzReviewCompleteSubtitle =>
       'Quay lại khi các đoạn đã học thuộc đến hạn ôn tiếp.';
+
+  @override
+  String get hifzProgressTitle => 'Tiến độ Hifz';
+
+  @override
+  String get hifzProgressLoading => 'Đang tải tiến độ...';
+
+  @override
+  String get hifzProgressPlanNotFound => 'Không tìm thấy kế hoạch này.';
+
+  @override
+  String get hifzProgressStartedLabel => 'Bắt đầu';
+
+  @override
+  String get hifzProgressCompletedLabel => 'Hoàn thành';
+
+  @override
+  String get hifzProgressOverviewTitle => 'Tổng quan';
+
+  @override
+  String get hifzProgressAyahCountLabel => 'Số Ayah';
+
+  @override
+  String get hifzProgressStableLabel => 'Đang ổn định';
+
+  @override
+  String get hifzProgressDueNowLabel => 'Đến hạn ôn';
+
+  @override
+  String get hifzProgressReviewedLabel => 'Đã ôn';
+
+  @override
+  String get hifzProgressNextDueLabel => 'Ôn tiếp theo';
+
+  @override
+  String get hifzProgressNoScheduleYet => 'Chưa có';
+
+  @override
+  String get hifzProgressStateSectionTitle => 'Trạng thái ôn hiện tại';
+
+  @override
+  String hifzProgressTrackedNote(int tracked, int total) {
+    return '$tracked/$total Ayah đã có lịch ôn.';
+  }
+
+  @override
+  String get hifzProgressSnapshotNote =>
+      'Đây là ảnh chụp hiện tại, không phải lịch sử ôn tập.';
+
+  @override
+  String get hifzProgressPaceSectionTitle => 'Nhịp độ ôn tập';
+
+  @override
+  String get hifzProgressAverageEaseLabel => 'Hệ số ổn định trung bình';
+
+  @override
+  String get hifzProgressAverageIntervalLabel => 'Khoảng ôn trung bình';
+
+  @override
+  String hifzProgressIntervalDaysValue(int days) {
+    return '$days ngày';
+  }
+
+  @override
+  String get hifzProgressNoReviewsYet =>
+      'Chưa có lượt ôn nào. Bắt đầu ôn để xem nhịp độ.';
 
   @override
   String get comingSoon => 'Sắp ra mắt';

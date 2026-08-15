@@ -682,6 +682,12 @@ abstract class AppLocalizations {
   /// **'Đã hoàn thành'**
   String get hifzStatusCompleted;
 
+  /// No description provided for @hifzPlanActionViewProgress.
+  ///
+  /// In vi, this message translates to:
+  /// **'Xem tiến độ'**
+  String get hifzPlanActionViewProgress;
+
   /// No description provided for @hifzActionPause.
   ///
   /// In vi, this message translates to:
@@ -801,6 +807,126 @@ abstract class AppLocalizations {
   /// In vi, this message translates to:
   /// **'Quay lại khi các đoạn đã học thuộc đến hạn ôn tiếp.'**
   String get hifzReviewCompleteSubtitle;
+
+  /// No description provided for @hifzProgressTitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Tiến độ Hifz'**
+  String get hifzProgressTitle;
+
+  /// No description provided for @hifzProgressLoading.
+  ///
+  /// In vi, this message translates to:
+  /// **'Đang tải tiến độ...'**
+  String get hifzProgressLoading;
+
+  /// No description provided for @hifzProgressPlanNotFound.
+  ///
+  /// In vi, this message translates to:
+  /// **'Không tìm thấy kế hoạch này.'**
+  String get hifzProgressPlanNotFound;
+
+  /// No description provided for @hifzProgressStartedLabel.
+  ///
+  /// In vi, this message translates to:
+  /// **'Bắt đầu'**
+  String get hifzProgressStartedLabel;
+
+  /// No description provided for @hifzProgressCompletedLabel.
+  ///
+  /// In vi, this message translates to:
+  /// **'Hoàn thành'**
+  String get hifzProgressCompletedLabel;
+
+  /// No description provided for @hifzProgressOverviewTitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Tổng quan'**
+  String get hifzProgressOverviewTitle;
+
+  /// No description provided for @hifzProgressAyahCountLabel.
+  ///
+  /// In vi, this message translates to:
+  /// **'Số Ayah'**
+  String get hifzProgressAyahCountLabel;
+
+  /// No description provided for @hifzProgressStableLabel.
+  ///
+  /// In vi, this message translates to:
+  /// **'Đang ổn định'**
+  String get hifzProgressStableLabel;
+
+  /// No description provided for @hifzProgressDueNowLabel.
+  ///
+  /// In vi, this message translates to:
+  /// **'Đến hạn ôn'**
+  String get hifzProgressDueNowLabel;
+
+  /// No description provided for @hifzProgressReviewedLabel.
+  ///
+  /// In vi, this message translates to:
+  /// **'Đã ôn'**
+  String get hifzProgressReviewedLabel;
+
+  /// No description provided for @hifzProgressNextDueLabel.
+  ///
+  /// In vi, this message translates to:
+  /// **'Ôn tiếp theo'**
+  String get hifzProgressNextDueLabel;
+
+  /// No description provided for @hifzProgressNoScheduleYet.
+  ///
+  /// In vi, this message translates to:
+  /// **'Chưa có'**
+  String get hifzProgressNoScheduleYet;
+
+  /// No description provided for @hifzProgressStateSectionTitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Trạng thái ôn hiện tại'**
+  String get hifzProgressStateSectionTitle;
+
+  /// No description provided for @hifzProgressTrackedNote.
+  ///
+  /// In vi, this message translates to:
+  /// **'{tracked}/{total} Ayah đã có lịch ôn.'**
+  String hifzProgressTrackedNote(int tracked, int total);
+
+  /// No description provided for @hifzProgressSnapshotNote.
+  ///
+  /// In vi, this message translates to:
+  /// **'Đây là ảnh chụp hiện tại, không phải lịch sử ôn tập.'**
+  String get hifzProgressSnapshotNote;
+
+  /// No description provided for @hifzProgressPaceSectionTitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Nhịp độ ôn tập'**
+  String get hifzProgressPaceSectionTitle;
+
+  /// No description provided for @hifzProgressAverageEaseLabel.
+  ///
+  /// In vi, this message translates to:
+  /// **'Hệ số ổn định trung bình'**
+  String get hifzProgressAverageEaseLabel;
+
+  /// No description provided for @hifzProgressAverageIntervalLabel.
+  ///
+  /// In vi, this message translates to:
+  /// **'Khoảng ôn trung bình'**
+  String get hifzProgressAverageIntervalLabel;
+
+  /// No description provided for @hifzProgressIntervalDaysValue.
+  ///
+  /// In vi, this message translates to:
+  /// **'{days} ngày'**
+  String hifzProgressIntervalDaysValue(int days);
+
+  /// No description provided for @hifzProgressNoReviewsYet.
+  ///
+  /// In vi, this message translates to:
+  /// **'Chưa có lượt ôn nào. Bắt đầu ôn để xem nhịp độ.'**
+  String get hifzProgressNoReviewsYet;
 
   /// No description provided for @comingSoon.
   ///
