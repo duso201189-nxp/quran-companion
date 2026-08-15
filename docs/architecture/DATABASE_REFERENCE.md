@@ -490,13 +490,14 @@ Added in schema v3. Data class: `BookmarkCollectionRow`. Domain entity:
 
 Generalized spaced-repetition scheduling card (Sprint 10 Phase 1 —
 DR-2026-0005 part 3). `item_type`+`item_id` is generic across ayah
-review and lemma vocabulary review.
+review, lemma vocabulary review, and Hifz memorization review (`'hifz'`
+added Sprint 7.7a).
 
 | Column | SQL name | Type | Constraints |
 |---|---|---|---|
 | *(SyncColumns)* | — | — | `updatedAt` doubles as "last reviewed at" from Sprint 14 Phase 1 onward — overwritten on every review, not a review history. |
-| `itemType` | `item_type` | TEXT | NOT NULL. `'ayah'` \| `'lemma'`. |
-| `itemId` | `item_id` | INTEGER | NOT NULL. `ayah_id` or `lemma_id` depending on `itemType`. |
+| `itemType` | `item_type` | TEXT | NOT NULL. `'ayah'` \| `'lemma'` \| `'hifz'`. |
+| `itemId` | `item_id` | INTEGER | NOT NULL. `ayah_id` or `lemma_id` depending on `itemType` — `'hifz'` also uses `ayah_id` (global Ayah ordinal), same as `'ayah'`. |
 | `easeFactor` | `ease_factor` | REAL | NOT NULL, default `2.5`. |
 | `intervalDays` | `interval_days` | INTEGER | NOT NULL, default `0`. |
 | `repetitions` | `repetitions` | INTEGER | NOT NULL, default `0`. |
@@ -608,6 +609,7 @@ layer:
 | `flashcards.deck_id` | `flashcard_decks.id` | `FlashcardRepositoryImpl` |
 | `flashcards.lexicon_entry_type` + `lexicon_entry_id` | Polymorphic reference into a Lexicon table, resolved via `LexiconRepository.getEntry(type, id)` | `FlashcardRepositoryImpl`, at display time |
 | `srs_cards.item_id` (lemma) | `lemmas.id` in AppDatabase | `SchedulerRepositoryImpl` |
+| `srs_cards.item_id` (hifz) | `ayahs.id` in AppDatabase | `SchedulerRepositoryImpl` |
 | `srs_cards` (`item_type='ayah'`) membership | `ayah_statuses.status='review'` (Revision Queue) | `SchedulerRepository.syncWithReviewQueue` |
 
 The five annotation tables (`bookmarks`, `highlights`, `notes`,

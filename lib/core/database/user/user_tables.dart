@@ -227,10 +227,11 @@ class SrsCards extends Table with SyncColumns {
   @override
   String get tableName => 'srs_cards';
 
-  /// 'ayah' | 'lemma'.
+  /// 'ayah' | 'lemma' | 'hifz'.
   TextColumn get itemType => text().named('item_type')();
 
-  /// ayah_id hoặc lemma_id tùy [itemType].
+  /// ayah_id hoặc lemma_id tùy [itemType] — 'hifz' cũng dùng ayah_id
+  /// (ordinal Ayah toàn cục), cùng hệ số với 'ayah'.
   IntColumn get itemId => integer().named('item_id')();
 
   RealColumn get easeFactor =>
