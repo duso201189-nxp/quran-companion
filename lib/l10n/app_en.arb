@@ -197,6 +197,12 @@
     }
   },
   "hifzProgressNoReviewsYet": "No reviews yet. Start reviewing to see your pace.",
+  "hifzOverallSectionTitle": "Overall Hifz snapshot",
+  "hifzOverallPlansLabel": "Active plans",
+  "hifzOverallAyahsLabel": "Ayahs planned",
+  "hifzOverallDueNowLabel": "Due now",
+  "hifzOverallReviewedLabel": "Reviewed",
+  "hifzOverallNoActivePlans": "No active Hifz plans right now.",
   "comingSoon": "Coming soon",
   "statsReadingDays": "Reading days",
   "statsAyahsRead": "Ayahs read",

@@ -928,6 +928,42 @@ abstract class AppLocalizations {
   /// **'Chưa có lượt ôn nào. Bắt đầu ôn để xem nhịp độ.'**
   String get hifzProgressNoReviewsYet;
 
+  /// No description provided for @hifzOverallSectionTitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Ảnh chụp Hifz tổng quan'**
+  String get hifzOverallSectionTitle;
+
+  /// No description provided for @hifzOverallPlansLabel.
+  ///
+  /// In vi, this message translates to:
+  /// **'Kế hoạch đang học'**
+  String get hifzOverallPlansLabel;
+
+  /// No description provided for @hifzOverallAyahsLabel.
+  ///
+  /// In vi, this message translates to:
+  /// **'Ayah đã lên kế hoạch'**
+  String get hifzOverallAyahsLabel;
+
+  /// No description provided for @hifzOverallDueNowLabel.
+  ///
+  /// In vi, this message translates to:
+  /// **'Đến hạn ngay'**
+  String get hifzOverallDueNowLabel;
+
+  /// No description provided for @hifzOverallReviewedLabel.
+  ///
+  /// In vi, this message translates to:
+  /// **'Đã ôn'**
+  String get hifzOverallReviewedLabel;
+
+  /// No description provided for @hifzOverallNoActivePlans.
+  ///
+  /// In vi, this message translates to:
+  /// **'Hiện không có kế hoạch Hifz nào đang hoạt động.'**
+  String get hifzOverallNoActivePlans;
+
   /// No description provided for @comingSoon.
   ///
   /// In vi, this message translates to:

@@ -443,6 +443,24 @@ class AppLocalizationsAr extends AppLocalizations {
       'لا توجد مراجعات بعد. ابدأ المراجعة لرؤية وتيرتك.';
 
   @override
+  String get hifzOverallSectionTitle => 'لمحة عامة عن الحفظ';
+
+  @override
+  String get hifzOverallPlansLabel => 'الخطط النشطة';
+
+  @override
+  String get hifzOverallAyahsLabel => 'الآيات المخطط لها';
+
+  @override
+  String get hifzOverallDueNowLabel => 'مستحقة الآن';
+
+  @override
+  String get hifzOverallReviewedLabel => 'تمت مراجعتها';
+
+  @override
+  String get hifzOverallNoActivePlans => 'لا توجد خطط حفظ نشطة حالياً.';
+
+  @override
   String get comingSoon => 'قريباً';
 
   @override

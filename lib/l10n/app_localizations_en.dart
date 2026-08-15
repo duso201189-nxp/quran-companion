@@ -446,6 +446,24 @@ class AppLocalizationsEn extends AppLocalizations {
       'No reviews yet. Start reviewing to see your pace.';
 
   @override
+  String get hifzOverallSectionTitle => 'Overall Hifz snapshot';
+
+  @override
+  String get hifzOverallPlansLabel => 'Active plans';
+
+  @override
+  String get hifzOverallAyahsLabel => 'Ayahs planned';
+
+  @override
+  String get hifzOverallDueNowLabel => 'Due now';
+
+  @override
+  String get hifzOverallReviewedLabel => 'Reviewed';
+
+  @override
+  String get hifzOverallNoActivePlans => 'No active Hifz plans right now.';
+
+  @override
   String get comingSoon => 'Coming soon';
 
   @override

@@ -1,6 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../learning/domain/entities/srs_card.dart';
+import '../domain/entities/hifz_overall_progress.dart';
 import '../domain/entities/hifz_plan.dart';
 import '../domain/entities/hifz_plan_progress.dart';
 import '../domain/hifz_progress_calculator.dart';
@@ -60,3 +61,43 @@ final hifzPlanProgressProvider =
     );
   },
 );
+
+/// Ảnh chụp tiến độ TOÀN CỤC — gộp mọi kế hoạch Hifz đang ACTIVE —
+/// Sprint D6.4. KHÔNG phải family: chỉ một phạm vi "tổng quan", khác
+/// [hifzPlanProgressProvider] (theo `planId`).
+///
+/// Lọc thẻ theo `hifzActiveAyahIdsProvider` (đã có sẵn, Sprint 7.7a) —
+/// KHÔNG đọc trực tiếp toàn bộ `watchAllCards(hifz)` mà không lọc, vì
+/// bảng `srs_cards` giữ CẢ thẻ của kế hoạch paused/completed (chỉ xoá
+/// mềm mới rời tập hợp — xem `hifzUnionAyahIdsProvider`). Đây CHÍNH LÀ
+/// nơi thực thi "chỉ active" của ảnh chụp tổng quan: `activeIds` là một
+/// `Set<int>` (đã khử trùng lặp ordinal chồng lấn giữa các kế hoạch
+/// active), nên thẻ của Ayah chồng lấn chỉ xuất hiện ĐÚNG MỘT LẦN
+/// trong [cards] truyền cho [computeHifzOverallProgress] — không có
+/// đường nào khiến cùng một thẻ vật lý bị đếm hai lần.
+final hifzOverallProgressProvider =
+    FutureProvider.autoDispose<HifzOverallProgress>((ref) async {
+  final plans = await ref.watch(hifzPlansProvider.future);
+  final activePlans = [
+    for (final p in plans)
+      if (p.status == HifzPlanStatus.active) p,
+  ];
+
+  await ref.watch(hifzSchedulerSyncProvider.future);
+  final activeIds = await ref.watch(hifzActiveAyahIdsProvider.future);
+
+  final allCards = await ref
+      .watch(hifzSchedulerRepositoryProvider)
+      .watchAllCards(LearningItemType.hifz)
+      .first;
+  final cards = [
+    for (final c in allCards)
+      if (activeIds.contains(c.itemId)) c,
+  ];
+
+  return computeHifzOverallProgress(
+    activePlans: activePlans,
+    cards: cards,
+    now: DateTime.now(),
+  );
+});

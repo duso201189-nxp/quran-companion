@@ -197,6 +197,12 @@
     }
   },
   "hifzProgressNoReviewsYet": "لا توجد مراجعات بعد. ابدأ المراجعة لرؤية وتيرتك.",
+  "hifzOverallSectionTitle": "لمحة عامة عن الحفظ",
+  "hifzOverallPlansLabel": "الخطط النشطة",
+  "hifzOverallAyahsLabel": "الآيات المخطط لها",
+  "hifzOverallDueNowLabel": "مستحقة الآن",
+  "hifzOverallReviewedLabel": "تمت مراجعتها",
+  "hifzOverallNoActivePlans": "لا توجد خطط حفظ نشطة حالياً.",
   "comingSoon": "قريباً",
   "statsReadingDays": "أيام القراءة",
   "statsAyahsRead": "الآيات المقروءة",

@@ -444,6 +444,25 @@ class AppLocalizationsVi extends AppLocalizations {
       'Chưa có lượt ôn nào. Bắt đầu ôn để xem nhịp độ.';
 
   @override
+  String get hifzOverallSectionTitle => 'Ảnh chụp Hifz tổng quan';
+
+  @override
+  String get hifzOverallPlansLabel => 'Kế hoạch đang học';
+
+  @override
+  String get hifzOverallAyahsLabel => 'Ayah đã lên kế hoạch';
+
+  @override
+  String get hifzOverallDueNowLabel => 'Đến hạn ngay';
+
+  @override
+  String get hifzOverallReviewedLabel => 'Đã ôn';
+
+  @override
+  String get hifzOverallNoActivePlans =>
+      'Hiện không có kế hoạch Hifz nào đang hoạt động.';
+
+  @override
   String get comingSoon => 'Sắp ra mắt';
 
   @override

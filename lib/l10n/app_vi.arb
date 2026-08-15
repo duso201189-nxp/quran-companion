@@ -197,6 +197,12 @@
     }
   },
   "hifzProgressNoReviewsYet": "Chưa có lượt ôn nào. Bắt đầu ôn để xem nhịp độ.",
+  "hifzOverallSectionTitle": "Ảnh chụp Hifz tổng quan",
+  "hifzOverallPlansLabel": "Kế hoạch đang học",
+  "hifzOverallAyahsLabel": "Ayah đã lên kế hoạch",
+  "hifzOverallDueNowLabel": "Đến hạn ngay",
+  "hifzOverallReviewedLabel": "Đã ôn",
+  "hifzOverallNoActivePlans": "Hiện không có kế hoạch Hifz nào đang hoạt động.",
   "comingSoon": "Sắp ra mắt",
   "statsReadingDays": "Ngày đọc",
   "statsAyahsRead": "Ayah đã đọc",

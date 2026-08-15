@@ -4,9 +4,13 @@ import 'package:go_router/go_router.dart';
 import 'package:quran_companion/l10n/app_localizations.dart';
 
 import '../../../app/router.dart';
+import '../../../shared/widgets/empty_state_banner.dart';
+import '../../../shared/widgets/loading_state.dart';
+import '../../../shared/widgets/stat_card.dart';
 import '../../quran/domain/entities/surah.dart';
 import '../../quran/presentation/surah_list_controller.dart'
     show surahListProvider;
+import '../data/hifz_progress_providers.dart';
 import '../data/hifz_providers.dart';
 import '../domain/entities/hifz_plan.dart';
 
@@ -38,24 +42,34 @@ class HifzPlansScreen extends ConsumerWidget {
         ],
       ),
       body: SafeArea(
-        child: plansAsync.when(
-          loading: () => const Center(child: CircularProgressIndicator()),
-          error: (_, __) => Center(child: Text(l10n.errorLoadData)),
-          data: (plans) {
-            if (plans.isEmpty) {
-              return Center(
-                child: Padding(
-                  padding: const EdgeInsets.all(24),
-                  child: Text(l10n.hifzPlansEmpty, textAlign: TextAlign.center),
-                ),
-              );
-            }
-            return ListView.builder(
-              padding: const EdgeInsets.symmetric(vertical: 8),
-              itemCount: plans.length,
-              itemBuilder: (context, i) => _PlanTile(plan: plans[i]),
-            );
-          },
+        child: Column(
+          children: [
+            const _HifzOverallSummaryCard(),
+            Expanded(
+              child: plansAsync.when(
+                loading: () => const Center(child: CircularProgressIndicator()),
+                error: (_, __) => Center(child: Text(l10n.errorLoadData)),
+                data: (plans) {
+                  if (plans.isEmpty) {
+                    return Center(
+                      child: Padding(
+                        padding: const EdgeInsets.all(24),
+                        child: Text(
+                          l10n.hifzPlansEmpty,
+                          textAlign: TextAlign.center,
+                        ),
+                      ),
+                    );
+                  }
+                  return ListView.builder(
+                    padding: const EdgeInsets.symmetric(vertical: 8),
+                    itemCount: plans.length,
+                    itemBuilder: (context, i) => _PlanTile(plan: plans[i]),
+                  );
+                },
+              ),
+            ),
+          ],
         ),
       ),
       floatingActionButton: FloatingActionButton.extended(
@@ -210,5 +224,104 @@ class _PlanTile extends ConsumerWidget {
           await repo.deletePlan(plan.id);
         }
     }
+  }
+}
+
+/// Ảnh chụp Hifz TỔNG QUAN — gộp mọi kế hoạch active — Sprint D6.4.
+///
+/// CHỦ ĐÍCH KHÔNG CÓ: điểm số/% hoàn thành/chuỗi ngày gộp thành 1 con
+/// số duy nhất — cùng lý do đã nêu ở `HifzProgressScreen` (Hiến pháp
+/// Study §10, checkpoint "Worship First"). Thẻ này chỉ hiện các sự
+/// kiện đếm được (số kế hoạch/Ayah/thẻ đến hạn/đã ôn) — một mô tả
+/// trung thực tại thời điểm xem, KHÔNG phải một thành tích hay xu
+/// hướng theo thời gian (xem [HifzOverallProgress] doc comment).
+class _HifzOverallSummaryCard extends ConsumerWidget {
+  const _HifzOverallSummaryCard();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context);
+    final progressAsync = ref.watch(hifzOverallProgressProvider);
+
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(16, 12, 16, 4),
+      child: progressAsync.when(
+        loading: () =>
+            LoadingState(semanticsLabel: l10n.hifzProgressLoading, height: 72),
+        error: (_, __) => Text(
+          l10n.errorLoadData,
+          style: TextStyle(color: Theme.of(context).colorScheme.error),
+        ),
+        data: (progress) {
+          if (progress.activePlanCount == 0) {
+            return EmptyStateBanner(text: l10n.hifzOverallNoActivePlans);
+          }
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                l10n.hifzOverallSectionTitle,
+                style: Theme.of(context)
+                    .textTheme
+                    .titleSmall
+                    ?.copyWith(fontWeight: FontWeight.w700),
+              ),
+              const SizedBox(height: 10),
+              // CÙNG luật lưới đáp ứng của HifzProgressScreen's
+              // _OverviewGrid (Sprint 7.7c-A) — 2 cột trên điện thoại
+              // hẹp, 3 cột khi đủ rộng, KHÔNG ép 4 cột luôn khiến nhãn
+              // dài (vd "Ayahs planned"/"Ayah đã lên kế hoạch") bị cắt
+              // trên màn hình hẹp.
+              LayoutBuilder(
+                builder: (context, constraints) {
+                  final columns = constraints.maxWidth >= 560 ? 3 : 2;
+                  return GridView.count(
+                    shrinkWrap: true,
+                    physics: const NeverScrollableScrollPhysics(),
+                    crossAxisCount: columns,
+                    mainAxisSpacing: 10,
+                    crossAxisSpacing: 10,
+                    childAspectRatio: 1.55,
+                    children: [
+                      StatCard(
+                        icon: Icons.fact_check_rounded,
+                        value: '${progress.activePlanCount}',
+                        label: l10n.hifzOverallPlansLabel,
+                      ),
+                      StatCard(
+                        icon: Icons.menu_book_rounded,
+                        value: '${progress.totalPlannedAyahs}',
+                        label: l10n.hifzOverallAyahsLabel,
+                      ),
+                      StatCard(
+                        icon: Icons.schedule_rounded,
+                        value: '${progress.dueNowCount}',
+                        label: l10n.hifzOverallDueNowLabel,
+                      ),
+                      StatCard(
+                        icon: Icons.track_changes_rounded,
+                        value: '${progress.reviewedCardCount}',
+                        label: l10n.hifzOverallReviewedLabel,
+                      ),
+                    ],
+                  );
+                },
+              ),
+              const SizedBox(height: 4),
+              Text(
+                // Cùng chuỗi l10n đã dùng ở HifzProgressScreen — cùng ý
+                // nghĩa (ảnh chụp hiện tại, không phải lịch sử ôn tập),
+                // tái dùng thay vì thêm khoá l10n trùng lặp.
+                l10n.hifzProgressSnapshotNote,
+                style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                      color: Theme.of(context).colorScheme.onSurfaceVariant,
+                    ),
+              ),
+              const SizedBox(height: 8),
+            ],
+          );
+        },
+      ),
+    );
   }
 }
