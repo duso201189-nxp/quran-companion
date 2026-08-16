@@ -22,13 +22,14 @@ part 'user_database.g.dart';
     FlashcardDecks,
     Flashcards,
     HifzPlans,
+    ReviewEvents,
   ],
 )
 class UserDatabase extends _$UserDatabase {
   UserDatabase(super.executor);
 
   @override
-  int get schemaVersion => 7;
+  int get schemaVersion => 8;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -81,6 +82,19 @@ class UserDatabase extends _$UserDatabase {
           // đó" nào để suy ra — cùng lý do đã ghi cho flashcards ở v6.
           if (from < 7) {
             await m.createTable(hifzPlans);
+          }
+          // v8: Sprint D6.6 (DR-2026-0024, accepted) — review_events.
+          // Lịch sử BẤT BIẾN các lần ôn SRS đã cam kết, TÁCH BIỆT hoàn
+          // toàn với trạng thái hiện tại trong srs_cards. KHÔNG
+          // backfill: bảng này rỗng ngay sau khi tạo — lịch sử ôn tập
+          // trước v8 không thể khôi phục (srs_cards chỉ giữ trạng thái
+          // mới nhất, không phải sự kiện). Ghi vào bảng này CHỈ xảy ra
+          // trong SchedulerRepositoryImpl.applyReview, cho item_type
+          // 'ayah'/'hifz' (không 'lemma' — xem doc lớp ReviewEvents).
+          if (from < 8) {
+            await m.createTable(reviewEvents);
+            await m.createIndex(idxReviewEventsItem);
+            await m.createIndex(idxReviewEventsReviewedAt);
           }
         },
         beforeOpen: (details) async {

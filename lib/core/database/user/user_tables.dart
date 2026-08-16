@@ -394,3 +394,117 @@ class HifzPlans extends Table with SyncColumns {
   // srs_cards cộng với tập hợp HỢP (union) khiến mỗi Ayah luôn chỉ có
   // đúng một thẻ Hifz.
 }
+
+/// Lịch sử BẤT BIẾN các lần ôn SRS đã CAM KẾT — Sprint D6.6, kiến trúc
+/// tại DR-2026-0024 (đã `accepted`). KHÁC HẲN `srs_cards`: bảng đó là
+/// TRẠNG THÁI hiện tại (mutable, bị `syncItemsForType` xoá mềm/hồi
+/// sinh); bảng này là DÃY SỰ KIỆN append-only — 1 dòng = 1 lần
+/// `applyReview` đã ghi thật xuống `srs_cards` trong CÙNG một
+/// transaction (xem `SchedulerRepositoryImpl.applyReview`).
+///
+/// ## Phạm vi phát hành v1 — CHỈ ayah + hifz
+///
+/// `item_type='lemma'` KHÔNG được ghi vào bảng này (DR-2026-0024 quyết
+/// định 3): `item_id` của lemma trỏ vào `lemmas.id` (AppDatabase, khoá
+/// nguyên sinh từ bản build nội dung) — KHÔNG có bảo đảm ổn định qua
+/// các lần build lại nội dung, nên lịch sử bất biến gắn với id đó
+/// không thể chứng minh vẫn đúng sau này. `ayah`/`hifz` dùng ordinal
+/// Ayah toàn cục (cố định vĩnh viễn theo chính văn bản Mushaf) nên an
+/// toàn. Mô hình LƯU TRỮ vẫn TỔNG QUÁT (cột `item_type` chung cho cả
+/// 3 loại, không có bảng riêng cho Hifz) — chỉ CHÍNH SÁCH GHI ở tầng
+/// repository là bị thu hẹp có chủ đích cho v1.
+///
+/// ## KHÔNG có plan_id, KHÔNG có cycle_id (quyết định 5/6 — ràng buộc)
+///
+/// Kế hoạch Hifz được phép chồng lấn (`HifzPlanRepository.createPlan`)
+/// và `UNIQUE(item_type, item_id)` của `srs_cards` khiến MỘT Ayah dù
+/// thuộc nhiều kế hoạch cũng chỉ có ĐÚNG MỘT thẻ — gán 1 `plan_id` cho
+/// 1 sự kiện sẽ là một khẳng định sai. `srs_cards.id` cũng KHÔNG phải
+/// định danh vòng đời học: `syncItemsForType` hồi sinh lại CHÍNH id cũ
+/// và RESET về trạng thái khởi tạo khi một mục quay lại tập hợp — nên
+/// không có `cycle_id` nào được thêm; before/after state đầy đủ ở mỗi
+/// dòng đã đủ để phát hiện một lần hồi sinh như một chỗ gián đoạn
+/// (before của dòng mới ≠ after của dòng liền trước), không cần khái
+/// niệm vòng đời mới.
+///
+/// ## Bất biến (append-only)
+///
+/// Không có API cập nhật/xoá nào cho bảng này ở tầng repository.
+/// `deletedAt` (từ [SyncColumns]) tồn tại vì mixin là TRỌN VẸN hoặc
+/// KHÔNG DÙNG (không có cách "dùng một phần" một mixin Dart) — nhưng
+/// KHÔNG có đoạn mã nào được uỷ quyền ghi vào cột đó; nó ở lại `NULL`
+/// vĩnh viễn trong phạm vi hiện tại (cơ chế xoá quyền riêng tư ở mức
+/// tài khoản là quyết định TƯƠNG LAI, tách biệt, chưa tồn tại trong
+/// kho mã này — DR-2026-0024 Quyết định mở #4).
+///
+/// ## KHÔNG backfill
+///
+/// Bảng này rỗng ngay sau khi tạo — không có INSERT nào suy ra từ
+/// `srs_cards` hiện có. Lịch sử ôn tập trước khi bảng này tồn tại
+/// KHÔNG THỂ khôi phục (grade/before-state/số lần ôn thật đã mất vĩnh
+/// viễn — xem doc comment `SrsCard.updatedAtMs`).
+@DataClassName('ReviewEventRow')
+@TableIndex(
+  name: 'idx_review_events_item',
+  columns: {#itemType, #itemId, #reviewedAt},
+)
+@TableIndex(name: 'idx_review_events_reviewed_at', columns: {#reviewedAt})
+class ReviewEvents extends Table with SyncColumns {
+  @override
+  String get tableName => 'review_events';
+
+  /// `srs_cards.id` của thẻ đã được cập nhật trong CÙNG transaction —
+  /// tham chiếu MỀM (không FK Drift-level, cùng quy ước không-FK toàn
+  /// bộ tệp này), toàn vẹn do transaction dùng chung ở tầng repository
+  /// đảm nhiệm.
+  TextColumn get cardId => text().named('card_id')();
+
+  /// 'ayah' | 'hifz' — KHÔNG BAO GIỜ 'lemma' trong v1 (xem doc lớp).
+  TextColumn get itemType => text().named('item_type')();
+
+  /// Cùng hệ ordinal Ayah toàn cục với `srs_cards.item_id` cho cả hai
+  /// loại 'ayah' và 'hifz'.
+  IntColumn get itemId => integer().named('item_id')();
+
+  /// Epoch ms UTC — thời điểm ôn, CÙNG giá trị đã ghi vào
+  /// `srs_cards.updated_at` trong cùng lần gọi `applyReview` (bất
+  /// biến I3, DR-2026-0024).
+  IntColumn get reviewedAt => integer().named('reviewed_at')();
+
+  /// 'again' | 'hard' | 'good' | 'easy' — `ReviewGrade.name`. KHÔNG
+  /// cần codec riêng (khác `SrsCardState`): không giá trị nào trùng từ
+  /// khoá Dart, nên `.name` vừa là định danh Dart vừa là chuỗi lưu.
+  TextColumn get grade => text()();
+
+  /// `SchedulingAlgorithm.algorithmId` của chính thuật toán đã tính ra
+  /// lần ôn này — 'sm2-v1' hoặc 'hifz-sm2-capped-v1'. KHÔNG suy từ
+  /// `runtimeType`; đọc trực tiếp từ thể hiện thuật toán đang xử lý.
+  TextColumn get algorithmId => text().named('algorithm_id')();
+
+  /// Trạng thái thẻ TRƯỚC lần ôn này — 'new' | 'learning' | 'review' |
+  /// 'lapsed', đọc thẳng từ `srs_cards.state` trước khi UPDATE.
+  TextColumn get beforeState => text().named('before_state')();
+  IntColumn get beforeRepetitions => integer().named('before_repetitions')();
+  IntColumn get beforeIntervalDays => integer().named('before_interval_days')();
+  RealColumn get beforeEaseFactor => real().named('before_ease_factor')();
+
+  /// Epoch ms UTC — `due_date` TRƯỚC lần ôn này.
+  IntColumn get beforeDueDate => integer().named('before_due_date')();
+
+  /// Trạng thái thẻ SAU lần ôn này — lưu lại (không tính lại từ before)
+  /// để lịch sử vẫn đọc đúng ngay cả khi thuật toán scheduling thay
+  /// đổi sau này (vd FSRS thay SM-2) — xem `algorithmId`.
+  TextColumn get afterState => text().named('after_state')();
+  IntColumn get afterRepetitions => integer().named('after_repetitions')();
+  IntColumn get afterIntervalDays => integer().named('after_interval_days')();
+  RealColumn get afterEaseFactor => real().named('after_ease_factor')();
+
+  /// Epoch ms UTC — `due_date` SAU lần ôn này.
+  IntColumn get afterDueDate => integer().named('after_due_date')();
+
+  @override
+  Set<Column<Object>> get primaryKey => {id};
+
+  // KHÔNG uniqueKeys: khác srs_cards, nhiều dòng cho cùng
+  // (item_type, item_id) là ĐÚNG mục đích — mỗi lần ôn một dòng.
+}

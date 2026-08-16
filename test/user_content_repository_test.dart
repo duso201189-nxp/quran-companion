@@ -32,7 +32,9 @@ void main() {
   }
 
   group('schema & migration', () {
-    test('schemaVersion 7 tạo đủ 13 bảng user', () async {
+    test(
+        'schemaVersion 8 tạo đủ 14 bảng user (Sprint D6.6 — thêm '
+        'review_events, DR-2026-0024)', () async {
       final tables = await db
           .customSelect(
             "SELECT name FROM sqlite_master WHERE type='table'",
@@ -55,11 +57,12 @@ void main() {
             'flashcard_decks',
             'flashcards',
             'hifz_plans',
+            'review_events',
           },
         ),
         isTrue,
       );
-      expect(db.schemaVersion, 7);
+      expect(db.schemaVersion, 8);
     });
 
     test(
@@ -141,7 +144,7 @@ void main() {
 
       // Chạm vào database lần đầu -> Drift chạy hết chuỗi onUpgrade
       // thật (1 -> 2 -> 3 -> 4 -> 5 -> 6, vì schemaVersion hiện tại là 6).
-      expect(v1Migrated.schemaVersion, 7);
+      expect(v1Migrated.schemaVersion, 8);
       final tableNames = (await v1Migrated
               .customSelect("SELECT name FROM sqlite_master WHERE type='table'")
               .get())
@@ -269,7 +272,7 @@ void main() {
 
       // Chạm vào database lần đầu -> Drift chạy onUpgrade thật
       // (2 -> 3 -> 4 -> 5 -> 6).
-      expect(v2Migrated.schemaVersion, 7);
+      expect(v2Migrated.schemaVersion, 8);
       final tableNames = (await v2Migrated
               .customSelect("SELECT name FROM sqlite_master WHERE type='table'")
               .get())
@@ -445,7 +448,7 @@ void main() {
 
       // Chạm vào database lần đầu -> Drift chạy onUpgrade thật
       // (3 -> 4 -> 5 -> 6).
-      expect(v3Migrated.schemaVersion, 7);
+      expect(v3Migrated.schemaVersion, 8);
       final tableNames = (await v3Migrated
               .customSelect("SELECT name FROM sqlite_master WHERE type='table'")
               .get())
@@ -621,7 +624,7 @@ void main() {
       addTearDown(v4Migrated.close);
 
       // Chạm vào database lần đầu -> Drift chạy onUpgrade thật (4 -> 5 -> 6).
-      expect(v4Migrated.schemaVersion, 7);
+      expect(v4Migrated.schemaVersion, 8);
       final tableNames = (await v4Migrated
               .customSelect("SELECT name FROM sqlite_master WHERE type='table'")
               .get())
@@ -813,7 +816,7 @@ void main() {
       addTearDown(v5Migrated.close);
 
       // Chạm vào database lần đầu -> Drift chạy onUpgrade thật (5 -> 6).
-      expect(v5Migrated.schemaVersion, 7);
+      expect(v5Migrated.schemaVersion, 8);
       final tableNames = (await v5Migrated
               .customSelect("SELECT name FROM sqlite_master WHERE type='table'")
               .get())
@@ -1041,7 +1044,7 @@ void main() {
       );
       addTearDown(v6Migrated.close);
 
-      expect(v6Migrated.schemaVersion, 7);
+      expect(v6Migrated.schemaVersion, 8);
       final tableNames = (await v6Migrated
               .customSelect("SELECT name FROM sqlite_master WHERE type='table'")
               .get())
@@ -1070,6 +1073,268 @@ void main() {
       // hành động chủ động của người dùng, không suy ra được từ dữ
       // liệu cũ.
       expect(await v6Migrated.select(v6Migrated.hifzPlans).get(), isEmpty);
+    });
+
+    test(
+        'onUpgrade v7 -> v8: bảng cũ + dữ liệu mẫu còn nguyên, thêm '
+        'review_events (Sprint D6.6 — DR-2026-0024, đã accepted)', () async {
+      // Dựng thủ công 1 database "v7" (13 bảng hiện có, CHƯA có
+      // review_events) + 1 bookmark mẫu + 1 srs_cards mẫu loại 'ayah' +
+      // 1 hifz_plans mẫu (mô phỏng dữ liệu học tập đã tích luỹ từ
+      // trước), set PRAGMA user_version = 7. Mở qua UserDatabase thật
+      // để Drift chạy đúng onUpgrade thật (7 -> 8).
+      const seedBookmarkId = 'seed-bookmark-v7';
+      const seedCardId = 'seed-card-v7';
+      const seedPlanId = 'seed-plan-v7';
+      final v7Migrated = UserDatabase(
+        NativeDatabase.memory(
+          setup: (rawDb) {
+            for (final ddl in [
+              '''
+              CREATE TABLE bookmarks (
+                id TEXT NOT NULL PRIMARY KEY,
+                user_id TEXT NULL,
+                updated_at INTEGER NOT NULL,
+                deleted_at INTEGER NULL,
+                is_dirty INTEGER NOT NULL DEFAULT 1,
+                ayah_id INTEGER NOT NULL,
+                created_at INTEGER NOT NULL,
+                collection_id TEXT NULL,
+                UNIQUE(ayah_id)
+              );
+              ''',
+              '''
+              CREATE TABLE highlights (
+                id TEXT NOT NULL PRIMARY KEY,
+                user_id TEXT NULL,
+                updated_at INTEGER NOT NULL,
+                deleted_at INTEGER NULL,
+                is_dirty INTEGER NOT NULL DEFAULT 1,
+                ayah_id INTEGER NOT NULL,
+                color TEXT NOT NULL,
+                UNIQUE(ayah_id, color)
+              );
+              ''',
+              '''
+              CREATE TABLE notes (
+                id TEXT NOT NULL PRIMARY KEY,
+                user_id TEXT NULL,
+                updated_at INTEGER NOT NULL,
+                deleted_at INTEGER NULL,
+                is_dirty INTEGER NOT NULL DEFAULT 1,
+                ayah_id INTEGER NOT NULL,
+                content TEXT NOT NULL,
+                UNIQUE(ayah_id)
+              );
+              ''',
+              '''
+              CREATE TABLE favorites (
+                id TEXT NOT NULL PRIMARY KEY,
+                user_id TEXT NULL,
+                updated_at INTEGER NOT NULL,
+                deleted_at INTEGER NULL,
+                is_dirty INTEGER NOT NULL DEFAULT 1,
+                ayah_id INTEGER NOT NULL,
+                created_at INTEGER NOT NULL,
+                UNIQUE(ayah_id)
+              );
+              ''',
+              '''
+              CREATE TABLE ayah_statuses (
+                id TEXT NOT NULL PRIMARY KEY,
+                user_id TEXT NULL,
+                updated_at INTEGER NOT NULL,
+                deleted_at INTEGER NULL,
+                is_dirty INTEGER NOT NULL DEFAULT 1,
+                ayah_id INTEGER NOT NULL,
+                status TEXT NOT NULL,
+                UNIQUE(ayah_id)
+              );
+              ''',
+              '''
+              CREATE TABLE study_sessions (
+                id TEXT NOT NULL PRIMARY KEY,
+                user_id TEXT NULL,
+                updated_at INTEGER NOT NULL,
+                deleted_at INTEGER NULL,
+                is_dirty INTEGER NOT NULL DEFAULT 1,
+                date TEXT NOT NULL,
+                surah_id INTEGER NOT NULL,
+                ayah_from INTEGER NOT NULL,
+                ayah_to INTEGER NOT NULL,
+                duration_sec INTEGER NOT NULL,
+                note TEXT NULL,
+                created_at INTEGER NOT NULL
+              );
+              ''',
+              '''
+              CREATE TABLE khatm_cycles (
+                id TEXT NOT NULL PRIMARY KEY,
+                user_id TEXT NULL,
+                updated_at INTEGER NOT NULL,
+                deleted_at INTEGER NULL,
+                is_dirty INTEGER NOT NULL DEFAULT 1,
+                name TEXT NOT NULL,
+                started_at INTEGER NOT NULL,
+                target_date TEXT NULL,
+                completed_at INTEGER NULL,
+                current_ayah_id INTEGER NOT NULL DEFAULT 1
+              );
+              ''',
+              '''
+              CREATE TABLE bookmark_collections (
+                id TEXT NOT NULL PRIMARY KEY,
+                user_id TEXT NULL,
+                updated_at INTEGER NOT NULL,
+                deleted_at INTEGER NULL,
+                is_dirty INTEGER NOT NULL DEFAULT 1,
+                name TEXT NOT NULL,
+                emoji TEXT NULL,
+                display_order INTEGER NOT NULL DEFAULT 0
+              );
+              ''',
+              '''
+              CREATE TABLE srs_cards (
+                id TEXT NOT NULL PRIMARY KEY,
+                user_id TEXT NULL,
+                updated_at INTEGER NOT NULL,
+                deleted_at INTEGER NULL,
+                is_dirty INTEGER NOT NULL DEFAULT 1,
+                item_type TEXT NOT NULL,
+                item_id INTEGER NOT NULL,
+                ease_factor REAL NOT NULL DEFAULT 2.5,
+                interval_days INTEGER NOT NULL DEFAULT 0,
+                repetitions INTEGER NOT NULL DEFAULT 0,
+                due_date INTEGER NOT NULL,
+                state TEXT NOT NULL,
+                UNIQUE(item_type, item_id)
+              );
+              ''',
+              '''
+              CREATE TABLE quiz_results (
+                id TEXT NOT NULL PRIMARY KEY,
+                user_id TEXT NULL,
+                updated_at INTEGER NOT NULL,
+                deleted_at INTEGER NULL,
+                is_dirty INTEGER NOT NULL DEFAULT 1,
+                quiz_type TEXT NOT NULL,
+                surah_id INTEGER NULL,
+                score INTEGER NOT NULL,
+                total INTEGER NOT NULL,
+                taken_at INTEGER NOT NULL
+              );
+              ''',
+              '''
+              CREATE TABLE flashcard_decks (
+                id TEXT NOT NULL PRIMARY KEY,
+                user_id TEXT NULL,
+                updated_at INTEGER NOT NULL,
+                deleted_at INTEGER NULL,
+                is_dirty INTEGER NOT NULL DEFAULT 1,
+                name TEXT NOT NULL,
+                created_at INTEGER NOT NULL
+              );
+              ''',
+              '''
+              CREATE TABLE flashcards (
+                id TEXT NOT NULL PRIMARY KEY,
+                user_id TEXT NULL,
+                updated_at INTEGER NOT NULL,
+                deleted_at INTEGER NULL,
+                is_dirty INTEGER NOT NULL DEFAULT 1,
+                type TEXT NOT NULL,
+                lexicon_entry_type TEXT NOT NULL,
+                lexicon_entry_id INTEGER NOT NULL,
+                deck_id TEXT NULL,
+                note TEXT NULL,
+                created_at INTEGER NOT NULL,
+                UNIQUE(lexicon_entry_type, lexicon_entry_id)
+              );
+              ''',
+              '''
+              CREATE TABLE hifz_plans (
+                id TEXT NOT NULL PRIMARY KEY,
+                user_id TEXT NULL,
+                updated_at INTEGER NOT NULL,
+                deleted_at INTEGER NULL,
+                is_dirty INTEGER NOT NULL DEFAULT 1,
+                ayah_from INTEGER NOT NULL,
+                ayah_to INTEGER NOT NULL,
+                status TEXT NOT NULL,
+                started_at INTEGER NOT NULL,
+                completed_at INTEGER NULL
+              );
+              ''',
+            ]) {
+              rawDb.execute(ddl);
+            }
+            rawDb.execute(
+              'INSERT INTO bookmarks '
+              '(id, updated_at, ayah_id, created_at, is_dirty) '
+              "VALUES ('$seedBookmarkId', 9000, 55, 9000, 0);",
+            );
+            rawDb.execute(
+              'INSERT INTO srs_cards '
+              '(id, updated_at, item_type, item_id, due_date, state, '
+              'is_dirty) '
+              "VALUES ('$seedCardId', 9000, 'ayah', 42, 9000, 'new', 0);",
+            );
+            rawDb.execute(
+              'INSERT INTO hifz_plans '
+              '(id, updated_at, ayah_from, ayah_to, status, started_at, '
+              'is_dirty) '
+              "VALUES ('$seedPlanId', 9000, 1, 5, 'active', 9000, 0);",
+            );
+            rawDb.execute('PRAGMA user_version = 7;');
+          },
+        ),
+      );
+      addTearDown(v7Migrated.close);
+
+      expect(v7Migrated.schemaVersion, 8);
+      final tableNames = (await v7Migrated
+              .customSelect("SELECT name FROM sqlite_master WHERE type='table'")
+              .get())
+          .map((r) => r.data['name'])
+          .toSet();
+      expect(
+        tableNames.contains('review_events'),
+        isTrue,
+        reason: 'onUpgrade phải thêm review_events mà không đụng 13 bảng cũ',
+      );
+
+      // Dữ liệu mẫu từ "trước khi nâng cấp" phải còn nguyên vẹn — kể cả
+      // hifz_plans (bảng mới nhất trước v8).
+      final bookmarks = await v7Migrated.select(v7Migrated.bookmarks).get();
+      expect(bookmarks, hasLength(1));
+      expect(bookmarks.single.id, seedBookmarkId);
+
+      final cards = await v7Migrated.select(v7Migrated.srsCards).get();
+      expect(cards, hasLength(1));
+      expect(cards.single.id, seedCardId);
+      expect(cards.single.itemType, 'ayah');
+
+      final plans = await v7Migrated.select(v7Migrated.hifzPlans).get();
+      expect(plans, hasLength(1));
+      expect(plans.single.id, seedPlanId);
+
+      // Bảng mới dùng được ngay, và KHÔNG backfill — lịch sử ôn tập
+      // trước v8 không tồn tại để suy ra (DR-2026-0024 Quyết định 10):
+      // review_events phải RỖNG ngay sau khi nâng cấp, không có sự
+      // kiện nào được dựng lại từ srs_cards đã có.
+      expect(await v7Migrated.select(v7Migrated.reviewEvents).get(), isEmpty);
+
+      // Hai chỉ mục đã duyệt phải tồn tại (DR-2026-0024 Quyết định 12).
+      final indexNames = (await v7Migrated
+              .customSelect(
+                "SELECT name FROM sqlite_master WHERE type='index' "
+                "AND tbl_name='review_events'",
+              )
+              .get())
+          .map((r) => r.data['name'])
+          .toSet();
+      expect(indexNames, contains('idx_review_events_item'));
+      expect(indexNames, contains('idx_review_events_reviewed_at'));
     });
 
     test('toggleFavorite: bật -> tắt -> bật lại giữ nguyên UUID', () async {

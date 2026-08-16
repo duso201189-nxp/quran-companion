@@ -5,6 +5,7 @@ import 'package:quran_companion/core/database/user/user_database.dart';
 import 'package:quran_companion/core/logging/console_logger.dart';
 import 'package:quran_companion/features/learning/data/scheduler_repository_impl.dart';
 import 'package:quran_companion/features/learning/domain/entities/srs_card.dart';
+import 'package:quran_companion/features/learning/domain/hifz_scheduling_algorithm.dart';
 import 'package:quran_companion/features/learning/domain/scheduling_algorithm.dart';
 import 'package:quran_companion/features/learning/domain/sm2_scheduling_algorithm.dart';
 
@@ -206,6 +207,201 @@ void main() {
       final sorted = await repo.watchAllCards(LearningItemType.ayah).first;
       expect(sorted.first.itemId, 20);
       expect(sorted.last.itemId, 10);
+    });
+  });
+
+  group('review_events (Sprint D6.6 — DR-2026-0024, ghi sự kiện bất biến)', () {
+    test('ayah: applyReview ghi ĐÚNG MỘT review_events row', () async {
+      await repo.syncWithReviewQueue([10]);
+      final card =
+          (await repo.watchAllCards(LearningItemType.ayah).first).single;
+
+      await repo.applyReview(card.id, ReviewGrade.good);
+
+      final rows = await db.select(db.reviewEvents).get();
+      expect(rows, hasLength(1));
+      expect(rows.single.itemType, 'ayah');
+    });
+
+    test(
+        'hifz: applyReview ghi ĐÚNG MỘT review_events row, algorithm_id '
+        '= hifz-sm2-capped-v1', () async {
+      final hifzRepo = SchedulerRepositoryImpl(
+        db,
+        const HifzSchedulingAlgorithm(),
+        const ConsoleLogger(),
+        newId: () => 'hifz-card-${++idCounter}',
+        nowMs: () => fakeNow,
+      );
+      await hifzRepo.syncItemsForType(LearningItemType.hifz, [7]);
+      final card =
+          (await hifzRepo.watchAllCards(LearningItemType.hifz).first).single;
+
+      await hifzRepo.applyReview(card.id, ReviewGrade.good);
+
+      final rows = await db.select(db.reviewEvents).get();
+      expect(rows, hasLength(1));
+      expect(rows.single.itemType, 'hifz');
+      expect(rows.single.algorithmId, 'hifz-sm2-capped-v1');
+    });
+
+    test('lemma: applyReview KHÔNG ghi review_events nào (Quyết định 3)',
+        () async {
+      await repo.syncItemsForType(LearningItemType.lemma, [100]);
+      final card =
+          (await repo.watchAllCards(LearningItemType.lemma).first).single;
+
+      await repo.applyReview(card.id, ReviewGrade.good);
+
+      final rows = await db.select(db.reviewEvents).get();
+      expect(rows, isEmpty);
+    });
+
+    test('cardId không tồn tại -> không ghi review_events nào', () async {
+      await repo.applyReview('khong-ton-tai', ReviewGrade.good);
+      final rows = await db.select(db.reviewEvents).get();
+      expect(rows, isEmpty);
+    });
+
+    test(
+        'nội dung sự kiện khớp đúng card_id/item_type/item_id/grade/'
+        'reviewed_at/algorithm_id', () async {
+      await repo.syncWithReviewQueue([10]);
+      final card =
+          (await repo.watchAllCards(LearningItemType.ayah).first).single;
+
+      fakeNow = 2000000;
+      await repo.applyReview(card.id, ReviewGrade.good);
+
+      final event = (await db.select(db.reviewEvents).get()).single;
+      expect(event.cardId, card.id);
+      expect(event.itemType, 'ayah');
+      expect(event.itemId, 10);
+      expect(event.grade, 'good');
+      expect(event.reviewedAt, 2000000);
+      expect(event.algorithmId, 'sm2-v1');
+    });
+
+    test(
+        'reviewed_at == srs_cards.updated_at cho cùng lần ôn (bất biến '
+        'I3, DR-2026-0024)', () async {
+      await repo.syncWithReviewQueue([10]);
+      final card =
+          (await repo.watchAllCards(LearningItemType.ayah).first).single;
+
+      fakeNow = 3000000;
+      await repo.applyReview(card.id, ReviewGrade.good);
+
+      final event = (await db.select(db.reviewEvents).get()).single;
+      final updatedCard =
+          (await repo.watchAllCards(LearningItemType.ayah).first).single;
+      expect(event.reviewedAt, updatedCard.updatedAtMs);
+      expect(event.reviewedAt, 3000000);
+    });
+
+    test('before_*/after_* phản ánh đúng trạng thái trước/sau lần ôn',
+        () async {
+      await repo.syncWithReviewQueue([10]);
+      final card =
+          (await repo.watchAllCards(LearningItemType.ayah).first).single;
+
+      await repo.applyReview(card.id, ReviewGrade.good);
+
+      final event = (await db.select(db.reviewEvents).get()).single;
+      expect(event.beforeState, 'new');
+      expect(event.beforeRepetitions, 0);
+      expect(event.beforeEaseFactor, 2.5);
+      expect(event.afterState, 'review');
+      expect(event.afterRepetitions, 1);
+      expect(event.afterIntervalDays, 1);
+    });
+
+    test(
+        'nguyên tử: PRIMARY KEY trùng ở review_events khiến CẢ update '
+        'srs_cards LẪN insert review_events của lần ôn thứ hai đều '
+        'KHÔNG được ghi (rollback toàn bộ transaction)', () async {
+      await repo.syncWithReviewQueue([10]);
+      final card =
+          (await repo.watchAllCards(LearningItemType.ayah).first).single;
+
+      // newId CỐ ĐỊNH — mô phỏng một PRIMARY KEY va chạm THẬT, dùng
+      // ĐÚNG điểm tiêm sẵn có (SchedulerRepositoryImpl.newId), không
+      // fake executor/database nào — theo đúng hướng D6.6 đã duyệt.
+      final collidingRepo = SchedulerRepositoryImpl(
+        db,
+        const SM2SchedulingAlgorithm(),
+        const ConsoleLogger(),
+        newId: () => 'fixed-review-event-id',
+        nowMs: () => fakeNow,
+      );
+
+      // Lần ôn đầu — 'fixed-review-event-id' chưa tồn tại -> thành công.
+      await collidingRepo.applyReview(card.id, ReviewGrade.good);
+      final beforeSecondAttempt =
+          (await repo.watchAllCards(LearningItemType.ayah).first).single;
+
+      // Lần ôn thứ hai — UPDATE srs_cards chạy trong transaction, rồi
+      // INSERT review_events với CÙNG id -> vi phạm PRIMARY KEY thật
+      // -> ném lỗi -> Drift rollback TOÀN BỘ transaction, kể cả UPDATE
+      // đã chạy trước đó trong CÙNG transaction.
+      await expectLater(
+        collidingRepo.applyReview(card.id, ReviewGrade.good),
+        throwsA(anything),
+      );
+
+      final afterFailedAttempt =
+          (await repo.watchAllCards(LearningItemType.ayah).first).single;
+      // srs_cards PHẢI giữ NGUYÊN trạng thái của lần ôn đầu — UPDATE
+      // của lần ôn thứ hai đã bị rollback cùng INSERT thất bại.
+      expect(afterFailedAttempt.repetitions, beforeSecondAttempt.repetitions);
+      expect(
+        afterFailedAttempt.intervalDays,
+        beforeSecondAttempt.intervalDays,
+      );
+      expect(afterFailedAttempt.dueDate, beforeSecondAttempt.dueDate);
+
+      // Vẫn ĐÚNG MỘT review_events row (từ lần ôn đầu) — lần thứ hai
+      // không để lại dấu vết nào, kể cả review_events lẫn srs_cards.
+      final rows = await db.select(db.reviewEvents).get();
+      expect(rows, hasLength(1));
+    });
+
+    test(
+        'bất biến: hai lần ôn liên tiếp tạo hai sự kiện, sự kiện ĐẦU '
+        'KHÔNG bị sửa bởi lần ôn thứ hai (append-only)', () async {
+      await repo.syncWithReviewQueue([10]);
+      final card =
+          (await repo.watchAllCards(LearningItemType.ayah).first).single;
+
+      fakeNow = 1000000;
+      await repo.applyReview(card.id, ReviewGrade.good);
+      final firstEventBefore = (await db.select(db.reviewEvents).get()).single;
+
+      fakeNow = 2000000;
+      await repo.applyReview(card.id, ReviewGrade.good);
+
+      final rows = await db.select(db.reviewEvents).get();
+      expect(rows, hasLength(2));
+
+      final firstEventAfter =
+          rows.firstWhere((r) => r.id == firstEventBefore.id);
+      // Sự kiện đầu KHÔNG thay đổi sau lần ôn thứ hai.
+      expect(firstEventAfter.reviewedAt, firstEventBefore.reviewedAt);
+      expect(firstEventAfter.beforeState, firstEventBefore.beforeState);
+      expect(firstEventAfter.afterState, firstEventBefore.afterState);
+      expect(
+        firstEventAfter.afterRepetitions,
+        firstEventBefore.afterRepetitions,
+      );
+
+      // Sự kiện thứ hai's before khớp đúng sự kiện đầu's after — chuỗi
+      // liên tục, không gián đoạn (chưa qua syncItemsForType revive).
+      final secondEvent = rows.firstWhere((r) => r.id != firstEventBefore.id);
+      expect(secondEvent.beforeState, firstEventAfter.afterState);
+      expect(
+        secondEvent.beforeRepetitions,
+        firstEventAfter.afterRepetitions,
+      );
     });
   });
 }

@@ -3780,10 +3780,11 @@ class SrsCardRow extends DataClass implements Insertable<SrsCardRow> {
   final int? deletedAt;
   final bool isDirty;
 
-  /// 'ayah' | 'lemma'.
+  /// 'ayah' | 'lemma' | 'hifz'.
   final String itemType;
 
-  /// ayah_id hoặc lemma_id tùy [itemType].
+  /// ayah_id hoặc lemma_id tùy [itemType] — 'hifz' cũng dùng ayah_id
+  /// (ordinal Ayah toàn cục), cùng hệ số với 'ayah'.
   final int itemId;
   final double easeFactor;
   final int intervalDays;
@@ -6121,6 +6122,1026 @@ class HifzPlansCompanion extends UpdateCompanion<HifzPlanRow> {
   }
 }
 
+class $ReviewEventsTable extends ReviewEvents
+    with TableInfo<$ReviewEventsTable, ReviewEventRow> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $ReviewEventsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+      'id', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  static const VerificationMeta _userIdMeta = const VerificationMeta('userId');
+  @override
+  late final GeneratedColumn<String> userId = GeneratedColumn<String>(
+      'user_id', aliasedName, true,
+      type: DriftSqlType.string, requiredDuringInsert: false);
+  static const VerificationMeta _updatedAtMeta =
+      const VerificationMeta('updatedAt');
+  @override
+  late final GeneratedColumn<int> updatedAt = GeneratedColumn<int>(
+      'updated_at', aliasedName, false,
+      type: DriftSqlType.int, requiredDuringInsert: true);
+  static const VerificationMeta _deletedAtMeta =
+      const VerificationMeta('deletedAt');
+  @override
+  late final GeneratedColumn<int> deletedAt = GeneratedColumn<int>(
+      'deleted_at', aliasedName, true,
+      type: DriftSqlType.int, requiredDuringInsert: false);
+  static const VerificationMeta _isDirtyMeta =
+      const VerificationMeta('isDirty');
+  @override
+  late final GeneratedColumn<bool> isDirty = GeneratedColumn<bool>(
+      'is_dirty', aliasedName, false,
+      type: DriftSqlType.bool,
+      requiredDuringInsert: false,
+      defaultConstraints:
+          GeneratedColumn.constraintIsAlways('CHECK ("is_dirty" IN (0, 1))'),
+      defaultValue: const Constant(true));
+  static const VerificationMeta _cardIdMeta = const VerificationMeta('cardId');
+  @override
+  late final GeneratedColumn<String> cardId = GeneratedColumn<String>(
+      'card_id', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  static const VerificationMeta _itemTypeMeta =
+      const VerificationMeta('itemType');
+  @override
+  late final GeneratedColumn<String> itemType = GeneratedColumn<String>(
+      'item_type', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  static const VerificationMeta _itemIdMeta = const VerificationMeta('itemId');
+  @override
+  late final GeneratedColumn<int> itemId = GeneratedColumn<int>(
+      'item_id', aliasedName, false,
+      type: DriftSqlType.int, requiredDuringInsert: true);
+  static const VerificationMeta _reviewedAtMeta =
+      const VerificationMeta('reviewedAt');
+  @override
+  late final GeneratedColumn<int> reviewedAt = GeneratedColumn<int>(
+      'reviewed_at', aliasedName, false,
+      type: DriftSqlType.int, requiredDuringInsert: true);
+  static const VerificationMeta _gradeMeta = const VerificationMeta('grade');
+  @override
+  late final GeneratedColumn<String> grade = GeneratedColumn<String>(
+      'grade', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  static const VerificationMeta _algorithmIdMeta =
+      const VerificationMeta('algorithmId');
+  @override
+  late final GeneratedColumn<String> algorithmId = GeneratedColumn<String>(
+      'algorithm_id', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  static const VerificationMeta _beforeStateMeta =
+      const VerificationMeta('beforeState');
+  @override
+  late final GeneratedColumn<String> beforeState = GeneratedColumn<String>(
+      'before_state', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  static const VerificationMeta _beforeRepetitionsMeta =
+      const VerificationMeta('beforeRepetitions');
+  @override
+  late final GeneratedColumn<int> beforeRepetitions = GeneratedColumn<int>(
+      'before_repetitions', aliasedName, false,
+      type: DriftSqlType.int, requiredDuringInsert: true);
+  static const VerificationMeta _beforeIntervalDaysMeta =
+      const VerificationMeta('beforeIntervalDays');
+  @override
+  late final GeneratedColumn<int> beforeIntervalDays = GeneratedColumn<int>(
+      'before_interval_days', aliasedName, false,
+      type: DriftSqlType.int, requiredDuringInsert: true);
+  static const VerificationMeta _beforeEaseFactorMeta =
+      const VerificationMeta('beforeEaseFactor');
+  @override
+  late final GeneratedColumn<double> beforeEaseFactor = GeneratedColumn<double>(
+      'before_ease_factor', aliasedName, false,
+      type: DriftSqlType.double, requiredDuringInsert: true);
+  static const VerificationMeta _beforeDueDateMeta =
+      const VerificationMeta('beforeDueDate');
+  @override
+  late final GeneratedColumn<int> beforeDueDate = GeneratedColumn<int>(
+      'before_due_date', aliasedName, false,
+      type: DriftSqlType.int, requiredDuringInsert: true);
+  static const VerificationMeta _afterStateMeta =
+      const VerificationMeta('afterState');
+  @override
+  late final GeneratedColumn<String> afterState = GeneratedColumn<String>(
+      'after_state', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  static const VerificationMeta _afterRepetitionsMeta =
+      const VerificationMeta('afterRepetitions');
+  @override
+  late final GeneratedColumn<int> afterRepetitions = GeneratedColumn<int>(
+      'after_repetitions', aliasedName, false,
+      type: DriftSqlType.int, requiredDuringInsert: true);
+  static const VerificationMeta _afterIntervalDaysMeta =
+      const VerificationMeta('afterIntervalDays');
+  @override
+  late final GeneratedColumn<int> afterIntervalDays = GeneratedColumn<int>(
+      'after_interval_days', aliasedName, false,
+      type: DriftSqlType.int, requiredDuringInsert: true);
+  static const VerificationMeta _afterEaseFactorMeta =
+      const VerificationMeta('afterEaseFactor');
+  @override
+  late final GeneratedColumn<double> afterEaseFactor = GeneratedColumn<double>(
+      'after_ease_factor', aliasedName, false,
+      type: DriftSqlType.double, requiredDuringInsert: true);
+  static const VerificationMeta _afterDueDateMeta =
+      const VerificationMeta('afterDueDate');
+  @override
+  late final GeneratedColumn<int> afterDueDate = GeneratedColumn<int>(
+      'after_due_date', aliasedName, false,
+      type: DriftSqlType.int, requiredDuringInsert: true);
+  @override
+  List<GeneratedColumn> get $columns => [
+        id,
+        userId,
+        updatedAt,
+        deletedAt,
+        isDirty,
+        cardId,
+        itemType,
+        itemId,
+        reviewedAt,
+        grade,
+        algorithmId,
+        beforeState,
+        beforeRepetitions,
+        beforeIntervalDays,
+        beforeEaseFactor,
+        beforeDueDate,
+        afterState,
+        afterRepetitions,
+        afterIntervalDays,
+        afterEaseFactor,
+        afterDueDate
+      ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'review_events';
+  @override
+  VerificationContext validateIntegrity(Insertable<ReviewEventRow> instance,
+      {bool isInserting = false}) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    } else if (isInserting) {
+      context.missing(_idMeta);
+    }
+    if (data.containsKey('user_id')) {
+      context.handle(_userIdMeta,
+          userId.isAcceptableOrUnknown(data['user_id']!, _userIdMeta));
+    }
+    if (data.containsKey('updated_at')) {
+      context.handle(_updatedAtMeta,
+          updatedAt.isAcceptableOrUnknown(data['updated_at']!, _updatedAtMeta));
+    } else if (isInserting) {
+      context.missing(_updatedAtMeta);
+    }
+    if (data.containsKey('deleted_at')) {
+      context.handle(_deletedAtMeta,
+          deletedAt.isAcceptableOrUnknown(data['deleted_at']!, _deletedAtMeta));
+    }
+    if (data.containsKey('is_dirty')) {
+      context.handle(_isDirtyMeta,
+          isDirty.isAcceptableOrUnknown(data['is_dirty']!, _isDirtyMeta));
+    }
+    if (data.containsKey('card_id')) {
+      context.handle(_cardIdMeta,
+          cardId.isAcceptableOrUnknown(data['card_id']!, _cardIdMeta));
+    } else if (isInserting) {
+      context.missing(_cardIdMeta);
+    }
+    if (data.containsKey('item_type')) {
+      context.handle(_itemTypeMeta,
+          itemType.isAcceptableOrUnknown(data['item_type']!, _itemTypeMeta));
+    } else if (isInserting) {
+      context.missing(_itemTypeMeta);
+    }
+    if (data.containsKey('item_id')) {
+      context.handle(_itemIdMeta,
+          itemId.isAcceptableOrUnknown(data['item_id']!, _itemIdMeta));
+    } else if (isInserting) {
+      context.missing(_itemIdMeta);
+    }
+    if (data.containsKey('reviewed_at')) {
+      context.handle(
+          _reviewedAtMeta,
+          reviewedAt.isAcceptableOrUnknown(
+              data['reviewed_at']!, _reviewedAtMeta));
+    } else if (isInserting) {
+      context.missing(_reviewedAtMeta);
+    }
+    if (data.containsKey('grade')) {
+      context.handle(
+          _gradeMeta, grade.isAcceptableOrUnknown(data['grade']!, _gradeMeta));
+    } else if (isInserting) {
+      context.missing(_gradeMeta);
+    }
+    if (data.containsKey('algorithm_id')) {
+      context.handle(
+          _algorithmIdMeta,
+          algorithmId.isAcceptableOrUnknown(
+              data['algorithm_id']!, _algorithmIdMeta));
+    } else if (isInserting) {
+      context.missing(_algorithmIdMeta);
+    }
+    if (data.containsKey('before_state')) {
+      context.handle(
+          _beforeStateMeta,
+          beforeState.isAcceptableOrUnknown(
+              data['before_state']!, _beforeStateMeta));
+    } else if (isInserting) {
+      context.missing(_beforeStateMeta);
+    }
+    if (data.containsKey('before_repetitions')) {
+      context.handle(
+          _beforeRepetitionsMeta,
+          beforeRepetitions.isAcceptableOrUnknown(
+              data['before_repetitions']!, _beforeRepetitionsMeta));
+    } else if (isInserting) {
+      context.missing(_beforeRepetitionsMeta);
+    }
+    if (data.containsKey('before_interval_days')) {
+      context.handle(
+          _beforeIntervalDaysMeta,
+          beforeIntervalDays.isAcceptableOrUnknown(
+              data['before_interval_days']!, _beforeIntervalDaysMeta));
+    } else if (isInserting) {
+      context.missing(_beforeIntervalDaysMeta);
+    }
+    if (data.containsKey('before_ease_factor')) {
+      context.handle(
+          _beforeEaseFactorMeta,
+          beforeEaseFactor.isAcceptableOrUnknown(
+              data['before_ease_factor']!, _beforeEaseFactorMeta));
+    } else if (isInserting) {
+      context.missing(_beforeEaseFactorMeta);
+    }
+    if (data.containsKey('before_due_date')) {
+      context.handle(
+          _beforeDueDateMeta,
+          beforeDueDate.isAcceptableOrUnknown(
+              data['before_due_date']!, _beforeDueDateMeta));
+    } else if (isInserting) {
+      context.missing(_beforeDueDateMeta);
+    }
+    if (data.containsKey('after_state')) {
+      context.handle(
+          _afterStateMeta,
+          afterState.isAcceptableOrUnknown(
+              data['after_state']!, _afterStateMeta));
+    } else if (isInserting) {
+      context.missing(_afterStateMeta);
+    }
+    if (data.containsKey('after_repetitions')) {
+      context.handle(
+          _afterRepetitionsMeta,
+          afterRepetitions.isAcceptableOrUnknown(
+              data['after_repetitions']!, _afterRepetitionsMeta));
+    } else if (isInserting) {
+      context.missing(_afterRepetitionsMeta);
+    }
+    if (data.containsKey('after_interval_days')) {
+      context.handle(
+          _afterIntervalDaysMeta,
+          afterIntervalDays.isAcceptableOrUnknown(
+              data['after_interval_days']!, _afterIntervalDaysMeta));
+    } else if (isInserting) {
+      context.missing(_afterIntervalDaysMeta);
+    }
+    if (data.containsKey('after_ease_factor')) {
+      context.handle(
+          _afterEaseFactorMeta,
+          afterEaseFactor.isAcceptableOrUnknown(
+              data['after_ease_factor']!, _afterEaseFactorMeta));
+    } else if (isInserting) {
+      context.missing(_afterEaseFactorMeta);
+    }
+    if (data.containsKey('after_due_date')) {
+      context.handle(
+          _afterDueDateMeta,
+          afterDueDate.isAcceptableOrUnknown(
+              data['after_due_date']!, _afterDueDateMeta));
+    } else if (isInserting) {
+      context.missing(_afterDueDateMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  ReviewEventRow map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return ReviewEventRow(
+      id: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}id'])!,
+      userId: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}user_id']),
+      updatedAt: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}updated_at'])!,
+      deletedAt: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}deleted_at']),
+      isDirty: attachedDatabase.typeMapping
+          .read(DriftSqlType.bool, data['${effectivePrefix}is_dirty'])!,
+      cardId: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}card_id'])!,
+      itemType: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}item_type'])!,
+      itemId: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}item_id'])!,
+      reviewedAt: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}reviewed_at'])!,
+      grade: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}grade'])!,
+      algorithmId: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}algorithm_id'])!,
+      beforeState: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}before_state'])!,
+      beforeRepetitions: attachedDatabase.typeMapping.read(
+          DriftSqlType.int, data['${effectivePrefix}before_repetitions'])!,
+      beforeIntervalDays: attachedDatabase.typeMapping.read(
+          DriftSqlType.int, data['${effectivePrefix}before_interval_days'])!,
+      beforeEaseFactor: attachedDatabase.typeMapping.read(
+          DriftSqlType.double, data['${effectivePrefix}before_ease_factor'])!,
+      beforeDueDate: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}before_due_date'])!,
+      afterState: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}after_state'])!,
+      afterRepetitions: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}after_repetitions'])!,
+      afterIntervalDays: attachedDatabase.typeMapping.read(
+          DriftSqlType.int, data['${effectivePrefix}after_interval_days'])!,
+      afterEaseFactor: attachedDatabase.typeMapping.read(
+          DriftSqlType.double, data['${effectivePrefix}after_ease_factor'])!,
+      afterDueDate: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}after_due_date'])!,
+    );
+  }
+
+  @override
+  $ReviewEventsTable createAlias(String alias) {
+    return $ReviewEventsTable(attachedDatabase, alias);
+  }
+}
+
+class ReviewEventRow extends DataClass implements Insertable<ReviewEventRow> {
+  final String id;
+  final String? userId;
+  final int updatedAt;
+  final int? deletedAt;
+  final bool isDirty;
+
+  /// `srs_cards.id` của thẻ đã được cập nhật trong CÙNG transaction —
+  /// tham chiếu MỀM (không FK Drift-level, cùng quy ước không-FK toàn
+  /// bộ tệp này), toàn vẹn do transaction dùng chung ở tầng repository
+  /// đảm nhiệm.
+  final String cardId;
+
+  /// 'ayah' | 'hifz' — KHÔNG BAO GIỜ 'lemma' trong v1 (xem doc lớp).
+  final String itemType;
+
+  /// Cùng hệ ordinal Ayah toàn cục với `srs_cards.item_id` cho cả hai
+  /// loại 'ayah' và 'hifz'.
+  final int itemId;
+
+  /// Epoch ms UTC — thời điểm ôn, CÙNG giá trị đã ghi vào
+  /// `srs_cards.updated_at` trong cùng lần gọi `applyReview` (bất
+  /// biến I3, DR-2026-0024).
+  final int reviewedAt;
+
+  /// 'again' | 'hard' | 'good' | 'easy' — `ReviewGrade.name`. KHÔNG
+  /// cần codec riêng (khác `SrsCardState`): không giá trị nào trùng từ
+  /// khoá Dart, nên `.name` vừa là định danh Dart vừa là chuỗi lưu.
+  final String grade;
+
+  /// `SchedulingAlgorithm.algorithmId` của chính thuật toán đã tính ra
+  /// lần ôn này — 'sm2-v1' hoặc 'hifz-sm2-capped-v1'. KHÔNG suy từ
+  /// `runtimeType`; đọc trực tiếp từ thể hiện thuật toán đang xử lý.
+  final String algorithmId;
+
+  /// Trạng thái thẻ TRƯỚC lần ôn này — 'new' | 'learning' | 'review' |
+  /// 'lapsed', đọc thẳng từ `srs_cards.state` trước khi UPDATE.
+  final String beforeState;
+  final int beforeRepetitions;
+  final int beforeIntervalDays;
+  final double beforeEaseFactor;
+
+  /// Epoch ms UTC — `due_date` TRƯỚC lần ôn này.
+  final int beforeDueDate;
+
+  /// Trạng thái thẻ SAU lần ôn này — lưu lại (không tính lại từ before)
+  /// để lịch sử vẫn đọc đúng ngay cả khi thuật toán scheduling thay
+  /// đổi sau này (vd FSRS thay SM-2) — xem `algorithmId`.
+  final String afterState;
+  final int afterRepetitions;
+  final int afterIntervalDays;
+  final double afterEaseFactor;
+
+  /// Epoch ms UTC — `due_date` SAU lần ôn này.
+  final int afterDueDate;
+  const ReviewEventRow(
+      {required this.id,
+      this.userId,
+      required this.updatedAt,
+      this.deletedAt,
+      required this.isDirty,
+      required this.cardId,
+      required this.itemType,
+      required this.itemId,
+      required this.reviewedAt,
+      required this.grade,
+      required this.algorithmId,
+      required this.beforeState,
+      required this.beforeRepetitions,
+      required this.beforeIntervalDays,
+      required this.beforeEaseFactor,
+      required this.beforeDueDate,
+      required this.afterState,
+      required this.afterRepetitions,
+      required this.afterIntervalDays,
+      required this.afterEaseFactor,
+      required this.afterDueDate});
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<String>(id);
+    if (!nullToAbsent || userId != null) {
+      map['user_id'] = Variable<String>(userId);
+    }
+    map['updated_at'] = Variable<int>(updatedAt);
+    if (!nullToAbsent || deletedAt != null) {
+      map['deleted_at'] = Variable<int>(deletedAt);
+    }
+    map['is_dirty'] = Variable<bool>(isDirty);
+    map['card_id'] = Variable<String>(cardId);
+    map['item_type'] = Variable<String>(itemType);
+    map['item_id'] = Variable<int>(itemId);
+    map['reviewed_at'] = Variable<int>(reviewedAt);
+    map['grade'] = Variable<String>(grade);
+    map['algorithm_id'] = Variable<String>(algorithmId);
+    map['before_state'] = Variable<String>(beforeState);
+    map['before_repetitions'] = Variable<int>(beforeRepetitions);
+    map['before_interval_days'] = Variable<int>(beforeIntervalDays);
+    map['before_ease_factor'] = Variable<double>(beforeEaseFactor);
+    map['before_due_date'] = Variable<int>(beforeDueDate);
+    map['after_state'] = Variable<String>(afterState);
+    map['after_repetitions'] = Variable<int>(afterRepetitions);
+    map['after_interval_days'] = Variable<int>(afterIntervalDays);
+    map['after_ease_factor'] = Variable<double>(afterEaseFactor);
+    map['after_due_date'] = Variable<int>(afterDueDate);
+    return map;
+  }
+
+  ReviewEventsCompanion toCompanion(bool nullToAbsent) {
+    return ReviewEventsCompanion(
+      id: Value(id),
+      userId:
+          userId == null && nullToAbsent ? const Value.absent() : Value(userId),
+      updatedAt: Value(updatedAt),
+      deletedAt: deletedAt == null && nullToAbsent
+          ? const Value.absent()
+          : Value(deletedAt),
+      isDirty: Value(isDirty),
+      cardId: Value(cardId),
+      itemType: Value(itemType),
+      itemId: Value(itemId),
+      reviewedAt: Value(reviewedAt),
+      grade: Value(grade),
+      algorithmId: Value(algorithmId),
+      beforeState: Value(beforeState),
+      beforeRepetitions: Value(beforeRepetitions),
+      beforeIntervalDays: Value(beforeIntervalDays),
+      beforeEaseFactor: Value(beforeEaseFactor),
+      beforeDueDate: Value(beforeDueDate),
+      afterState: Value(afterState),
+      afterRepetitions: Value(afterRepetitions),
+      afterIntervalDays: Value(afterIntervalDays),
+      afterEaseFactor: Value(afterEaseFactor),
+      afterDueDate: Value(afterDueDate),
+    );
+  }
+
+  factory ReviewEventRow.fromJson(Map<String, dynamic> json,
+      {ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return ReviewEventRow(
+      id: serializer.fromJson<String>(json['id']),
+      userId: serializer.fromJson<String?>(json['userId']),
+      updatedAt: serializer.fromJson<int>(json['updatedAt']),
+      deletedAt: serializer.fromJson<int?>(json['deletedAt']),
+      isDirty: serializer.fromJson<bool>(json['isDirty']),
+      cardId: serializer.fromJson<String>(json['cardId']),
+      itemType: serializer.fromJson<String>(json['itemType']),
+      itemId: serializer.fromJson<int>(json['itemId']),
+      reviewedAt: serializer.fromJson<int>(json['reviewedAt']),
+      grade: serializer.fromJson<String>(json['grade']),
+      algorithmId: serializer.fromJson<String>(json['algorithmId']),
+      beforeState: serializer.fromJson<String>(json['beforeState']),
+      beforeRepetitions: serializer.fromJson<int>(json['beforeRepetitions']),
+      beforeIntervalDays: serializer.fromJson<int>(json['beforeIntervalDays']),
+      beforeEaseFactor: serializer.fromJson<double>(json['beforeEaseFactor']),
+      beforeDueDate: serializer.fromJson<int>(json['beforeDueDate']),
+      afterState: serializer.fromJson<String>(json['afterState']),
+      afterRepetitions: serializer.fromJson<int>(json['afterRepetitions']),
+      afterIntervalDays: serializer.fromJson<int>(json['afterIntervalDays']),
+      afterEaseFactor: serializer.fromJson<double>(json['afterEaseFactor']),
+      afterDueDate: serializer.fromJson<int>(json['afterDueDate']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<String>(id),
+      'userId': serializer.toJson<String?>(userId),
+      'updatedAt': serializer.toJson<int>(updatedAt),
+      'deletedAt': serializer.toJson<int?>(deletedAt),
+      'isDirty': serializer.toJson<bool>(isDirty),
+      'cardId': serializer.toJson<String>(cardId),
+      'itemType': serializer.toJson<String>(itemType),
+      'itemId': serializer.toJson<int>(itemId),
+      'reviewedAt': serializer.toJson<int>(reviewedAt),
+      'grade': serializer.toJson<String>(grade),
+      'algorithmId': serializer.toJson<String>(algorithmId),
+      'beforeState': serializer.toJson<String>(beforeState),
+      'beforeRepetitions': serializer.toJson<int>(beforeRepetitions),
+      'beforeIntervalDays': serializer.toJson<int>(beforeIntervalDays),
+      'beforeEaseFactor': serializer.toJson<double>(beforeEaseFactor),
+      'beforeDueDate': serializer.toJson<int>(beforeDueDate),
+      'afterState': serializer.toJson<String>(afterState),
+      'afterRepetitions': serializer.toJson<int>(afterRepetitions),
+      'afterIntervalDays': serializer.toJson<int>(afterIntervalDays),
+      'afterEaseFactor': serializer.toJson<double>(afterEaseFactor),
+      'afterDueDate': serializer.toJson<int>(afterDueDate),
+    };
+  }
+
+  ReviewEventRow copyWith(
+          {String? id,
+          Value<String?> userId = const Value.absent(),
+          int? updatedAt,
+          Value<int?> deletedAt = const Value.absent(),
+          bool? isDirty,
+          String? cardId,
+          String? itemType,
+          int? itemId,
+          int? reviewedAt,
+          String? grade,
+          String? algorithmId,
+          String? beforeState,
+          int? beforeRepetitions,
+          int? beforeIntervalDays,
+          double? beforeEaseFactor,
+          int? beforeDueDate,
+          String? afterState,
+          int? afterRepetitions,
+          int? afterIntervalDays,
+          double? afterEaseFactor,
+          int? afterDueDate}) =>
+      ReviewEventRow(
+        id: id ?? this.id,
+        userId: userId.present ? userId.value : this.userId,
+        updatedAt: updatedAt ?? this.updatedAt,
+        deletedAt: deletedAt.present ? deletedAt.value : this.deletedAt,
+        isDirty: isDirty ?? this.isDirty,
+        cardId: cardId ?? this.cardId,
+        itemType: itemType ?? this.itemType,
+        itemId: itemId ?? this.itemId,
+        reviewedAt: reviewedAt ?? this.reviewedAt,
+        grade: grade ?? this.grade,
+        algorithmId: algorithmId ?? this.algorithmId,
+        beforeState: beforeState ?? this.beforeState,
+        beforeRepetitions: beforeRepetitions ?? this.beforeRepetitions,
+        beforeIntervalDays: beforeIntervalDays ?? this.beforeIntervalDays,
+        beforeEaseFactor: beforeEaseFactor ?? this.beforeEaseFactor,
+        beforeDueDate: beforeDueDate ?? this.beforeDueDate,
+        afterState: afterState ?? this.afterState,
+        afterRepetitions: afterRepetitions ?? this.afterRepetitions,
+        afterIntervalDays: afterIntervalDays ?? this.afterIntervalDays,
+        afterEaseFactor: afterEaseFactor ?? this.afterEaseFactor,
+        afterDueDate: afterDueDate ?? this.afterDueDate,
+      );
+  ReviewEventRow copyWithCompanion(ReviewEventsCompanion data) {
+    return ReviewEventRow(
+      id: data.id.present ? data.id.value : this.id,
+      userId: data.userId.present ? data.userId.value : this.userId,
+      updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
+      deletedAt: data.deletedAt.present ? data.deletedAt.value : this.deletedAt,
+      isDirty: data.isDirty.present ? data.isDirty.value : this.isDirty,
+      cardId: data.cardId.present ? data.cardId.value : this.cardId,
+      itemType: data.itemType.present ? data.itemType.value : this.itemType,
+      itemId: data.itemId.present ? data.itemId.value : this.itemId,
+      reviewedAt:
+          data.reviewedAt.present ? data.reviewedAt.value : this.reviewedAt,
+      grade: data.grade.present ? data.grade.value : this.grade,
+      algorithmId:
+          data.algorithmId.present ? data.algorithmId.value : this.algorithmId,
+      beforeState:
+          data.beforeState.present ? data.beforeState.value : this.beforeState,
+      beforeRepetitions: data.beforeRepetitions.present
+          ? data.beforeRepetitions.value
+          : this.beforeRepetitions,
+      beforeIntervalDays: data.beforeIntervalDays.present
+          ? data.beforeIntervalDays.value
+          : this.beforeIntervalDays,
+      beforeEaseFactor: data.beforeEaseFactor.present
+          ? data.beforeEaseFactor.value
+          : this.beforeEaseFactor,
+      beforeDueDate: data.beforeDueDate.present
+          ? data.beforeDueDate.value
+          : this.beforeDueDate,
+      afterState:
+          data.afterState.present ? data.afterState.value : this.afterState,
+      afterRepetitions: data.afterRepetitions.present
+          ? data.afterRepetitions.value
+          : this.afterRepetitions,
+      afterIntervalDays: data.afterIntervalDays.present
+          ? data.afterIntervalDays.value
+          : this.afterIntervalDays,
+      afterEaseFactor: data.afterEaseFactor.present
+          ? data.afterEaseFactor.value
+          : this.afterEaseFactor,
+      afterDueDate: data.afterDueDate.present
+          ? data.afterDueDate.value
+          : this.afterDueDate,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('ReviewEventRow(')
+          ..write('id: $id, ')
+          ..write('userId: $userId, ')
+          ..write('updatedAt: $updatedAt, ')
+          ..write('deletedAt: $deletedAt, ')
+          ..write('isDirty: $isDirty, ')
+          ..write('cardId: $cardId, ')
+          ..write('itemType: $itemType, ')
+          ..write('itemId: $itemId, ')
+          ..write('reviewedAt: $reviewedAt, ')
+          ..write('grade: $grade, ')
+          ..write('algorithmId: $algorithmId, ')
+          ..write('beforeState: $beforeState, ')
+          ..write('beforeRepetitions: $beforeRepetitions, ')
+          ..write('beforeIntervalDays: $beforeIntervalDays, ')
+          ..write('beforeEaseFactor: $beforeEaseFactor, ')
+          ..write('beforeDueDate: $beforeDueDate, ')
+          ..write('afterState: $afterState, ')
+          ..write('afterRepetitions: $afterRepetitions, ')
+          ..write('afterIntervalDays: $afterIntervalDays, ')
+          ..write('afterEaseFactor: $afterEaseFactor, ')
+          ..write('afterDueDate: $afterDueDate')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hashAll([
+        id,
+        userId,
+        updatedAt,
+        deletedAt,
+        isDirty,
+        cardId,
+        itemType,
+        itemId,
+        reviewedAt,
+        grade,
+        algorithmId,
+        beforeState,
+        beforeRepetitions,
+        beforeIntervalDays,
+        beforeEaseFactor,
+        beforeDueDate,
+        afterState,
+        afterRepetitions,
+        afterIntervalDays,
+        afterEaseFactor,
+        afterDueDate
+      ]);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is ReviewEventRow &&
+          other.id == this.id &&
+          other.userId == this.userId &&
+          other.updatedAt == this.updatedAt &&
+          other.deletedAt == this.deletedAt &&
+          other.isDirty == this.isDirty &&
+          other.cardId == this.cardId &&
+          other.itemType == this.itemType &&
+          other.itemId == this.itemId &&
+          other.reviewedAt == this.reviewedAt &&
+          other.grade == this.grade &&
+          other.algorithmId == this.algorithmId &&
+          other.beforeState == this.beforeState &&
+          other.beforeRepetitions == this.beforeRepetitions &&
+          other.beforeIntervalDays == this.beforeIntervalDays &&
+          other.beforeEaseFactor == this.beforeEaseFactor &&
+          other.beforeDueDate == this.beforeDueDate &&
+          other.afterState == this.afterState &&
+          other.afterRepetitions == this.afterRepetitions &&
+          other.afterIntervalDays == this.afterIntervalDays &&
+          other.afterEaseFactor == this.afterEaseFactor &&
+          other.afterDueDate == this.afterDueDate);
+}
+
+class ReviewEventsCompanion extends UpdateCompanion<ReviewEventRow> {
+  final Value<String> id;
+  final Value<String?> userId;
+  final Value<int> updatedAt;
+  final Value<int?> deletedAt;
+  final Value<bool> isDirty;
+  final Value<String> cardId;
+  final Value<String> itemType;
+  final Value<int> itemId;
+  final Value<int> reviewedAt;
+  final Value<String> grade;
+  final Value<String> algorithmId;
+  final Value<String> beforeState;
+  final Value<int> beforeRepetitions;
+  final Value<int> beforeIntervalDays;
+  final Value<double> beforeEaseFactor;
+  final Value<int> beforeDueDate;
+  final Value<String> afterState;
+  final Value<int> afterRepetitions;
+  final Value<int> afterIntervalDays;
+  final Value<double> afterEaseFactor;
+  final Value<int> afterDueDate;
+  final Value<int> rowid;
+  const ReviewEventsCompanion({
+    this.id = const Value.absent(),
+    this.userId = const Value.absent(),
+    this.updatedAt = const Value.absent(),
+    this.deletedAt = const Value.absent(),
+    this.isDirty = const Value.absent(),
+    this.cardId = const Value.absent(),
+    this.itemType = const Value.absent(),
+    this.itemId = const Value.absent(),
+    this.reviewedAt = const Value.absent(),
+    this.grade = const Value.absent(),
+    this.algorithmId = const Value.absent(),
+    this.beforeState = const Value.absent(),
+    this.beforeRepetitions = const Value.absent(),
+    this.beforeIntervalDays = const Value.absent(),
+    this.beforeEaseFactor = const Value.absent(),
+    this.beforeDueDate = const Value.absent(),
+    this.afterState = const Value.absent(),
+    this.afterRepetitions = const Value.absent(),
+    this.afterIntervalDays = const Value.absent(),
+    this.afterEaseFactor = const Value.absent(),
+    this.afterDueDate = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  ReviewEventsCompanion.insert({
+    required String id,
+    this.userId = const Value.absent(),
+    required int updatedAt,
+    this.deletedAt = const Value.absent(),
+    this.isDirty = const Value.absent(),
+    required String cardId,
+    required String itemType,
+    required int itemId,
+    required int reviewedAt,
+    required String grade,
+    required String algorithmId,
+    required String beforeState,
+    required int beforeRepetitions,
+    required int beforeIntervalDays,
+    required double beforeEaseFactor,
+    required int beforeDueDate,
+    required String afterState,
+    required int afterRepetitions,
+    required int afterIntervalDays,
+    required double afterEaseFactor,
+    required int afterDueDate,
+    this.rowid = const Value.absent(),
+  })  : id = Value(id),
+        updatedAt = Value(updatedAt),
+        cardId = Value(cardId),
+        itemType = Value(itemType),
+        itemId = Value(itemId),
+        reviewedAt = Value(reviewedAt),
+        grade = Value(grade),
+        algorithmId = Value(algorithmId),
+        beforeState = Value(beforeState),
+        beforeRepetitions = Value(beforeRepetitions),
+        beforeIntervalDays = Value(beforeIntervalDays),
+        beforeEaseFactor = Value(beforeEaseFactor),
+        beforeDueDate = Value(beforeDueDate),
+        afterState = Value(afterState),
+        afterRepetitions = Value(afterRepetitions),
+        afterIntervalDays = Value(afterIntervalDays),
+        afterEaseFactor = Value(afterEaseFactor),
+        afterDueDate = Value(afterDueDate);
+  static Insertable<ReviewEventRow> custom({
+    Expression<String>? id,
+    Expression<String>? userId,
+    Expression<int>? updatedAt,
+    Expression<int>? deletedAt,
+    Expression<bool>? isDirty,
+    Expression<String>? cardId,
+    Expression<String>? itemType,
+    Expression<int>? itemId,
+    Expression<int>? reviewedAt,
+    Expression<String>? grade,
+    Expression<String>? algorithmId,
+    Expression<String>? beforeState,
+    Expression<int>? beforeRepetitions,
+    Expression<int>? beforeIntervalDays,
+    Expression<double>? beforeEaseFactor,
+    Expression<int>? beforeDueDate,
+    Expression<String>? afterState,
+    Expression<int>? afterRepetitions,
+    Expression<int>? afterIntervalDays,
+    Expression<double>? afterEaseFactor,
+    Expression<int>? afterDueDate,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (userId != null) 'user_id': userId,
+      if (updatedAt != null) 'updated_at': updatedAt,
+      if (deletedAt != null) 'deleted_at': deletedAt,
+      if (isDirty != null) 'is_dirty': isDirty,
+      if (cardId != null) 'card_id': cardId,
+      if (itemType != null) 'item_type': itemType,
+      if (itemId != null) 'item_id': itemId,
+      if (reviewedAt != null) 'reviewed_at': reviewedAt,
+      if (grade != null) 'grade': grade,
+      if (algorithmId != null) 'algorithm_id': algorithmId,
+      if (beforeState != null) 'before_state': beforeState,
+      if (beforeRepetitions != null) 'before_repetitions': beforeRepetitions,
+      if (beforeIntervalDays != null)
+        'before_interval_days': beforeIntervalDays,
+      if (beforeEaseFactor != null) 'before_ease_factor': beforeEaseFactor,
+      if (beforeDueDate != null) 'before_due_date': beforeDueDate,
+      if (afterState != null) 'after_state': afterState,
+      if (afterRepetitions != null) 'after_repetitions': afterRepetitions,
+      if (afterIntervalDays != null) 'after_interval_days': afterIntervalDays,
+      if (afterEaseFactor != null) 'after_ease_factor': afterEaseFactor,
+      if (afterDueDate != null) 'after_due_date': afterDueDate,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  ReviewEventsCompanion copyWith(
+      {Value<String>? id,
+      Value<String?>? userId,
+      Value<int>? updatedAt,
+      Value<int?>? deletedAt,
+      Value<bool>? isDirty,
+      Value<String>? cardId,
+      Value<String>? itemType,
+      Value<int>? itemId,
+      Value<int>? reviewedAt,
+      Value<String>? grade,
+      Value<String>? algorithmId,
+      Value<String>? beforeState,
+      Value<int>? beforeRepetitions,
+      Value<int>? beforeIntervalDays,
+      Value<double>? beforeEaseFactor,
+      Value<int>? beforeDueDate,
+      Value<String>? afterState,
+      Value<int>? afterRepetitions,
+      Value<int>? afterIntervalDays,
+      Value<double>? afterEaseFactor,
+      Value<int>? afterDueDate,
+      Value<int>? rowid}) {
+    return ReviewEventsCompanion(
+      id: id ?? this.id,
+      userId: userId ?? this.userId,
+      updatedAt: updatedAt ?? this.updatedAt,
+      deletedAt: deletedAt ?? this.deletedAt,
+      isDirty: isDirty ?? this.isDirty,
+      cardId: cardId ?? this.cardId,
+      itemType: itemType ?? this.itemType,
+      itemId: itemId ?? this.itemId,
+      reviewedAt: reviewedAt ?? this.reviewedAt,
+      grade: grade ?? this.grade,
+      algorithmId: algorithmId ?? this.algorithmId,
+      beforeState: beforeState ?? this.beforeState,
+      beforeRepetitions: beforeRepetitions ?? this.beforeRepetitions,
+      beforeIntervalDays: beforeIntervalDays ?? this.beforeIntervalDays,
+      beforeEaseFactor: beforeEaseFactor ?? this.beforeEaseFactor,
+      beforeDueDate: beforeDueDate ?? this.beforeDueDate,
+      afterState: afterState ?? this.afterState,
+      afterRepetitions: afterRepetitions ?? this.afterRepetitions,
+      afterIntervalDays: afterIntervalDays ?? this.afterIntervalDays,
+      afterEaseFactor: afterEaseFactor ?? this.afterEaseFactor,
+      afterDueDate: afterDueDate ?? this.afterDueDate,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (userId.present) {
+      map['user_id'] = Variable<String>(userId.value);
+    }
+    if (updatedAt.present) {
+      map['updated_at'] = Variable<int>(updatedAt.value);
+    }
+    if (deletedAt.present) {
+      map['deleted_at'] = Variable<int>(deletedAt.value);
+    }
+    if (isDirty.present) {
+      map['is_dirty'] = Variable<bool>(isDirty.value);
+    }
+    if (cardId.present) {
+      map['card_id'] = Variable<String>(cardId.value);
+    }
+    if (itemType.present) {
+      map['item_type'] = Variable<String>(itemType.value);
+    }
+    if (itemId.present) {
+      map['item_id'] = Variable<int>(itemId.value);
+    }
+    if (reviewedAt.present) {
+      map['reviewed_at'] = Variable<int>(reviewedAt.value);
+    }
+    if (grade.present) {
+      map['grade'] = Variable<String>(grade.value);
+    }
+    if (algorithmId.present) {
+      map['algorithm_id'] = Variable<String>(algorithmId.value);
+    }
+    if (beforeState.present) {
+      map['before_state'] = Variable<String>(beforeState.value);
+    }
+    if (beforeRepetitions.present) {
+      map['before_repetitions'] = Variable<int>(beforeRepetitions.value);
+    }
+    if (beforeIntervalDays.present) {
+      map['before_interval_days'] = Variable<int>(beforeIntervalDays.value);
+    }
+    if (beforeEaseFactor.present) {
+      map['before_ease_factor'] = Variable<double>(beforeEaseFactor.value);
+    }
+    if (beforeDueDate.present) {
+      map['before_due_date'] = Variable<int>(beforeDueDate.value);
+    }
+    if (afterState.present) {
+      map['after_state'] = Variable<String>(afterState.value);
+    }
+    if (afterRepetitions.present) {
+      map['after_repetitions'] = Variable<int>(afterRepetitions.value);
+    }
+    if (afterIntervalDays.present) {
+      map['after_interval_days'] = Variable<int>(afterIntervalDays.value);
+    }
+    if (afterEaseFactor.present) {
+      map['after_ease_factor'] = Variable<double>(afterEaseFactor.value);
+    }
+    if (afterDueDate.present) {
+      map['after_due_date'] = Variable<int>(afterDueDate.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('ReviewEventsCompanion(')
+          ..write('id: $id, ')
+          ..write('userId: $userId, ')
+          ..write('updatedAt: $updatedAt, ')
+          ..write('deletedAt: $deletedAt, ')
+          ..write('isDirty: $isDirty, ')
+          ..write('cardId: $cardId, ')
+          ..write('itemType: $itemType, ')
+          ..write('itemId: $itemId, ')
+          ..write('reviewedAt: $reviewedAt, ')
+          ..write('grade: $grade, ')
+          ..write('algorithmId: $algorithmId, ')
+          ..write('beforeState: $beforeState, ')
+          ..write('beforeRepetitions: $beforeRepetitions, ')
+          ..write('beforeIntervalDays: $beforeIntervalDays, ')
+          ..write('beforeEaseFactor: $beforeEaseFactor, ')
+          ..write('beforeDueDate: $beforeDueDate, ')
+          ..write('afterState: $afterState, ')
+          ..write('afterRepetitions: $afterRepetitions, ')
+          ..write('afterIntervalDays: $afterIntervalDays, ')
+          ..write('afterEaseFactor: $afterEaseFactor, ')
+          ..write('afterDueDate: $afterDueDate, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
 abstract class _$UserDatabase extends GeneratedDatabase {
   _$UserDatabase(QueryExecutor e) : super(e);
   $UserDatabaseManager get managers => $UserDatabaseManager(this);
@@ -6138,6 +7159,12 @@ abstract class _$UserDatabase extends GeneratedDatabase {
   late final $FlashcardDecksTable flashcardDecks = $FlashcardDecksTable(this);
   late final $FlashcardsTable flashcards = $FlashcardsTable(this);
   late final $HifzPlansTable hifzPlans = $HifzPlansTable(this);
+  late final $ReviewEventsTable reviewEvents = $ReviewEventsTable(this);
+  late final Index idxReviewEventsItem = Index('idx_review_events_item',
+      'CREATE INDEX idx_review_events_item ON review_events (item_type, item_id, reviewed_at)');
+  late final Index idxReviewEventsReviewedAt = Index(
+      'idx_review_events_reviewed_at',
+      'CREATE INDEX idx_review_events_reviewed_at ON review_events (reviewed_at)');
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
@@ -6155,7 +7182,10 @@ abstract class _$UserDatabase extends GeneratedDatabase {
         quizResults,
         flashcardDecks,
         flashcards,
-        hifzPlans
+        hifzPlans,
+        reviewEvents,
+        idxReviewEventsItem,
+        idxReviewEventsReviewedAt
       ];
 }
 
@@ -9142,6 +10172,433 @@ typedef $$HifzPlansTableProcessedTableManager = ProcessedTableManager<
     (HifzPlanRow, BaseReferences<_$UserDatabase, $HifzPlansTable, HifzPlanRow>),
     HifzPlanRow,
     PrefetchHooks Function()>;
+typedef $$ReviewEventsTableCreateCompanionBuilder = ReviewEventsCompanion
+    Function({
+  required String id,
+  Value<String?> userId,
+  required int updatedAt,
+  Value<int?> deletedAt,
+  Value<bool> isDirty,
+  required String cardId,
+  required String itemType,
+  required int itemId,
+  required int reviewedAt,
+  required String grade,
+  required String algorithmId,
+  required String beforeState,
+  required int beforeRepetitions,
+  required int beforeIntervalDays,
+  required double beforeEaseFactor,
+  required int beforeDueDate,
+  required String afterState,
+  required int afterRepetitions,
+  required int afterIntervalDays,
+  required double afterEaseFactor,
+  required int afterDueDate,
+  Value<int> rowid,
+});
+typedef $$ReviewEventsTableUpdateCompanionBuilder = ReviewEventsCompanion
+    Function({
+  Value<String> id,
+  Value<String?> userId,
+  Value<int> updatedAt,
+  Value<int?> deletedAt,
+  Value<bool> isDirty,
+  Value<String> cardId,
+  Value<String> itemType,
+  Value<int> itemId,
+  Value<int> reviewedAt,
+  Value<String> grade,
+  Value<String> algorithmId,
+  Value<String> beforeState,
+  Value<int> beforeRepetitions,
+  Value<int> beforeIntervalDays,
+  Value<double> beforeEaseFactor,
+  Value<int> beforeDueDate,
+  Value<String> afterState,
+  Value<int> afterRepetitions,
+  Value<int> afterIntervalDays,
+  Value<double> afterEaseFactor,
+  Value<int> afterDueDate,
+  Value<int> rowid,
+});
+
+class $$ReviewEventsTableFilterComposer
+    extends Composer<_$UserDatabase, $ReviewEventsTable> {
+  $$ReviewEventsTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get id => $composableBuilder(
+      column: $table.id, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get userId => $composableBuilder(
+      column: $table.userId, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<int> get updatedAt => $composableBuilder(
+      column: $table.updatedAt, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<int> get deletedAt => $composableBuilder(
+      column: $table.deletedAt, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<bool> get isDirty => $composableBuilder(
+      column: $table.isDirty, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get cardId => $composableBuilder(
+      column: $table.cardId, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get itemType => $composableBuilder(
+      column: $table.itemType, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<int> get itemId => $composableBuilder(
+      column: $table.itemId, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<int> get reviewedAt => $composableBuilder(
+      column: $table.reviewedAt, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get grade => $composableBuilder(
+      column: $table.grade, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get algorithmId => $composableBuilder(
+      column: $table.algorithmId, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get beforeState => $composableBuilder(
+      column: $table.beforeState, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<int> get beforeRepetitions => $composableBuilder(
+      column: $table.beforeRepetitions,
+      builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<int> get beforeIntervalDays => $composableBuilder(
+      column: $table.beforeIntervalDays,
+      builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<double> get beforeEaseFactor => $composableBuilder(
+      column: $table.beforeEaseFactor,
+      builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<int> get beforeDueDate => $composableBuilder(
+      column: $table.beforeDueDate, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get afterState => $composableBuilder(
+      column: $table.afterState, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<int> get afterRepetitions => $composableBuilder(
+      column: $table.afterRepetitions,
+      builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<int> get afterIntervalDays => $composableBuilder(
+      column: $table.afterIntervalDays,
+      builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<double> get afterEaseFactor => $composableBuilder(
+      column: $table.afterEaseFactor,
+      builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<int> get afterDueDate => $composableBuilder(
+      column: $table.afterDueDate, builder: (column) => ColumnFilters(column));
+}
+
+class $$ReviewEventsTableOrderingComposer
+    extends Composer<_$UserDatabase, $ReviewEventsTable> {
+  $$ReviewEventsTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get id => $composableBuilder(
+      column: $table.id, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get userId => $composableBuilder(
+      column: $table.userId, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<int> get updatedAt => $composableBuilder(
+      column: $table.updatedAt, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<int> get deletedAt => $composableBuilder(
+      column: $table.deletedAt, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<bool> get isDirty => $composableBuilder(
+      column: $table.isDirty, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get cardId => $composableBuilder(
+      column: $table.cardId, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get itemType => $composableBuilder(
+      column: $table.itemType, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<int> get itemId => $composableBuilder(
+      column: $table.itemId, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<int> get reviewedAt => $composableBuilder(
+      column: $table.reviewedAt, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get grade => $composableBuilder(
+      column: $table.grade, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get algorithmId => $composableBuilder(
+      column: $table.algorithmId, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get beforeState => $composableBuilder(
+      column: $table.beforeState, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<int> get beforeRepetitions => $composableBuilder(
+      column: $table.beforeRepetitions,
+      builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<int> get beforeIntervalDays => $composableBuilder(
+      column: $table.beforeIntervalDays,
+      builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<double> get beforeEaseFactor => $composableBuilder(
+      column: $table.beforeEaseFactor,
+      builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<int> get beforeDueDate => $composableBuilder(
+      column: $table.beforeDueDate,
+      builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get afterState => $composableBuilder(
+      column: $table.afterState, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<int> get afterRepetitions => $composableBuilder(
+      column: $table.afterRepetitions,
+      builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<int> get afterIntervalDays => $composableBuilder(
+      column: $table.afterIntervalDays,
+      builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<double> get afterEaseFactor => $composableBuilder(
+      column: $table.afterEaseFactor,
+      builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<int> get afterDueDate => $composableBuilder(
+      column: $table.afterDueDate,
+      builder: (column) => ColumnOrderings(column));
+}
+
+class $$ReviewEventsTableAnnotationComposer
+    extends Composer<_$UserDatabase, $ReviewEventsTable> {
+  $$ReviewEventsTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get userId =>
+      $composableBuilder(column: $table.userId, builder: (column) => column);
+
+  GeneratedColumn<int> get updatedAt =>
+      $composableBuilder(column: $table.updatedAt, builder: (column) => column);
+
+  GeneratedColumn<int> get deletedAt =>
+      $composableBuilder(column: $table.deletedAt, builder: (column) => column);
+
+  GeneratedColumn<bool> get isDirty =>
+      $composableBuilder(column: $table.isDirty, builder: (column) => column);
+
+  GeneratedColumn<String> get cardId =>
+      $composableBuilder(column: $table.cardId, builder: (column) => column);
+
+  GeneratedColumn<String> get itemType =>
+      $composableBuilder(column: $table.itemType, builder: (column) => column);
+
+  GeneratedColumn<int> get itemId =>
+      $composableBuilder(column: $table.itemId, builder: (column) => column);
+
+  GeneratedColumn<int> get reviewedAt => $composableBuilder(
+      column: $table.reviewedAt, builder: (column) => column);
+
+  GeneratedColumn<String> get grade =>
+      $composableBuilder(column: $table.grade, builder: (column) => column);
+
+  GeneratedColumn<String> get algorithmId => $composableBuilder(
+      column: $table.algorithmId, builder: (column) => column);
+
+  GeneratedColumn<String> get beforeState => $composableBuilder(
+      column: $table.beforeState, builder: (column) => column);
+
+  GeneratedColumn<int> get beforeRepetitions => $composableBuilder(
+      column: $table.beforeRepetitions, builder: (column) => column);
+
+  GeneratedColumn<int> get beforeIntervalDays => $composableBuilder(
+      column: $table.beforeIntervalDays, builder: (column) => column);
+
+  GeneratedColumn<double> get beforeEaseFactor => $composableBuilder(
+      column: $table.beforeEaseFactor, builder: (column) => column);
+
+  GeneratedColumn<int> get beforeDueDate => $composableBuilder(
+      column: $table.beforeDueDate, builder: (column) => column);
+
+  GeneratedColumn<String> get afterState => $composableBuilder(
+      column: $table.afterState, builder: (column) => column);
+
+  GeneratedColumn<int> get afterRepetitions => $composableBuilder(
+      column: $table.afterRepetitions, builder: (column) => column);
+
+  GeneratedColumn<int> get afterIntervalDays => $composableBuilder(
+      column: $table.afterIntervalDays, builder: (column) => column);
+
+  GeneratedColumn<double> get afterEaseFactor => $composableBuilder(
+      column: $table.afterEaseFactor, builder: (column) => column);
+
+  GeneratedColumn<int> get afterDueDate => $composableBuilder(
+      column: $table.afterDueDate, builder: (column) => column);
+}
+
+class $$ReviewEventsTableTableManager extends RootTableManager<
+    _$UserDatabase,
+    $ReviewEventsTable,
+    ReviewEventRow,
+    $$ReviewEventsTableFilterComposer,
+    $$ReviewEventsTableOrderingComposer,
+    $$ReviewEventsTableAnnotationComposer,
+    $$ReviewEventsTableCreateCompanionBuilder,
+    $$ReviewEventsTableUpdateCompanionBuilder,
+    (
+      ReviewEventRow,
+      BaseReferences<_$UserDatabase, $ReviewEventsTable, ReviewEventRow>
+    ),
+    ReviewEventRow,
+    PrefetchHooks Function()> {
+  $$ReviewEventsTableTableManager(_$UserDatabase db, $ReviewEventsTable table)
+      : super(TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$ReviewEventsTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$ReviewEventsTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$ReviewEventsTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback: ({
+            Value<String> id = const Value.absent(),
+            Value<String?> userId = const Value.absent(),
+            Value<int> updatedAt = const Value.absent(),
+            Value<int?> deletedAt = const Value.absent(),
+            Value<bool> isDirty = const Value.absent(),
+            Value<String> cardId = const Value.absent(),
+            Value<String> itemType = const Value.absent(),
+            Value<int> itemId = const Value.absent(),
+            Value<int> reviewedAt = const Value.absent(),
+            Value<String> grade = const Value.absent(),
+            Value<String> algorithmId = const Value.absent(),
+            Value<String> beforeState = const Value.absent(),
+            Value<int> beforeRepetitions = const Value.absent(),
+            Value<int> beforeIntervalDays = const Value.absent(),
+            Value<double> beforeEaseFactor = const Value.absent(),
+            Value<int> beforeDueDate = const Value.absent(),
+            Value<String> afterState = const Value.absent(),
+            Value<int> afterRepetitions = const Value.absent(),
+            Value<int> afterIntervalDays = const Value.absent(),
+            Value<double> afterEaseFactor = const Value.absent(),
+            Value<int> afterDueDate = const Value.absent(),
+            Value<int> rowid = const Value.absent(),
+          }) =>
+              ReviewEventsCompanion(
+            id: id,
+            userId: userId,
+            updatedAt: updatedAt,
+            deletedAt: deletedAt,
+            isDirty: isDirty,
+            cardId: cardId,
+            itemType: itemType,
+            itemId: itemId,
+            reviewedAt: reviewedAt,
+            grade: grade,
+            algorithmId: algorithmId,
+            beforeState: beforeState,
+            beforeRepetitions: beforeRepetitions,
+            beforeIntervalDays: beforeIntervalDays,
+            beforeEaseFactor: beforeEaseFactor,
+            beforeDueDate: beforeDueDate,
+            afterState: afterState,
+            afterRepetitions: afterRepetitions,
+            afterIntervalDays: afterIntervalDays,
+            afterEaseFactor: afterEaseFactor,
+            afterDueDate: afterDueDate,
+            rowid: rowid,
+          ),
+          createCompanionCallback: ({
+            required String id,
+            Value<String?> userId = const Value.absent(),
+            required int updatedAt,
+            Value<int?> deletedAt = const Value.absent(),
+            Value<bool> isDirty = const Value.absent(),
+            required String cardId,
+            required String itemType,
+            required int itemId,
+            required int reviewedAt,
+            required String grade,
+            required String algorithmId,
+            required String beforeState,
+            required int beforeRepetitions,
+            required int beforeIntervalDays,
+            required double beforeEaseFactor,
+            required int beforeDueDate,
+            required String afterState,
+            required int afterRepetitions,
+            required int afterIntervalDays,
+            required double afterEaseFactor,
+            required int afterDueDate,
+            Value<int> rowid = const Value.absent(),
+          }) =>
+              ReviewEventsCompanion.insert(
+            id: id,
+            userId: userId,
+            updatedAt: updatedAt,
+            deletedAt: deletedAt,
+            isDirty: isDirty,
+            cardId: cardId,
+            itemType: itemType,
+            itemId: itemId,
+            reviewedAt: reviewedAt,
+            grade: grade,
+            algorithmId: algorithmId,
+            beforeState: beforeState,
+            beforeRepetitions: beforeRepetitions,
+            beforeIntervalDays: beforeIntervalDays,
+            beforeEaseFactor: beforeEaseFactor,
+            beforeDueDate: beforeDueDate,
+            afterState: afterState,
+            afterRepetitions: afterRepetitions,
+            afterIntervalDays: afterIntervalDays,
+            afterEaseFactor: afterEaseFactor,
+            afterDueDate: afterDueDate,
+            rowid: rowid,
+          ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ));
+}
+
+typedef $$ReviewEventsTableProcessedTableManager = ProcessedTableManager<
+    _$UserDatabase,
+    $ReviewEventsTable,
+    ReviewEventRow,
+    $$ReviewEventsTableFilterComposer,
+    $$ReviewEventsTableOrderingComposer,
+    $$ReviewEventsTableAnnotationComposer,
+    $$ReviewEventsTableCreateCompanionBuilder,
+    $$ReviewEventsTableUpdateCompanionBuilder,
+    (
+      ReviewEventRow,
+      BaseReferences<_$UserDatabase, $ReviewEventsTable, ReviewEventRow>
+    ),
+    ReviewEventRow,
+    PrefetchHooks Function()>;
 
 class $UserDatabaseManager {
   final _$UserDatabase _db;
@@ -9172,4 +10629,6 @@ class $UserDatabaseManager {
       $$FlashcardsTableTableManager(_db, _db.flashcards);
   $$HifzPlansTableTableManager get hifzPlans =>
       $$HifzPlansTableTableManager(_db, _db.hifzPlans);
+  $$ReviewEventsTableTableManager get reviewEvents =>
+      $$ReviewEventsTableTableManager(_db, _db.reviewEvents);
 }

@@ -160,17 +160,59 @@ class SchedulerRepositoryImpl implements SchedulerRepository {
         now: DateTime.fromMillisecondsSinceEpoch(now, isUtc: true),
       );
 
-      await (_db.update(_db.srsCards)..where((t) => t.id.equals(cardId))).write(
-        SrsCardsCompanion(
-          easeFactor: Value(result.easeFactor),
-          intervalDays: Value(result.intervalDays),
-          repetitions: Value(result.repetitions),
-          state: Value(result.state.toDbValue()),
-          dueDate: Value(result.dueDate.millisecondsSinceEpoch),
-          updatedAt: Value(now),
-          isDirty: const Value(true),
-        ),
-      );
+      // Sprint D6.6 (DR-2026-0024, accepted) — cập nhật srs_cards VÀ
+      // ghi review_events (nếu item_type đủ điều kiện) trong CÙNG một
+      // transaction: hoặc cả hai cùng thành công, hoặc không cái nào
+      // được ghi. Bất biến này do chính ranh giới transaction của
+      // Drift đảm bảo — không cần logic bù trừ nào ở tầng ứng dụng.
+      await _db.transaction(() async {
+        await (_db.update(_db.srsCards)..where((t) => t.id.equals(cardId)))
+            .write(
+          SrsCardsCompanion(
+            easeFactor: Value(result.easeFactor),
+            intervalDays: Value(result.intervalDays),
+            repetitions: Value(result.repetitions),
+            state: Value(result.state.toDbValue()),
+            dueDate: Value(result.dueDate.millisecondsSinceEpoch),
+            updatedAt: Value(now),
+            isDirty: const Value(true),
+          ),
+        );
+
+        // Phạm vi phát hành v1 (Quyết định 3, DR-2026-0024): CHỈ
+        // 'ayah'/'hifz' được ghi sự kiện — 'lemma' CỐ Ý không ghi (xem
+        // doc comment lớp ReviewEvents,
+        // lib/core/database/user/user_tables.dart). Đây là RANH GIỚI
+        // KIẾN TRÚC, không phải chỗ thiếu sót — KHÔNG mở rộng thành
+        // "mọi loại đều ghi sự kiện" khi sửa hàm này sau này.
+        final itemType = LearningItemType.values.asNameMap()[row.itemType] ??
+            LearningItemType.ayah;
+        if (itemType == LearningItemType.ayah ||
+            itemType == LearningItemType.hifz) {
+          await _db.into(_db.reviewEvents).insert(
+                ReviewEventsCompanion.insert(
+                  id: _newId(),
+                  updatedAt: now,
+                  cardId: cardId,
+                  itemType: row.itemType,
+                  itemId: row.itemId,
+                  reviewedAt: now,
+                  grade: grade.name,
+                  algorithmId: _algorithm.algorithmId,
+                  beforeState: row.state,
+                  beforeRepetitions: row.repetitions,
+                  beforeIntervalDays: row.intervalDays,
+                  beforeEaseFactor: row.easeFactor,
+                  beforeDueDate: row.dueDate,
+                  afterState: result.state.toDbValue(),
+                  afterRepetitions: result.repetitions,
+                  afterIntervalDays: result.intervalDays,
+                  afterEaseFactor: result.easeFactor,
+                  afterDueDate: result.dueDate.millisecondsSinceEpoch,
+                ),
+              );
+        }
+      });
     });
   }
 }
