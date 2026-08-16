@@ -13,6 +13,7 @@ record's own "Relationship to" note) DR.
 | [DR-2026-0003](DR-2026-0003-sprint8-data-architecture.md) | Sprint 8 data architecture: Reading Statistics, Khatm, Bookmark Collections | accepted | 2026-07-20 |
 | [DR-2026-0004](DR-2026-0004-sprint9-streak-daily-goal-revision-queue.md) | Sprint 9: canonical streak source, Daily Goal storage split, Revision Queue reuse | accepted | 2026-07-20 |
 | [DR-2026-0005](DR-2026-0005.md) | Sprint 10: Learning Engine architecture — Scheduler (SM-2), Review Session, Quiz | accepted | 2026-07-20 |
+| [DR-2026-0014](DR-2026-0014-publishing-model.md) | Publishing model for the artifact registry | proposed | 2026-07-26 |
 | [DR-2026-0015](DR-2026-0015-coverage-measurement-policy.md) | Coverage measurement policy: generated code in the denominator | accepted | 2026-08-01 |
 | [DR-2026-0016](DR-2026-0016-lexicon-data-source.md) | Lexicon morphology data source | proposed | 2026-08-01 |
 | [DR-2026-0017](DR-2026-0017-universal-quran-address.md) | The Universal Qur'an Address | proposed | 2026-08-03 |
@@ -21,6 +22,7 @@ record's own "Relationship to" note) DR.
 | [DR-2026-0020](DR-2026-0020-governance-model-for-verified-quranic-explanatory-content.md) | Governance model for verified Qur'anic explanatory content | proposed | 2026-08-10 |
 | [DR-2026-0021](DR-2026-0021-automatic-retention-seeding.md) | Automatic Retention Seeding: Revision Queue eligibility amendment (amends DR-2026-0004) | accepted | 2026-08-10 |
 | [DR-2026-0022](DR-2026-0022-review-evidence-architecture-for-verified-quranic-explanatory-content.md) | Review-evidence architecture for verified Qur'anic explanatory content | proposed | 2026-08-10 |
+| [DR-2026-0023](DR-2026-0023-boundary-triggered-revision-moments.md) | Boundary-Triggered Revision Moments: completion detection, invitation persistence, and scoped revision targets | accepted | 2026-08-11 |
 | [DR-2026-0024](DR-2026-0024-srs-review-event-storage.md) | SRS review event storage | accepted | 2026-08-15 |
 | [DR-2026-0025](DR-2026-0025-analytics-review-event-consumption-boundary.md) | Analytics review-event consumption boundary | accepted | 2026-08-16 |
 | [DR-2026-0026](DR-2026-0026-hifz-historical-review-count-and-pace.md) | Hifz historical review count and review pace (read boundary) | accepted | 2026-08-16 |
