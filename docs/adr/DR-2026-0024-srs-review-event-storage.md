@@ -3,10 +3,10 @@ id: DR-2026-0024
 scope: project
 owner_role: data-owner
 date: 2026-08-15
-deciders: []
-status: proposed
+deciders: [duso]
+status: accepted
 supersedes: null
-review_by: null
+review_by: 2027-02-15
 reversibility: hard
 threshold_reason: [hard-to-reverse, materially-different-approaches, constrains-future-architecture]
 links:
@@ -17,13 +17,14 @@ links:
 
 # DR-2026-0024 — SRS review event storage
 
-**Status of this record: proposed, not accepted.** It records an
-architecture and authorizes nothing: no schema change, no migration, no
-Dart code, no UI, no analytics integration. The schema change it
-describes is additionally gated by `PROJ-P-002`
+**Status of this record: accepted.** Acceptance settles the
+architecture only and authorizes nothing further: no schema change, no
+migration, no Dart code, no UI, no analytics integration. The schema
+change it describes is additionally gated by `PROJ-P-002`
 (`PROJECT_CONSTITUTION.md`; `CLAUDE.md` §"Stop and ask before": *"Any
-schema change to either database"*), which is a separate human approval
-this record does not and cannot satisfy. See §Governance boundaries.
+schema change to either database"*), which remains a separate human
+approval this record's acceptance does not and cannot satisfy. See
+§Governance boundaries.
 
 ## Relationship to existing records
 
