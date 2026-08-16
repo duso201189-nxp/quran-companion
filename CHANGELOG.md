@@ -5,6 +5,60 @@ Phiên bản theo [Semantic Versioning](https://semver.org/lang/vi/).
 
 ## [Unreleased]
 
+### Added — D6.6–D6.11: SRS review event storage & Hifz historical review metrics (2026-08-15 → 2026-08-16)
+
+Sáu quyết định kiến trúc (`DR-2026-0024`, `DR-2026-0025`, `DR-2026-0026`,
+tất cả `accepted`) và ba lần triển khai, tách biệt rõ lưu trữ / ranh
+giới governance / tính năng đã hiện ra màn hình:
+
+- **D6.6 — `review_events`**: bảng bất biến, chỉ thêm không sửa,
+  ghi lại mỗi lần ôn SRS đã cam kết cho `item_type` `ayah`/`hifz`
+  (`lemma` cố ý CHƯA ghi). `schemaVersion` 7→8, migration hoàn toàn
+  cộng thêm. Ghi diễn ra atomic trong cùng transaction với cập nhật
+  `srs_cards` (`DR-2026-0024`, đã `accepted`).
+- **D6.7 — Ranh giới tiêu thụ Analytics**: MỘT quyết định governance,
+  KHÔNG phải tích hợp — xác nhận Analytics CÓ THỂ một ngày nào đó đọc
+  `review_events`, nhưng KHÔNG cấp phép bất kỳ code nào ngay bây giờ;
+  mọi tiêu thụ thật trong tương lai cần một quyết định riêng, mới
+  (`DR-2026-0025`, đã `accepted`). Không có `AnalyticsRepository`,
+  `LearningStatistics`, hay bất kỳ tầng nào trong chuỗi 5 tầng
+  (AI Tutor/Learning Journey/Smart Learning/Study Summary/`read_model`)
+  bị đụng tới.
+- **D6.11 — Lịch sử ôn Hifz**: tổng số lượt ôn đã ghi + phân bố 7 ngày
+  gần nhất cho MỘT kế hoạch Hifz, đọc CHỈ-ĐỌC từ `review_events` qua
+  một ranh giới đọc riêng của `hifz/` (không đi qua Analytics). Hiện
+  trên màn hình Tiến độ Hifz đã có sẵn, phần "Lịch sử ôn tập" mới
+  (`DR-2026-0026`, đã `accepted`).
+
+### Added — Milestone 7: Study Roadmap Sprints 7.1–7.7 (2026-08-06 → 2026-08-13)
+
+Bảy sprint theo `docs/release/MILESTONE_7_STUDY_ROADMAP.md`, đối chiếu
+trực tiếp source — Sprint 7.7 dưới đây CHỈ gồm phạm vi cốt lõi đã
+duyệt gốc; phần mở rộng D6.6–D6.11 ở trên là quyết định governance
+RIÊNG, không phải một phần nguyên thuỷ của sprint này:
+
+- **7.1 — Assessment Scoping**: Trắc nghiệm chỉ sinh câu hỏi từ nội
+  dung người dùng ĐÃ ĐỌC (trước đây lấy ngẫu nhiên từ toàn bộ 114
+  Surah, không quan tâm đã đọc chưa).
+- **7.2 — Foundation-First Session Default**: "Bắt đầu buổi học"
+  không còn tự động vào Trắc nghiệm cho người dùng chưa từng đọc gì —
+  giờ đưa vào màn Đọc (Al-Fatihah) trước.
+- **7.3 — Automatic Retention Seeding**: Đọc tự động đưa vào hàng chờ
+  Ôn tập theo mặc định — gắn thẻ thủ công trở thành ngoại lệ, không
+  còn là yêu cầu (`DR-2026-0021`, đã `accepted`).
+- **7.4 — Boundary-Triggered Revision Moments**: Hoàn thành một
+  Surah/Juz/Khatm mời một lượt ôn tập tổng hợp (`DR-2026-0023`, đã
+  `accepted`).
+- **7.5 — Reflection Practice (dạng đi kèm phiên đọc)**: Reflection
+  có bản sắc riêng, đi kèm phiên đọc — CHỈ dạng gắn với phiên đọc; dạng
+  gắn với hoàn thành Surah/Juz/Khatm còn phụ thuộc 7.4, chưa xây.
+- **7.6 — Sequencing Consolidation**: Hợp nhất quyền sở hữu logic sắp
+  xếp giữa AI Tutor / Learning Journey / Smart Learning về đúng MỘT
+  năng lực như Study Architecture Constitution §13 đã đặt tên.
+- **7.7 — Hifz Mode (phạm vi cốt lõi)**: Chế độ học thuộc tự chọn —
+  quản lý kế hoạch, thuật toán lên lịch riêng cho Hifz, ôn tập theo
+  SRS có chấm điểm.
+
 ### Added — Basmalah 2.0 BM4: Kiểm chứng cuối + sửa lỗi trên máy thật (2026-08-04)
 
 Kiểm chứng BM1–BM3 ở ba tầng: thuần, dữ liệu thật (asset

@@ -29,11 +29,14 @@ Lộ trình gốc: xem ROADMAP.md (cũng đã đóng băng, xem banner ở đầ
       `/search`, điểm vào, ô nhập, Mode/Scope, 4 trạng thái thân màn
       hình, điều hướng tới Ayah, bộ chuyển trạng thái dev, audit
       accessibility/dark-mode/responsive, +87 test) — xem CHANGELOG.
-- [ ] Bước 7 / Sprint 7.2: nối engine tìm kiếm thật — gọi
+- [x] Bước 7 / Sprint 7.2: nối engine tìm kiếm thật — gọi
       `QuranRepository.searchAyahs` (FTS5 `search_index`, đã build
       trong data, gồm lớp bỏ dấu arabic_plain / vi_main_plain /
       translit_latin_plain) vào `SearchResultSection`/`ResultCard`
       đã xây ở Sprint 7.1, thay bộ dữ liệu mẫu tĩnh của dev preview.
+      **Đã nối** — Phase 3 Sprint R1 (2026-07-31); `searchAyahs` hiện
+      thật sự truy vấn `search_index ... MATCH` (xác nhận trực tiếp
+      trong `quran_repository_impl.dart`, không chỉ theo CHANGELOG).
 - [ ] Sprint 7.2: sửa danh sách `source_code` hardcode trong
       `quran_repository_impl.searchAyahs` (chỉ nhận
       `arabic_plain`/`vi_main_plain`/`translit_latin_plain`/`en_sahih`)
@@ -125,14 +128,16 @@ Lộ trình gốc: xem ROADMAP.md (cũng đã đóng băng, xem banner ở đầ
       quy ước `DR-2026-0003-*`/`DR-2026-0004-*`) — theo đúng yêu cầu
       tường minh lúc tạo file. `DATABASE.md`/`ROADMAP.md`/`CHANGELOG.md`
       đã cập nhật link Markdown trỏ đúng file thật.
-- [ ] Nâng MIN_COVERAGE trong ci.yml từ 70% dần về 80% (mục tiêu
+- [x] Nâng MIN_COVERAGE trong ci.yml từ 70% dần về 80% (mục tiêu
       v1.0, ARCHITECTURE.md mục 9) khi Bước 7-9 landing kèm test đầy
       đủ — hạ tạm ở Bước 6 vì coverage thật ~74%, tránh CI đỏ thường
       trực trong lúc chưa viết thêm test. Sprint 10 (Phase 1-4) đã
       thêm 70 test mới (305 -> 375) cho toàn bộ code mới — con số
       coverage% thật chưa đo lại (`flutter test --coverage` không nằm
       trong phạm vi Phase 5), chỉ xác nhận KHÔNG có code mới nào thiếu
-      test (khác với Sprint 9, xem CHANGELOG).
+      test (khác với Sprint 9, xem CHANGELOG). **Nâng lên 80% đã hoàn
+      tất** — CI hiện gate ở `MIN_COVERAGE: '80'` (đã xác nhận trực
+      tiếp trong workflow config, không chỉ theo `DR-2026-0015`).
 
 ## Đối chiếu lại sau đợt khôi phục phát hành (không sửa mục nào ở trên)
 
@@ -153,9 +158,12 @@ không biết bối cảnh (xem banner đầu file):
   `docs/testing/TESTING_GUIDE.md` §2.4 (một file `coverage/lcov.info`
   cũ tồn tại trong repo nhưng chỉ phủ 57 file, KHÔNG đại diện cho
   coverage hiện tại — đừng trích dẫn con số của nó).
-- **Bước 7.2 (engine tìm kiếm thật)**: vẫn CHƯA nối — vẫn là gap thật,
-  xem `docs/architecture/DATA_FLOW.md` Flow 2 và
-  `docs/release/RELEASE_PLAN_V1.md` §4 bước 3.
+- **Bước 7.2 (engine tìm kiếm thật)**: **đã nối** — Phase 3 Sprint R1
+  (2026-07-31), xem mục "Kỹ thuật ngắn hạn" phía trên. Phần CÒN mở của
+  Bước 7 là mục kế tiếp trong danh sách đó ("Sprint 7.2: sửa danh sách
+  `source_code` hardcode... thành đọc động từ `translation_sources`") —
+  xác nhận trực tiếp: chuỗi `source_code IN (...)` trong
+  `quran_repository_impl.dart` vẫn liệt kê cố định, chưa đọc động.
 
 Danh sách việc mở đầy đủ, hiện tại: `docs/release/RELEASE_PLAN_V1.md`
 + `docs/release/UPDATED_TECHNICAL_DEBT.md`.
