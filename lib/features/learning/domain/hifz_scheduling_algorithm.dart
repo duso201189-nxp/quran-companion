@@ -45,6 +45,13 @@ class HifzSchedulingAlgorithm implements SchedulingAlgorithm {
   static const double _defaultEaseFactor = 2.5;
   static const double _minEaseFactor = 1.3;
 
+  /// Sprint D6.6 §11 — xem doc comment [SchedulingAlgorithm.algorithmId].
+  /// 'capped' đúng tên luật DUY NHẤT khác SM-2 gốc: chặn trần
+  /// [maxIntervalDays]. Đổi hằng số này (vd trần khác 30) PHẢI tăng
+  /// hậu tố -vN.
+  @override
+  String get algorithmId => 'hifz-sm2-capped-v1';
+
   @override
   SchedulingInput initialState() => (
         easeFactor: _defaultEaseFactor,

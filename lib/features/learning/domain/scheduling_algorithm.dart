@@ -34,6 +34,16 @@ typedef SchedulingResult = ({
 /// mọi tầng phía trên (repository, provider, UI, Revision Queue, Quiz,
 /// Hifz) chỉ phụ thuộc giao diện này, không phụ thuộc SM-2 cụ thể.
 abstract interface class SchedulingAlgorithm {
+  /// Định danh ổn định cho lịch sử — Sprint D6.6 §11 (chuẩn bị cho
+  /// `review_events.algorithm_id`, DR-2026-0024, CHƯA triển khai).
+  /// KHÔNG suy từ `runtimeType` (đổi tên lớp không được phép âm thầm
+  /// đổi provenance lịch sử). Hậu tố `-vN` tăng lên MỖI KHI một thay
+  /// đổi làm khác kết quả [review]/[initialState] cho CÙNG input
+  /// (ngưỡng, công thức, hằng số điều chỉnh được, delta ease,
+  /// `maxIntervalDays`, ánh xạ chất lượng, …) — kỷ luật rà soát mã thủ
+  /// công, không có cơ chế tự động nào ép buộc điều này.
+  String get algorithmId;
+
   /// Trạng thái khởi tạo cho một thẻ mới, trước lần ôn đầu tiên. Hằng
   /// số mặc định (vd. ease factor 2.5 của SM-2) thuộc về cài đặt cụ
   /// thể, không hardcode ở tầng repository.

@@ -12,6 +12,10 @@ class SM2SchedulingAlgorithm implements SchedulingAlgorithm {
   static const double _defaultEaseFactor = 2.5;
   static const double _minEaseFactor = 1.3;
 
+  /// Sprint D6.6 §11 — xem doc comment [SchedulingAlgorithm.algorithmId].
+  @override
+  String get algorithmId => 'sm2-v1';
+
   @override
   SchedulingInput initialState() => (
         easeFactor: _defaultEaseFactor,

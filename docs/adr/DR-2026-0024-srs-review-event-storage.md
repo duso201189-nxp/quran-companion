@@ -260,8 +260,26 @@ that adds less code.
    than recomputed because `HifzSchedulingAlgorithm.maxIntervalDays` is
    a tunable constant and `scheduling_algorithm.dart` explicitly
    anticipates replacing SM-2 with FSRS; `algorithm_id` exists so that
-   old events remain interpretable after such a change. No field is
-   added beyond these without a repository convention requiring it.
+   old events remain interpretable after such a change.
+
+   **Sprint D6.6 §11 update — the source contract now exists, storage
+   does not.** `SchedulingAlgorithm` (domain code, no schema involved)
+   now exposes `String get algorithmId`, deliberately **not** derived
+   from `runtimeType` — a class rename must never silently rewrite
+   historical provenance. `SM2SchedulingAlgorithm.algorithmId` returns
+   `'sm2-v1'`; `HifzSchedulingAlgorithm.algorithmId` returns
+   `'hifz-sm2-capped-v1'`. The versioning rule is binding: the `-vN`
+   suffix must be bumped whenever a change alters what `review()` or
+   `initialState()` would output for the same inputs — thresholds,
+   formulas, tunable constants (including `maxIntervalDays`), ease
+   deltas, or the quality mapping — enforced by manual code-review
+   discipline, not by any automated mechanism. This resolves what
+   `algorithm_id` will read at write time; it does **not** create the
+   `review_events` column, the table, or any writer of it — the source
+   value now exists ahead of the sink it is destined for, and the sink
+   remains exactly as unimplemented as everything else in this record.
+   No field is added beyond these without a repository convention
+   requiring it.
 
 5. **No `plan_id`. Binding.** Hifz plans may overlap —
    `HifzPlanRepository.createPlan` documents overlapping ranges as
@@ -487,8 +505,12 @@ All paths verified against the repository at the time of writing.
   Decision 6).
 - `lib/features/learning/domain/repositories/scheduler_repository.dart`,
   `lib/features/learning/domain/scheduling_algorithm.dart` —
-  `ReviewGrade`, `SchedulingInput`/`SchedulingResult`, and the
-  documented intent to replace SM-2 with FSRS (behind `algorithm_id`).
+  `ReviewGrade`, `SchedulingInput`/`SchedulingResult`, the documented
+  intent to replace SM-2 with FSRS, and (Sprint D6.6 §11, implemented)
+  `SchedulingAlgorithm.algorithmId` — `'sm2-v1'`
+  (`sm2_scheduling_algorithm.dart`) and `'hifz-sm2-capped-v1'`
+  (`hifz_scheduling_algorithm.dart`) — the concrete values `algorithm_id`
+  will hold once `review_events` exists.
 - `lib/features/learning/domain/entities/srs_card.dart` —
   `LearningItemType` (`ayah`/`lemma`/`hifz`) and the `updated_at`
   doc comment stating it is overwritten and is *not* a review history.
