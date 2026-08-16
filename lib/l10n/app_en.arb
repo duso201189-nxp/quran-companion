@@ -184,7 +184,7 @@
       }
     }
   },
-  "hifzProgressSnapshotNote": "This is a current snapshot, not a review history.",
+  "hifzProgressSnapshotNote": "These numbers are a current snapshot, not a review history.",
   "hifzProgressPaceSectionTitle": "Review pace",
   "hifzProgressAverageEaseLabel": "Average ease factor",
   "hifzProgressAverageIntervalLabel": "Average review interval",
@@ -197,6 +197,11 @@
     }
   },
   "hifzProgressNoReviewsYet": "No reviews yet. Start reviewing to see your pace.",
+  "hifzHistorySectionTitle": "Review history",
+  "hifzHistoryTotalLabel": "Reviews recorded",
+  "hifzHistoryLast7DaysLabel": "Last 7 days",
+  "hifzHistoryScopeNote": "Counted across the ayahs in this range, including reviews from before this plan was created.",
+  "hifzHistoryNoReviewsYet": "No reviews recorded yet.",
   "hifzOverallSectionTitle": "Overall Hifz snapshot",
   "hifzOverallPlansLabel": "Active plans",
   "hifzOverallAyahsLabel": "Ayahs planned",

@@ -895,7 +895,7 @@ abstract class AppLocalizations {
   /// No description provided for @hifzProgressSnapshotNote.
   ///
   /// In vi, this message translates to:
-  /// **'Đây là ảnh chụp hiện tại, không phải lịch sử ôn tập.'**
+  /// **'Các số liệu này là ảnh chụp hiện tại, không phải lịch sử ôn tập.'**
   String get hifzProgressSnapshotNote;
 
   /// No description provided for @hifzProgressPaceSectionTitle.
@@ -927,6 +927,36 @@ abstract class AppLocalizations {
   /// In vi, this message translates to:
   /// **'Chưa có lượt ôn nào. Bắt đầu ôn để xem nhịp độ.'**
   String get hifzProgressNoReviewsYet;
+
+  /// No description provided for @hifzHistorySectionTitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Lịch sử ôn tập'**
+  String get hifzHistorySectionTitle;
+
+  /// No description provided for @hifzHistoryTotalLabel.
+  ///
+  /// In vi, this message translates to:
+  /// **'Lượt ôn đã ghi'**
+  String get hifzHistoryTotalLabel;
+
+  /// No description provided for @hifzHistoryLast7DaysLabel.
+  ///
+  /// In vi, this message translates to:
+  /// **'7 ngày gần đây'**
+  String get hifzHistoryLast7DaysLabel;
+
+  /// No description provided for @hifzHistoryScopeNote.
+  ///
+  /// In vi, this message translates to:
+  /// **'Tính trên các Ayah thuộc đoạn này, kể cả những lượt ôn trước khi kế hoạch được tạo.'**
+  String get hifzHistoryScopeNote;
+
+  /// No description provided for @hifzHistoryNoReviewsYet.
+  ///
+  /// In vi, this message translates to:
+  /// **'Chưa có lượt ôn tập nào được ghi nhận.'**
+  String get hifzHistoryNoReviewsYet;
 
   /// No description provided for @hifzOverallSectionTitle.
   ///

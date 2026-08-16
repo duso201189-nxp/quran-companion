@@ -425,7 +425,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get hifzProgressSnapshotNote =>
-      'This is a current snapshot, not a review history.';
+      'These numbers are a current snapshot, not a review history.';
 
   @override
   String get hifzProgressPaceSectionTitle => 'Review pace';
@@ -444,6 +444,22 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get hifzProgressNoReviewsYet =>
       'No reviews yet. Start reviewing to see your pace.';
+
+  @override
+  String get hifzHistorySectionTitle => 'Review history';
+
+  @override
+  String get hifzHistoryTotalLabel => 'Reviews recorded';
+
+  @override
+  String get hifzHistoryLast7DaysLabel => 'Last 7 days';
+
+  @override
+  String get hifzHistoryScopeNote =>
+      'Counted across the ayahs in this range, including reviews from before this plan was created.';
+
+  @override
+  String get hifzHistoryNoReviewsYet => 'No reviews recorded yet.';
 
   @override
   String get hifzOverallSectionTitle => 'Overall Hifz snapshot';

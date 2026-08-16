@@ -423,7 +423,7 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get hifzProgressSnapshotNote =>
-      'Đây là ảnh chụp hiện tại, không phải lịch sử ôn tập.';
+      'Các số liệu này là ảnh chụp hiện tại, không phải lịch sử ôn tập.';
 
   @override
   String get hifzProgressPaceSectionTitle => 'Nhịp độ ôn tập';
@@ -442,6 +442,23 @@ class AppLocalizationsVi extends AppLocalizations {
   @override
   String get hifzProgressNoReviewsYet =>
       'Chưa có lượt ôn nào. Bắt đầu ôn để xem nhịp độ.';
+
+  @override
+  String get hifzHistorySectionTitle => 'Lịch sử ôn tập';
+
+  @override
+  String get hifzHistoryTotalLabel => 'Lượt ôn đã ghi';
+
+  @override
+  String get hifzHistoryLast7DaysLabel => '7 ngày gần đây';
+
+  @override
+  String get hifzHistoryScopeNote =>
+      'Tính trên các Ayah thuộc đoạn này, kể cả những lượt ôn trước khi kế hoạch được tạo.';
+
+  @override
+  String get hifzHistoryNoReviewsYet =>
+      'Chưa có lượt ôn tập nào được ghi nhận.';
 
   @override
   String get hifzOverallSectionTitle => 'Ảnh chụp Hifz tổng quan';

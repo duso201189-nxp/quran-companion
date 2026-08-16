@@ -430,8 +430,11 @@ void main() {
     // 3 thẻ mới đều due_date=0 -> luôn đến hạn ngay.
     expect(find.bySemanticsLabel('Due now: 3'), findsOneWidget);
     expect(find.bySemanticsLabel('Reviewed: 0'), findsOneWidget);
+    // Sprint D6.11 — khoá l10n dùng chung với HifzProgressScreen đổi
+    // thành "These numbers are..." (Fix #1); HifzPlansScreen không đổi
+    // gì, chỉ chuỗi đổi theo.
     expect(
-      find.text('This is a current snapshot, not a review history.'),
+      find.text('These numbers are a current snapshot, not a review history.'),
       findsOneWidget,
     );
   });

@@ -12,8 +12,10 @@ import '../../quran/domain/entities/surah.dart';
 import '../../quran/presentation/surah_list_controller.dart'
     show surahListProvider;
 import '../data/hifz_progress_providers.dart';
+import '../data/hifz_review_history_providers.dart';
 import '../domain/entities/hifz_plan.dart';
 import '../domain/entities/hifz_plan_progress.dart';
+import '../domain/entities/hifz_review_history.dart';
 
 /// Ảnh chụp tiến độ MỘT kế hoạch Hifz — Sprint 7.7c-A.
 ///
@@ -105,7 +107,190 @@ class _HifzProgressBody extends ConsumerWidget {
           EmptyStateBanner(text: l10n.hifzProgressNoReviewsYet)
         else
           _PaceGrid(progress: progress),
+        const SizedBox(height: 20),
+        SectionHeader(text: l10n.hifzHistorySectionTitle),
+        const SizedBox(height: 12),
+        _ReviewHistorySection(planId: plan.id),
       ],
+    );
+  }
+}
+
+/// Lịch sử ôn tập đã ghi của kế hoạch này — Sprint D6.11 (DR-2026-0026).
+///
+/// Đọc [hifzPlanReviewHistoryProvider] RIÊNG, không dùng chung
+/// [HifzPlanProgress] của phần còn lại màn hình: ảnh chụp hiện tại và
+/// lịch sử sự kiện là hai nguồn tách biệt, gộp lại sẽ xoá mất chính
+/// ranh giới mà DR-2026-0026 dựng lên.
+class _ReviewHistorySection extends ConsumerWidget {
+  const _ReviewHistorySection({required this.planId});
+
+  final String planId;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context);
+    final historyAsync = ref.watch(hifzPlanReviewHistoryProvider(planId));
+
+    return historyAsync.when(
+      loading: () => LoadingState(semanticsLabel: l10n.hifzProgressLoading),
+      error: (_, __) => EmptyStateBanner(text: l10n.errorLoadData),
+      data: (history) => history == null || history.totalReviewCount == 0
+          ? EmptyStateBanner(text: l10n.hifzHistoryNoReviewsYet)
+          : _ReviewHistoryCard(history: history),
+    );
+  }
+}
+
+class _ReviewHistoryCard extends StatelessWidget {
+  const _ReviewHistoryCard({required this.history});
+
+  final HifzReviewHistory history;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    final locale = Localizations.localeOf(context).toLanguageTag();
+    final scheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
+    final dayFormat = DateFormat.E(locale);
+
+    // Thang của biểu đồ là ngày BẬN NHẤT trong 7 ngày, không phải một
+    // chỉ tiêu — không có mốc "nên đạt" nào ở đây.
+    var busiestDay = 0;
+    for (final d in history.recentDays) {
+      if (d.reviewCount > busiestDay) busiestDay = d.reviewCount;
+    }
+
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: scheme.surfaceContainerLow,
+        borderRadius: BorderRadius.circular(16),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Semantics(
+            label: '${l10n.hifzHistoryTotalLabel}: '
+                '${history.totalReviewCount}',
+            container: true,
+            child: ExcludeSemantics(
+              child: Row(
+                children: [
+                  Icon(Icons.history_rounded, color: scheme.primary),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Text(
+                      l10n.hifzHistoryTotalLabel,
+                      style: textTheme.bodyMedium,
+                    ),
+                  ),
+                  Text(
+                    '${history.totalReviewCount}',
+                    style: textTheme.titleMedium
+                        ?.copyWith(fontWeight: FontWeight.w700),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          const SizedBox(height: 16),
+          Text(
+            l10n.hifzHistoryLast7DaysLabel,
+            style:
+                textTheme.labelMedium?.copyWith(color: scheme.onSurfaceVariant),
+          ),
+          const SizedBox(height: 10),
+          for (final day in history.recentDays) ...[
+            _DayBucketRow(
+              label: dayFormat.format(day.dayStart),
+              count: day.reviewCount,
+              busiestDay: busiestDay,
+            ),
+            const SizedBox(height: 8),
+          ],
+          const SizedBox(height: 2),
+          Text(
+            l10n.hifzHistoryScopeNote,
+            style:
+                textTheme.labelSmall?.copyWith(color: scheme.onSurfaceVariant),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+/// Một ngày trong phân bố 7 ngày — nhãn ngày, thanh tỉ lệ, số lượt.
+///
+/// Ngày không có lượt ôn nào VẪN hiện, với thanh rỗng: khoảng trống là
+/// dữ liệu thật, không phải thứ để giấu.
+class _DayBucketRow extends StatelessWidget {
+  const _DayBucketRow({
+    required this.label,
+    required this.count,
+    required this.busiestDay,
+  });
+
+  final String label;
+  final int count;
+  final int busiestDay;
+
+  @override
+  Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
+    final fraction = busiestDay == 0 ? 0.0 : count / busiestDay;
+
+    return Semantics(
+      label: '$label: $count',
+      // Cùng lý do `_StateRow`: các dòng anh em liền kề bị Flutter gộp
+      // nhãn semantics nếu không có container: true.
+      container: true,
+      child: ExcludeSemantics(
+        child: Row(
+          children: [
+            SizedBox(
+              width: 44,
+              child: Text(
+                label,
+                style: textTheme.labelSmall
+                    ?.copyWith(color: scheme.onSurfaceVariant),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+            const SizedBox(width: 8),
+            Expanded(
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(99),
+                child: SizedBox(
+                  height: 8,
+                  child: Stack(
+                    children: [
+                      Container(color: scheme.surfaceContainerHighest),
+                      FractionallySizedBox(
+                        widthFactor: fraction,
+                        child: Container(color: scheme.primary),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+            const SizedBox(width: 10),
+            SizedBox(
+              width: 24,
+              child: Text(
+                '$count',
+                textAlign: TextAlign.end,
+                style: textTheme.bodySmall,
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }

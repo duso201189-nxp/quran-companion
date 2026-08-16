@@ -422,7 +422,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get hifzProgressSnapshotNote =>
-      'هذه لقطة حالية، وليست سجلاً للمراجعات.';
+      'هذه الأرقام لقطة حالية، وليست سجلاً للمراجعات.';
 
   @override
   String get hifzProgressPaceSectionTitle => 'وتيرة المراجعة';
@@ -441,6 +441,22 @@ class AppLocalizationsAr extends AppLocalizations {
   @override
   String get hifzProgressNoReviewsYet =>
       'لا توجد مراجعات بعد. ابدأ المراجعة لرؤية وتيرتك.';
+
+  @override
+  String get hifzHistorySectionTitle => 'سجل المراجعات';
+
+  @override
+  String get hifzHistoryTotalLabel => 'المراجعات المسجَّلة';
+
+  @override
+  String get hifzHistoryLast7DaysLabel => 'آخر 7 أيام';
+
+  @override
+  String get hifzHistoryScopeNote =>
+      'محسوبة على آيات هذا النطاق، بما في ذلك المراجعات التي تمت قبل إنشاء هذه الخطة.';
+
+  @override
+  String get hifzHistoryNoReviewsYet => 'لم تُسجَّل أي مراجعات بعد.';
 
   @override
   String get hifzOverallSectionTitle => 'لمحة عامة عن الحفظ';

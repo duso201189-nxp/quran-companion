@@ -184,7 +184,7 @@
       }
     }
   },
-  "hifzProgressSnapshotNote": "هذه لقطة حالية، وليست سجلاً للمراجعات.",
+  "hifzProgressSnapshotNote": "هذه الأرقام لقطة حالية، وليست سجلاً للمراجعات.",
   "hifzProgressPaceSectionTitle": "وتيرة المراجعة",
   "hifzProgressAverageEaseLabel": "متوسط معامل السهولة",
   "hifzProgressAverageIntervalLabel": "متوسط فترة المراجعة",
@@ -197,6 +197,11 @@
     }
   },
   "hifzProgressNoReviewsYet": "لا توجد مراجعات بعد. ابدأ المراجعة لرؤية وتيرتك.",
+  "hifzHistorySectionTitle": "سجل المراجعات",
+  "hifzHistoryTotalLabel": "المراجعات المسجَّلة",
+  "hifzHistoryLast7DaysLabel": "آخر 7 أيام",
+  "hifzHistoryScopeNote": "محسوبة على آيات هذا النطاق، بما في ذلك المراجعات التي تمت قبل إنشاء هذه الخطة.",
+  "hifzHistoryNoReviewsYet": "لم تُسجَّل أي مراجعات بعد.",
   "hifzOverallSectionTitle": "لمحة عامة عن الحفظ",
   "hifzOverallPlansLabel": "الخطط النشطة",
   "hifzOverallAyahsLabel": "الآيات المخطط لها",

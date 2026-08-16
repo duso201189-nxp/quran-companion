@@ -249,8 +249,10 @@ void main() {
     // Ghi chú trung thực: đủ 3/3 Ayah đã có lịch ôn, và đây là ảnh
     // chụp hiện tại — không phải lịch sử.
     expect(find.text('3/3 ayahs have a review schedule.'), findsOneWidget);
+    // Sprint D6.11 — câu này đổi thành "These numbers are..." (Fix #1):
+    // "This" mơ hồ một khi màn hình có thêm phần "Review history".
     expect(
-      find.text('This is a current snapshot, not a review history.'),
+      find.text('These numbers are a current snapshot, not a review history.'),
       findsOneWidget,
     );
 
@@ -261,6 +263,13 @@ void main() {
       find.text('No reviews yet. Start reviewing to see your pace.'),
       findsOneWidget,
     );
+
+    // Sprint D6.11: phần "Lịch sử ôn tập" đọc review_events — nguồn
+    // ĐỘC LẬP với srs_cards, có thể lệch nhau (vd thẻ bị reset sau khi
+    // đã ôn: nhịp độ về 0 nhưng lịch sử vẫn còn) — nên có CÂU RIÊNG,
+    // không dùng lại câu của phần Nhịp độ ôn (câu đó nói về "pace",
+    // sai ngữ cảnh ở đây).
+    expect(find.text('No reviews recorded yet.'), findsOneWidget);
   });
 
   _test(
@@ -283,6 +292,134 @@ void main() {
     expect(find.text('Paused'), findsOneWidget);
     expect(find.bySemanticsLabel('Ayahs: 2'), findsOneWidget);
     expect(find.bySemanticsLabel('New: 2'), findsOneWidget);
+  });
+
+  // ── Sprint D6.11 (DR-2026-0026) — phần "Lịch sử ôn tập" ──────────
+  //
+  // Nguồn dữ liệu là `review_events` THẬT trong Drift bộ nhớ, ghi
+  // thẳng bằng companion: tệp này kiểm TRÌNH BÀY, còn đường ghi đã có
+  // suite riêng (scheduler_repository_test.dart).
+
+  Future<void> seedHifzEvent(
+    UserDatabase db, {
+    required String id,
+    required int itemId,
+    required int reviewedAt,
+  }) async {
+    await db.into(db.reviewEvents).insert(
+          ReviewEventsCompanion.insert(
+            id: id,
+            updatedAt: reviewedAt,
+            cardId: 'card-$itemId',
+            itemType: 'hifz',
+            itemId: itemId,
+            reviewedAt: reviewedAt,
+            grade: 'good',
+            algorithmId: 'hifz-sm2-capped-v1',
+            beforeState: 'new',
+            beforeRepetitions: 0,
+            beforeIntervalDays: 0,
+            beforeEaseFactor: 2.5,
+            beforeDueDate: reviewedAt,
+            afterState: 'review',
+            afterRepetitions: 1,
+            afterIntervalDays: 1,
+            afterEaseFactor: 2.5,
+            afterDueDate: reviewedAt,
+          ),
+        );
+  }
+
+  _test(
+      'D6.11 — có sự kiện ôn -> hiện tổng số lượt ôn, nhãn 7 ngày và câu '
+      'chú thích phạm vi', (tester, db, fakeScheduler) async {
+    final repo = HifzPlanRepositoryImpl(db, _SilentLogger());
+    final id = await repo.createPlan(ayahFrom: 1, ayahTo: 3);
+    fakeScheduler.emitCards([1, 2, 3].map(_newHifzCard).toList());
+
+    final todayMs = DateTime.now().millisecondsSinceEpoch;
+    await seedHifzEvent(db, id: 'e1', itemId: 1, reviewedAt: todayMs);
+    await seedHifzEvent(db, id: 'e2', itemId: 2, reviewedAt: todayMs);
+
+    await tester.pumpWidget(
+      _wrap(db, fakeScheduler, initialLocation: '/hifz/progress/$id'),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.text('Review history'), findsOneWidget);
+    expect(find.bySemanticsLabel('Reviews recorded: 2'), findsOneWidget);
+    expect(find.text('Last 7 days'), findsOneWidget);
+
+    // Câu chú thích phạm vi là thứ gánh toàn bộ tính trung thực của
+    // ranh giới "phạm vi, không phải quy gán" — không được vắng mặt.
+    expect(
+      find.text(
+        'Counted across the ayahs in this range, including reviews from '
+        'before this plan was created.',
+      ),
+      findsOneWidget,
+    );
+  });
+
+  _test(
+      'D6.11 — chưa có sự kiện nào -> phần lịch sử hiện trạng thái rỗng, '
+      'KHÔNG hiện con số nào và KHÔNG có lời lẽ thành tích',
+      (tester, db, fakeScheduler) async {
+    final repo = HifzPlanRepositoryImpl(db, _SilentLogger());
+    final id = await repo.createPlan(ayahFrom: 1, ayahTo: 3);
+    fakeScheduler.emitCards([1, 2, 3].map(_newHifzCard).toList());
+
+    await tester.pumpWidget(
+      _wrap(db, fakeScheduler, initialLocation: '/hifz/progress/$id'),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.text('Review history'), findsOneWidget);
+    expect(find.text('Reviews recorded'), findsNothing);
+    expect(find.text('Last 7 days'), findsNothing);
+  });
+
+  _test(
+      'D6.11 — sự kiện của Ayah NGOÀI đoạn không được tính vào lịch sử của '
+      'kế hoạch này', (tester, db, fakeScheduler) async {
+    final repo = HifzPlanRepositoryImpl(db, _SilentLogger());
+    final id = await repo.createPlan(ayahFrom: 1, ayahTo: 3);
+    fakeScheduler.emitCards([1, 2, 3].map(_newHifzCard).toList());
+
+    final nowMs = DateTime.now().millisecondsSinceEpoch;
+    await seedHifzEvent(db, id: 'e1', itemId: 1, reviewedAt: nowMs);
+    await seedHifzEvent(db, id: 'e2', itemId: 99, reviewedAt: nowMs);
+
+    await tester.pumpWidget(
+      _wrap(db, fakeScheduler, initialLocation: '/hifz/progress/$id'),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.bySemanticsLabel('Reviews recorded: 1'), findsOneWidget);
+  });
+
+  _test(
+      'D6.11 — màn hình DANH SÁCH kế hoạch KHÔNG có phần lịch sử: ảnh chụp '
+      'tổng quan vẫn thuần trạng thái hiện tại',
+      (tester, db, fakeScheduler) async {
+    final repo = HifzPlanRepositoryImpl(db, _SilentLogger());
+    await repo.createPlan(ayahFrom: 1, ayahTo: 3);
+    fakeScheduler.emitCards([1, 2, 3].map(_newHifzCard).toList());
+    await seedHifzEvent(
+      db,
+      id: 'e1',
+      itemId: 1,
+      reviewedAt: DateTime.now().millisecondsSinceEpoch,
+    );
+
+    await tester.pumpWidget(
+      _wrap(db, fakeScheduler, initialLocation: AppRoutes.hifzPlans),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.text('Overall Hifz snapshot'), findsOneWidget);
+    expect(find.text('Review history'), findsNothing);
+    expect(find.text('Reviews recorded'), findsNothing);
   });
 
   _test(
