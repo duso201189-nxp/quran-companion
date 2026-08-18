@@ -100,7 +100,7 @@ Constitution, not optional per-sprint polish.
 **Scope:** Logging first; reporting deferred until there's enough data to warrant it.
 **Depends on:** Nothing structurally.
 **Worship First checkpoint:** Confirm metrics remain internal and diagnostic, and are never surfaced back to the user as a score.
-**Status:** Not started. Still planned; awaiting its own explicit scope/authorization before work begins. The Hifz-specific `review_events` infrastructure (D6.6, `DR-2026-0024`) is a separate, independently governed capability — scoped to `ayah`/`hifz` review history only — and does not, by itself, constitute or satisfy this sprint's general "Learning Analytics Foundation" scope.
+**Status:** Shipped (dormant, read-only instrument) — `37facdd` (2026-08-18), governed by `DR-2026-0027` (accepted). Delivers exactly the deferred-reporting scope this sprint always stated: a retention-observation derivation over `review_events`, scoped to `ayah`/`hifz`, with no consumer, no UI, no Analytics integration, and no rollup/score/mastery/streak of any kind built or authorized. As with 7.7 above, D6.6/`DR-2026-0024` (storage) and D6.11/`DR-2026-0026` (Hifz count/pace) remain separate, independently governed capabilities that do not by themselves constitute this sprint's scope — D7.8 is the first artifact that does.
 
 **Note carried from final review:** Learning Analytics Foundation remains Sprint 7.8 — it is not reordered. Silent logging may begin earlier than Sprint 7.8 if a measurement baseline is ever judged necessary before 7.1–7.6 change user-facing behavior; if so, that logging is a quiet, minimal addition riding alongside an earlier sprint (most naturally 7.3), not a reason to move Sprint 7.8 itself. Sprint 7.8, wherever its preparatory logging began, remains the sprint where the analytics capability is formally built out and delivered as its own scoped unit.
 
@@ -108,4 +108,4 @@ Constitution, not optional per-sprint polish.
 
 ## Status
 
-Frozen for planning purposes; 7 of 8 sprints below are shipped (see individual status lines). Remaining: 7.8. This roadmap does not authorize implementation of any not-yet-shipped sprint — each requires its own explicit go-ahead before work begins, per this project's standing engagement convention.
+Frozen for planning purposes; all 8 sprints below have shipped their stated scope (see individual status lines) — 7.8 shipped as a dormant, read-only instrument only, per its own deliberately deferred-reporting scope; no consumer, UI, or Analytics integration is shipped or authorized. This roadmap does not authorize implementation of anything beyond what is already shipped — any future extension (a consumer, reporting, or Analytics integration for 7.8; any change to 7.1–7.7) requires its own explicit go-ahead before work begins, per this project's standing engagement convention.

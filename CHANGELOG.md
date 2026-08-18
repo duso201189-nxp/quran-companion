@@ -5,6 +5,31 @@ Phiên bản theo [Semantic Versioning](https://semver.org/lang/vi/).
 
 ## [Unreleased]
 
+### Added — D7.8: Công cụ quan sát khả năng ghi nhớ (dormant, chỉ đọc) (2026-08-18)
+
+Một quyết định kiến trúc (`DR-2026-0027`, đã `accepted`) và một lần
+triển khai, đưa vào công cụ *quan sát khả năng ghi nhớ* (retention
+observation) đầu tiên của sản phẩm — nội bộ, chỉ chẩn đoán, cố ý CHƯA
+có nơi nào gọi tới:
+
+- **D7.8 — Retention observation instrument**: đọc CHỈ-ĐỌC từ
+  `review_events` (không đổi schema — `schemaVersion` vẫn 8, không
+  migration, không cột mới, không index mới), ghép mỗi cặp sự kiện ôn
+  liên tục cùng `(item_type, item_id)` thành một "quan sát ghi nhớ"
+  (khoảng thời gian đã trôi qua thực tế + kết quả nhớ lại thô, chưa
+  quy đổi thành điểm số), phạm vi CHỈ `ayah`/`hifz` (`lemma` vẫn không
+  có dữ liệu). Sống trong `lib/features/learning/`:
+  `domain/entities/retention_observation.dart`,
+  `domain/repositories/retention_event_source_repository.dart`,
+  `domain/retention_instrument.dart`,
+  `data/retention_event_source_repository_impl.dart`,
+  `data/retention_instrument_providers.dart` — đúng ranh giới
+  `DR-2026-0027` đã duyệt (`37facdd`, 2026-08-18). KHÔNG có consumer,
+  KHÔNG UI, KHÔNG tích hợp Analytics, KHÔNG rollup/score/mastery/
+  streak/gamification nào được xây hay cấp phép — dormant có chủ đích,
+  đúng tinh thần "logging first; reporting deferred" của Sprint 7.8
+  gốc.
+
 ### Added — D6.6–D6.11: SRS review event storage & Hifz historical review metrics (2026-08-15 → 2026-08-16)
 
 Sáu quyết định kiến trúc (`DR-2026-0024`, `DR-2026-0025`, `DR-2026-0026`,
