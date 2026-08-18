@@ -26,6 +26,7 @@ record's own "Relationship to" note) DR.
 | [DR-2026-0024](DR-2026-0024-srs-review-event-storage.md) | SRS review event storage | accepted | 2026-08-15 |
 | [DR-2026-0025](DR-2026-0025-analytics-review-event-consumption-boundary.md) | Analytics review-event consumption boundary | accepted | 2026-08-16 |
 | [DR-2026-0026](DR-2026-0026-hifz-historical-review-count-and-pace.md) | Hifz historical review count and review pace (read boundary) | accepted | 2026-08-16 |
+| [DR-2026-0027](DR-2026-0027-retention-observation-instrument.md) | Retention observation instrument (read-only boundary) | accepted | 2026-08-18 |
 
 `DR-2026-0017` is partially implemented: Sprint F0 (Phase 4) shipped its
 Surah/Āyah subset as `lib/core/quran/quran_address.dart`. The record
