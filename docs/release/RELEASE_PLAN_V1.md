@@ -215,8 +215,23 @@ plus this engagement's `UPDATED_TECHNICAL_DEBT.md`.
   v1.0 product surface, reachable from the Study tab. Shipped scope:
   plan management (create, range selection, active/paused/completed
   lifecycle, soft delete), a Hifz-specific scheduling algorithm, and
-  SRS-backed review with grading. Hifz-specific progress/history
-  reporting is **not** implemented — Hifz is shipped, not complete.
+  SRS-backed review with grading. **Stale claim corrected 2026-08-18**:
+  this bullet went on to say Hifz-specific progress/history reporting
+  was **not** implemented. Both have since shipped. Progress: a
+  per-plan snapshot screen (Sprint 7.7c-A) and an all-active-plans
+  overview on the plans list (Sprint D6.4), each derived from
+  `srs_cards`. History: a review-history section on the per-plan
+  progress screen (Sprint D6.11,
+  `docs/adr/DR-2026-0026-hifz-historical-review-count-and-pace.md`,
+  accepted) derived from the `review_events` table added at schema v8 —
+  a total review count plus a seven-day per-day distribution, computed
+  over the ayah set of a plan's range. That is *scope*, not
+  attribution: overlapping plans share a single card per ayah, so no
+  fact exists about which plan "caused" a review, the same event can
+  legitimately appear under more than one plan, and the numbers do not
+  sum across plans. Deliberately still absent, therefore: any
+  cross-plan or aggregate Hifz review-history total — no provider
+  combines them.
 
 ## 4. Recommended release checklist (sequenced)
 

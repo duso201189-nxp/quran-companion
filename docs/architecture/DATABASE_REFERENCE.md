@@ -350,7 +350,8 @@ integer, so two offline devices can never collide on id when synced.
 A 13th table, `hifz_plans`, was added at schema v7 (§3.2) and is **not
 yet catalogued below** — its column-by-column entry needs the same
 read of `user_tables.dart` the twelve below were generated from, not an
-estimate.
+estimate. The same is true of a 14th table, `review_events`, added at
+schema v8.
 
 #### `bookmarks` → part of `AyahAnnotation`
 
@@ -678,10 +679,10 @@ detect and force a recopy.
 
 ```dart
 @override
-int get schemaVersion => 7;
+int get schemaVersion => 8;
 ```
 
-Currently at **schema version 7**. `onUpgrade` is strictly additive,
+Currently at **schema version 8**. `onUpgrade` is strictly additive,
 applying each step `v(n) -> v(n+1)` independently (`if (from < N)`
 guards), so a device can jump multiple versions in one open. Design
 rule, stated directly in the code: "CHỈ ADDITIVE (thêm bảng/cột), đi
@@ -696,6 +697,7 @@ KHÔNG BAO GIỜ drop dữ liệu người dùng."
 | v4 → v5 | `quiz_results` table | Sprint 10 Phase 4, `docs/adr/DR-2026-0005.md`. Only results, no Question Bank. |
 | v5 → v6 | `flashcard_decks`, `flashcards` tables | Sprint 13 Phase 2. Points into Lexicon via type+id rather than copying content. No backfill. |
 | v6 → v7 | `hifz_plans` table | Sprint 7.7a — the Hifz foundation. No backfill: a Hifz commitment is a deliberate user action, with no prior data to infer it from — the same reasoning recorded for `flashcards` at v6. |
+| v7 → v8 | `review_events` table, plus its two indexes `idx_review_events_item` and `idx_review_events_reviewed_at` | Sprint D6.6, `docs/adr/DR-2026-0024-srs-review-event-storage.md` (accepted). An immutable, append-only record of committed SRS reviews, kept strictly separate from the current state in `srs_cards`. No backfill: the table is empty immediately after creation — review history from before v8 cannot be reconstructed, since `srs_cards` holds only the latest state, not events. Written only by `SchedulerRepositoryImpl.applyReview`, and only for `item_type` `'ayah'`/`'hifz'` — never `'lemma'`. |
 
 `beforeOpen` (every open, not version-specific) sets
 `PRAGMA foreign_keys = ON`.
@@ -708,39 +710,44 @@ Queue design but does not correspond to a schema version bump — Sprint
 ### 3.3 Migration test coverage
 
 `test/user_content_repository_test.dart` has a dedicated
-`group('schema & migration', ...)` (lines 34–1088) exercising
+`group('schema & migration', ...)` (lines 34–1353) exercising
 `UserDatabase` migrations directly:
 
-1. **Fresh install** — asserts all 13 tables exist, `schemaVersion == 7`.
-2. **v1 → v2 (→7)** — hand-builds a raw v1 SQLite database (4 original
+1. **Fresh install** — asserts all 14 tables exist, `schemaVersion == 8`.
+2. **v1 → v2 (→8)** — hand-builds a raw v1 SQLite database (4 original
    tables + 1 seeded bookmark), opens it through the real
    `UserDatabase` class, runs the actual `onUpgrade` chain, verifies
    all tables exist, the seed row survives, `favorites` is immediately
    usable.
-3. **v2 → v3 (→7)** — same pattern from a 5-table "v2" database;
+3. **v2 → v3 (→8)** — same pattern from a 5-table "v2" database;
    verifies the Sprint 8 tables appear, the seed bookmark survives, and
    the newly `ALTER TABLE`-added `collection_id` comes back `NULL` for
    pre-existing rows.
-4. **v3 → v4 (→7)** — from an 8-table "v3" database with a seeded
+4. **v3 → v4 (→8)** — from an 8-table "v3" database with a seeded
    `ayah_statuses` row (`status='review'`); verifies `srs_cards`
    appears empty (explicitly no backfill) and the Queue row is
    untouched.
-5. **v4 → v5 (→7)** — from a 9-table "v4" database with a hand-built
+5. **v4 → v5 (→8)** — from a 9-table "v4" database with a hand-built
    `srs_cards` table and seeded row; verifies `quiz_results` appears
    and the seeded card survives.
-6. **v5 → v6 (→7)** — from a 10-table "v5" database with hand-built
+6. **v5 → v6 (→8)** — from a 10-table "v5" database with hand-built
    `srs_cards`/`quiz_results` and seeded rows; verifies
    `flashcard_decks`/`flashcards` appear empty (no backfill) and both
    seeded rows survive.
-7. **v6 → v7** — from a 12-table "v6" database with a seeded bookmark
-   and a seeded `'ayah'`-type `srs_cards` row (a pre-existing ordinary
-   revision schedule); verifies `hifz_plans` appears empty (no
+7. **v6 → v7 (→8)** — from a 12-table "v6" database with a seeded
+   bookmark and a seeded `'ayah'`-type `srs_cards` row (a pre-existing
+   ordinary revision schedule); verifies `hifz_plans` appears empty (no
    backfill), the seeded bookmark survives, and the ordinary revision
    card is untouched.
+8. **v7 → v8** — from a 13-table "v7" database with a seeded bookmark,
+   a seeded `'ayah'`-type `srs_cards` row and a seeded `hifz_plans`
+   row; verifies `review_events` appears empty (explicitly no
+   backfill), both of its indexes exist, and all three seeded rows
+   survive untouched.
 
-Every real `onUpgrade` transition (1→2, 2→3, 3→4, 4→5, 5→6, 6→7) is
-exercised at least once; several starting points ride through the
-*entire remaining chain* to v7 in one open, incidentally proving the
+Every real `onUpgrade` transition (1→2, 2→3, 3→4, 4→5, 5→6, 6→7, 7→8)
+is exercised at least once; several starting points ride through the
+*entire remaining chain* to v8 in one open, incidentally proving the
 additive steps compose correctly across multiple consecutive versions.
 
 `AppDatabase` has no analogous migration test (never left

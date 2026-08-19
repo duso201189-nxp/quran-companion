@@ -769,14 +769,25 @@ selection so engineering is never idle waiting on them.
   specified; a v2.0 candidate per `PRODUCT_ROADMAP.md`, not a v1.0 gap.
   No route, screen, or localized string for it exists in the
   repository.
-- **Hifz progress/history reporting** — the remaining unbuilt part of
-  Hifz. **Corrected 2026-08-14**: this entry previously grouped *Hifz
-  mode* with "Nhật ký" as a never-specified v2.0 candidate. Hifz
-  itself shipped as Milestone 7 Sprint 7.7 — plan management,
-  Hifz-specific scheduling, and SRS-backed review with grading are
-  built and reachable from the Study tab, so Hifz is part of the v1.0
-  product surface. Only a Hifz-specific progress/history view is still
-  missing: Hifz is shipped, not complete.
+- ~~**Hifz progress/history reporting**~~ — **closed**. **Corrected
+  2026-08-14**: this entry previously grouped *Hifz mode* with "Nhật
+  ký" as a never-specified v2.0 candidate. Hifz itself shipped as
+  Milestone 7 Sprint 7.7 — plan management, Hifz-specific scheduling,
+  and SRS-backed review with grading are built and reachable from the
+  Study tab, so Hifz is part of the v1.0 product surface. **Corrected
+  again 2026-08-18**: the entry then said a Hifz-specific
+  progress/history view was still missing. Both have since been built —
+  progress as a per-plan snapshot screen (Sprint 7.7c-A) plus an
+  all-active-plans overview on the plans list (Sprint D6.4), and
+  history as a review-history section on the per-plan progress screen
+  (Sprint D6.11, `DR-2026-0026`, accepted) reading the `review_events`
+  table added at schema v8: a total review count and a seven-day
+  per-day distribution over the ayah set of a plan's range.
+  **Deliberately not built, and not a gap**: that history is *scope*,
+  not attribution — overlapping plans share one card per ayah, so no
+  cross-plan or aggregate Hifz history total exists and none is
+  planned. No Analytics surface consumes `review_events` either — that
+  boundary is `DR-2026-0025`, and it remains uncrossed.
 
 ---
 

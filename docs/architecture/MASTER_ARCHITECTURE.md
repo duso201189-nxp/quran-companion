@@ -73,16 +73,17 @@ database).`
   LexiconRelations`), built offline by `tool/build_quran_db.py`,
   shipped as a read-only asset, opened lazily via `appDatabaseProvider`
   (`lib/core/database/database_providers.dart:8-12`).
-- **`UserDatabase`** (`lib/core/database/user/user_database.dart:10-25`)
+- **`UserDatabase`** (`lib/core/database/user/user_database.dart:10-26`)
   — a **separate** Drift database, opened via a separate connection
   (`user_database_providers.dart:6-10`), currently at
-  `schemaVersion = 7` with 13 tables (`Bookmarks, Highlights, Notes,
+  `schemaVersion = 8` with 14 tables (`Bookmarks, Highlights, Notes,
   Favorites, AyahStatuses, StudySessions, KhatmCycles,
   BookmarkCollections, SrsCards, QuizResults, FlashcardDecks,
-  Flashcards, HifzPlans`). Migrations are strictly additive — the doc
-  comment is explicit: `KHÔNG BAO GIỜ drop dữ liệu người dùng` ("NEVER
-  drop user data", `user_database.dart:37`), and every `onUpgrade` step
-  only calls `createTable`/`addColumn` (`user_database.dart:38-75`).
+  Flashcards, HifzPlans, ReviewEvents`). Migrations are strictly
+  additive — the doc comment is explicit: `KHÔNG BAO GIỜ drop dữ liệu
+  người dùng` ("NEVER drop user data", `user_database.dart:37`), and
+  every `onUpgrade` step only calls `createTable`/`addColumn`
+  (`user_database.dart:38-75`).
   Every Group B table mixes in `SyncColumns` (`user_tables.dart:10-17`) —
   client-generated UUID `id`, nullable `user_id`, `updated_at`,
   nullable `deleted_at` (soft delete), `is_dirty` — preparing for a
