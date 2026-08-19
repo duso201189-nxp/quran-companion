@@ -27,12 +27,59 @@ record's own "Relationship to" note) DR.
 | [DR-2026-0025](DR-2026-0025-analytics-review-event-consumption-boundary.md) | Analytics review-event consumption boundary | accepted | 2026-08-16 |
 | [DR-2026-0026](DR-2026-0026-hifz-historical-review-count-and-pace.md) | Hifz historical review count and review pace (read boundary) | accepted | 2026-08-16 |
 | [DR-2026-0027](DR-2026-0027-retention-observation-instrument.md) | Retention observation instrument (read-only boundary) | accepted | 2026-08-18 |
+| [DR-2026-0028](DR-2026-0028-decision-record-authority-over-main.md) | Decision Record authority over `main` | accepted | 2026-08-19 |
 
 `DR-2026-0017` is partially implemented: Sprint F0 (Phase 4) shipped its
 Surah/Āyah subset as `lib/core/quran/quran_address.dart`. The record
 remains `proposed` because its later milestones — Word/Segment levels,
 `Range`, and the schema change at M4 — are neither built nor approved,
 and M4 additionally requires `PROJ-P-002` sign-off.
+
+## Authority over `main` (DR-2026-0028)
+
+[`DR-2026-0028`](DR-2026-0028-decision-record-authority-over-main.md)
+separates two questions about a Decision Record that this directory had
+previously conflated.
+
+**Approval** is what `status: accepted` records: the decision was made,
+by the named deciders. **Jurisdiction** is which branch the decision
+governs. Answering one does not answer the other — a record can be
+fully approved and govern nothing on `main`.
+
+**The test for `main` is repository presence.** A Decision Record
+governs `main` when, and only when, that record — with
+`status: accepted` — is present in `origin/main`'s tree:
+
+```
+git ls-tree -r origin/main -- docs/adr/
+```
+
+Listed there, it governs `main`. Not listed there, it does not. Nothing
+substitutes for that test — not acceptance on another branch, not
+presence in a working tree, not restoration from history, and not
+citation by code on `main`. Implementation citations establish only
+that someone referenced a record; they are never evidence of its
+authority.
+
+**`DR-2026-0006` … `DR-2026-0013` are accepted historical records that
+do not govern `main`.** All eight were genuinely approved, on
+2026-07-25 and 2026-07-26, on the branch `sprint1-my-library`. All
+eight keep `status: accepted`, unchanged, and their content is
+untouched. None of the eight is present on `origin/main`, so none of
+them governs `main`, and `main` is not in breach of them: they are
+authoritative history of what was decided on that branch, not
+obligations on this one. Any of them may become governing for `main`
+later, by a separate review that publishes it here — a review
+`DR-2026-0028` neither performs nor prejudges.
+
+The rule is **declaratory**. It invalidates no approval given before
+its date, changes no record's `status`, supersedes nothing, and
+reclassifies nothing as rejected. What it supplies is the missing
+jurisdiction test, stated once, so the question is not re-argued per
+record.
+
+`DR-2026-0028` is subject to its own rule: it governs `main` once it is
+present on `origin/main`, and not before.
 
 ## Known gap: `DR-2026-0002`
 
