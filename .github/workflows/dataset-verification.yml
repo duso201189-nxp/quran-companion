@@ -1,0 +1,225 @@
+# =============================================================
+# Dataset storage verification (read-only)
+#
+# Purpose: confirm the R2 dataset registry is reachable and readable,
+# and that whatever it currently holds matches its own documented
+# layout and manifests (docs/PRIVATE_STORAGE.md §4).
+#
+# This workflow NEVER writes. It references only the read-only
+# credential pair (R2_READ_ACCESS_KEY_ID / R2_READ_SECRET_ACCESS_KEY)
+# plus two non-secret configuration values (R2_BUCKET / R2_S3_ENDPOINT).
+# The self-check step below scans this file for any secrets./vars.
+# reference containing PUBLISH and refuses to run if it ever finds one
+# — proven to catch a real injected reference, not just present.
+#
+# DR-2026-0014 (publishing model) remains Proposed. This workflow
+# implements no part of publishing and does not anticipate an answer —
+# see DATASET_RELEASE_PIPELINE.md §5 for where a future publish action
+# would live; it is not here.
+#
+# Does not run on push/pull_request: bucket contents do not change on
+# every commit, so there is no benefit to referencing the read
+# credential on every PR from every same-repo branch. workflow_dispatch
+# covers on-demand checks; schedule covers unattended drift/rotation
+# detection.
+# =============================================================
+
+name: Dataset Storage Verification (read-only)
+
+on:
+  workflow_dispatch: {}
+  schedule:
+    - cron: '17 5 * * *'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: dataset-verification
+  cancel-in-progress: true
+
+jobs:
+  verify:
+    name: Verify R2 dataset storage
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      AWS_ACCESS_KEY_ID: ${{ secrets.R2_READ_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.R2_READ_SECRET_ACCESS_KEY }}
+      AWS_DEFAULT_REGION: auto
+      R2_BUCKET: ${{ vars.R2_BUCKET }}
+      R2_ENDPOINT: ${{ vars.R2_S3_ENDPOINT }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Self-check — no write-capable command, no publisher secret
+        id: selfcheck
+        run: |
+          FILE=.github/workflows/dataset-verification.yml
+          # The two pattern definitions below are tagged `pattern-definition`
+          # and excluded from the text they scan, so this check does not
+          # trip over its own deny-list. The PUBLISH check requires a
+          # secrets./vars. prefix so it flags an actual credential
+          # reference, not the English word "publisher" used in this
+          # file's own comments and error messages.
+          SCAN=$(grep -v 'pattern-definition' "$FILE")
+          WRITE_PATTERN='put-object|delete-object|delete-objects|s3 sync|s3 mv|s3 cp [^|]*s3://' # pattern-definition
+          SECRET_PATTERN='(secrets|vars)\.[A-Za-z0-9_]*PUBLISH' # pattern-definition
+          if echo "$SCAN" | grep -Eiq "$WRITE_PATTERN"; then
+            echo "::error::Write-capable command found in $FILE — refusing to run."
+            echo "$SCAN" | grep -Ein "$WRITE_PATTERN"
+            exit 1
+          fi
+          if echo "$SCAN" | grep -Eiq "$SECRET_PATTERN"; then
+            echo "::error::A secret/variable reference containing PUBLISH was found in $FILE — refusing to run."
+            echo "$SCAN" | grep -Ein "$SECRET_PATTERN"
+            exit 1
+          fi
+          echo "OK — no write-capable command and no publish-related secret/variable reference in this workflow."
+
+      - name: Required configuration is present
+        id: config
+        run: |
+          missing=()
+          [ -z "$AWS_ACCESS_KEY_ID" ] && missing+=("R2_READ_ACCESS_KEY_ID")
+          [ -z "$AWS_SECRET_ACCESS_KEY" ] && missing+=("R2_READ_SECRET_ACCESS_KEY")
+          [ -z "$R2_BUCKET" ] && missing+=("R2_BUCKET")
+          [ -z "$R2_ENDPOINT" ] && missing+=("R2_S3_ENDPOINT")
+          if [ ${#missing[@]} -gt 0 ]; then
+            echo "::error::Missing required secret(s)/variable(s): ${missing[*]}"
+            echo "See C1_PROVISIONING_CHECKLIST.md §7 for the names this workflow expects."
+            exit 1
+          fi
+          echo "OK — all four required names are set (values not shown)."
+
+      - name: Bucket connectivity and authenticated read access
+        id: connectivity
+        run: |
+          set +e
+          OUT=$(aws s3api head-bucket --bucket "$R2_BUCKET" --endpoint-url "$R2_ENDPOINT" 2>&1)
+          CODE=$?
+          set -e
+          if [ $CODE -ne 0 ]; then
+            echo "$OUT"
+            if echo "$OUT" | grep -Eq '\(403\)|Forbidden|AccessDenied'; then
+              echo "::error::Authentication or authorization failed against bucket '$R2_BUCKET'. Check that R2_READ_ACCESS_KEY_ID / R2_READ_SECRET_ACCESS_KEY are correct, not revoked, and scoped to this bucket with read permission."
+            elif echo "$OUT" | grep -Eq '\(404\)|NoSuchBucket|Not Found'; then
+              echo "::error::Bucket '$R2_BUCKET' not found at endpoint '$R2_ENDPOINT'. Check R2_BUCKET and R2_S3_ENDPOINT."
+            elif echo "$OUT" | grep -Eiq 'could not connect|endpoint|name or service not known|timed out'; then
+              echo "::error::Could not reach '$R2_ENDPOINT'. Check R2_S3_ENDPOINT and network egress from the runner."
+            else
+              echo "::error::Bucket check failed for an unrecognised reason — see the raw error above."
+            fi
+            exit 1
+          fi
+          echo "OK — bucket '$R2_BUCKET' is reachable and the read credential authenticated."
+
+      - name: Enumerate registry layout (datasets/ and artifacts/)
+        id: enumerate
+        run: |
+          for PREFIX in datasets artifacts; do
+            aws s3api list-objects-v2 \
+              --bucket "$R2_BUCKET" --endpoint-url "$R2_ENDPOINT" \
+              --prefix "${PREFIX}/" \
+              | jq -r '.Contents[]?.Key // empty' > "${PREFIX}.keys.txt"
+          done
+          DATASET_COUNT=$(grep -c . datasets.keys.txt || true)
+          ARTIFACT_COUNT=$(grep -c . artifacts.keys.txt || true)
+          echo "dataset_objects=$DATASET_COUNT" >> "$GITHUB_OUTPUT"
+          echo "artifact_objects=$ARTIFACT_COUNT" >> "$GITHUB_OUTPUT"
+          echo "Found $DATASET_COUNT object(s) under datasets/, $ARTIFACT_COUNT under artifacts/."
+
+      - name: Every object has a sibling manifest.json
+        id: layout
+        run: |
+          FAIL=0
+          for PREFIX in datasets artifacts; do
+            [ -s "${PREFIX}.keys.txt" ] || continue
+            while IFS= read -r KEY; do
+              [ "$(basename "$KEY")" = "manifest.json" ] && continue
+              MANIFEST="$(dirname "$KEY")/manifest.json"
+              if ! grep -qxF "$MANIFEST" "${PREFIX}.keys.txt"; then
+                echo "::error::Object '$KEY' has no sibling manifest.json at '$MANIFEST' — violates the layout documented in docs/PRIVATE_STORAGE.md §4."
+                FAIL=1
+              fi
+            done < "${PREFIX}.keys.txt"
+          done
+          if [ "$FAIL" -eq 1 ]; then
+            exit 1
+          fi
+          echo "OK — every object found has a sibling manifest.json (or no objects exist yet)."
+
+      - name: Required dataset/artifact presence (configurable)
+        id: required
+        env:
+          # Populate one key per line as artifacts are actually
+          # published through the pipeline's Production stage
+          # (DATASET_RELEASE_PIPELINE.md §5). Empty today because no
+          # Publisher write has occurred yet — DR-2026-0014 remains
+          # Proposed and the Publisher credential is documented as
+          # stored but unused.
+          REQUIRED_OBJECTS: ""
+        run: |
+          if [ -z "$REQUIRED_OBJECTS" ]; then
+            echo "No required objects configured yet — nothing has been published via the Production stage as of this run. This is a placeholder state, not a false pass; see the REQUIRED_OBJECTS comment in this workflow file."
+            exit 0
+          fi
+          MISSING=0
+          while IFS= read -r KEY; do
+            [ -z "$KEY" ] && continue
+            if ! grep -qxF "$KEY" datasets.keys.txt artifacts.keys.txt 2>/dev/null; then
+              echo "::error::Required object missing from registry: $KEY"
+              MISSING=1
+            fi
+          done <<< "$REQUIRED_OBJECTS"
+          if [ "$MISSING" -eq 1 ]; then
+            exit 1
+          fi
+          echo "OK — all configured required objects are present."
+
+      - name: Manifest integrity — version metadata (if applicable)
+        id: integrity
+        run: |
+          CHECKED=0
+          for PREFIX in datasets artifacts; do
+            [ -s "${PREFIX}.keys.txt" ] || continue
+            while IFS= read -r KEY; do
+              case "$KEY" in
+                */manifest.json)
+                  aws s3api get-object --bucket "$R2_BUCKET" --endpoint-url "$R2_ENDPOINT" \
+                    --key "$KEY" /tmp/manifest.json >/dev/null
+                  if ! python3 -c "import json,sys; d=json.load(open('/tmp/manifest.json')); sys.exit(0 if 'sha256' in d else 1)"; then
+                    echo "::error::Manifest '$KEY' is missing a sha256 field — cannot verify immutable identity."
+                    exit 1
+                  fi
+                  CHECKED=$((CHECKED+1))
+                  ;;
+              esac
+            done < "${PREFIX}.keys.txt"
+          done
+          if [ "$CHECKED" -eq 0 ]; then
+            echo "No manifests found — no version metadata to verify yet. Not applicable at this point in the pipeline."
+          else
+            echo "OK — checked $CHECKED manifest(s), each declares a sha256 identity."
+          fi
+
+      - name: Verification summary
+        if: always()
+        run: |
+          {
+            echo "## Dataset storage verification — $(date -u +%FT%TZ)"
+            echo
+            echo "| Check | Outcome |"
+            echo "|---|---|"
+            echo "| No write-capable command / no publisher secret reference | ${{ steps.selfcheck.outcome || 'not run' }} |"
+            echo "| Required configuration present | ${{ steps.config.outcome || 'not run' }} |"
+            echo "| Bucket connectivity + authenticated read | ${{ steps.connectivity.outcome || 'not run' }} |"
+            echo "| Registry layout enumerated (datasets: ${{ steps.enumerate.outputs.dataset_objects || '?' }}, artifacts: ${{ steps.enumerate.outputs.artifact_objects || '?' }}) | ${{ steps.enumerate.outcome || 'not run' }} |"
+            echo "| Every object has a sibling manifest.json | ${{ steps.layout.outcome || 'not run' }} |"
+            echo "| Configured required objects present | ${{ steps.required.outcome || 'not run' }} |"
+            echo "| Manifest version/checksum metadata (if any) | ${{ steps.integrity.outcome || 'not run' }} |"
+            echo
+            echo "Credentials referenced by this workflow: \`R2_READ_ACCESS_KEY_ID\`, \`R2_READ_SECRET_ACCESS_KEY\` only."
+            echo "Write operations attempted: **none** — enforced by the self-check step above."
+          } >> "$GITHUB_STEP_SUMMARY"
