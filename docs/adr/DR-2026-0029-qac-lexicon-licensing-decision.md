@@ -17,9 +17,13 @@ links:
 
 # DR-2026-0029 — QAC/Lexicon licensing: MASAQ rejection and unresolved-dependency governance
 
-**Status of this record: proposed, not accepted.** It states facts drawn
+**Status of this record: accepted** by the `owner_role`
+(constitution-owner `duso`) on 2026-08-22; `review_by` 2027-02-22.
+Acceptance makes it an accepted Decision Record; it does **not** yet
+make it governing on `main`, because it is not yet present on
+`origin/main` (see "Consequences"). It states facts drawn
 from repository evidence, a conservative decision set, and an evidence
-rule for future resolution. Acceptance is the `owner_role`'s call, same
+rule for future resolution. Acceptance was the `owner_role`'s call, same
 posture as `DR-2026-0014` and `DR-2026-0016`. This record authorizes
 **no implementation**: no parser is written, no dataset is downloaded,
 no schema changes, no code under `lib/` or `tool/` is touched, and no
@@ -382,7 +386,7 @@ at `WAITING_EXTERNAL_DECISION` against the **2026-08-24** deadline
 after this record's date (2026-08-22). This record does not change that
 deadline.
 
-Once this record (or a disposition for `DR-2026-0016`) is accepted,
+With this record accepted,
 those two documents need a **partial** reconciliation pass: adding the
 licence finding and this record's governance status — **not** adding
 a MASAQ rejection they already carry. That remains a separate, later
@@ -393,7 +397,7 @@ either document's status fields.
 ## Licensing registry follow-up
 
 `docs/LICENSING.md` is not edited by this record. As a follow-up,
-once this record (or a `DR-2026-0016` disposition) is accepted, the
+with this record accepted, the
 QAC/Lexicon licensing position should be represented in
 `docs/LICENSING.md` consistently with whatever the accepted decision
 states — including that no permission is currently evidenced and that
@@ -444,7 +448,7 @@ document as corrected.
   record. Both documents already record the MASAQ **structural**
   rejection; what they lack is the Fact 2 licence finding and this
   record's governance status. That **partial** reconciliation is
-  flagged here for after acceptance, not resolved.
+  flagged here as a later action, not resolved.
 - `docs/release/LEXICON_DATASET_VALIDATION.md` is explicitly flagged as
   requiring a later reconciliation pass — its Root/Lemma
   availability claims and its `masaq_parser.py`/`fetch_masaq.py`
@@ -463,9 +467,9 @@ document as corrected.
   inherited from `DR-2026-0016`, which never governed `main`. Ordinary
   maintenance of `segment_parser.py` for the QAC format it already
   serves is expressly not restricted (4c).
-- This record creates no new obligation on `main`: it is `proposed`, and
-  by the `DR-2026-0028` test does not govern `main` unless and until it
-  is accepted and present on `origin/main`.
+- This record creates no new obligation on `main` yet: it is accepted,
+  but by the `DR-2026-0028` test it does not govern `main` until it is
+  also present on `origin/main`, which it is not yet.
 - **Reversibility is soft.** This record can be superseded by a later DR
   — e.g. one that accepts a new Lexicon source under the evidence rule
   above, or one that formally defers Lexicon/Flashcards from v1.0 — with
