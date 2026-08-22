@@ -237,7 +237,7 @@ Four tracks. A, B, C run concurrently. D is gated on C2.
 | **D3** | Basmalah declarative | 0017 M2 · 0019 E2 |
 | **D4** | Audio/scroll split + sync policy | 0017 M3 · 0018 S2 · 0019 E3/E4 |
 | **D5** | Render pipeline + frame builder | 0019 E5 · 0018 S1/S3/S4 |
-| **D6** | Word foundation | 0017 M4/M5 · 0018 S6 · 0019 E6 — **gated on B2** |
+| **D6** | Word foundation | 0017 M4/M5 · 0018 S6 · 0019 E6 — **gated on B2**. Deferred from v1.0 under `DR-2026-0030` (accepted, governing, 2026-08-22). |
 
 ## 6. Epic definitions
 
@@ -341,12 +341,12 @@ Four tracks. A, B, C run concurrently. D is gated on C2.
 
 | Field | |
 |---|---|
-| **Objective** | Resolve `DR-2026-0016` — grant, or formal deferral. |
+| **Objective** | Resolve the QAC/Lexicon licensing question — grant, or formal deferral. (Historical framing named `DR-2026-0016`; that record is now **rejected** — `DR-2026-0029` rejected MASAQ, its proposed replacement source, on structural and licensing grounds, and QAC permission itself remains unresolved from repository evidence.) |
 | **Complexity** | Zero engineering. |
 | **Migration risk** | None |
 | **Dependency** | External response |
 | **Rollback** | N/A |
-| **DoD** | Decision recorded on the deadline; if unfavourable, Lexicon and Flashcards formally deferred under a Decision Record. **Do not extend the date.** |
+| **DoD** | Decision recorded on the deadline; if unfavourable, Lexicon and Flashcards formally deferred under a Decision Record. **Do not extend the date.** **Closure annotation (2026-08-22):** the substantive B2 outcome was completed through `DR-2026-0029` (QAC/Lexicon licensing — MASAQ rejected, QAC unresolved) and `DR-2026-0030` (formal deferral of Lexicon/Flashcards from v1.0), both accepted 2026-08-22, proactively ahead of the 2026-08-24 deadline. |
 | **Release impact** | Gates **D6 only**. Per `QURAN_COMPANION_PRODUCT_VISION.md` §0, word-level *reading* does not depend on this — only morphology does. An unfavourable answer costs one attachment, not the roadmap. |
 
 ### B3 — Store & legal assets · **start week 0**
@@ -457,7 +457,7 @@ Stated in advance, so they are decisions rather than drift.
 | Point | When | Criterion |
 |---|---|---|
 | **A0 result** | Week 0 | No device access → A3 re-planned or procurement started **before** anything is scheduled around it |
-| **B2 deadline** | **2026-08-24** | Decide. Do not extend. Unfavourable → D6 drops; the rest of Track D is unaffected |
+| **B2 deadline** | **2026-08-24** | Decide. Do not extend. Unfavourable → D6 drops; the rest of Track D is unaffected. **Fired 2026-08-22** (`DR-2026-0029` + `DR-2026-0030`), proactively ahead of the deadline — D6 dropped under `DR-2026-0030`; the rest of Track D remains unaffected |
 | **A1 verification** | End of A1 | Not verified on real hardware → A1 is not done, regardless of code state |
 | **C1 launch gate** | Before invites | Crash-free on both platforms, or do not invite. A first impression is spent once |
 | **C2 verdict** | C1 + 4 weeks | Thesis contradicted → Track D re-scoped or dropped, and the vision document amended, not quietly ignored |
