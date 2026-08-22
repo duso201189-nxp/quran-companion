@@ -658,6 +658,22 @@ selection so engineering is never idle waiting on them.
   Consequence while unresolved: Lexicon and Flashcards are
   non-functional on a real install; `weakRoots` in AI Tutor can never
   fire.
+- **Governance status update (2026-08-22).** `DR-2026-0016` (the MASAQ
+  data-source proposal referenced above) is now **rejected**.
+  `DR-2026-0029` ("QAC/Lexicon licensing," accepted, governing `main`)
+  independently confirms MASAQ is not adopted, on two grounds:
+  structural (no Root/Lemma columns, as above) and licensing (the
+  currently published MASAQ v6 is CC BY-NC 3.0, not the CC BY 4.0
+  `DR-2026-0016` assumed). No repository evidence establishes that a
+  QAC permission request was ever sent or answered; QAC permission
+  status remains unresolved from repository evidence. `DR-2026-0030`
+  ("Formal deferral of Lexicon and Flashcards from v1.0," accepted,
+  governing `main`) formally defers Lexicon (F1) and Flashcards (F2)
+  from v1.0 scope; `D6` (the Word foundation epic,
+  `PHASE4_IMPLEMENTATION_MASTER_PLAN.md`) is deferred as a direct
+  consequence. `DR-2026-0030` confirms the `weakRoots` consequence
+  above as a direct v1.0 consequence of this deferral. Word-level
+  Reading is unaffected; AI Tutor itself is not deferred.
 
 ### Critical
 
@@ -1035,11 +1051,17 @@ A release candidate is v1.0-ready only when all of the following hold:
 
 ## 7. Go / No-Go checklist
 
-- [ ] **Lexicon database asset populated and verified on a real
-      install — `WAITING_EXTERNAL_DECISION`**, Product Owner, blocked on
-      QAC permission response, decision deadline **2026-08-24**. Closes
-      either by a permission grant + pipeline run, or by formal deferral
-      under a Decision Record. **Not an engineering task until then.**
+- [x] **Lexicon database asset populated and verified on a real
+      install** — closed via **formal deferral under `DR-2026-0030`**
+      (accepted, governing `main`, 2026-08-22), the second of the two
+      closure paths this item named (*"a permission grant + pipeline
+      run, or ... formal deferral under a Decision Record"*), not the
+      first. Decision deadline was **2026-08-24**; `DR-2026-0030`
+      exercised the formal-deferral path proactively, ahead of that
+      date. The Lexicon database asset itself remains unpopulated — no
+      QAC permission grant is claimed, and no pipeline run occurred.
+      This box closes because Lexicon/Flashcards are formally deferred
+      from v1.0 scope, not because the asset was populated.
 - [x] Search returns real FTS5 results, not placeholder/empty states —
       shipped Phase 3 Sprint R1 (`0f3f751`); 43,652 rows in
       `search_index_content`
@@ -1091,6 +1113,13 @@ sequence re-cut so engineering is never idle waiting on a third party.
    legal review in parallel** — both are external, both have lead time,
    both carry binary risk (§6). Neither is engineering work. Hard
    decision date for QAC: **2026-08-24**.
+   *Historical annotation (added 2026-08-22).* This instruction was
+   written 2026-08-03. `DR-2026-0030` subsequently exercised the
+   Lexicon/Flashcards formal-deferral path proactively, on 2026-08-22,
+   ahead of the 2026-08-24 decision date named above; that date itself
+   was not changed by `DR-2026-0030`. Repository evidence does not
+   establish whether this instruction — sending a QAC permission
+   request — was ever carried out.
 2. ~~**R3a — Web Platform Completion**~~ — **done** (2026-08-03).
    Closed Go/No-Go box 4 and removed the false-green from CI; verified
    working in a real browser. Hosting-target choice still open, not

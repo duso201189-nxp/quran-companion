@@ -183,6 +183,24 @@ plus this engagement's `UPDATED_TECHNICAL_DEBT.md`.
   On deadline expiry with no clear grant: defer Lexicon and Flashcards
   from v1.0 under a Decision Record. Do not renegotiate the date.
 
+  **Governance update (2026-08-22).** `DR-2026-0029` ("QAC/Lexicon
+  licensing," accepted, governing) adds a second, independent
+  rejection ground for MASAQ beyond the structural one above: the
+  currently published MASAQ v6 is **CC BY-NC 3.0**, not the CC BY 4.0
+  the MASAQ proposal assumed. No repository evidence establishes that
+  a QAC permission request was ever sent or answered. `DR-2026-0030`
+  ("Formal deferral of Lexicon and Flashcards from v1.0," accepted,
+  governing) formally defers Lexicon and Flashcards from v1.0 scope,
+  exercised **proactively on 2026-08-22** — approximately two days
+  ahead of the 2026-08-24 deadline above — under explicit
+  release-owner authorization. This is **not** the automatic firing of
+  the deadline-expiry contingency stated above: the deadline had not
+  passed, and nothing here claims it had. The deadline itself
+  (2026-08-24) is unchanged, unextended, and not renegotiated. `D6`
+  (the Word foundation epic in `PHASE4_IMPLEMENTATION_MASTER_PLAN.md`
+  — distinct from this document's own technical-debt item D6, below)
+  is deferred as a direct consequence.
+
 ## 3. Nice-to-have (does not block v1.0)
 
 - Consolidating the remaining duplicate widgets flagged in
