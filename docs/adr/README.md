@@ -28,6 +28,7 @@ record's own "Relationship to" note) DR.
 | [DR-2026-0026](DR-2026-0026-hifz-historical-review-count-and-pace.md) | Hifz historical review count and review pace (read boundary) | accepted | 2026-08-16 |
 | [DR-2026-0027](DR-2026-0027-retention-observation-instrument.md) | Retention observation instrument (read-only boundary) | accepted | 2026-08-18 |
 | [DR-2026-0028](DR-2026-0028-decision-record-authority-over-main.md) | Decision Record authority over `main` | accepted | 2026-08-19 |
+| [DR-2026-0029](DR-2026-0029-qac-lexicon-licensing-decision.md) | QAC/Lexicon licensing: MASAQ rejection and unresolved-dependency governance | accepted | 2026-08-22 |
 
 `DR-2026-0017` is partially implemented: Sprint F0 (Phase 4) shipped its
 Surah/Āyah subset as `lib/core/quran/quran_address.dart`. The record
