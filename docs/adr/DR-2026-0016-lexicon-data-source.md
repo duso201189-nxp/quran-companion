@@ -3,8 +3,8 @@ id: DR-2026-0016
 scope: project
 owner_role: constitution-owner
 date: 2026-08-01
-deciders: []
-status: proposed
+deciders: [duso]
+status: rejected
 supersedes: null
 review_by: null
 reversibility: soft
@@ -17,7 +17,8 @@ links:
 
 # DR-2026-0016 — Lexicon morphology data source
 
-**Status of this record: proposed, not accepted.** It states a
+**Status of this record: rejected** (was proposed, not accepted; the
+`owner_role` has since rejected it). It states a
 recommendation and the evidence behind it; acceptance is the
 `owner_role`'s call. No production code has been changed, no dataset
 has been downloaded. Same posture as `DR-2026-0014` and `DR-2026-0015`.

@@ -15,7 +15,7 @@ record's own "Relationship to" note) DR.
 | [DR-2026-0005](DR-2026-0005.md) | Sprint 10: Learning Engine architecture — Scheduler (SM-2), Review Session, Quiz | accepted | 2026-07-20 |
 | [DR-2026-0014](DR-2026-0014-publishing-model.md) | Publishing model for the artifact registry | proposed | 2026-07-26 |
 | [DR-2026-0015](DR-2026-0015-coverage-measurement-policy.md) | Coverage measurement policy: generated code in the denominator | accepted | 2026-08-01 |
-| [DR-2026-0016](DR-2026-0016-lexicon-data-source.md) | Lexicon morphology data source | proposed | 2026-08-01 |
+| [DR-2026-0016](DR-2026-0016-lexicon-data-source.md) | Lexicon morphology data source | rejected | 2026-08-01 |
 | [DR-2026-0017](DR-2026-0017-universal-quran-address.md) | The Universal Qur'an Address | proposed | 2026-08-03 |
 | [DR-2026-0018](DR-2026-0018-reading-session-architecture.md) | Reading Session architecture | proposed | 2026-08-03 |
 | [DR-2026-0019](DR-2026-0019-reading-engine-architecture.md) | Reading Engine architecture | proposed | 2026-08-03 |
@@ -29,6 +29,7 @@ record's own "Relationship to" note) DR.
 | [DR-2026-0027](DR-2026-0027-retention-observation-instrument.md) | Retention observation instrument (read-only boundary) | accepted | 2026-08-18 |
 | [DR-2026-0028](DR-2026-0028-decision-record-authority-over-main.md) | Decision Record authority over `main` | accepted | 2026-08-19 |
 | [DR-2026-0029](DR-2026-0029-qac-lexicon-licensing-decision.md) | QAC/Lexicon licensing: MASAQ rejection and unresolved-dependency governance | accepted | 2026-08-22 |
+| [DR-2026-0030](DR-2026-0030-formal-deferral-lexicon-flashcards-v1.md) | Formal deferral of Lexicon and Flashcards from v1.0 | accepted | 2026-08-22 |
 
 `DR-2026-0017` is partially implemented: Sprint F0 (Phase 4) shipped its
 Surah/Āyah subset as `lib/core/quran/quran_address.dart`. The record
