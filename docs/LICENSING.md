@@ -214,3 +214,60 @@ bản, hoặc (b) gỡ bộ này khỏi bản phát hành.
 Cho tới khi 1a được giải quyết theo một trong hai hướng ấy, **không có
 bản phát hành công khai nào**, kể cả miễn phí. Miễn phí không phải là
 phòng vệ trước vi phạm bản quyền.
+
+## 5. Lexicon / dữ liệu hình thái học (F1) — chưa phát sinh nghĩa vụ giấy phép
+
+**Thêm 2026-08-23 (Session 89), theo yêu cầu "follow-up" nêu tại
+`DR-2026-0029` mục "Licensing registry follow-up" và `DR-2026-0030`.**
+Khác với mục 1–4 ở trên (mô tả nội dung **đang phát hành**): 8 bảng
+Lexicon (`roots`, `lemmas`, `lexemes`, `word_instances`,
+`grammar_features`, `phrases`, `phrase_word_instances`,
+`lexicon_relations`) tồn tại trong schema và trong
+`assets/database/quran.sqlite`, nhưng **cả 8 bảng đều 0 dòng**. Không
+có bộ dữ liệu QAC nào và không có bộ dữ liệu MASAQ nào được phát hành
+kèm app. Mục này chỉ ghi lại vị thế quản trị hiện tại của nguồn dữ liệu
+Lexicon; nó không phải, và không thay thế, một Decision Record.
+
+**MASAQ bị từ chối** (`docs/adr/DR-2026-0029-qac-lexicon-licensing-decision.md`,
+accepted, đang áp dụng trên `main`, 2026-08-22). `DR-2026-0016` từng đề
+xuất MASAQ (Mendeley `10.17632/9yvrzxktmr`) làm nguồn thay thế QAC.
+`DR-2026-0029` từ chối bộ MASAQ hiện đang công bố (v5/v6, dữ liệu
+byte-giống-nhau) trên **hai căn cứ độc lập**:
+
+- **Cấu trúc**: file thật (19 cột, không phải 20 như mô tả công bố ban
+  đầu) không có cột Root và không có cột Lemma — không thỏa hợp đồng dữ
+  liệu bắt buộc của `tool/lexicon/normalizer.py`
+  (`docs/release/MASAQ_ACCEPTANCE_REPORT.md`).
+- **Giấy phép**: phiên bản v6 hiện đang công bố trên Mendeley là **CC
+  BY-NC 3.0** (phi thương mại), không phải CC BY 4.0 mà `DR-2026-0016`
+  đã giả định. (v5 — không còn là phiên bản công bố hiện tại — mang CC
+  BY 4.0.)
+
+Hai căn cứ này độc lập với nhau: dù pin lại về v5, căn cứ cấu trúc vẫn
+không đổi (vì v5 và v6 giống hệt nhau ở dữ liệu). Chi tiết đầy đủ:
+`docs/release/MASAQ_ACCEPTANCE_REPORT.md`,
+`docs/release/LEXICON_DATASET_VALIDATION.md`.
+
+**QAC vẫn chưa xác định được giấy phép/quyền sử dụng.** Không có bằng
+chứng nào trong kho mã cho thấy một yêu cầu xin phép QAC
+(corpus.quran.com) từng được gửi đi, và không có bằng chứng nào cho
+thấy đã nhận được phản hồi. Tài liệu này **không khẳng định** yêu cầu
+đã được gửi, **không khẳng định** yêu cầu chưa từng được gửi, và
+**không khẳng định** QAC đã từ chối hay đã chấp thuận bất cứ điều gì —
+chỉ ghi nhận rằng kho mã không chứa bằng chứng theo bất kỳ hướng nào.
+(`DR-2026-0029` Fact 4/5.)
+
+**Lexicon (F1) và Flashcards (F2) đã được hoãn chính thức khỏi v1.0**
+(`docs/adr/DR-2026-0030-formal-deferral-lexicon-flashcards-v1.md`,
+accepted, đang áp dụng trên `main`, 2026-08-22) — một quyết định phạm
+vi phát hành (release-scope), độc lập với câu hỏi nguồn dữ liệu ở
+trên. Quyết định này không phê duyệt, không xếp hạng và không loại trừ
+bất kỳ nguồn thay thế nào cho Lexicon.
+
+**Chưa quyết định ở đây** (để ngỏ cho chủ dự án — chủ sở hữu, không
+phải kỹ thuật):
+
+- Có nên thay thế nguồn Tanzil (văn bản Ả Rập hoặc bản dịch) hay không.
+- Có cần chọn một nguồn bản dịch/dữ liệu khác hay không.
+- Có nên gửi yêu cầu xin phép QAC hay không, khi nào, và nội dung ra
+  sao.

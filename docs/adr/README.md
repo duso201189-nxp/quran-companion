@@ -85,10 +85,18 @@ present on `origin/main`, and not before.
 
 ## Known gap: `DR-2026-0002`
 
-Referenced by id from six places in `lib/` (`app/router.dart`,
-`features/quran/presentation/reading/reading_navigation.dart`,
-`features/search/presentation/search_screen.dart`, and three
-`features/search/presentation/widgets/*.dart` files) plus
+Referenced by id from 10 files in `lib/` (14 occurrences total —
+**corrected 2026-08-23, Session 89 documentation-reconciliation pass**,
+by direct `grep` against the working tree; previously undercounted as
+"six places"): `app/router.dart`;
+`features/quran/presentation/reading/reading_navigation.dart`;
+`features/search/presentation/search_screen.dart` and three
+`features/search/presentation/widgets/*.dart` files
+(`search_result_section.dart`, `result_card.dart`,
+`search_error_state.dart`); `features/study/presentation/revision_queue_screen.dart`;
+`features/library/presentation/library_screen.dart`;
+`features/learning/presentation/review_session_screen.dart`; and
+`features/khatm/presentation/active_khatm_card.dart` — plus
 `CHANGELOG.md` — but, like `DR-2026-0003` was until this same
 Sprint-9 Phase-0 pass, it was never saved into this directory; it
 only ever existed as a chat-session artifact from Sprint 7.1's

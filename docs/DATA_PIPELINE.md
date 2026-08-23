@@ -15,7 +15,7 @@
 | Dữ liệu | Nguồn | Giấy phép / điều kiện |
 |---|---|---|
 | Arabic Uthmani | Tanzil.net (text verified) | Phân phối nguyên văn, cấm sửa văn bản, PHẢI ghi nguồn + link tanzil.net |
-| Transliteration | Tanzil.net (en.transliteration) | Tanzil terms — phi thương mại, ghi nguồn |
+| Transliteration | Quran.com / QUL (word-by-word transliteration API; `tool/fetch_transliteration.py` → `tool/data/transliteration.json`, nguồn duy nhất hiện dùng — **sửa lại 2026-08-23, Session 89**, dòng này trước đó ghi Tanzil.net, đã lỗi thời từ khi `fetch_transliteration.py` được thêm) | Ghi nguồn Quran.com/QUL khi phân phối (xem `docs/LICENSING.md` mục 1, dòng 2 — QUL chưa có tuyên bố giấy phép rõ ràng cho bộ này). Dự phòng: nếu thiếu `tool/data/transliteration.json`, `build_quran_db.py` tự tải từ Tanzil.net (en.transliteration, điều khoản phi thương mại, ghi nguồn) |
 | English (Sahih International) | Tanzil.net (en.sahih) | Tanzil terms — phi thương mại, ghi nguồn |
 | Tiếng Việt | QuranEnc.com (tự phát hiện key; ưu tiên Hasan Abdul Karim) | Sử dụng với ghi nguồn — kiểm tra điều khoản từng bản trên quranenc.com |
 | Audio | everyayah.com (URL trong bảng `reciters`) | Phi thương mại — xem everyayah.com |

@@ -35,11 +35,22 @@ Scope: everything currently in the repo, minus the pieces that are
 either broken on a real device or missing entirely. Full blocker list
 in `RELEASE_PLAN_V1.md`; summarized here as roadmap items:
 
-- **Fix the Lexicon content gap** — the 8 Lexicon tables exist in the
-  schema but not in the shipped database asset. This single fix
-  unblocks Lexicon and (since Flashcards depends on Lexicon) makes the
-  vocabulary/flashcard experience actually work on a real install, not
-  just in tests.
+- ~~**Fix the Lexicon content gap**~~ — **deferred from v1.0, not a
+  v1.0 gap to close.** **Corrected 2026-08-23** (Session 89
+  documentation-reconciliation pass): this item previously framed
+  populating the 8 Lexicon tables as v1.0 work to finish. `DR-2026-0030`
+  (accepted, governing `main`, 2026-08-22) formally defers Lexicon (F1)
+  and Flashcards (F2, which depends on F1) from v1.0 scope. The
+  underlying gap is unchanged — the 8 Lexicon tables exist in the
+  schema and ship with the database asset, but all remain empty (0
+  rows); `DR-2026-0029` rejected the current MASAQ dataset as a source
+  on structural and licensing grounds, and no repository evidence
+  establishes that QAC permission was ever requested or granted.
+  Whether, and in which release, Lexicon/Flashcards eventually ship is
+  **not** scheduled or committed by `DR-2026-0030` — it is not
+  reclassified into v1.1 below, only removed from v1.0. See
+  `docs/adr/DR-2026-0030-formal-deferral-lexicon-flashcards-v1.md` and
+  `docs/adr/DR-2026-0029-qac-lexicon-licensing-decision.md`.
 - **Finish Search** — **done; no longer a v1.0 gap**. **Corrected
   2026-08-18**: this item previously called it "the one clearly-visible
   'UI exists, logic doesn't' gap a real user would notice

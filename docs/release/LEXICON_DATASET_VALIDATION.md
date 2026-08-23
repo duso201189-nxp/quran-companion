@@ -1,5 +1,32 @@
 # Lexicon Dataset Validation — Phase 3 Sprint R3.1
 
+> **Superseded by real-file validation — corrected 2026-08-23, Session 89
+> documentation-reconciliation pass.** This document's Q1/Q10/§3/§5
+> findings below were derived from **published descriptions of MASAQ**
+> (the paper, the Mendeley abstract), not from the dataset file itself —
+> each such claim is marked **[external]** where it appears, exactly as
+> originally written. `docs/release/MASAQ_ACCEPTANCE_REPORT.md`
+> subsequently validated the **real** MASAQ file (TSV/DB, SHA-256
+> `aac224f1b852a1a87e5a896b76c4b55df7c29369a7da836aea1b7286a9c3a931`) and
+> found the external-description claims below **materially wrong**: no
+> Root column and no Lemma column exist (19 columns, not 20; 157,676
+> rows, not 131K), and the currently published version (v6) is licensed
+> CC BY-NC 3.0, not CC BY 4.0. `docs/adr/DR-2026-0029-qac-lexicon-licensing-decision.md`
+> (accepted, governing `main`) accordingly **rejects** the current MASAQ
+> dataset as a Lexicon source, on both grounds independently.
+> `docs/adr/DR-2026-0030-formal-deferral-lexicon-flashcards-v1.md`
+> (accepted, governing `main`) formally **defers Lexicon (F1) and
+> Flashcards (F2) from v1.0** as a consequence. All 8 Lexicon tables
+> ship empty (0 rows) in the current database asset; **no MASAQ dataset
+> and no QAC dataset is shipped**. This document is preserved below,
+> **unedited except for inline correction notes at each affected
+> claim**, as the historical record of the pre-validation,
+> description-based analysis — the required-field contract in §1 (read
+> from this repository's own `normalizer.py`, not from MASAQ) and the
+> architectural analysis in §2 Q2–Q9 remain accurate and are not
+> corrected here. Nothing below should be read as asserting that a valid
+> production Lexicon currently exists, or that MASAQ is adopted.
+
 Architecture / legal / data-validation sprint. **No production code, build
 script, release document, or commit was touched.**
 
@@ -36,18 +63,33 @@ produce an empty Lexicon. This was the single assumption
 
 **Yes, all six.** **[external]**
 
+> **False — corrected 2026-08-23, Session 89.** Validated against the
+> real 19-column MASAQ file in
+> `docs/release/MASAQ_ACCEPTANCE_REPORT.md`: **neither a Root column nor
+> a Lemma column exists**, in either the TSV or the SQLite distribution.
+> This is the hard constraint identified in §1 above — its absence means
+> `normalizer.py` skips every content word, producing an empty Lexicon,
+> exactly the state currently shipping. `DR-2026-0029` (accepted,
+> governing `main`) rejects the current MASAQ dataset on this ground,
+> independent of licensing. The table below is preserved verbatim as
+> the original, description-based (not file-verified) claim; do not
+> treat any row in it as current fact.
+
 | Requirement | MASAQ | Evidence |
 |---|---|---|
-| Root | ✅ | Dedicated Root field |
-| Lemma | ✅ | Dedicated Lemma field |
+| Root | ~~✅~~ **❌ absent — see correction above** | Dedicated Root field |
+| Lemma | ~~✅~~ **❌ absent — see correction above** | Dedicated Lemma field |
 | Surface | ✅ | "the Quranic word and its word parts, including the segment of the word in Arabic script" |
 | Segmentation | ✅ **explicitly** | "a field indicating the morpheme type whether it is a prefix, a stem or a suffix… prefixes represent all morphemes prior to the stem including the proclitics; suffixes represent all morphemes following the stem including enclitics" |
 | POS | ✅ | Morphological tags per morpheme, **Arabella Corpus tagset** |
 | Morphology | ✅ | 131K morphological entries; 55 of 71 tagset functions used |
 | Location | ✅ | Sura, verse, and "an index representing the sequence of the word part within the word" |
 
-Structure: **20 columns per row**, one row per word *or segment*, whole
-Quran. Formats: **TSV, CSV, JSON, SQLite3 `.db`**.
+Structure: ~~**20 columns per row**~~ **19 columns per row — corrected
+2026-08-23, Session 89, per `MASAQ_ACCEPTANCE_REPORT.md` §6**, one row
+per word *or segment*, whole Quran (~~131K~~ **157,676 rows —
+corrected 2026-08-23, Session 89**). Formats: **TSV, CSV, JSON, SQLite3
+`.db`**.
 
 Two findings materially better than expected:
 
@@ -108,6 +150,17 @@ to `.6`. Both permit derivatives and commercial use, so neither blocks —
 but the exact version and licence **must be pinned and recorded at
 download time**, not inferred from the paper. **[external]**
 
+> **Resolved, unfavourably — corrected 2026-08-23, Session 89.**
+> `MASAQ_ACCEPTANCE_REPORT.md` pinned it directly against the real file:
+> v5 (12 Nov 2024) is CC BY 4.0, but v6 (10 Dec 2024, byte-identical
+> data) is **CC BY-NC 3.0**, and v6 is the version currently published.
+> This does not reach a general legal conclusion about CC BY-NC 3.0
+> data — it defeats `DR-2026-0016`'s recommendation specifically,
+> which was conditioned on CC BY 4.0. `DR-2026-0029`
+> (accepted, governing `main`) treats this as one of two independent,
+> disqualifying grounds for rejecting the current MASAQ dataset (the
+> other being I-1/the Q1 correction above).
+
 **I-5 — Word/segment indexing alignment (unverified).** `_ayah_id_for`
 must produce ids matching the existing `ayahs` table, and
 `word_instances.position` must be unique per ayah (enforced by
@@ -130,6 +183,14 @@ risk that MASAQ merely exposes first.
 
 ### Q4 — Engineering effort: **Medium**
 
+> **Not authorized against the current MASAQ dataset — corrected
+> 2026-08-23, Session 89.** `DR-2026-0029` Decision 2 prohibits building
+> `masaq_parser.py`, `fetch_masaq.py`, or any Lexicon build against the
+> current MASAQ dataset (v5/v6); it fails the Q1 required-field contract
+> outright, so this sizing is now moot for that dataset. Preserved
+> verbatim below as the original sizing estimate, made before the file
+> was inspected.
+
 | Work | Size |
 |---|---|
 | `fetch_masaq.py` (validate + record provenance, no auto-download) | ~80 lines — Tiny |
@@ -149,7 +210,7 @@ written against a contract that already exists and is already tested.
 |---|---|---|
 | Arabella tagset doesn't decompose onto normalizer's axes (case/state/aspect/mood/voice/verb-form) | **High impact, medium likelihood** | If Arabella conflates axes the QAC scheme separates, `grammar_features` loses fidelity. Degrades gracefully — `classify_flag` returns `None` → warning, not crash. |
 | Word/segment indexing misaligns with `ayahs` | Medium | Caught loudly by `post_build_validator`'s position-uniqueness and occurrence-count checks. |
-| Root/lemma sparser than expected on content words | **High impact, low likelihood** | Would skip words (case G). MASAQ explicitly carries both; likelihood low but consequence is a partial Lexicon. |
+| Root/lemma sparser than expected on content words | ~~**High impact, low likelihood**~~ **realized in full — corrected 2026-08-23, Session 89: root/lemma are not sparse, they are absent (no such columns exist); see the Q1 correction above.** | Would skip words (case G). ~~MASAQ explicitly carries both; likelihood low but consequence is a partial Lexicon.~~ Consequence is not a partial Lexicon but an **empty** one — matches the current shipped state. |
 | First-contact defects in `normalizer.py` | Medium | Certain to some degree; unit tests are synthetic-only. |
 | Asset size growth | Low | 131K entries will grow `quran.sqlite`. CI already reports APK/web bundle sizes, so it surfaces automatically. |
 
@@ -221,67 +282,124 @@ release document records.
 
 **Materially safer.** **[external]**
 
+> **True only of v5, false of the currently published v6 — corrected
+> 2026-08-23, Session 89.** `MASAQ_ACCEPTANCE_REPORT.md` found v6 (the
+> version currently published on Mendeley) licensed **CC BY-NC 3.0**,
+> not CC BY. The "Attribution only" verdict and the "removes the
+> Lexicon leg" conclusion below hold for v5 alone, and this document's
+> recommendation is conditioned on this table — see the §5 correction.
+> This is a version-specific licensing finding, not a legal conclusion
+> about CC BY-NC 3.0 data in general.
+
 | Source | Derivatives | Commercial | Verdict |
 |---|---|---|---|
 | **QAC v0.4** | ❌ `# CHANGING IT IS NOT ALLOWED` in the data header, against a nominal GPL declaration | Unclear | Self-contradictory; the pipeline *must* transform, so this is unusable without accepting legal ambiguity |
 | **QAC v2** (`kaisdukes/quranic-corpus`) | ✅ under GPL-3.0 | ✅ | Copyleft obligations on data embedded in a store binary |
-| **MASAQ** | ✅ explicitly | ✅ explicitly | Attribution only |
+| **MASAQ v5** | ✅ explicitly | ✅ explicitly | Attribution only |
+| **MASAQ v6 (currently published)** | ✅ explicitly | ❌ NonCommercial (CC BY-NC 3.0) | Not commercially safe as published |
 
 CC BY (3.0 or 4.0) grants the right to *remix, transform and build upon*
 the material, **for any purpose, including commercially**, conditioned
 only on attribution — exactly the right QAC's header withholds and the
-one this pipeline requires.
+one this pipeline requires. CC BY-NC does not.
 
 Effect on `PROJ-P-005` (monetisation blocker, `CLAUDE.md` "stop and ask"):
 MASAQ **removes the Lexicon leg** of that blocker. It does **not** clear
 `PROJ-P-005` — Tanzil's non-commercial translation terms remain the
 binding constraint, and MASAQ's own text provenance is Tanzil, so nothing
 about the translation exposure changes either way. Net: one fewer
-obstacle, the principal one untouched.
+obstacle, the principal one untouched. **This paragraph describes v5
+only; the currently published v6 would not remove the Lexicon leg —
+see the correction above.**
 
 ## 3. Comparison table
 
-| | **QAC v0.4** (current target) | **QAC v2** | **MASAQ** ← recommended | Text-Fabric Quran | CAMeL/Farasa analysers |
+> **MASAQ column is wrong in three ways — corrected 2026-08-23, Session
+> 89, per `MASAQ_ACCEPTANCE_REPORT.md` §6**: Licence omits the currently
+> published v6's CC BY-NC 3.0; Root/Lemma are both absent, not present
+> (see the Q1 correction above); "Blocking flaw: *None identified*" is
+> false — the real file has two independent blocking flaws (structural:
+> no Root/Lemma; licensing: v6 is NonCommercial). `DR-2026-0029`
+> (accepted, governing `main`) rejects the current MASAQ dataset as a
+> Lexicon source on both grounds. The ranking below is likewise
+> superseded: MASAQ is not first-ranked once its own row is corrected.
+> The table is preserved verbatim beneath this notice as the original,
+> description-based comparison.
+
+| | **QAC v0.4** (current target) | **QAC v2** | **MASAQ** ← ~~recommended~~ **rejected, see notice above** | Text-Fabric Quran | CAMeL/Farasa analysers |
 |---|---|---|---|---|---|
-| Licence | GPL declared + `CHANGING IT IS NOT ALLOWED` | GPL-3.0 | **CC BY 4.0** (Mendeley v5) / 3.0 (paper) | CC BY 4.0 | Tool licences vary; output derivative |
+| Licence | GPL declared + `CHANGING IT IS NOT ALLOWED` | GPL-3.0 | ~~**CC BY 4.0** (Mendeley v5) / 3.0 (paper)~~ **v5: CC BY 4.0; v6 (currently published): CC BY-NC 3.0** | CC BY 4.0 | Tool licences vary; output derivative |
 | Derivatives permitted | **No** (contradictory) | Yes (copyleft) | **Yes** | Yes | N/A — generates, not distributes |
-| Commercial safe | Unclear | Obligations attach | **Yes** | Yes | Depends on tool |
-| Root | ✅ | ✅ | ✅ | ✅ | Generated, not gold |
-| Lemma | ✅ | ✅ | ✅ | ✅ | Generated |
+| Commercial safe | Unclear | Obligations attach | ~~**Yes**~~ **v5 only; v6 (published) is NonCommercial** | Yes | Depends on tool |
+| Root | ✅ | ✅ | ~~✅~~ **❌ no such column** | ✅ | Generated, not gold |
+| Lemma | ✅ | ✅ | ~~✅~~ **❌ no such column** | ✅ | Generated |
 | Segmentation | ✅ (`+` notation) | ✅ | ✅ **explicit column** | ✅ | Generated |
 | POS / morphology | ✅ QAC tagset | ✅ (AI-generated, community-verified) | ✅ Arabella tagset, expert i'rab | ✅ | Generated |
 | Academic quality | Established, widely cited | Newer; AI-tagged + human review | **Peer-reviewed** (*Data in Brief*), expert linguists, Univ. of Jordan | Established | Strong tools, no gold Quran annotation |
 | Maintenance | v0.4, long static | Active | Active (DOI at v6) | Active | Active |
-| Format | Tab text | Repo | **TSV/CSV/JSON/SQLite** | Text-Fabric | Library output |
+| Format | Tab text | Repo | **TSV/CSV/JSON/SQLite** (19 columns, not 20) | Text-Fabric | Library output |
 | Acquisition | Email-gated JS form | git clone | Mendeley download | Download | pip install |
-| Engineering effort | Baseline (parser exists) | Small-Medium | **Medium** | Medium-Large (adapter) | Large (build + verify annotation) |
-| Blocking flaw | **Licence** | Copyleft | *None identified* | Viable fallback | Not gold-standard data |
+| Engineering effort | Baseline (parser exists) | Small-Medium | *Not authorized — `DR-2026-0029` Decision 2* | Medium-Large (adapter) | Large (build + verify annotation) |
+| Blocking flaw | **Licence** | Copyleft | ~~*None identified*~~ **Two: no Root/Lemma columns; v6 is CC BY-NC 3.0** | Viable fallback | Not gold-standard data |
 
-Ranking of viable alternatives, best first: **1. MASAQ · 2. Text-Fabric
+~~Ranking of viable alternatives, best first: **1. MASAQ · 2. Text-Fabric
 Quran (CC BY 4.0) · 3. QAC v2 (GPL-3.0) · 4. Analyser-generated
-(CAMeL/Farasa) · 5. QAC v0.4 (rejected on licence).** A deeper top-five
-work-up was not pursued because MASAQ satisfies every hard requirement;
-the bench above is recorded so a fallback does not need re-researching.
+(CAMeL/Farasa) · 5. QAC v0.4 (rejected on licence).**~~ **Superseded —
+corrected 2026-08-23, Session 89**: MASAQ is rejected (see notice
+above), so it cannot rank first. `DR-2026-0029` Decision 5 does not
+re-rank or adopt an alternative; any replacement source remains a
+separate, future evidence/licensing/architecture decision. A deeper
+top-five work-up was not pursued because MASAQ was believed (wrongly,
+before file inspection) to satisfy every hard requirement; the bench
+above is recorded so a fallback does not need re-researching from zero.
 
 ## 4. What remains unverified
+
+> **All items below have since been resolved by file inspection —
+> corrected 2026-08-23, Session 89**, per `MASAQ_ACCEPTANCE_REPORT.md`.
+> The list is preserved verbatim as the original sprint's honest
+> statement of what it could not yet check; §5's recommendation, made
+> while all of this was still open, is corrected immediately below.
 
 Stated plainly, because the recommendation is conditional on it:
 
 - **No MASAQ file was downloaded.** Acquiring third-party data means
   accepting its terms — the owner's action, not an automated one,
   matching the posture `fetch_morphology.py` already takes.
+  — **Resolved**: the real file was subsequently acquired and hash-verified;
+  see `MASAQ_ACCEPTANCE_REPORT.md` §1–§2.
 - The **exact 20-column layout and header names** are known only from
   published descriptions, not inspection.
+  — **Resolved**: 19 columns, not 20; no Root or Lemma column among them.
 - Whether **root/lemma are populated densely enough on content words** to
   avoid case-G skips is unverified.
+  — **Resolved, unfavourably**: not "sparse" but **absent** — neither
+  column exists.
 - The **Arabella tagset's value vocabulary** — the input to the mapping
   layer — has not been enumerated.
+  — Moot: no Lexicon build against the current MASAQ dataset is
+  authorized (`DR-2026-0029` Decision 2), so this mapping work does not
+  proceed.
 - `pytest` is not installed locally, so the 543 lines of existing
   pipeline tests **could not be executed** during this sprint.
+  — Unrelated to the MASAQ finding; left as originally stated.
 
 ## 5. Recommendation
 
-# APPROVE MASAQ
+> **Superseded — corrected 2026-08-23, Session 89.** `DR-2026-0029`
+> (accepted, governing `main`, 2026-08-22) rejects the current MASAQ
+> dataset (v5/v6) as a Lexicon source, on two independent grounds: no
+> Root/Lemma columns (structural), and the currently published v6 is CC
+> BY-NC 3.0, not the CC BY 4.0 this recommendation was conditioned on
+> (licensing). No `masaq_parser.py` or `fetch_masaq.py` is authorized
+> against this dataset. `DR-2026-0030` (accepted, governing `main`)
+> subsequently and separately formally defers Lexicon (F1) and
+> Flashcards (F2) from v1.0 scope. The original recommendation and its
+> validation-gate steps are preserved verbatim below as the historical
+> record of this sprint's conclusion; they are not current guidance and
+> must not be acted on as written.
+
+# ~~APPROVE MASAQ~~ — REJECTED (see notice above)
 
 Conditional on a validation gate as the first task of any implementation
 sprint, in this order:
@@ -302,9 +420,24 @@ also fails, defer Lexicon from v1.0 under a superseding Decision Record.**
 Do not fall back to QAC — its licence problem is not solved by any amount
 of engineering.
 
+> **What actually happened — corrected 2026-08-23, Session 89.** Steps 2
+> and 3 both failed against the real file (`MASAQ_ACCEPTANCE_REPORT.md`):
+> no Root/Lemma columns exist at all. Per this section's own
+> contingency, that calls for evaluating a fallback source or deferral —
+> `DR-2026-0029` (accepted, governing `main`) records the MASAQ
+> rejection and leaves fallback-source selection to a future, separate
+> Decision Record (its own Decision 5); `DR-2026-0030` (accepted,
+> governing `main`) subsequently exercises the deferral branch directly,
+> formally deferring Lexicon (F1) and Flashcards (F2) from v1.0. Neither
+> Text-Fabric nor any other alternative has been adopted, evaluated, or
+> ruled out by either record.
+
 `DR-2026-0016` should remain `proposed` until step 3 passes. This
 document is the evidence base for accepting it, not the acceptance
-itself.
+itself. **`DR-2026-0016` was subsequently set to `status: rejected`
+(2026-08-22, PR #26) — a different, later action than "step 3 passes";
+see `docs/adr/DR-2026-0016-lexicon-data-source.md` and `DR-2026-0029`'s
+"`DR-2026-0016` disposition" section for why.**
 
 ---
 
