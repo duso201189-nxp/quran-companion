@@ -67,6 +67,18 @@ not the release-blocking gaps themselves).
 > under "v1.0-specific release blockers" (Verification gaps) and
 > "Known engineering gaps"; treat 58% as understating current progress
 > until a full refresh is run.
+>
+> **Note (Session 83 documentation-reconciliation pass, 2026-08-23)**:
+> this table predates further work not chronicled in §2 at all —
+> including the Analytics F3 test-file restoration (`UPDATED_TECHNICAL_DEBT.md`
+> D9) and the Read Model CTA (Sprint R3.1, `RELEASE_PLAN_V1.md`) — and
+> its "767 tests" / "81.54%" figures are accordingly stale. The
+> CI-verified baseline as of the latest green run on `main`
+> (commit `efd73e6`, run `32562348452`, 2026-08-22) is **1,317 tests
+> passing, 84.1% line coverage, 80% coverage gate**. This is a factual
+> correction only — the weighted score itself is still **not**
+> recalculated here, per the same reasoning as the notes above; no new
+> percentage is asserted.
 
 ---
 
@@ -730,11 +742,16 @@ selection so engineering is never idle waiting on them.
   the verified IndexedDB tier is fully functional and persistent.
 - **No real accessibility audit** has been performed (screen readers);
   `PERFORMANCE.md`'s Android column is unmeasured on a real mid-range
-  device; automated tests (767) verify logic, not an actual QA pass.
+  device; automated tests (**1,317** as of the latest CI run on `main`,
+  commit `efd73e6`, 2026-08-22 — corrected from a stale "767" during the
+  Session 83 documentation-reconciliation pass) verify logic, not an
+  actual QA pass.
 - ~~**Coverage gate mismatch**~~ — **resolved (Sprint R3.2, see §2)**.
-  Measured at 81.54% on hand-written code; gate raised 70 → 80 under
-  `DR-2026-0015`. Still open in the adjacent sense that Arabic/RTL
-  remains under-tested — tracked under Verification gaps, not here.
+  Measured at 81.54% on hand-written code at that sprint; gate raised
+  70 → 80 under `DR-2026-0015`. Re-measured at **84.1%** in the latest
+  CI run on `main` (commit `efd73e6`, 2026-08-22), still against the
+  80% gate. Still open in the adjacent sense that Arabic/RTL remains
+  under-tested — tracked under Verification gaps, not here.
 - **16 outdated packages**, including 2 major-version-behind
   (`flutter_riverpod`, `go_router`) and one EOL-flagged SQLite
   package — each requires its own regression pass; `CLAUDE.md` flags
@@ -747,7 +764,13 @@ selection so engineering is never idle waiting on them.
   step-numbered labels). Same class of cleanup as the item above,
   found during R3b, not yet actioned.
 - **D8 — duplicated soft-delete filter / upsert pattern**, 20+ sites
-  across 9 repository files. `RELEASE_PLAN_V1.md`'s own recommendation
+  across **8** repository files (`flashcard_repository_impl.dart`,
+  `hifz_plan_repository_impl.dart`, `khatm_cycle_repository_impl.dart`,
+  `scheduler_repository_impl.dart`, `bookmark_collection_repository_impl.dart`,
+  `quiz_repository_impl.dart`, `user_content_repository_impl.dart`,
+  `study_session_repository_impl.dart` — grepped directly against
+  `lib/` during the Session 83 documentation-reconciliation pass;
+  corrected from a stale "9"). `RELEASE_PLAN_V1.md`'s own recommendation
   is that this get an isolated sprint with full regression re-runs,
   not be bundled with smaller cleanups — correctly deferred so far,
   not yet scheduled.
@@ -761,9 +784,18 @@ selection so engineering is never idle waiting on them.
   action unilaterally under a "preserve behavior" constraint.
 - **`pubspec.yaml` version never bumped** — still `0.8.1+7` despite
   12 PRs and two quality sprints having shipped since.
-- **Background audio playback missing** (`AudioController` is
-  foreground-only) and **audio cache management has no UI** — both
-  real, user-visible gaps independent of the F1–F8 feature work.
+- ~~**Background audio playback missing**~~ — **resolved (Phase 4
+  Sprints B1–B3, see §2)**. `AudioService.init()` is wired, Android
+  manifest/permissions and `Info.plist`'s `UIBackgroundModes: audio`
+  are declared, and 14 of 16 Android emulator scenarios passed
+  directly (screen-off playback, lock-screen/notification controls,
+  call-interruption resume, queue boundaries). **iOS remains entirely
+  unverified — 0%** (no macOS build environment available); this stale
+  entry previously conflated "not implemented" with "iOS unverified,"
+  which are different claims — corrected during the Session 83
+  documentation-reconciliation pass. **Audio cache management has no
+  UI** remains open and unchanged — a real, user-visible gap
+  independent of the F1–F8 feature work.
 
 ### Low
 
@@ -973,10 +1005,16 @@ misleading UI affordances were.
   upstream genuinely closed; the risk here is entirely inherited from
   earlier sprints slipping, not new risk of its own.
 
-v1.1 work (D6 remainder, background audio, audio cache UI, Search
-polish, dependency-driven follow-ups) begins after R5, per
-`PRODUCT_ROADMAP.md` — deliberately excluded from R1–R5 to keep this
-sprint plan focused on what actually gates v1.0.
+v1.1 work (D6 remainder, audio cache UI, Search polish,
+dependency-driven follow-ups) begins after R5, per `PRODUCT_ROADMAP.md`
+— deliberately excluded from R1–R5 to keep this sprint plan focused on
+what actually gates v1.0. **Background audio removed from this list
+during the Session 83 documentation-reconciliation pass**: it was not
+v1.1-deferred as this line previously implied — it shipped opportunistically
+as Phase 4 Sprints B1–B3 (§2), Android-verified, iOS unverified.
+`PRODUCT_ROADMAP.md` itself still classifies background audio as
+open/v1.1-scoped and was deliberately left unedited in this pass —
+flagged as a follow-up for separate review rather than corrected here.
 
 ---
 
@@ -1037,10 +1075,15 @@ A release candidate is v1.0-ready only when all of the following hold:
   Every sprint above is sequential capacity on one person, not
   parallelizable across a team — the R1–R5 plan's dependencies matter
   more here than they would with more contributors.
-- **Coverage-gate honesty risk.** Raising the gate toward 80% (R3)
+- ~~**Coverage-gate honesty risk.**~~ Raising the gate toward 80% (R3)
   may surface that some of the 767 passing tests cover less real
   behavior than the count implies — treat any gap found as a genuine
-  finding, not a target to quietly lower instead.
+  finding, not a target to quietly lower instead. **The event this risk
+  warns about has already occurred and closed** (Sprint R3.2 raised the
+  gate to 80% against a measured 81.54%; the latest CI run on `main`,
+  commit `efd73e6`, 2026-08-22, measures 84.1% across 1,317 tests,
+  still above gate) — left in place as a record of the risk that was
+  taken, not removed, per this batch's documentation-only scope.
 - **Real-device access is unverified.** No source document confirms
   accessibility or performance testing has ever run on physical
   hardware rather than emulators/simulators — R3 assumes device
@@ -1075,8 +1118,11 @@ A release candidate is v1.0-ready only when all of the following hold:
 - [ ] Accessibility audit complete, Critical/High findings closed
 - [ ] Performance measured on a real mid-range Android device
 - [x] Coverage gate reconciled with actual measured coverage — measured
-      81.54% (hand-written code, generated sources excluded), gate set
-      to 80; all four figures and the rationale in §2, policy in
+      81.54% (hand-written code, generated sources excluded) at Sprint
+      R3.2, gate set to 80; re-measured at **84.1%** in the latest CI
+      run on `main` (commit `efd73e6`, 2026-08-22; `1,317` tests
+      passing) as of the Session 83 documentation-reconciliation pass.
+      All four original figures and the rationale in §2, policy in
       `DR-2026-0015`
 - [ ] All 16 outdated packages triaged; load-bearing/EOL ones upgraded
 - [ ] `RELEASE_CHECKLIST.md` fully signed off (assets, legal, signing)
@@ -1151,8 +1197,12 @@ engineering path entirely — see §3.)*
    box in §7 is checked.
 7. **v1.1 planning begins after v1.0 ships**, per `PRODUCT_ROADMAP.md`
    — not before, and not by quietly absorbing v1.1-scoped items
-   (Search polish, background audio, D6 remainder) into the v1.0 path
-   under schedule pressure.
+   (Search polish, D6 remainder) into the v1.0 path under schedule
+   pressure. *(Historical instruction, written 2026-08-03; background
+   audio removed from this parenthetical during the Session 83
+   documentation-reconciliation pass — it shipped as Phase 4 Sprints
+   B1–B3, §2, so it was never actually absorbed under pressure, just
+   done ahead of this sequencing note.)*
 
 ---
 
