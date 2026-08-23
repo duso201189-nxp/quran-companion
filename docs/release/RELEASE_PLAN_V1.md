@@ -95,9 +95,15 @@ plus this engagement's `UPDATED_TECHNICAL_DEBT.md`.
   storage tier (OPFS, needs COOP/COEP headers) is unverified in
   practice — the verified IndexedDB tier is fully functional, so this
   is a performance question, not a "ship or defer" one anymore.
-- Background audio playback (`audio_service` + platform manifest
-  entries) not implemented — `AudioController` currently only plays in
-  foreground.
+- ~~Background audio playback not implemented~~ — **resolved (Phase 4
+  Sprints B1–B3, `RELEASE_DASHBOARD.md` §2)**. `audio_service` is wired
+  with the required Android manifest/permission entries and iOS
+  `Info.plist` `UIBackgroundModes: audio`; 14 of 16 Android emulator
+  scenarios passed directly. **iOS remains entirely unverified — 0%**
+  (no macOS build environment available). Corrected during the Session
+  83 documentation-reconciliation pass — this entry previously said
+  "not implemented," which conflated the missing-iOS-verification gap
+  with a build that was never done.
 - Audio cache management UI in Settings not built (the underlying
   `IoCacheManager` engine exists but is never wired in — this is also
   `UPDATED_TECHNICAL_DEBT.md` D5).
@@ -143,7 +149,9 @@ plus this engagement's `UPDATED_TECHNICAL_DEBT.md`.
   the time it actually closed; flagged as its own finding in
   `docs/release/PHASE3_RELEASE_TRACKING_FINAL_REPORT.md`.
 - **D8**: a soft-delete filter and an upsert pattern are duplicated
-  across 9+ repository files. Not a correctness bug (tests pass,
+  across 8 repository files (corrected from a stale "9+" during the
+  Session 83 documentation-reconciliation pass — grepped directly
+  against `lib/`). Not a correctness bug (tests pass,
   behavior is consistent), but real duplication debt — recommended as
   its own dedicated, carefully-regression-tested sprint before v1.0 if
   time allows, not required to ship.

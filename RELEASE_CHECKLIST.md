@@ -141,15 +141,25 @@ log cho chi tiết từng commit). Mục đã ✅ là đã XÁC MINH THẬT (ch�
       đăng ký đúng trên Play Console khớp package này
 - [ ] iOS: Apple Developer Program, certificate + profile, TestFlight
 - [ ] Google Play Console, internal testing track
-- [ ] Phát nền audio: audio_service + AndroidManifest + Info.plist
-      (docs/AUDIO.md) — chưa triển khai, AudioController hiện chỉ
-      chạy foreground
+- [x] Phát nền audio: audio_service + AndroidManifest + Info.plist
+      (docs/AUDIO.md) — **đã triển khai (Phase 4 Sprint B1–B3,
+      RELEASE_DASHBOARD.md §2)**: `AudioService.init()` đã nối, manifest
+      Android + `Info.plist` đã khai báo, 14/16 kịch bản Android emulator
+      pass trực tiếp. **iOS chưa xác minh — 0%** (không có môi trường
+      build macOS). Sửa lại trong đợt rà soát tài liệu Session 83 — mục
+      này trước đó ghi "chưa triển khai", vốn nhầm lẫn giữa "chưa build"
+      và "chưa xác minh trên iOS".
 - [ ] UI quản lý cache audio trong Cài đặt (engine đã có:
       IoCacheManager, nhưng chưa nối vào AudioController/UI — xem
       TODO.md)
-- [ ] Web: sqlite3.wasm + drift_worker.js vào web/ (docs/DATA_PIPELINE.md)
-      — xác nhận lại lần này: 2 file này CHƯA có trong web/, build Web
-      hiện tại sẽ lỗi khi mở database trên trình duyệt thật
+- [x] Web: sqlite3.wasm + drift_worker.js vào web/ (docs/DATA_PIPELINE.md)
+      — **đã có (Phase 3 Sprint R3a.1–R3a.3, 2026-08-03)**: cả 2 file đã
+      được vendor vào `web/`, khớp phiên bản `pubspec.lock`
+      (`sqlite3-3.3.4`, `drift-2.34.0`), có SHA-256 trong
+      `docs/DATA_PIPELINE.md`, và đã xác minh chạy thật trên trình
+      duyệt (RELEASE_DASHBOARD.md §2/§3). Một CI guard chặn `build-web`
+      nếu 2 file này bị xoá. Sửa lại trong đợt rà soát tài liệu
+      Session 83 — mục này trước đó ghi "CHƯA có trong web/", đã lỗi thời.
 - [ ] Accessibility audit thật trên thiết bị: TalkBack/VoiceOver,
       contrast, font scale 200% (code đã có nền tảng theo
       ARCHITECTURE.md §14, nhưng chưa audit trên thiết bị/screen reader
@@ -159,9 +169,12 @@ log cho chi tiết từng commit). Mục đã ✅ là đã XÁC MINH THẬT (ch�
       bằng `flutter run --profile --trace-startup`, KHÔNG thay thế
       cho số đo Android thật). getAyahsOfSurah/FTS MATCH vẫn chưa đo
       trên cả 2 môi trường
-- [ ] Coverage gate CI hiện tạm 70% (không phải 80% như tài liệu gốc)
-      — coverage thật ~74% ở Bước 6/12; xem TODO.md + ARCHITECTURE.md
-      mục 9 để biết kế hoạch nâng dần về 80% khi Bước 7-9 landing
+- [x] Coverage gate CI — **đã nâng lên 80% (Sprint R3.2, `DR-2026-0015`)**,
+      không còn 70% như mục này trước đó ghi. Coverage đo được 81.54%
+      tại thời điểm Sprint R3.2; lần chạy CI xanh gần nhất trên `main`
+      (commit `efd73e6`, 2026-08-22) đo được **84.1%** trên **1.317**
+      test pass, vẫn trên ngưỡng 80%. Sửa lại trong đợt rà soát tài liệu
+      Session 83 — số "70%"/"~74%" đã lỗi thời từ lâu.
 - [ ] 16 package outdated (bao gồm 2 major version: flutter_riverpod
       2→3, go_router 14→17) + `sqlite3_flutter_libs` có bản mới đánh
       dấu `+eol` — CHƯA nâng cấp, cần một đợt test riêng trước khi bump

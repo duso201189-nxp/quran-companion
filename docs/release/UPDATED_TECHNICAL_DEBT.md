@@ -41,10 +41,15 @@ route `/study-summary`) now consumes `learningSnapshotProvider` and
 renders all four `LearningSnapshot` sections, with pull-to-refresh/
 retry wired to `smartLearningSessionProvider`. Details across
 `docs/release/PHASE3_SPRINT_R2_PLAN.md`,
-`PHASE3_SPRINT_R2_DESIGN_REVIEW.md`, and the R2.1–R2.3 reports. Not
-fully closed as a *product* surface — no CTA yet links to the route
-from `SmartLearningScreen` — but the debt item itself (repository
-built with no consumer, no decision made) is resolved.
+`PHASE3_SPRINT_R2_DESIGN_REVIEW.md`, and the R2.1–R2.3 reports. **Fully
+closed as a product surface as of Sprint R3.1** — `SmartLearningScreen`
+now links to the route via `_StudySummaryEntryCard`
+(`lib/features/smart_learning/presentation/smart_learning_screen.dart`).
+This entry previously said "no CTA yet links to the route from
+`SmartLearningScreen`"; corrected during the Session 83
+documentation-reconciliation pass — `RELEASE_PLAN_V1.md` already
+recorded this CTA as shipped and this file had not been updated to
+match.
 
 ### D4. Unused providers — **PARTIALLY FIXED (S2)**
 
@@ -94,7 +99,13 @@ existing seeded tests pass unmodified. 4 new dedicated tests added.
 ### D8. Duplicated soft-delete filter and upsert pattern in repositories — **NOT ACTIONED, unchanged**
 
 Still true (20+ sites for the filter, ~5 for the upsert recipe, across
-9 repository files). `ROADMAP_RECOMMENDATION.md` itself recommended
+**8** repository files — corrected from a stale "9" during the
+Session 83 documentation-reconciliation pass, grepped directly against
+`lib/`: `flashcard_repository_impl.dart`, `hifz_plan_repository_impl.dart`,
+`khatm_cycle_repository_impl.dart`, `scheduler_repository_impl.dart`,
+`bookmark_collection_repository_impl.dart`, `quiz_repository_impl.dart`,
+`user_content_repository_impl.dart`, `study_session_repository_impl.dart`).
+`ROADMAP_RECOMMENDATION.md` itself recommended
 this get "its own dedicated sprint with full regression-test re-runs,
 not bundled with D6/D7" given the surface area — S2 respected that and
 did not attempt it.
@@ -104,10 +115,15 @@ did not attempt it.
 Commit `8d85fc5`. `session_strategy_rules.dart` (11 tests),
 `daily_goal_store.dart` (4 tests), `daily_goal_providers.dart` (4
 tests), `flashcardRepositoryProvider`/`lexiconRepositoryProvider`
-wiring (2 tests) — all now covered. The separately-tracked F3 gap
-(5 missing Analytics test files) has its own complete, already-gated
-fix waiting on `feat/f3-test-completion` (commit `55b8de3`), unrelated
-to and unaffected by this sprint.
+wiring (2 tests) — all now covered. The separately-tracked F3 gap (5
+missing Analytics test files) is also closed: `feat/f3-test-completion`
+(commit `55b8de3`, PR #22) restored
+`achievement_calculator_test.dart`, `achievement_card_test.dart`,
+`goal_card_test.dart`, `learning_goal_calculator_test.dart`, and
+`learning_history_calculator_test.dart`, merged to `main` and present
+in the repository as of this pass — corrected from "waiting on ...,
+unrelated to and unaffected by this sprint" during the Session 83
+documentation-reconciliation pass.
 
 ---
 
