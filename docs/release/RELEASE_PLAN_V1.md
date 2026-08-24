@@ -176,10 +176,10 @@ plus this engagement's `UPDATED_TECHNICAL_DEBT.md`.
 
   | Field | Value |
   |---|---|
-  | Status | `WAITING_EXTERNAL_DECISION` |
+  | Status | `DEFERRED_FROM_V1.0` (`DR-2026-0030`, accepted, governing `main`, 2026-08-22) — **corrected 2026-08-23, Session 89**: previously still read `WAITING_EXTERNAL_DECISION`, contradicting the governance update below |
   | Owner | **Product Owner** (not engineering) |
-  | Dependency | QAC permission response (corpus.quran.com) |
-  | Deadline | **2026-08-24** (21 days) |
+  | Dependency | QAC permission response (corpus.quran.com) — unresolved from repository evidence |
+  | Deadline | **2026-08-24** (21 days); deferral was exercised proactively on 2026-08-22, ahead of this date, which is itself unchanged/unextended |
 
   The original framing above — "needs the content pipeline re-run",
   "effort depends on where the data comes from" — was **wrong**. The
@@ -268,7 +268,11 @@ plus this engagement's `UPDATED_TECHNICAL_DEBT.md`.
 2. ~~**Rebuild the content database asset**~~ — **removed from the
    engineering sequence 2026-08-03.** Now an external dependency owned
    by the Product Owner (§2). Engineering schedules nothing against it
-   until the QAC answer arrives or the deadline passes.
+   until the QAC answer arrives or the deadline passes. **Update
+   (2026-08-22, corrected 2026-08-23, Session 89)**: Lexicon (and
+   Flashcards, which depends on it) has since been formally deferred
+   from v1.0 under `DR-2026-0030` — see §2 — closing this item by
+   deferral rather than by a QAC answer or by reaching the deadline.
 3. ~~**Finish the FTS5 search engine wiring**~~ — **done**, Phase 3
    Sprint R1 (commit `0f3f751`).
 4. ~~**Resolve D3** (Read Model UI decision)~~ — **done**, Phase 3

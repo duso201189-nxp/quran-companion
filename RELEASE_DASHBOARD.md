@@ -652,7 +652,7 @@ selection so engineering is never idle waiting on them.
 
 | Item | Status | Owner | Dependency | Deadline |
 |---|---|---|---|---|
-| **Lexicon content** | `WAITING_EXTERNAL_DECISION` | Product Owner | QAC permission response | **2026-08-24** (21 days from 2026-08-03) |
+| **Lexicon content** | `DEFERRED_FROM_V1.0` (`DR-2026-0030`, accepted, governing `main`, 2026-08-22) — **corrected 2026-08-23, Session 89**: this field previously still read `WAITING_EXTERNAL_DECISION`, contradicting the governance update already recorded immediately below | Product Owner | QAC permission response — unresolved from repository evidence (no request or response is recorded) | **2026-08-24** (21 days from 2026-08-03); deferral was exercised proactively on 2026-08-22, ahead of this date, which is itself unchanged/unextended |
 
 - **Lexicon tables empty (0 rows) in the shipped database asset.**
   Schema exists (8 tables, F1/P3) and the full build pipeline exists
@@ -861,6 +861,13 @@ selection so engineering is never idle waiting on them.
   comes from" framing was wrong: the pipeline exists and the source is
   identified; the gate is a licence answer. This milestone cannot close
   until that answer arrives or Lexicon is formally deferred.
+  **Update (2026-08-22, corrected in this dashboard 2026-08-23, Session 89
+  documentation-reconciliation pass)**: Lexicon has since been formally
+  deferred from v1.0 under `DR-2026-0030` (accepted, governing `main`) —
+  the second of the two closure conditions named above. This milestone's
+  Lexicon half is accordingly closed by deferral, not by a QAC answer;
+  see §3 and §7. The QAC answer itself remains unresolved from
+  repository evidence.
 
 ### R3a — Web Platform Completion ← **RECOMMENDED NEXT SPRINT**
 
@@ -1022,8 +1029,14 @@ flagged as a follow-up for separate review rather than corrected here.
 
 A release candidate is v1.0-ready only when all of the following hold:
 
-1. Lexicon database asset ships with real data in all 8 tables;
-   Flashcards work end-to-end on a fresh install.
+1. ~~Lexicon database asset ships with real data in all 8 tables;
+   Flashcards work end-to-end on a fresh install.~~ — **closed by
+   formal deferral, not by shipping data** (`DR-2026-0030`, accepted,
+   governing `main`, 2026-08-22; **corrected 2026-08-23, Session 89**,
+   matching the Go/No-Go item already reconciled in §7). Lexicon (F1)
+   and Flashcards (F2) are formally deferred from v1.0 scope; the
+   database asset itself remains unpopulated (0 rows, all 8 tables) and
+   no QAC permission grant is claimed.
 2. Search UI is backed by the real FTS5 engine — no placeholder
    results.
 3. Read Model has either a shipped UI or a documented, explicit
@@ -1055,11 +1068,21 @@ A release candidate is v1.0-ready only when all of the following hold:
 
 ## 6. Risks
 
-- **Lexicon data sourcing is unscoped.** No source document specifies
-  where real lemma/word-instance data comes from or how much effort
-  populating 8 tables actually takes — this is the single largest
-  unknown in the entire v1.0 path, and it sits on the critical path
-  (R1, blocking Flashcards).
+- ~~**Lexicon data sourcing is unscoped.**~~ No source document
+  specifies where real lemma/word-instance data comes from or how much
+  effort populating 8 tables actually takes — this is the single
+  largest unknown in the entire v1.0 path, and it sits on the critical
+  path (R1, blocking Flashcards). **Resolved/superseded (2026-08-22,
+  corrected in this dashboard 2026-08-23, Session 89)**: the source was
+  in fact identified and evaluated — `DR-2026-0016` proposed MASAQ,
+  `DR-2026-0029` rejected the current MASAQ dataset on structural and
+  licensing grounds, and `DR-2026-0030` formally deferred Lexicon (F1)
+  and Flashcards (F2) from v1.0. Lexicon no longer sits on the v1.0
+  critical path — it is out of v1.0 scope entirely, not merely blocked
+  pending a source decision. Left in place as a record of the risk that
+  was assessed, per this batch's documentation-only, non-rewriting
+  convention (see the "Coverage-gate honesty risk" entry below for the
+  same pattern).
 - **Major dependency version bumps** (`flutter_riverpod`, `go_router`)
   carry real regression risk specifically in this codebase: S2's own
   D9 fix uncovered a genuine `.autoDispose` provider-lifecycle bug
