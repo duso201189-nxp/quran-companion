@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<!--
+  REPOSITORY DRAFT — NOT XCODE-VERIFIED. NOT AN APPLE COMPLIANCE CLAIM.
+
+  Prepared by SESSION 107 (2026-08-24) by static inspection of this
+  repository (worktree at origin/main SHA 3d5da90) and of the exact
+  plugin versions resolved in `pubspec.lock`, using each plugin's
+  locally cached source under the Pub package cache. This app has never
+  been built with Xcode/CocoaPods (no `ios/Podfile.lock` exists,
+  confirmed absent) — Xcode's own manifest-merge step, which runs at
+  archive time and can surface Required-Reason API usage this static
+  read did not catch, has never run against this project. Final
+  verification via an actual `flutter build ios`/Xcode archive is
+  required before App Store submission. This file does not assert Apple
+  compliance, App Store approval, or that this manifest is complete.
+
+  Evidence this draft is based on:
+
+  - NSPrivacyTracking / NSPrivacyTrackingDomains: set to false / empty.
+    No advertising identifier (IDFA), fingerprinting, or cross-app/
+    cross-site tracking code exists anywhere in lib/, android/, or ios/
+    (repository-wide search); no ad or tracking SDK is declared in
+    pubspec.yaml.
+  - NSPrivacyCollectedDataTypes: left empty. Full-repository audit found
+    no personal data is collected or transmitted off-device by this
+    app's own code — see docs/release/STORE_PRIVACY_FORM_DRAFT.md for
+    the complete evidence and citations. (That document, not this
+    comment, is the authoritative evidence record; this file only
+    carries the declarations that follow from it.)
+  - NSPrivacyAccessedAPITypes: left empty at the app level, for the
+    reasons below — this is the one section most likely to need
+    revision after an actual Xcode build, and is NOT to be read as a
+    claim that no Required-Reason API is used anywhere in the compiled
+    app.
+
+    Resolved iOS/macOS-relevant plugin versions (from pubspec.lock) were
+    checked directly in the local Pub cache for their OWN bundled
+    PrivacyInfo.xcprivacy manifests, which Xcode merges automatically
+    with this file at archive time — they do not need to be duplicated
+    here:
+      * shared_preferences_foundation 2.5.6 — ships its own manifest
+        declaring NSPrivacyAccessedAPICategoryUserDefaults, reason
+        "1C8F.1" (access user defaults from within the app's own
+        container). Covers this app's shared_preferences usage
+        (docs/release/STORE_PRIVACY_FORM_DRAFT.md §5).
+      * sqflite_darwin 2.4.3+1 — ships its own manifest, declares no
+        Required-Reason API usage.
+      * package_info_plus 10.2.0 (ios/ and macos/ variants) — ships its
+        own manifest, declares no Required-Reason API usage.
+
+    The following resolved plugins have real native Darwin
+    implementations (confirmed: their `darwin/` source directories
+    exist and were inspected) but do NOT currently bundle their own
+    PrivacyInfo.xcprivacy, as of the exact versions pinned in
+    pubspec.lock:
+      * path_provider_foundation 2.6.0 — Dart-FFI-based (no compiled
+        Swift/Obj-C source shipped in this version; calls Foundation
+        directly via FFI bindings). No File Timestamp or other
+        Required-Reason API usage was found in the available source.
+      * just_audio (darwin implementation, resolved via just_audio
+        0.9.46)
+      * audio_service (darwin implementation, resolved via
+        audio_service 0.18.19)
+      * sqlite3_flutter_libs (darwin implementation, resolved via
+        sqlite3_flutter_libs 0.5.42)
+      * flutter_cache_manager 3.4.1 and audio_session 0.1.25
+        (transitive; darwin-relevant but no bundled manifest found)
+
+    Absence of a bundled manifest is not proof of absence of
+    Required-Reason API usage — it may mean the plugin's current
+    version doesn't trigger Apple's declared categories, or that its
+    manifest coverage is simply incomplete for this version. This
+    repository has no Xcode/macOS toolchain available to compile these
+    plugins and run Apple's own manifest-merge/analysis step, so this
+    was not resolved further. A future session with Xcode access must
+    run an actual archive build and address any Required-Reason API
+    warning Xcode surfaces before submission.
+  - This app's own native code (ios/Runner/AppDelegate.swift,
+    ios/Runner/SceneDelegate.swift) was read in full and contains only
+    standard Flutter engine bootstrap code — no custom Required-Reason
+    API usage of any kind.
+
+  Do not add a Required-Reason API entry to this file without a matching
+  source citation, exactly as this comment records for the entries
+  above (all currently empty, none invented).
+
+  This file is NOT yet added as a build resource in
+  ios/Runner.xcodeproj/project.pbxproj — that file is out of this
+  session's scope to modify. Adding this file to the Runner target's
+  "Copy Bundle Resources" build phase in Xcode remains a required,
+  separate manual step before it takes effect in an actual build.
+-->
+<plist version="1.0">
+<dict>
+	<key>NSPrivacyTracking</key>
+	<false/>
+	<key>NSPrivacyTrackingDomains</key>
+	<array/>
+	<key>NSPrivacyCollectedDataTypes</key>
+	<array/>
+	<key>NSPrivacyAccessedAPITypes</key>
+	<array/>
+</dict>
+</plist>

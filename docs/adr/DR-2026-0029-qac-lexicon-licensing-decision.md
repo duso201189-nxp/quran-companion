@@ -19,9 +19,10 @@ links:
 
 **Status of this record: accepted** by the `owner_role`
 (constitution-owner `duso`) on 2026-08-22; `review_by` 2027-02-22.
-Acceptance makes it an accepted Decision Record; it does **not** yet
-make it governing on `main`, because it is not yet present on
-`origin/main` (see "Consequences"). It states facts drawn
+Acceptance makes it an accepted Decision Record. It is present on
+`origin/main` (merged via PR #24, commit `667e292`); by
+`DR-2026-0028`'s test (accepted **and** present on `origin/main`) it
+now governs `main` (see "Consequences"). It states facts drawn
 from repository evidence, a conservative decision set, and an evidence
 rule for future resolution. Acceptance was the `owner_role`'s call, same
 posture as `DR-2026-0014` and `DR-2026-0016`. This record authorizes
@@ -467,9 +468,9 @@ document as corrected.
   inherited from `DR-2026-0016`, which never governed `main`. Ordinary
   maintenance of `segment_parser.py` for the QAC format it already
   serves is expressly not restricted (4c).
-- This record creates no new obligation on `main` yet: it is accepted,
-  but by the `DR-2026-0028` test it does not govern `main` until it is
-  also present on `origin/main`, which it is not yet.
+- This record is present on `origin/main` (merged via PR #24, commit
+  `667e292`); by the `DR-2026-0028` test (accepted and present on
+  `origin/main`) it governs `main`.
 - **Reversibility is soft.** This record can be superseded by a later DR
   — e.g. one that accepts a new Lexicon source under the evidence rule
   above, or one that formally defers Lexicon/Flashcards from v1.0 — with

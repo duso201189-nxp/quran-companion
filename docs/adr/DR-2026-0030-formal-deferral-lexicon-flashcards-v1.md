@@ -43,15 +43,16 @@ domain as `ROLES.md` states it. On this solo project the same person
 Owner in `ROLES.md`'s, so nothing turns on the distinction in practice,
 but the mapping is stated here rather than assumed.
 
-As of this record's date this file exists only in the working tree; it
-is **not committed and not present on `origin/main`**. By
-`DR-2026-0028`'s jurisdiction test (accepted **and** present on
-`origin/main`), this record is an accepted Decision Record but does
-**not yet govern `main`** — the same posture `DR-2026-0029` itself held
-between its acceptance and its publication in PR #24. This record
-authorizes no implementation: no code under `lib/` or `tool/` is
-touched, no dataset is downloaded or removed, no schema changes, and no
-other document in this repository is edited by it.
+As of this record's date (2026-08-22) this file existed only in the
+working tree and was not committed or present on `origin/main`. It has
+since been published to `origin/main` (merged via PR #25, commit
+`0aa03b6`, merge commit `fb2694a`); by `DR-2026-0028`'s jurisdiction
+test (accepted **and** present on `origin/main`), this record now
+governs `main` — the same posture `DR-2026-0029` reached upon its own
+publication in PR #24. This record authorizes no implementation: no
+code under `lib/` or `tool/` is touched, no dataset is downloaded or
+removed, no schema changes, and no other document in this repository is
+edited by it.
 
 This record does not assert that a QAC permission request was ever
 sent, and does not assert that one was never sent. It states only what
@@ -322,10 +323,11 @@ was outside `DR-2026-0029`'s.
 - `docs/LICENSING.md` is unaffected and not edited by this record;
   `DR-2026-0029`'s own licensing-registry follow-up is unaffected and
   unduplicated here.
-- This record creates no new obligation on `main`: it is accepted, but
-  by the `DR-2026-0028` test it does not govern `main` until it is also
-  committed and present on `origin/main`, which as of this date it is
-  not.
+- As of this record's date (2026-08-22) this record was accepted but
+  not yet committed or present on `origin/main`, so it did not yet
+  govern `main` under the `DR-2026-0028` test. It has since been
+  committed and published to `origin/main` (merged via PR #25, commit
+  `0aa03b6`); it now governs `main` under that test.
 - **Reversibility is soft.** A future Decision Record — one that
   accepts a new Lexicon source under `DR-2026-0029`'s evidence rule, or
   one that reinstates F1/F2/D6 into a later v1.0-equivalent scope
