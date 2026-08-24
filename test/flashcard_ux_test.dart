@@ -77,14 +77,11 @@ void main() {
     await appDb.close();
   });
 
-  Widget wrap() {
+  Widget wrap({String initialLocation = AppRoutes.study}) {
     final router = GoRouter(
-      initialLocation: AppRoutes.study,
+      initialLocation: initialLocation,
       routes: [
-        GoRoute(
-          path: AppRoutes.study,
-          builder: (_, __) => const StudyScreen(),
-        ),
+        GoRoute(path: AppRoutes.study, builder: (_, __) => const StudyScreen()),
         GoRoute(
           path: AppRoutes.flashcards,
           builder: (_, __) => const FlashcardBrowseScreen(),
@@ -120,69 +117,73 @@ void main() {
   }
 
   testWidgets(
-      'StudyScreen -> chạm Flashcard -> FlashcardBrowseScreen, trạng thái '
-      'rỗng (Onboarding) khi chưa có Flashcard nào', (tester) async {
-    await tester.pumpWidget(wrap());
-    await tester.pumpAndSettle();
+    'Session 96 (DR-2026-0030) — StudyScreen: thẻ Flashcard hiện "Sắp '
+    'ra mắt", chạm vào KHÔNG điều hướng sang FlashcardBrowseScreen',
+    (tester) async {
+      await tester.pumpWidget(wrap());
+      await tester.pumpAndSettle();
 
-    await tester.tap(find.text('Flashcards'));
-    await tester.pumpAndSettle();
+      expect(find.text('Coming soon'), findsOneWidget);
 
-    expect(find.text('No flashcards yet'), findsOneWidget);
-    expect(find.text('Add your first flashcard'), findsOneWidget);
+      await tester.tap(find.text('Flashcards'));
+      await tester.pumpAndSettle();
 
-    await _disposeTree(tester);
-  });
+      expect(find.byType(FlashcardBrowseScreen), findsNothing);
+      expect(find.text('Coming soon'), findsOneWidget);
 
-  testWidgets(
-      'Onboarding CTA -> AddFlashcardScreen, tìm + thêm 1 Lemma -> quay '
-      'lại Browse thấy Flashcard vừa thêm', (tester) async {
-    await _seedLemmas(appDb);
-    await tester.pumpWidget(wrap());
-    await tester.pumpAndSettle();
-    await tester.tap(find.text('Flashcards'));
-    await tester.pumpAndSettle();
-
-    await tester.tap(find.text('Add your first flashcard'));
-    await tester.pumpAndSettle();
-    expect(find.byType(AddFlashcardScreen), findsOneWidget);
-
-    await tester.enterText(find.byType(TextField), 'kataba');
-    await tester.pumpAndSettle();
-
-    expect(find.text('كَتَبَ'), findsOneWidget);
-    await tester.tap(find.byIcon(Icons.add_circle_outline_rounded));
-    await tester.pumpAndSettle();
-
-    // Đã thêm -> icon đổi thành dấu tick, không còn nút Thêm.
-    expect(find.byIcon(Icons.check_circle_rounded), findsOneWidget);
-
-    await tester.pageBack();
-    await tester.pumpAndSettle();
-
-    expect(find.text('No flashcards yet'), findsNothing);
-    expect(find.text('كَتَبَ'), findsOneWidget);
-
-    await _disposeTree(tester);
-  });
+      await _disposeTree(tester);
+    },
+  );
 
   testWidgets(
-      'Add Flashcard: nguồn Root/Phrase hiện trạng thái "chưa có dữ liệu", '
-      'không giả lập kết quả tìm kiếm', (tester) async {
-    await tester.pumpWidget(wrap());
-    await tester.pumpAndSettle();
-    await tester.tap(find.text('Flashcards'));
-    await tester.pumpAndSettle();
-    await tester.tap(find.text('Add your first flashcard'));
-    await tester.pumpAndSettle();
+    'Onboarding CTA -> AddFlashcardScreen, tìm + thêm 1 Lemma -> quay '
+    'lại Browse thấy Flashcard vừa thêm',
+    (tester) async {
+      await _seedLemmas(appDb);
+      await tester.pumpWidget(wrap(initialLocation: AppRoutes.flashcards));
+      await tester.pumpAndSettle();
 
-    await tester.tap(find.text('Root'));
-    await tester.pumpAndSettle();
+      await tester.tap(find.text('Add your first flashcard'));
+      await tester.pumpAndSettle();
+      expect(find.byType(AddFlashcardScreen), findsOneWidget);
 
-    expect(find.text('No browsable data for this type yet.'), findsOneWidget);
+      await tester.enterText(find.byType(TextField), 'kataba');
+      await tester.pumpAndSettle();
 
-    await _disposeTree(tester);
-  });
+      expect(find.text('كَتَبَ'), findsOneWidget);
+      await tester.tap(find.byIcon(Icons.add_circle_outline_rounded));
+      await tester.pumpAndSettle();
+
+      // Đã thêm -> icon đổi thành dấu tick, không còn nút Thêm.
+      expect(find.byIcon(Icons.check_circle_rounded), findsOneWidget);
+
+      await tester.pageBack();
+      await tester.pumpAndSettle();
+
+      expect(find.text('No flashcards yet'), findsNothing);
+      expect(find.text('كَتَبَ'), findsOneWidget);
+
+      await _disposeTree(tester);
+    },
+  );
+
+  testWidgets(
+    'Add Flashcard: nguồn Root/Phrase hiện trạng thái "chưa có dữ liệu", '
+    'không giả lập kết quả tìm kiếm',
+    (tester) async {
+      await tester.pumpWidget(wrap(initialLocation: AppRoutes.flashcards));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Add your first flashcard'));
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.text('Root'));
+      await tester.pumpAndSettle();
+
+      expect(find.text('No browsable data for this type yet.'), findsOneWidget);
+
+      await _disposeTree(tester);
+    },
+  );
 
   testWidgets(
       'Sprint R3b.3 — Add Flashcard: nguồn Lemma hiện trạng thái "chưa '
@@ -190,9 +191,7 @@ void main() {
       'thấy kết quả." dù gõ gì đi nữa', (tester) async {
     // KHÔNG gọi _seedLemmas — mô phỏng đúng trạng thái Lexicon thật
     // hôm nay (bảng lemmas 0 dòng, xem PRODUCT_READINESS_REVIEW.md).
-    await tester.pumpWidget(wrap());
-    await tester.pumpAndSettle();
-    await tester.tap(find.text('Flashcards'));
+    await tester.pumpWidget(wrap(initialLocation: AppRoutes.flashcards));
     await tester.pumpAndSettle();
     await tester.tap(find.text('Add your first flashcard'));
     await tester.pumpAndSettle();
@@ -216,16 +215,15 @@ void main() {
 
   group('FlashcardDecksScreen', () {
     Future<void> openDecks(WidgetTester tester) async {
-      await tester.pumpWidget(wrap());
-      await tester.pumpAndSettle();
-      await tester.tap(find.text('Flashcards'));
+      await tester.pumpWidget(wrap(initialLocation: AppRoutes.flashcards));
       await tester.pumpAndSettle();
       await tester.tap(find.byIcon(Icons.folder_outlined));
       await tester.pumpAndSettle();
     }
 
-    testWidgets('rỗng lúc đầu, tạo deck mới hiện ngay trong danh sách',
-        (tester) async {
+    testWidgets('rỗng lúc đầu, tạo deck mới hiện ngay trong danh sách', (
+      tester,
+    ) async {
       await openDecks(tester);
       expect(find.text('No decks yet.'), findsOneWidget);
 
@@ -287,12 +285,11 @@ void main() {
 
   testWidgets(
       'Smart Deck: chạm chip "Today\'s Review" điều hướng sang '
-      'SmartDeckScreen, trạng thái rỗng khi chưa có gì đến hạn',
-      (tester) async {
+      'SmartDeckScreen, trạng thái rỗng khi chưa có gì đến hạn', (
+    tester,
+  ) async {
     await _seedLemmas(appDb);
-    await tester.pumpWidget(wrap());
-    await tester.pumpAndSettle();
-    await tester.tap(find.text('Flashcards'));
+    await tester.pumpWidget(wrap(initialLocation: AppRoutes.flashcards));
     await tester.pumpAndSettle();
     await tester.tap(find.text('Add your first flashcard'));
     await tester.pumpAndSettle();
