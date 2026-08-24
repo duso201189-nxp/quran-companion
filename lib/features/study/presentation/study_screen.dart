@@ -13,10 +13,16 @@ import '../data/surah_revision_target_providers.dart';
 /// (Flashcard, Lặp lại ngắt quãng, Trắc nghiệm, Ôn tập hằng ngày) giữ
 /// nguyên bên dưới làm lối tắt — Phase 0 Revision cố ý để cả hai cùng
 /// tồn tại thay vì bỏ 4 thẻ cũ (câu hỏi sản phẩm còn mở, xem kiến
-/// trúc). Flashcard nối vào FlashcardBrowseScreen từ Sprint 13 Phase
-/// 3 — LƯU Ý: Lexicon (nhóm A) hiện CHƯA có dữ liệu Lemma thật (xem
-/// Sprint 12 Phase 3 §5), nên màn hình Duyệt/Thêm sẽ trống cho tới khi
-/// dữ liệu thật được nạp; đây là hạn chế dữ liệu, không phải lỗi UI.
+/// trúc).
+///
+/// Session 96 (`DR-2026-0030`, accepted, governing `main`): Flashcard
+/// (F2, phụ thuộc Lexicon/F1) đã được hoãn chính thức khỏi phạm vi
+/// v1.0. Thẻ Flashcard dưới đây dùng `onTap: null` — cùng cơ chế
+/// "Sắp ra mắt" đã có sẵn trong `_StudyToolCard` — để không còn điều
+/// hướng vào `FlashcardBrowseScreen` nữa; mã nguồn của F1/F2 (màn
+/// hình, repository, bảng dữ liệu) không bị xoá, chỉ không còn lối
+/// vào từ điều hướng chính, đúng tính "reversibility: soft" của
+/// `DR-2026-0030`.
 ///
 /// Sprint 7.2 (Foundation-First Session Default — Study Architecture
 /// Constitution §15 "Foundation First"): nút "Bắt đầu buổi học" không
@@ -43,17 +49,15 @@ class StudyScreen extends ConsumerWidget {
     final l10n = AppLocalizations.of(context);
     final hasRead = ref.watch(readingPositionStoreProvider).lastSurahId != null;
 
-    final tools = <({
-      IconData icon,
-      String title,
-      String subtitle,
-      VoidCallback? onTap,
-    })>[
+    final tools =
+        <({IconData icon, String title, String subtitle, VoidCallback? onTap})>[
       (
         icon: Icons.style_rounded,
         title: l10n.studyFlashcards,
         subtitle: l10n.studyFlashcardsDesc,
-        onTap: () => context.push(AppRoutes.flashcards),
+        // DR-2026-0030: Flashcards (F2) deferred from v1.0 — no
+        // navigation from this shortcut. See file header comment.
+        onTap: null,
       ),
       (
         icon: Icons.update_rounded,
@@ -201,8 +205,9 @@ class _BoundaryRevisionCard extends ConsumerWidget {
                     header: true,
                     child: Text(
                       l10n.boundaryRevisionTitle(invitation.surahName),
-                      style: textTheme.titleMedium
-                          ?.copyWith(fontWeight: FontWeight.w700),
+                      style: textTheme.titleMedium?.copyWith(
+                        fontWeight: FontWeight.w700,
+                      ),
                     ),
                   ),
                 ),
@@ -211,8 +216,9 @@ class _BoundaryRevisionCard extends ConsumerWidget {
             const SizedBox(height: 6),
             Text(
               l10n.boundaryRevisionBody(invitation.ayahCount),
-              style: textTheme.bodyMedium
-                  ?.copyWith(color: scheme.onSurfaceVariant),
+              style: textTheme.bodyMedium?.copyWith(
+                color: scheme.onSurfaceVariant,
+              ),
             ),
             const SizedBox(height: 12),
             Row(
@@ -288,16 +294,18 @@ class _StudyToolCard extends StatelessWidget {
                   children: [
                     Text(
                       title,
-                      style: textTheme.titleMedium
-                          ?.copyWith(fontWeight: FontWeight.w700),
+                      style: textTheme.titleMedium?.copyWith(
+                        fontWeight: FontWeight.w700,
+                      ),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                     ),
                     const SizedBox(height: 3),
                     Text(
                       subtitle,
-                      style: textTheme.bodySmall
-                          ?.copyWith(color: scheme.onSurfaceVariant),
+                      style: textTheme.bodySmall?.copyWith(
+                        color: scheme.onSurfaceVariant,
+                      ),
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
                     ),
@@ -317,8 +325,9 @@ class _StudyToolCard extends StatelessWidget {
                   ),
                   child: Text(
                     comingSoonLabel,
-                    style: textTheme.labelSmall
-                        ?.copyWith(color: scheme.onSecondaryContainer),
+                    style: textTheme.labelSmall?.copyWith(
+                      color: scheme.onSecondaryContainer,
+                    ),
                   ),
                 ),
               ] else
