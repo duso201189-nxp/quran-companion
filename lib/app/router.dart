@@ -1,3 +1,4 @@
+import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
@@ -161,9 +162,41 @@ abstract final class AppRoutes {
 int _surahIdFrom(GoRouterState state) =>
     int.tryParse(state.pathParameters['id'] ?? '') ?? 0;
 
+/// F2 Flashcards — cùng với F1 Lexicon mà nó phụ thuộc — bị hoãn
+/// chính thức khỏi phạm vi v1.0 (`DR-2026-0030`, accepted, governing
+/// `main`). Route definitions của F2 vẫn giữ nguyên bên dưới để tái
+/// kích hoạt sau này (reversibility: soft) — hàm này chỉ chặn điều
+/// hướng tới, không xoá màn hình/route nào. Dùng prefix-match trên 3
+/// route gốc (không phải liệt kê cả 5 path) để mọi route con tương
+/// lai dưới cùng gốc ([AppRoutes.flashcards]/[addFlashcard]/
+/// [smartDeck] đều nằm dưới `/flashcards`) cũng tự động bị chặn mà
+/// không cần sửa hàm này lần nữa.
+const _deferredF2RoutePrefixes = [
+  AppRoutes
+      .flashcards, // covers /flashcards, /flashcards/add, /flashcards/smart-deck
+  AppRoutes.flashcardDecks,
+  AppRoutes.flashcardReview,
+];
+
+bool _isDeferredF2Route(String path) => _deferredF2RoutePrefixes.any(
+      (prefix) => path == prefix || path.startsWith('$prefix/'),
+    );
+
+/// Guard cấp router (Session 98, residual fix theo audit read-only
+/// Session 97): chặn điều hướng trực tiếp/deep-link Web vào F2 —
+/// route vẫn đăng ký như cũ, chỉ redirect trước khi builder của
+/// F2 chạy. Đưa về [AppRoutes.study]: đích v1.0 hợp lệ đã tồn tại,
+/// đúng nơi thẻ Flashcard "Sắp ra mắt" đã hiện diện trên tab Học,
+/// nên người dùng deep-link vào đây vẫn thấy ngữ cảnh liên quan thay
+/// vì bị đưa xa khỏi những gì họ đang tìm.
+String? deferredFeatureRedirect(BuildContext context, GoRouterState state) {
+  return _isDeferredF2Route(state.uri.path) ? AppRoutes.study : null;
+}
+
 final routerProvider = Provider<GoRouter>((ref) {
   return GoRouter(
     initialLocation: AppRoutes.home,
+    redirect: deferredFeatureRedirect,
     routes: [
       // StatefulShellRoute giữ trạng thái riêng của từng tab
       // (vị trí cuộn, màn hình con...) khi chuyển qua lại.
@@ -325,9 +358,8 @@ final routerProvider = Provider<GoRouter>((ref) {
 
       GoRoute(
         path: '/hifz/progress/:id',
-        builder: (context, state) => HifzProgressScreen(
-          planId: state.pathParameters['id'] ?? '',
-        ),
+        builder: (context, state) =>
+            HifzProgressScreen(planId: state.pathParameters['id'] ?? ''),
       ),
 
       GoRoute(
