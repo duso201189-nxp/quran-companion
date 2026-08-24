@@ -32,3 +32,10 @@ Runner/GeneratedPluginRegistrant.*
 !default.mode2v3
 !default.pbxuser
 !default.perspectivev3
+
+# Signing & provisioning secrets — never commit real values.
+# Same discipline as android/.gitignore's key.properties/*.keystore/*.jks rule.
+*.mobileprovision
+*.p12
+*.cer
+*.pem
