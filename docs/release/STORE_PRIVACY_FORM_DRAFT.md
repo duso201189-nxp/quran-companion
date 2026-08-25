@@ -11,6 +11,14 @@ time. Nothing in this document constitutes legal advice, a completed
 disclosure, or evidence that either store's requirements have been
 satisfied.
 
+**Session 114 update (2026-08-25):** the OWNER SUBMISSION CHECKLIST's
+target-audience bullet has been updated to reflect the owner's
+confirmed general-audience positioning — see
+`docs/release/PRIVACY_POLICY_OWNER_DECISION_PACKET.md` B4. No other
+section of this document was changed; none of its FACT/UNKNOWN/
+REQUIRES-OWNER-CONFIRMATION answers were owner-facing decisions this
+session's confirmations affect.
+
 This document was prepared by inspecting `pubspec.yaml`, `lib/` source
 code, `android/app/src/main/AndroidManifest.xml`, `ios/Runner/Info.plist`,
 and existing release-readiness documentation
@@ -359,10 +367,16 @@ following steps remain, all outside this session's authority:
 - [ ] **Confirm HTTPS behavior** of the live `everyayah.com` audio
       endpoint (§13) rather than relying on the documented URL template
       alone.
-- [ ] **Decide the app's target-audience / children's-privacy
-      declaration** (e.g., Google Play Families Policy, Apple's Kids
-      Category, COPPA applicability) — not addressed anywhere in this
-      document; requires an owner policy decision, not a code fact.
+- [x] **Target-audience positioning stated (Session 114).** The owner
+      has confirmed Qur'an Companion is a general-audience app, not
+      designed or intentionally directed to children under 13 (see
+      `docs/release/PRIVACY_POLICY_OWNER_DECISION_PACKET.md` B4). This
+      is product positioning, not a COPPA/Apple Kids Category/Google
+      Play Families Policy determination — **which specific checkbox
+      or category each console's own current form requires for this
+      positioning is still open** and must be confirmed against each
+      store's current form wording at submission time, ideally with
+      legal review.
 - [ ] **Complete and submit the Google Play Console "Data safety" form**
       using these answers as a starting draft, re-verified in the
       console's own current question wording (which changes over time

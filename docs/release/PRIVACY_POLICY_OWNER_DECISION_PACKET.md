@@ -2,6 +2,19 @@
 
 **Status: DECISION AID. NOT A POLICY. NOT LEGAL ADVICE.**
 
+**Session 114 update (2026-08-25):** the owner has confirmed answers to
+B1 (legal name only — a public-facing address is still outstanding),
+B2, B3, and B4 below. Each is annotated in place as **OWNER DECISION
+(Session 114)**, with the original question and evidence review left
+intact for provenance. B5 remains unanswered. These confirmed facts
+have been carried into `docs/release/PRIVACY_POLICY_DRAFT.md` and,
+where directly applicable, `docs/release/STORE_PRIVACY_FORM_DRAFT.md`
+— see "How to use this packet" at the bottom for what that
+finalization pass did and did not do. Section C's legal-review items
+are **not** resolved by these confirmations; two of them (C6, C7) are
+now unconditional rather than contingent, and are annotated
+accordingly below.
+
 This document exists to let the owner answer every open Privacy-Policy
 question **once**, in one place, instead of re-deriving them from
 `docs/release/PRIVACY_POLICY_DRAFT.md` and
@@ -90,6 +103,14 @@ facts external to the codebase.
   (non-Claude) advice on, but that advice-seeking is optional and
   outside this packet's scope.
 
+**OWNER DECISION (Session 114, 2026-08-25):** Legal name is **DU SÔ**,
+operating as an individual (not a registered business name). A
+public-facing mailing address has **not** been supplied and remains
+open — the Privacy Policy and store-account registrations still need
+one before publication/submission. This is carried forward as an
+explicit outstanding item in `docs/release/PRIVACY_POLICY_DRAFT.md`,
+not silently dropped or invented.
+
 ### B2. Jurisdiction / governing legal location
 
 - **Question:** Under which country's/region's law does the app
@@ -113,6 +134,11 @@ facts external to the codebase.
   is an owner fact; determining full compliance obligations that follow
   from it is a legal question.
 
+**OWNER DECISION (Session 114, 2026-08-25):** Jurisdiction is
+**Vietnam**. This is an owner-stated governing-law fact only — it does
+not itself determine which privacy-law regime(s) apply to the app's
+actual users (see Section C, item 6, now unconditional).
+
 ### B3. Privacy contact email or form
 
 - **Question:** What monitored email address (or web form) should the
@@ -126,6 +152,12 @@ facts external to the codebase.
   existing personal/support email the owner is willing to publish.
 - **Legal review required?** No — this is an operational choice, not a
   legal interpretation.
+
+**OWNER DECISION (Session 114, 2026-08-25):** Privacy contact is
+**qurancompanionhq@gmail.com**. This is stated by the owner as the
+monitored contact point; this packet does not independently verify
+that the mailbox is monitored — that remains the owner's operational
+responsibility.
 
 ### B4. Children's privacy / target audience declaration
 
@@ -153,6 +185,17 @@ facts external to the codebase.
   audience.** The *choice* of intended audience is the owner's; whether
   that choice satisfies COPPA/Apple/Google's specific rules for the
   audience stated is a legal-interpretation question (see Section C).
+
+**OWNER DECISION (Session 114, 2026-08-25):** Qur'an Companion is a
+**general-audience application, not designed or intentionally
+directed to children under 13**. This states the owner's product
+positioning and design intent only. It is **not** a claim that
+children are prohibited from using the app, and it is **not** a
+universal legal-age or compliance claim for Vietnam or any other
+jurisdiction — whether this positioning satisfies COPPA, Apple's Kids
+Category rules, Google Play's Families Policy, or any other regime's
+specific requirements remains open (Section C, item 7, now
+unconditional).
 
 ### B5. iOS display-name correction (narrow, not a naming decision)
 
@@ -210,12 +253,18 @@ unilaterally. None is answered here.
 5. **Whether the transliteration source (Quran.com/QUL) needs
    individual named attribution** beyond the current combined string
    (P2-2 in `V1_STORE_LEGAL_READINESS.md`).
-6. **Which privacy-law regime(s) apply once B2's jurisdiction is
-   known** (GDPR, CCPA/CPRA, Vietnam's PDPD, or others depending on
-   where users are located, not just where the owner is based).
-7. **Whether B4's stated target audience satisfies COPPA / Apple Kids
-   Category / Google Play Families Policy requirements**, once the
-   owner states an intended audience.
+6. **Which privacy-law regime(s) apply, now that B2's jurisdiction
+   (Vietnam) is known** (Vietnam's PDPD at minimum, plus GDPR,
+   CCPA/CPRA, or others depending on where users are actually located,
+   not just where the owner is based). Stating the jurisdiction does
+   not by itself answer this — it is still open, and now unconditional
+   rather than contingent on B2.
+7. **Whether B4's stated target audience (general audience, not
+   intentionally directed at children under 13) satisfies COPPA /
+   Apple Kids Category / Google Play Families Policy requirements.**
+   The audience positioning itself is now stated (§B4); whether that
+   positioning, as stated, meets each regime's specific test is still
+   open and now unconditional rather than contingent.
 
 ## D. External platform required — Apple / Google / macOS / hosting
 
@@ -239,7 +288,8 @@ Nothing here can be completed by Claude from this repository.
 
 ## What this packet does not do
 
-- It does not answer B1–B5 on the owner's behalf.
+- It does not answer B1–B5 on the owner's behalf — B1's address
+  component and B5 remain unanswered even after Session 114.
 - It does not reach any legal conclusion listed under Section C.
 - It does not reopen, edit, or reinterpret `DR-2026-0029` or
   `DR-2026-0030`.
@@ -255,3 +305,13 @@ review. Once B1–B4 are answered, `docs/release/PRIVACY_POLICY_DRAFT.md`
 can be finalized by replacing its `[PLACEHOLDER]` markers with the
 supplied answers — that finalization is a separate, later action, not
 performed by this packet.
+
+**Session 114 status:** B1 (name only), B2, B3, and B4 are now
+answered above and have been carried into
+`docs/release/PRIVACY_POLICY_DRAFT.md`'s corresponding placeholders.
+B1's address component and B5 (iOS display-name correction) remain
+open. None of Section C's legal-review items have been resolved by
+this update — items 6 and 7 are now unconditional rather than
+contingent, but still require legal review, not owner guessing. This
+packet still does not publish a Privacy Policy, submit any store form,
+or assert legal compliance.
