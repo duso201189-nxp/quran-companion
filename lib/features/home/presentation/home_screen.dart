@@ -497,32 +497,44 @@ class _StatChip extends StatelessWidget {
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
     final textTheme = Theme.of(context).textTheme;
-    return Container(
-      padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 12),
-      decoration: BoxDecoration(
-        color: scheme.surfaceContainerLow,
-        borderRadius: BorderRadius.circular(16),
-      ),
-      child: Column(
-        children: [
-          Icon(icon, size: 22, color: scheme.primary),
-          const SizedBox(height: 6),
-          Text(
-            value,
-            style: textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700),
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
+    // Semantics(container: true) — không có `container: true`, 3 chip
+    // trong _StatChipsRow vẫn gộp thành MỘT node duy nhất (xác nhận
+    // bằng dump uiautomator thật trên emulator: thiếu container vẫn
+    // merge lên node cha dù đã có label riêng), TalkBack đọc dồn cả 3
+    // chỉ số trong một lần vuốt thay vì di chuyển được tới từng chỉ số.
+    return Semantics(
+      container: true,
+      label: '$label: $value',
+      child: ExcludeSemantics(
+        child: Container(
+          padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 12),
+          decoration: BoxDecoration(
+            color: scheme.surfaceContainerLow,
+            borderRadius: BorderRadius.circular(16),
           ),
-          const SizedBox(height: 2),
-          Text(
-            label,
-            style:
-                textTheme.labelSmall?.copyWith(color: scheme.onSurfaceVariant),
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-            textAlign: TextAlign.center,
+          child: Column(
+            children: [
+              Icon(icon, size: 22, color: scheme.primary),
+              const SizedBox(height: 6),
+              Text(
+                value,
+                style: textTheme.titleMedium
+                    ?.copyWith(fontWeight: FontWeight.w700),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
+              const SizedBox(height: 2),
+              Text(
+                label,
+                style: textTheme.labelSmall
+                    ?.copyWith(color: scheme.onSurfaceVariant),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                textAlign: TextAlign.center,
+              ),
+            ],
           ),
-        ],
+        ),
       ),
     );
   }

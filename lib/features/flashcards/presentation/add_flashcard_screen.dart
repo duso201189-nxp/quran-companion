@@ -86,6 +86,7 @@ class _AddFlashcardScreenState extends ConsumerState<AddFlashcardScreen> {
                       ? null
                       : IconButton(
                           icon: const Icon(Icons.clear_rounded),
+                          tooltip: l10n.searchClearTooltip,
                           onPressed: () {
                             _searchController.clear();
                             setState(() => _query = '');
