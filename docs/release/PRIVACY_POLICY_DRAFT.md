@@ -31,6 +31,22 @@ code, `android/app/src/main/AndroidManifest.xml`, `ios/Runner/Info.plist`,
 checked out at `origin/main` SHA `3ca83c0a596ccdd7b03a780a448b4c97aedb3759`
 (Session 109, 2026-08-24).
 
+**Session 114 finalization (2026-08-25).** The owner-name,
+jurisdiction, contact, and target-audience placeholders below have
+been replaced with facts the owner confirmed in
+`docs/release/PRIVACY_POLICY_OWNER_DECISION_PACKET.md` (B1–B4). Before
+doing so, this session re-verified — against `session112-owner-legal`
+branch HEAD `a2d0683` (based on `origin/main` SHA
+`99e10c8f76e4c2cc1edcd2a0b7bf81f5f0f32f03`) — that the underlying
+technical facts this draft depends on still hold: exactly one network
+call site (`lib/core/cache/io_cache_manager.dart:13`, to
+`everyayah.com`), no analytics/crash/advertising/auth SDK declared in
+`pubspec.yaml`, and `ios/Runner/PrivacyInfo.xcprivacy` now exists as a
+repository draft (added Session 107/109) — still explicitly marked
+**not** Xcode-verified in its own header, and not claimed as verified
+here either. No other section of this document was re-derived; see
+each section's own citation for the SHA it was last checked against.
+
 ---
 
 ## App identity
@@ -45,15 +61,25 @@ unresolved cross-platform inconsistency, see
 `0.8.1+7` (`pubspec.yaml:4`) — pre-1.0; this document does not
 authorize or imply a version bump or release.
 
-**REQUIRES OWNER CONFIRMATION.** Legal entity/developer name, business
-address, and jurisdiction of operation are not recorded anywhere in
-this repository and are not invented here. A Privacy Policy
-conventionally names the entity or individual responsible for the app
-("Company Name, located at ...", or an individual developer's name).
-This draft leaves that placeholder open:
+**FACT (owner-confirmed, Session 114 — see
+`docs/release/PRIVACY_POLICY_OWNER_DECISION_PACKET.md` B1–B2).** This
+app is operated by an individual, not a registered business entity:
 
-> **[LEGAL ENTITY / DEVELOPER NAME — NOT YET PROVIDED]**, based in
-> **[JURISDICTION — NOT YET PROVIDED]**.
+> **DU SÔ**, based in **Vietnam**.
+
+**REQUIRES OWNER CONFIRMATION — still open.** A public-facing mailing
+address has not been supplied. Both a Privacy Policy and each store's
+developer-account registration conventionally require one; this draft
+does not invent one:
+
+> **[PUBLIC-FACING MAILING ADDRESS — NOT YET PROVIDED]**.
+
+Naming an individual and a country here is a business/contact fact,
+not a legal-jurisdiction compliance determination — see "Which
+privacy-law regime(s) apply" in
+`docs/release/PRIVACY_POLICY_OWNER_DECISION_PACKET.md` Section C for
+the still-open question of which privacy-law regime(s) actually govern
+this app given where its users are located.
 
 ## Scope
 
@@ -182,19 +208,24 @@ app's code (`docs/release/STORE_PRIVACY_FORM_DRAFT.md` §9).
 
 ## Children's privacy / target audience
 
-**REQUIRES OWNER CONFIRMATION.** This repository contains no
-age-rating declaration, no COPPA/Google Play Families Policy
-statement, and no target-audience decision of any kind. Whether this
-app is directed at children, whether it will be listed under Apple's
-Kids Category or enrolled in Google Play's Families Policy, and what
-age rating it should carry are business/policy decisions for the
-owner, not facts derivable from the code
-(`docs/release/STORE_PRIVACY_FORM_DRAFT.md` "Owner Submission
-Checklist"). This draft does not assume, imply, or default to any
-answer — it must be filled in before publication:
+**FACT (owner-confirmed, Session 114 — see
+`docs/release/PRIVACY_POLICY_OWNER_DECISION_PACKET.md` B4).**
 
-> **[TARGET AUDIENCE / CHILDREN'S PRIVACY DECLARATION — REQUIRES OWNER
-> DECISION. NOT YET DETERMINED.]**
+> Qur'an Companion is a general-audience application. It is not
+> designed or intentionally directed to children under 13.
+
+This states the owner's product positioning and design intent only.
+It is **not** a statement that children are prohibited from using the
+app, and it is **not** a claim of compliance with COPPA, Vietnam's
+PDPD, or any other law's age-related requirements, nor a determination
+of Apple Kids Category or Google Play Families Policy status.
+
+**LEGAL REVIEW REQUIRED.** Whether this stated positioning satisfies
+COPPA, Apple's Kids Category rules, Google Play's Families Policy, or
+any other applicable regime's specific test is not determined by this
+draft — see Section C, item 7 of
+`docs/release/PRIVACY_POLICY_OWNER_DECISION_PACKET.md`. No age rating
+or Kids Category/Families Policy enrollment decision has been made.
 
 ## Data deletion and retention
 
@@ -231,13 +262,16 @@ any particular threat model.
 
 ## Contact
 
-**REQUIRES OWNER CONFIRMATION.** No support or privacy-contact email,
-web form, or postal address is recorded anywhere in this repository.
-Both a Privacy Policy and each store's submission process require a
-real, monitored contact point. This draft does not invent one:
+**FACT (owner-confirmed, Session 114 — see
+`docs/release/PRIVACY_POLICY_OWNER_DECISION_PACKET.md` B3).**
 
 > Questions about this policy can be directed to:
-> **[PRIVACY CONTACT EMAIL / FORM — NOT YET PROVIDED]**
+> **qurancompanionhq@gmail.com**
+
+This is the contact point the owner has stated as monitored. This
+draft does not independently verify that the mailbox is actively
+monitored, and does not supply a postal address — see "App identity"
+above for the still-open mailing-address item.
 
 ## Effective date
 
@@ -267,11 +301,13 @@ elsewhere in this repository's drafts
 - It does not resolve the Tanzil translation license legal review or
   any other open legal item tracked in
   `docs/release/V1_STORE_LEGAL_READINESS.md`.
-- It does not decide the app's target audience or children's-privacy
-  posture.
-- It does not supply a legal entity name, contact address, or
-  jurisdiction — those are owner-supplied facts, not something this
-  session can originate.
+- It does not reach any legal conclusion about whether the stated
+  target-audience positioning satisfies COPPA, Apple Kids Category,
+  Google Play Families Policy, or any other regime's specific test —
+  see "Children's privacy / target audience" above.
+- It does not supply a public-facing mailing address — that remains
+  outstanding even though a legal name, jurisdiction, and contact
+  email have now been supplied by the owner (Session 114).
 
 ---
 
@@ -280,15 +316,28 @@ elsewhere in this repository's drafts
 - [ ] Confirm or correct every FACT claim above against the codebase
       at the time of actual publication (this draft reflects
       `origin/main` SHA `3ca83c0a596ccdd7b03a780a448b4c97aedb3759`,
-      2026-08-24 — re-verify if the code has since changed).
-- [ ] Supply the legal entity/developer name, address, and
-      jurisdiction.
-- [ ] Decide and state the target-audience / children's-privacy
-      declaration.
-- [ ] Supply a real, monitored contact email or form.
+      2026-08-24, technical facts re-verified against
+      `session112-owner-legal` HEAD `a2d0683` on 2026-08-25 — re-verify
+      again if the code has since changed).
+- [x] Supply the legal entity/developer name and jurisdiction. **Done
+      (Session 114): DU SÔ, Vietnam.**
+- [ ] Supply a public-facing mailing address. **Still outstanding.**
+- [x] Decide and state the target-audience / children's-privacy
+      positioning. **Done (Session 114): general audience, not
+      intentionally directed to children under 13.** Whether this
+      positioning satisfies any specific regime's legal test remains
+      open — see "Children's privacy / target audience" above.
+- [x] Supply a real, monitored contact email or form. **Done (Session
+      114): qurancompanionhq@gmail.com.**
 - [ ] Obtain legal review of the third-party audio-streaming
       disclosure nuance (see "Network and audio behavior") against
       Google's and Apple's current policy text.
+- [ ] Obtain legal review of which privacy-law regime(s) apply given
+      the stated Vietnam jurisdiction and the app's actual user
+      locations.
+- [ ] Obtain legal review of whether the stated target-audience
+      positioning satisfies COPPA / Apple Kids Category / Google Play
+      Families Policy requirements.
 - [ ] Obtain legal review of this draft as a whole before publishing
       it anywhere.
 - [ ] Publish the finalized policy at a real, hosted, stable URL, and
