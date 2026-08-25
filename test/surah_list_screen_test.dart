@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/semantics.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:quran_companion/features/quran/data/quran_providers.dart';
@@ -167,6 +168,26 @@ void main() {
       find.widgetWithIcon(IconButton, Icons.search),
       findsOneWidget,
     );
+  });
+
+  testWidgets(
+      'SurahTile lộ hành động onTap trong semantics node (TalkBack kích '
+      'hoạt được bằng double-tap)', (tester) async {
+    final handle = tester.ensureSemantics();
+
+    await tester.pumpWidget(_app(_FakeQuranRepository(_testSurahs)));
+    await tester.pumpAndSettle();
+
+    final tileFinder = find.ancestor(
+      of: find.text('Al-Fatihah'),
+      matching: find.byType(SurahTile),
+    );
+    final semanticsData = tester.getSemantics(tileFinder).getSemanticsData();
+
+    expect(semanticsData.hasAction(SemanticsAction.tap), isTrue);
+    expect(semanticsData.flagsCollection.isButton, isTrue);
+
+    handle.dispose();
   });
 
   testWidgets('layout không vỡ ở text scale 200% (accessibility)',
