@@ -145,16 +145,22 @@ class SurahTile extends StatelessWidget {
         ? l10n.revelationMecca
         : l10n.revelationMadinah;
 
+    void openReading() => context.push(AppRoutes.surahReading(surah.id));
+
     return Semantics(
       // Screen reader đọc trọn thông tin một lần, thay vì từng mảnh.
       label: '${surah.id}. ${surah.nameLatin} — ${surah.nameVi}. '
           '${l10n.surahAyahCount(surah.ayahCount)}. $placeLabel.',
       excludeSemantics: true,
       button: true,
+      // excludeSemantics gộp node con vào node này — nếu không khai báo
+      // onTap ở đây, node gộp không có ACTION_CLICK và TalkBack double-tap
+      // không kích hoạt được (xác nhận trên Android Emulator, Session 121).
+      onTap: openReading,
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
         child: ListTile(
-          onTap: () => context.push(AppRoutes.surahReading(surah.id)),
+          onTap: openReading,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(14),
           ),
