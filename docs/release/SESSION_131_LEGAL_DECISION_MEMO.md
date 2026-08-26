@@ -11,6 +11,27 @@ not reopen or edit `DR-2026-0029` or `DR-2026-0030`, and does not
 override any existing owner decision recorded in
 `docs/release/PRIVACY_POLICY_OWNER_DECISION_PACKET.md`.
 
+> **Session 131A correction (same day).** Google Play's Console
+> Requirements page
+> (`support.google.com/googleplay/android-developer/answer/10788890`)
+> was re-checked directly and cited explicitly in the Google Evidence
+> section (Phase 5) and the Public Address Decision (Phase 9). The
+> correction: this memo's original text inferred a merchant-vs-non-merchant
+> address-*display* split from several partially-inconsistent pages
+> without an authoritative source confirming that outcome for this
+> app's exact account type; that inference is now explicitly marked
+> UNKNOWN/COUNSEL REQUIRED rather than stated as a MEDIUM-confidence
+> reading presented as settled. The distinction between (a) Google's
+> developer-*account* information requirement (legal name and address —
+> confirmed FACT), (b) the Privacy Policy *document's* own content
+> requirement (no address element found), and (c) what is *publicly
+> displayed* on the Play Store listing (not settled for this account
+> type) is now stated explicitly wherever the memo discusses Google.
+> This correction did not touch the Vietnam, Apple, GDPR/CCPA,
+> children's-privacy, or Tanzil sections, the Public Address
+> recommendation (Option B is retained), or any private owner
+> information — none was added or removed.
+
 ## A note on this session's premise
 
 The task that produced this document referred to a prior "Session 130"
@@ -315,43 +336,73 @@ no data must complete it and supply the Privacy Policy URL. HIGH
 confidence. Distinct artifact from A; content must be *consistent* with
 the Privacy Policy document, not identical to it.
 
-**C. Developer identity verification (Google-internal KYC):**
-individual accounts must supply a government ID and a Google Payments
-profile (legal name + legal address); D-U-N-S numbers apply only to
-organization accounts, "does not apply to individual accounts." A
-separate contact email/phone used by Google internally is explicitly
-"NOT shown to users on Google Play." HIGH confidence
+**C. Developer identity verification (Google-internal account
+information):** OFFICIAL REQUIREMENT, per Google Play Console
+Requirements
+(`support.google.com/googleplay/android-developer/answer/10788890`,
+cited directly this correction pass) — developer account information
+includes **legal name and address**, a **D-U-N-S number if the account
+is an organization**, and **contact email and phone**. This is
+confirmed FACT: Google requires legal name and address as part of
+developer *account* information. It is a distinct requirement from
+Category B (Privacy Policy content, below) and is not, by itself, a
+statement about what the Privacy Policy document must contain or what
+becomes publicly visible — see Category D. Individual accounts
+separately supply a government ID and a Google Payments profile;
+D-U-N-S numbers apply only to organization accounts, "does not apply to
+individual accounts." A separate contact email/phone used by Google
+internally is explicitly "NOT shown to users on Google Play." HIGH
+confidence
 (`support.google.com/googleplay/android-developer/answer/10841920`,
-`.../13628312`).
+`.../13628312`, `.../10788890`).
 
-**D. Public developer information:** for a non-merchant (non-monetized)
-individual account, publicly displayed fields appear to be **legal name
-+ country + a chosen developer contact email** — **full street address
-appears to be a merchant-account (paid/IAP) obligation** described as
-existing "to comply with consumer protection laws," not a general
-requirement. **MEDIUM confidence** — this reading reconciles several
-partially-inconsistent official pages, but no single page gave one
-unambiguous verbatim table; **the developer should personally check
-their own Play Console "Developer profile" screen before relying on
-this.** EU "trader status" equivalent to Apple's DSA mechanism could
-not be located within Google's own three approved documentation domains
-this session — **UNKNOWN / COUNSEL REQUIRED**, particularly relevant if
-EU distribution is intended.
+**D. Public developer information:** the same Google Play Console
+Requirements page states that a **developer email and phone are shown
+on Google Play "where applicable"** — Google's own phrasing is
+conditional, not a blanket statement that every account's full contact
+set (name, address, email, phone) is published for every account type.
+No authoritative Google source fetched this session **explicitly
+establishes, for an individual, non-merchant/non-monetized account
+specifically, that the full residential address from Category C is
+published on the Play Store listing.** A prior reading in this memo
+inferred a merchant-vs-non-merchant address-display split from several
+partially-inconsistent official pages; that inference is retained below
+as a plausible reading, not a confirmed FACT, because no single
+authoritative source gave an unambiguous, verbatim rule for this exact
+account type/circumstance. **LOW-MEDIUM confidence — UNKNOWN / COUNSEL
+REQUIRED.** The developer should personally check their own Play
+Console "Developer profile" screen to see the actual public-display
+fields for this specific account before relying on any reading here. EU
+"trader status" equivalent to Apple's DSA mechanism could not be
+located within Google's own approved documentation domains this
+session — **UNKNOWN / COUNSEL REQUIRED**, particularly relevant if EU
+distribution is intended.
 
 **E. Monetization differences:** Data Safety completeness — no
 difference (always required in full). Public address disclosure —
-appears to differ, reduced/absent for non-merchant accounts (MEDIUM).
-Identity verification tier — no apparent reduction; government ID is
-required regardless of monetization.
+a merchant/non-merchant distinction was hypothesized in earlier research
+this session but is **not confirmed by an authoritative source for this
+exact account type** (see Category D above) — treat as UNKNOWN, not as
+an established reduction. Identity verification tier — no apparent
+reduction; government ID is required regardless of monetization.
 
-**Direct answer:** Google's Privacy Policy content rules do **not**
-clearly require a full residential address (a contact mechanism
-suffices per the policy's own "or" language); full public address
-disclosure on the Play Store listing itself appears tied to monetized
-("merchant") accounts specifically, which this app is not. This
-reading carries MEDIUM confidence and should be verified directly
-against the developer's own Play Console account before being relied
-upon.
+**Direct answer:** Google's Privacy Policy content rules (Category B)
+do **not** clearly require a full residential address inside the
+Privacy Policy document itself (a contact mechanism suffices per the
+policy's own "or" language — see Category B below). Separately and
+distinctly, Google's developer *account* requirements (Category C) do
+require legal name and address — this is FACT, confirmed against
+Google's own Play Console Requirements page. Whether, and for which
+account types, that account-level address becomes **publicly displayed**
+on the Play Store listing (Category D) is **not settled** by any source
+fetched this session with the specificity this app's exact
+circumstance (individual, free, non-monetized) would require. This
+memo does **not** state that Google requires a full residential address
+in the Privacy Policy, and does **not** state that Google will
+necessarily publicly display the full residential address for this
+account — neither claim is supported by an authoritative source found.
+Verify directly against the developer's own Play Console account before
+relying on any reading here.
 
 **Google Play Families Policy (children, platform policy angle):**
 applies "if one of the target audiences for your app is children," per
@@ -541,11 +592,21 @@ determinable from source code.
   for this app) requires no public address regardless of A/B/C. No
   Apple-specific risk differential identified between B and C on
   current evidence.
-- **Google risk.** Phase 5: address disclosure appears tied to merchant
-  (monetized) status, which this app does not have. No Google-specific
-  risk differential identified between B and C on current evidence,
-  though this reading is MEDIUM confidence and merits a direct
-  Play-Console check.
+- **Google risk.** Phase 5 (Category C): Google separately requires
+  legal name and address for developer *account* verification — this is
+  confirmed FACT, not a Privacy-Policy-content requirement. That
+  account-level requirement does not, by itself, establish that the
+  full residential address must appear in the Privacy Policy, or that
+  it is publicly displayed on the Play Store listing for this account
+  type (Category D remains UNKNOWN/COUNSEL REQUIRED — see Phase 5). Option
+  B provides a limited geographic identity signal in the public-facing
+  Privacy Policy while avoiding publication of the developer's full
+  residential address there; it does not change, satisfy, or bypass
+  whatever Google separately requires at the account level, which is
+  outside this memo's scope and outside the Privacy Policy document
+  itself. No confirmed Google-specific risk differential between B and
+  C was established for the Privacy Policy document specifically; this
+  remains MEDIUM/LOW confidence and merits a direct Play-Console check.
 - **User transparency.** B offers slightly more transparency than C
   (a general sense of the developer's home region) without approaching
   A's exposure. Neither is clearly required by any store or law found.
@@ -700,8 +761,12 @@ research and is available in this session's transcript; this memo
 condenses it here to keep the document readable, while preserving every
 material conclusion's citation inline above. Primary official domains
 used: `chinhphu.vn`, `congbao.chinhphu.vn`, `developer.apple.com`,
-`support.google.com/googleplay/android-developer`, `oag.ca.gov`,
-`edpb.europa.eu`, `tanzil.net`. Secondary sources used only where
+`support.google.com/googleplay/android-developer` (including
+`.../answer/10144311` — Privacy Policy/User Data requirements — and
+`.../answer/10788890` — Play Console Requirements/developer account
+information, re-confirmed directly in the Session 131A correction
+pass), `oag.ca.gov`, `edpb.europa.eu`, `tanzil.net`. Secondary sources
+used only where
 official text was inaccessible, and labeled as such throughout:
 LuatVietnam (Vietnamese law translation), Tilleke & Gibbins and Vietnam
 Briefing (law-firm summaries), Cornell Law School LII (eCFR mirror for
