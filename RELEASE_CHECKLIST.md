@@ -64,9 +64,15 @@ log cho chi tiết từng commit). Mục đã ✅ là đã XÁC MINH THẬT (ch�
       đúng" dưới điều kiện release thật
 - [x] CI xanh trên commit cuối cùng đã build release (xác minh qua
       GitHub Actions API, không suy đoán)
-- [ ] Chưa test bằng TalkBack/screen reader thật (chỉ mới kiểm thử
-      chức năng bằng tay, chưa audit accessibility chuyên sâu — xem
-      mục "Accessibility audit" bên dưới, vẫn còn treo)
+- [x] TalkBack trên Android emulator: ĐÃ audit + xác minh thật (Session
+      119, PR #39 — 3 lỗi accessibility đã sửa, xác nhận bằng
+      uiautomator dump trên Pixel 8 API 37 emulator; Session 122, PR
+      #40 — sửa lỗi SurahTile không kích hoạt được bằng TalkBack). Xem
+      chi tiết đầy đủ ở mục "Accessibility audit" bên dưới.
+- [ ] TalkBack trên thiết bị Android vật lý thật — CHƯA kiểm thử, vẫn
+      còn treo (chỉ mới xác minh trên emulator, xem mục trên).
+- [ ] VoiceOver trên iOS — CHƯA kiểm thử, vẫn còn treo (không có môi
+      trường build macOS/Xcode).
 
 ## Kỹ thuật — Đã xác minh (Phase 4, ký thật + tối ưu release)
 - [x] **Keystore upload thật đã tạo**: `keytool -genkeypair` (RSA 2048,
@@ -160,10 +166,23 @@ log cho chi tiết từng commit). Mục đã ✅ là đã XÁC MINH THẬT (ch�
       duyệt (RELEASE_DASHBOARD.md §2/§3). Một CI guard chặn `build-web`
       nếu 2 file này bị xoá. Sửa lại trong đợt rà soát tài liệu
       Session 83 — mục này trước đó ghi "CHƯA có trong web/", đã lỗi thời.
-- [ ] Accessibility audit thật trên thiết bị: TalkBack/VoiceOver,
-      contrast, font scale 200% (code đã có nền tảng theo
-      ARCHITECTURE.md §14, nhưng chưa audit trên thiết bị/screen reader
-      thật)
+- [x] TalkBack trên Android emulator thật: ĐÃ audit xong (Session 119 —
+      PR #39 sửa 3 lỗi: tooltip thiếu ở nút "xoá tìm kiếm" trong
+      FlashcardBrowseScreen/AddFlashcardScreen, 3 _StatChip trên Trang
+      chủ bị gộp sai thành 1 node TalkBack; Session 122 — PR #40 sửa
+      SurahTile thiếu `onTap` nên TalkBack focus được nhưng double-tap
+      không kích hoạt được hàng Surah nào). Xác minh bằng uiautomator
+      dump thật trên Pixel 8 (API 37) emulator, không chỉ code review
+      tĩnh. Widget semantics test pass trong CI
+      (`test/surah_list_screen_test.dart`).
+- [ ] TalkBack trên thiết bị Android vật lý thật — CHƯA kiểm thử, vẫn
+      còn treo (chỉ mới xác minh trên emulator, xem mục trên).
+- [ ] VoiceOver trên iOS (thiết bị thật hoặc simulator) — CHƯA kiểm
+      thử, vẫn còn treo (không có môi trường build macOS/Xcode ở các
+      phiên làm việc đến nay).
+- [ ] Contrast, font scale 200% trên thiết bị thật — CHƯA đo/audit
+      (code có nền tảng theo ARCHITECTURE.md §14, nhưng chưa xác minh
+      trên thiết bị thật).
 - [ ] PERFORMANCE.md: cột "Android tầm trung" vẫn "chưa đo" — cột
       "Máy dev" đã điền số thật (161.6 ms, đo trên Windows desktop
       bằng `flutter run --profile --trace-startup`, KHÔNG thay thế

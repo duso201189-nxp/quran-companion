@@ -34,6 +34,30 @@ open — never resolved, narrowed, or implied-resolved.
 > this document was altered, and no governance record (`DR-2026-0029`,
 > `DR-2026-0030`) was reopened or reinterpreted to produce it.
 
+> **Session 125 amendment (2026-08-26, documentation reconciliation —
+> no code, no ADR changes).** Since the Session 104 baseline, three
+> Privacy-Policy documents have been created and the owner has answered
+> most (not all) of the questions they raised:
+> `docs/release/PRIVACY_POLICY_DRAFT.md`,
+> `docs/release/STORE_PRIVACY_FORM_DRAFT.md`, and
+> `docs/release/PRIVACY_POLICY_OWNER_DECISION_PACKET.md` now exist. Per
+> the owner-decision packet (Session 114, 2026-08-25): legal identity is
+> **DU SÔ**, an individual; jurisdiction is **Vietnam**; privacy contact
+> is **qurancompanionhq@gmail.com**; audience positioning is **general
+> audience, not intentionally directed at children under 13** — stated
+> as the owner's product-positioning intent only, not a COPPA/Apple Kids
+> Category/Google Play Families Policy compliance conclusion (that
+> remains open, see the decision packet's Section C, item 7). Two owner
+> items remain unanswered: a public-facing mailing address (part of B1),
+> and the B5 iOS-display-name correction. **The Privacy Policy itself is
+> still a draft** — not finalized, not legally approved, not published,
+> and no public Privacy Policy URL exists anywhere. **P0-1 below remains
+> OPEN.** This amendment does not resolve B5, does not supply a mailing
+> address, does not perform or shortcut legal review, and does not
+> reopen or reinterpret any ADR. The executive-status bullet, legal-
+> inventory item 1, and P0-1 below are updated in place with this
+> finding; nothing else in this document was altered.
+
 ## Executive status
 
 - No store submission has occurred. No Apple Developer or Google Play
@@ -53,8 +77,15 @@ open — never resolved, narrowed, or implied-resolved.
   note above and P0-3 below (now resolved). Feature code and route
   definitions still exist; that is intentional soft-reversibility per
   DR-2026-0030, not a live/reachable gap.
-- Privacy Policy and Terms of Use do not exist in any form (no draft, no
-  URL, no in-app route).
+- Privacy Policy: **[Session 125 update]** no longer nonexistent — draft
+  documents exist (`docs/release/PRIVACY_POLICY_DRAFT.md`,
+  `docs/release/STORE_PRIVACY_FORM_DRAFT.md`) and the owner has answered
+  most of `docs/release/PRIVACY_POLICY_OWNER_DECISION_PACKET.md`'s
+  questions (legal identity, jurisdiction, contact, audience positioning
+  — see amendment note above). It remains a **draft**: not finalized,
+  not legally approved, not published, no public URL. A mailing address
+  and the B5 iOS-display-name decision remain open. Terms of Use still
+  does not exist in any form, in any draft. **P0-1 remains open.**
 - Android identity/signing mechanics are in place; the release keystore and
   `key.properties` correctly do not exist in this repository (gitignored,
   publisher-machine-only per `RELEASE_CHECKLIST.md`). Play Console
@@ -127,9 +158,20 @@ directly observable in the repository), **[draft]** (unfinished material
 exists), **[needs-external-verification]**, or
 **[needs-owner/legal-approval]**.
 
-1. **Privacy Policy** — [repo-evidence: absent]. No file, no route, no
-   hosted URL. `RELEASE_DASHBOARD.md:710-711` names it under "Store & legal
-   readiness unstarted."
+1. **Privacy Policy** — [draft: exists, not published]. **[Session 125
+   update]** `docs/release/PRIVACY_POLICY_DRAFT.md` and
+   `docs/release/STORE_PRIVACY_FORM_DRAFT.md` exist, and
+   `docs/release/PRIVACY_POLICY_OWNER_DECISION_PACKET.md` records
+   owner-confirmed answers: legal identity **DU SÔ** (individual);
+   jurisdiction **Vietnam**; contact **qurancompanionhq@gmail.com**;
+   audience **general audience, not intentionally directed at children
+   under 13** (a positioning statement, not a COPPA/Kids-Category/
+   Families-Policy legal conclusion — that stays open per the decision
+   packet's Section C). Still open: a public mailing address (part of
+   B1) and the B5 iOS display-name decision. No hosted URL exists; the
+   policy has not been legally approved or published. The original
+   `RELEASE_DASHBOARD.md:710-711` citation reflected the pre-draft state
+   and is superseded for this specific item by this update.
 2. **Terms of Use** — [repo-evidence: absent]. No file, no route.
 3. **Data collection disclosure** — [repo-evidence]. No network/backend SDK
    in `pubspec.yaml`; storage is local-only (Drift/SQLite +
@@ -197,9 +239,15 @@ exists), **[needs-external-verification]**, or
 
 ## P0 blockers (block v1.0; no path forward without owner/external action)
 
-- **P0-1** — Privacy Policy and Terms of Use do not exist. Both stores
-  require a privacy policy at minimum. *Category C* (owner must author or
-  commission; legal review recommended before publishing).
+- **P0-1 — STILL OPEN (updated Session 125, 2026-08-26).** Privacy
+  Policy is now in **draft** form with most owner decisions captured
+  (see amendment note above), but it is **not published, not legally
+  approved, and has no public URL** — the store-submission blocker
+  remains. Terms of Use still does not exist in any form. Remaining
+  owner items: a public mailing address and the B5 iOS display-name
+  decision. Both stores require a published privacy policy at minimum.
+  *Category C* (owner must finish supplying the address, then legal
+  review before publishing).
 - **P0-2** — Tanzil translation license legal review has not returned a
   result. *Category C* (external legal review).
 - **P0-3 — RESOLVED (re-verified Session 104, 2026-08-24, `origin/main`
@@ -296,7 +344,11 @@ exists), **[needs-external-verification]**, or
 ## Owner action checklist
 
 - [ ] Author or commission a Privacy Policy and Terms of Use; obtain legal
-      review before publishing a URL.
+      review before publishing a URL. **[Session 125 update]** Privacy
+      Policy is drafted and most owner decisions (identity, jurisdiction,
+      contact, audience) are captured — still open: mailing address, B5
+      iOS display-name decision, legal review, and publication. Terms of
+      Use not started.
 - [ ] Commission/complete real app icon (1024×1024) and splash screen art
       for Android and iOS.
 - [x] Decide: gate Lexicon/Flashcards UI before v1.0, or accept shipping
