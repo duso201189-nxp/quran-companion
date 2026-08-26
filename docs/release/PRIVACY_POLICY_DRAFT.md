@@ -47,14 +47,26 @@ repository draft (added Session 107/109) — still explicitly marked
 here either. No other section of this document was re-derived; see
 each section's own citation for the SHA it was last checked against.
 
+**Session 128 update (2026-08-26).** The owner has supplied a
+public-facing reduced locality (see "App identity" below) and resolved
+B5 (iOS `CFBundleDisplayName` corrected to "Qur'an Companion"). Neither
+change alters this draft's status: it remains **DRAFT, NOT PUBLISHED,
+NOT LEGALLY APPROVED**. Whether a reduced locality is legally
+sufficient for publisher-address disclosure is not resolved by this
+update — see
+`docs/release/PRIVACY_POLICY_OWNER_DECISION_PACKET.md` Section C item
+8. No other section of this document was changed.
+
 ---
 
 ## App identity
 
-**FACT.** App name: "Qur'an Companion" (Android/README spelling) /
-"Quran Companion" (iOS `CFBundleDisplayName`, no apostrophe — a known,
-unresolved cross-platform inconsistency, see
-`docs/release/V1_STORE_LEGAL_READINESS.md` P2-1). Package identifiers:
+**FACT.** App name: "Qur'an Companion", consistent across Android
+(`AndroidManifest.xml` app label), README.md, and iOS
+`CFBundleDisplayName` — the iOS spelling was corrected from "Quran
+Companion" (no apostrophe) to match the other two platforms, per owner
+decision B5 (`docs/release/PRIVACY_POLICY_OWNER_DECISION_PACKET.md`
+B5, Session 128). Package identifiers:
 `com.duso.qurancompanion` on both Android
 (`android/app/build.gradle.kts:19,29`) and iOS
 (`ios/Runner.xcodeproj/project.pbxproj`). Current version:
@@ -67,12 +79,21 @@ app is operated by an individual, not a registered business entity:
 
 > **DU SÔ**, based in **Vietnam**.
 
-**REQUIRES OWNER CONFIRMATION — still open.** A public-facing mailing
-address has not been supplied. Both a Privacy Policy and each store's
-developer-account registration conventionally require one; this draft
-does not invent one:
+**FACT (owner-confirmed, Session 128 — see
+`docs/release/PRIVACY_POLICY_OWNER_DECISION_PACKET.md` B1).** A
+public-facing locality has now been supplied, as a reduced/general
+locality rather than a full street-level address:
 
-> **[PUBLIC-FACING MAILING ADDRESS — NOT YET PROVIDED]**.
+> **Thị xã Tân Châu, tỉnh An Giang, Việt Nam**
+
+This is the owner's chosen public contact locality — not the owner's
+full residential address, which is held privately outside this
+document and this repository. This draft does not claim that a
+reduced locality of this kind is legally sufficient to satisfy any
+store's or jurisdiction's publisher-address disclosure requirement;
+whether it is remains **LEGAL REVIEW REQUIRED** (see
+`docs/release/PRIVACY_POLICY_OWNER_DECISION_PACKET.md` Section C, item
+8).
 
 Naming an individual and a country here is a business/contact fact,
 not a legal-jurisdiction compliance determination — see "Which
@@ -305,9 +326,11 @@ elsewhere in this repository's drafts
   target-audience positioning satisfies COPPA, Apple Kids Category,
   Google Play Families Policy, or any other regime's specific test —
   see "Children's privacy / target audience" above.
-- It does not supply a public-facing mailing address — that remains
-  outstanding even though a legal name, jurisdiction, and contact
-  email have now been supplied by the owner (Session 114).
+- It does not claim that the reduced public locality supplied in
+  Session 128 is legally sufficient to satisfy any store's or
+  jurisdiction's publisher-address disclosure requirement — see
+  `docs/release/PRIVACY_POLICY_OWNER_DECISION_PACKET.md` Section C
+  item 8.
 
 ---
 
@@ -321,7 +344,12 @@ elsewhere in this repository's drafts
       again if the code has since changed).
 - [x] Supply the legal entity/developer name and jurisdiction. **Done
       (Session 114): DU SÔ, Vietnam.**
-- [ ] Supply a public-facing mailing address. **Still outstanding.**
+- [x] Supply a public-facing locality. **Done (Session 128): "Thị xã
+      Tân Châu, tỉnh An Giang, Việt Nam" (reduced/general locality, not
+      a full street-level address).** Whether this satisfies any
+      store's or jurisdiction's specific publisher-address disclosure
+      requirement is **not** determined by this draft — remains open,
+      see the legal-review items below.
 - [x] Decide and state the target-audience / children's-privacy
       positioning. **Done (Session 114): general audience, not
       intentionally directed to children under 13.** Whether this
@@ -335,6 +363,10 @@ elsewhere in this repository's drafts
 - [ ] Obtain legal review of which privacy-law regime(s) apply given
       the stated Vietnam jurisdiction and the app's actual user
       locations.
+- [ ] Obtain legal review of whether the reduced public locality
+      supplied in Session 128 satisfies any store's or jurisdiction's
+      publisher-address disclosure requirement, or whether a full
+      address must be published instead.
 - [ ] Obtain legal review of whether the stated target-audience
       positioning satisfies COPPA / Apple Kids Category / Google Play
       Families Policy requirements.

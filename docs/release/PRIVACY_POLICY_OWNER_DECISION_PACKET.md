@@ -15,6 +15,19 @@ are **not** resolved by these confirmations; two of them (C6, C7) are
 now unconditional rather than contingent, and are annotated
 accordingly below.
 
+**Session 128 update (2026-08-26):** the owner has now confirmed B1's
+outstanding public-facing locality, and resolved B5. **OWNER DECISION
+(Session 128)**, annotated in place below. The owner also confirmed a
+full private residential address and date of birth as source-of-truth
+identity facts for internal record-keeping — per explicit owner
+instruction, **neither is reproduced in this document or any other
+repository file**: only the reduced public locality is recorded here,
+and no date-of-birth field exists anywhere in this packet. B1's
+remaining sub-item (whether a reduced locality is legally sufficient
+for store/publisher disclosure purposes) is **not** resolved by this
+update and stays flagged **LEGAL REVIEW REQUIRED** below. B5 is now
+fully resolved. No other Section B or C item was touched this session.
+
 This document exists to let the owner answer every open Privacy-Policy
 question **once**, in one place, instead of re-deriving them from
 `docs/release/PRIVACY_POLICY_DRAFT.md` and
@@ -110,6 +123,27 @@ open — the Privacy Policy and store-account registrations still need
 one before publication/submission. This is carried forward as an
 explicit outstanding item in `docs/release/PRIVACY_POLICY_DRAFT.md`,
 not silently dropped or invented.
+
+**OWNER DECISION (Session 128, 2026-08-26) — public locality supplied:**
+the owner has resolved the outstanding address item **only for public
+disclosure purposes**, as a reduced/general locality rather than a
+full street-level address:
+
+> **Thị xã Tân Châu, tỉnh An Giang, Việt Nam**
+
+This is the string to be used anywhere the Privacy Policy, store
+listings, or developer-account public disclosures need a publisher
+locality. It is **not** the owner's full residential address — the
+owner separately holds a complete, hamlet-level address as private
+source-of-truth information, which this document deliberately does
+**not** reproduce (nor does any other file in this repository). This
+packet does not assert that a reduced locality of this kind is
+legally sufficient to satisfy any store's or jurisdiction's publisher-
+disclosure requirements — whether it is remains **LEGAL REVIEW
+REQUIRED** (see Section C, new item 8, below). No date-of-birth or
+national-ID information is recorded in this document; the owner
+confirmed those facts exist as private records outside the repository,
+not for inclusion here.
 
 ### B2. Jurisdiction / governing legal location
 
@@ -219,6 +253,16 @@ unconditional).
   keep iOS as-is and change the other two instead"`.
 - **Legal review required?** No.
 
+**OWNER DECISION (Session 128, 2026-08-26):** **YES** — correct iOS to
+match. `ios/Runner/Info.plist`'s `CFBundleDisplayName` is changed from
+`"Quran Companion"` to `"Qur'an Companion"`, making all three
+platform-facing sources (README.md, Android's `AndroidManifest.xml`
+app label, and now iOS's `CFBundleDisplayName`) consistent. This was a
+one-file outlier correction, not a three-way naming decision — see §A4
+above. No bundle identifier, Team ID, signing, provisioning,
+certificate, `project.pbxproj`, version, or build-number change was
+made alongside it.
+
 ## C. Legal review required — not owner-decidable by guessing
 
 These are flagged so the owner does not attempt to resolve them
@@ -265,6 +309,12 @@ unilaterally. None is answered here.
    The audience positioning itself is now stated (§B4); whether that
    positioning, as stated, meets each regime's specific test is still
    open and now unconditional rather than contingent.
+8. **Whether a reduced/general locality ("Thị xã Tân Châu, tỉnh An
+   Giang, Việt Nam", supplied Session 128 — see B1) is legally
+   sufficient to satisfy any store's or jurisdiction's publisher-
+   address disclosure requirement**, as opposed to a full street-level
+   address. This packet does not assert sufficiency either way; it
+   only records the owner's chosen public-disclosure string.
 
 ## D. External platform required — Apple / Google / macOS / hosting
 
@@ -288,14 +338,21 @@ Nothing here can be completed by Claude from this repository.
 
 ## What this packet does not do
 
-- It does not answer B1–B5 on the owner's behalf — B1's address
-  component and B5 remain unanswered even after Session 114.
-- It does not reach any legal conclusion listed under Section C.
+- It does not answer B1–B5 on the owner's behalf — as of Session 128,
+  B1's public locality and B5 are now owner-confirmed above; B1's
+  legal-sufficiency question (Section C item 8) and Section C generally
+  remain unanswered.
+- It does not reach any legal conclusion listed under Section C,
+  including the new item 8.
 - It does not reopen, edit, or reinterpret `DR-2026-0029` or
   `DR-2026-0030`.
 - It does not publish a Privacy Policy or submit any store form.
 - It does not assert the app is closer to release-ready than
   `V1_STORE_LEGAL_READINESS.md` already states.
+- It does not claim that a reduced/general locality is legally
+  sufficient for any purpose — see Section C item 8.
+- It does not record the owner's date of birth, national-ID (CCCD)
+  number, or full residential address anywhere in this document.
 
 ## How to use this packet
 
@@ -315,3 +372,14 @@ this update — items 6 and 7 are now unconditional rather than
 contingent, but still require legal review, not owner guessing. This
 packet still does not publish a Privacy Policy, submit any store form,
 or assert legal compliance.
+
+**Session 128 status (2026-08-26):** B1 is now fully answered — a
+public-facing reduced locality (`Thị xã Tân Châu, tỉnh An Giang, Việt
+Nam`) has been supplied and carried into
+`docs/release/PRIVACY_POLICY_DRAFT.md`. B5 is resolved **YES** and
+`ios/Runner/Info.plist`'s `CFBundleDisplayName` has been corrected to
+`"Qur'an Companion"`. Whether the reduced locality satisfies any
+store's or jurisdiction's legal disclosure requirement is **not**
+resolved — see Section C item 8 (new). No Section C item is closed by
+this update. `DR-2026-0029`/`DR-2026-0030` were not touched. The
+Privacy Policy remains **DRAFT, NOT PUBLISHED, NOT LEGALLY APPROVED**.
