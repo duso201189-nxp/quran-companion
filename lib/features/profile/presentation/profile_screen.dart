@@ -1,8 +1,10 @@
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:quran_companion/l10n/app_localizations.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../../../app/locale/locale_controller.dart';
 import '../../../app/router.dart';
@@ -129,7 +131,7 @@ class ProfileScreen extends ConsumerWidget {
           ListTile(
             leading: const Icon(Icons.source_outlined),
             title: Text(l10n.aboutSources),
-            subtitle: Text(l10n.aboutSourcesDetail),
+            subtitle: _SourcesAttribution(text: l10n.aboutSourcesDetail),
             isThreeLine: true,
           ),
           ListTile(
@@ -144,6 +146,83 @@ class ProfileScreen extends ConsumerWidget {
             ),
           ),
           const SizedBox(height: 16),
+        ],
+      ),
+    );
+  }
+}
+
+/// Dòng "Nguồn dữ liệu" — giữ nguyên câu đã dịch (vi/en/ar) nhưng biến
+/// đoạn "Tanzil.net" thành liên kết chạm được, mở https://tanzil.net.
+///
+/// Giấy phép văn bản Ả Rập của Tanzil yêu cầu liên kết tới tanzil.net
+/// để người dùng theo dõi thay đổi bản gốc (Session 133). Chuỗi dịch ở
+/// cả 3 ngôn ngữ đều giữ nguyên "Tanzil.net" không dịch, nên tách theo
+/// chuỗi con này là an toàn — không cần đổi cấu trúc ARB hay dịch mới.
+class _SourcesAttribution extends StatefulWidget {
+  const _SourcesAttribution({required this.text});
+
+  final String text;
+
+  @override
+  State<_SourcesAttribution> createState() => _SourcesAttributionState();
+}
+
+class _SourcesAttributionState extends State<_SourcesAttribution> {
+  static const _tanzilLabel = 'Tanzil.net';
+  static final Uri _tanzilUri = Uri.parse('https://tanzil.net');
+
+  late final TapGestureRecognizer _tanzilRecognizer;
+
+  @override
+  void initState() {
+    super.initState();
+    _tanzilRecognizer = TapGestureRecognizer()..onTap = _openTanzil;
+  }
+
+  @override
+  void dispose() {
+    _tanzilRecognizer.dispose();
+    super.dispose();
+  }
+
+  Future<void> _openTanzil() async {
+    // Đích cố định, không dựng từ input người dùng (Phase 6). Nuốt lỗi
+    // thay vì crash nếu máy không có gì mở được https — launchUrl ném
+    // PlatformException/ném lỗi tuỳ nền tảng khi không tìm được handler.
+    try {
+      await launchUrl(_tanzilUri, mode: LaunchMode.externalApplication);
+    } catch (_) {
+      // Không có trình duyệt/handler để mở — im lặng bỏ qua, không crash.
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final text = widget.text;
+    final index = text.indexOf(_tanzilLabel);
+    if (index < 0) {
+      // An toàn dự phòng: nếu bản dịch tương lai đổi cách viết
+      // "Tanzil.net", hiển thị nguyên câu thay vì vỡ layout/crash.
+      return Text(text);
+    }
+    final before = text.substring(0, index);
+    final after = text.substring(index + _tanzilLabel.length);
+    final linkColor = Theme.of(context).colorScheme.primary;
+
+    return Text.rich(
+      TextSpan(
+        children: [
+          if (before.isNotEmpty) TextSpan(text: before),
+          TextSpan(
+            text: _tanzilLabel,
+            recognizer: _tanzilRecognizer,
+            style: TextStyle(
+              color: linkColor,
+              decoration: TextDecoration.underline,
+            ),
+          ),
+          if (after.isNotEmpty) TextSpan(text: after),
         ],
       ),
     );
