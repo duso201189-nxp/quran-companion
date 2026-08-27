@@ -17,17 +17,18 @@
 >
 > Where this historical draft and the published policy differ, **the
 > published policy governs.** Session 137 re-verified this draft's
-> technical claims against `origin/main` `5360f49` and corrected two
-> of them in the published policy — see "Session 137 supersession
-> note" immediately below. Those corrections were **not** back-applied
-> to the body of this draft, which is preserved unedited as the
-> historical record it now is.
+> technical claims against `origin/main` `5360f49`, corrected two of
+> them, and added a third disclosure this draft never made — see
+> "Session 137 supersession note" immediately below. None of that was
+> back-applied to the body of this draft, which is preserved unedited
+> as the historical record it now is.
 
 ## Session 137 supersession note (2026-08-27)
 
 This draft was superseded by the published policy at the URL above.
-Two substantive corrections were made during publication, after
-re-verifying every material claim against `origin/main` `5360f49`:
+Two substantive corrections and one new disclosure were made during
+publication, after re-verifying every material claim against
+`origin/main` `5360f49`:
 
 1. **"Exactly one network call site" was no longer accurate.** This
    draft (written at `3ca83c0a`, re-checked at `a2d0683`) states that
@@ -53,6 +54,22 @@ re-verifying every material claim against `origin/main` `5360f49`:
    `https://everyayah.com/...` templates. The published policy states
    this as fact, while still declining to warrant how the
    independently operated everyayah.com servers actually respond.
+
+3. **New disclosure: in-app deletion is a SOFT delete.** This draft's
+   "Data deletion and retention" section is not wrong, but it never
+   says what happens when a user deletes an individual item.
+   `UserContentRepository`'s contract states it
+   (`lib/features/quran/domain/repositories/user_content_repository.dart:6`)
+   and the implementation confirms it: removing a bookmark writes only
+   `deletedAt`/`updatedAt`/`isDirty`
+   (`user_content_repository_impl.dart:203-210`), and clearing a note
+   to empty sets `deletedAt` while **leaving the note's `content`
+   column intact** (`user_content_repository_impl.dart:285-297`). So a
+   deleted note's text remains on the device until app data is cleared
+   or the app is uninstalled. Nothing is transmitted — the SyncEngine
+   those comments anticipate does not exist on `main` — but the
+   published policy discloses this rather than letting "deleted"
+   read as "erased". Only the audio cache is a true delete.
 
 Everything below this line is the historical draft, unchanged.
 
