@@ -100,8 +100,8 @@ off-device.
 
 ## Network activity
 
-The app makes three kinds of outbound network request. There are no
-others.
+Using the app can result in three kinds of outbound network activity.
+There are no others.
 
 1. **Downloading recitation audio.** When you play or download a
    recitation, your device requests the corresponding audio file
@@ -119,6 +119,12 @@ others.
 In every case the request is made directly from your device to that
 website. It is not routed through any server operated by the developer,
 because none exists.
+
+On the Web/PWA build there is one further, unavoidable case: your
+browser loads the app's own program files from whichever server the app
+is hosted on, exactly as it does for any website you visit. That is how
+a web page loads at all, and it carries no information about you beyond
+what your browser sends to any site.
 
 As with any request to any website, the connection itself necessarily
 reveals ordinary technical information to the site being contacted —
