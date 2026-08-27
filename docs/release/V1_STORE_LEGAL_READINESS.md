@@ -236,6 +236,21 @@ exists), **[needs-external-verification]**, or
    policy has not been legally approved or published. The original
    `RELEASE_DASHBOARD.md:710-711` citation reflected the pre-draft state
    and is superseded for this specific item by this update.
+
+   **[Session 137 update, 2026-08-27 — supersedes the two sentences
+   above about draft status and URL.]** This item is no longer
+   `[draft]`. A single canonical policy exists at `privacy/index.md`,
+   effective **27 August 2026**, and
+   `docs/release/PRIVACY_POLICY_DRAFT.md` is marked SUPERSEDED.
+   Canonical URL:
+   <https://duso201189-nxp.github.io/quran-companion/privacy/> — it is
+   **`[needs-external-verification]` until it actually returns 200**,
+   because GitHub Pages builds from `main` only and the Session 137 PR
+   is unmerged. B5 was resolved in Session 128. A full mailing address
+   is deliberately not published (a reduced public locality is used);
+   whether that suffices is unresolved. The policy remains
+   `[needs-owner/legal-approval]` — no counsel has reviewed it — and
+   there is still no in-app link (Session 138).
 2. **Terms of Use** — [repo-evidence: absent]. No file, no route.
 3. **Data collection disclosure** — [repo-evidence]. No network/backend SDK
    in `pubspec.yaml`; storage is local-only (Drift/SQLite +
