@@ -58,6 +58,66 @@ open — never resolved, narrowed, or implied-resolved.
 > inventory item 1, and P0-1 below are updated in place with this
 > finding; nothing else in this document was altered.
 
+> **Session 137 amendment (2026-08-27, Privacy Policy publication —
+> no app code changed).** The Privacy Policy has been written as a
+> single canonical, public-facing document at `privacy/index.md`, with
+> effective date **27 August 2026**, replacing the draft in
+> `docs/release/PRIVACY_POLICY_DRAFT.md` (now explicitly marked
+> SUPERSEDED and pointing at the canonical URL). Canonical URL:
+> **<https://duso201189-nxp.github.io/quran-companion/privacy/>**
+>
+> **This does NOT yet close P0-1.** GitHub Pages for this repository
+> is configured (verified via `GET /repos/duso201189-nxp/quran-companion/pages`)
+> as a legacy Jekyll build with `source: {branch: "main", path: "/"}`
+> and `https_enforced: true`. Pages therefore builds **only from
+> `main`** — the canonical URL cannot return HTTP 200 until the
+> Session 137 PR is merged. Session 137 did not merge and does not
+> claim the URL is live. What Session 137 *did* verify on the live
+> site is the routing mechanism the URL depends on: sibling Markdown
+> under a non-underscore directory renders to HTML and serves 200
+> (`/docs/release/PRIVACY_POLICY_DRAFT.html`), and directory-index
+> resolution works (`/web/` → 200 from `web/index.html`). `/privacy/`
+> returns 404 today, confirming no path collision.
+>
+> Publication-format requirements were re-verified against primary
+> sources on 2026-08-27, not taken from prior sessions: Apple App
+> Store Review Guideline **5.1.1(i)** (policy link required in App
+> Store Connect metadata *and* in the app; policy must identify data
+> collected/how/all uses, confirm third-party equal protection where
+> user data is shared, and explain retention/deletion plus how to
+> revoke consent or request deletion) and the **Google Play User Data
+> policy** (policy link required in Play Console *and* in the app;
+> hosted at an active, publicly accessible, non-geofenced, non-PDF,
+> non-editable URL; clearly labelled a privacy policy; naming the app
+> or listed entity; disclosing developer identity, a privacy contact,
+> data types accessed/collected/used/shared and the parties shared
+> with, secure-handling procedures, and retention/deletion). The
+> published policy was written to address each of those content
+> points. **This is a format/content mapping, not a compliance
+> determination, and no legal review has occurred.**
+>
+> Session 137 also re-verified every material technical claim against
+> `origin/main` `5360f49` rather than trusting Session 136, and found
+> the draft's central network claim had gone stale: **there is not
+> "exactly one network call site"** — there are three outbound
+> behaviours (`HttpClient` audio download; `just_audio`/platform-engine
+> audio streaming of remote `https://everyayah.com` URIs built at
+> `audio_controller.dart:257,270`; and `launchUrl(https://tanzil.net)`
+> at `profile_screen.dart:194`, added by PR #44 after the draft was
+> last revised). The published policy describes all three. Separately,
+> all five `reciters` rows in `assets/database/quran.sqlite` use
+> `https://` templates, so the draft's UNKNOWN on HTTPS is resolved for
+> what the app *requests* (server behaviour is still not warranted).
+>
+> **Not changed by this amendment:** no Data Safety form was completed
+> or submitted, no store enrolment was started, no in-app Privacy
+> Policy link was implemented (deferred to Session 138 — note that
+> both stores require one, so P0-1 stays open on that ground too even
+> after the URL goes live), Terms of Use still does not exist, and no
+> other P0/P1/P2 item was reassessed. The executive-status Privacy
+> Policy bullet and P0-1 below are updated in place; nothing else in
+> this document was altered.
+
 ## Executive status
 
 - No store submission has occurred. No Apple Developer or Google Play
@@ -77,15 +137,19 @@ open — never resolved, narrowed, or implied-resolved.
   note above and P0-3 below (now resolved). Feature code and route
   definitions still exist; that is intentional soft-reversibility per
   DR-2026-0030, not a live/reachable gap.
-- Privacy Policy: **[Session 125 update]** no longer nonexistent — draft
-  documents exist (`docs/release/PRIVACY_POLICY_DRAFT.md`,
-  `docs/release/STORE_PRIVACY_FORM_DRAFT.md`) and the owner has answered
-  most of `docs/release/PRIVACY_POLICY_OWNER_DECISION_PACKET.md`'s
-  questions (legal identity, jurisdiction, contact, audience positioning
-  — see amendment note above). It remains a **draft**: not finalized,
-  not legally approved, not published, no public URL. A mailing address
-  and the B5 iOS-display-name decision remain open. Terms of Use still
-  does not exist in any form, in any draft. **P0-1 remains open.**
+- Privacy Policy: **[Session 137 update]** a single canonical policy now
+  exists as a finished, public-facing document at `privacy/index.md`,
+  effective **27 August 2026**, superseding the working draft in
+  `docs/release/PRIVACY_POLICY_DRAFT.md`. Canonical URL:
+  <https://duso201189-nxp.github.io/quran-companion/privacy/>. It is
+  **staged, not yet live** — GitHub Pages builds from `main` only, and
+  the Session 137 PR is unmerged. It is still **not legally approved**
+  (no counsel has reviewed it), and there is still **no in-app link**,
+  which both stores separately require (Session 138). A full street
+  address remains unpublished by owner choice (a reduced public
+  locality is used instead); whether that satisfies any store's
+  publisher-address rule is unresolved. Terms of Use still does not
+  exist in any form, in any draft. **P0-1 remains open.**
 - Android identity/signing mechanics are in place; the release keystore and
   `key.properties` correctly do not exist in this repository (gitignored,
   publisher-machine-only per `RELEASE_CHECKLIST.md`). Play Console
@@ -239,15 +303,29 @@ exists), **[needs-external-verification]**, or
 
 ## P0 blockers (block v1.0; no path forward without owner/external action)
 
-- **P0-1 — STILL OPEN (updated Session 125, 2026-08-26).** Privacy
-  Policy is now in **draft** form with most owner decisions captured
-  (see amendment note above), but it is **not published, not legally
-  approved, and has no public URL** — the store-submission blocker
-  remains. Terms of Use still does not exist in any form. Remaining
-  owner items: a public mailing address and the B5 iOS display-name
-  decision. Both stores require a published privacy policy at minimum.
-  *Category C* (owner must finish supplying the address, then legal
-  review before publishing).
+- **P0-1 — STILL OPEN (updated Session 137, 2026-08-27).** The Privacy
+  Policy itself is no longer a draft: one canonical, public-facing
+  policy exists at `privacy/index.md`, effective **27 August 2026**,
+  and the old draft is marked SUPERSEDED. Canonical URL:
+  <https://duso201189-nxp.github.io/quran-companion/privacy/>.
+  Three distinct things still block this item:
+  1. **The URL is not live yet.** GitHub Pages builds only from
+     `main`; the Session 137 PR is unmerged, so the URL still 404s.
+     This closes on merge + Pages rebuild, and must be confirmed with
+     an actual HTTP request returning 200 before this sub-item is
+     ticked. Nothing else is needed for it.
+  2. **No in-app Privacy Policy link exists.** Apple 5.1.1(i) and the
+     Google Play User Data policy each require the link *inside the
+     app* as well as in the store console. No such route or screen
+     exists in `lib/`. Deferred to **Session 138**.
+  3. **No legal review.** The policy was written from repository
+     evidence, not by counsel, and claims no compliance with any law
+     or store policy. Whether the reduced public locality satisfies
+     any publisher-address rule is still unresolved (decision packet
+     Section C item 8).
+  Terms of Use still does not exist in any form. *Category C* for
+  item 3 (external legal review); items 1 and 2 are now ordinary
+  in-repo work.
 - **P0-2** — Tanzil translation license legal review has not returned a
   result. *Category C* (external legal review).
 - **P0-3 — RESOLVED (re-verified Session 104, 2026-08-24, `origin/main`

@@ -1,15 +1,73 @@
-# Privacy Policy — DRAFT
+# SUPERSEDED — Privacy Policy working draft (historical record)
 
-**STATUS: DRAFT. NOT LEGALLY APPROVED. NOT PUBLISHED. NOT A HOSTED
-POLICY. Version 1.0.0 is not authorized for release by this document.**
+> # ⚠ THIS IS NOT THE PRIVACY POLICY.
+>
+> **This document has been SUPERSEDED and is retained only as a
+> historical record of how the policy was drafted.** It is not the
+> active policy, it is not authoritative, and it must not be cited,
+> linked, or submitted as the app's Privacy Policy.
+>
+> **The one authoritative, published Privacy Policy for Qur'an
+> Companion is:**
+>
+> ## → <https://duso201189-nxp.github.io/quran-companion/privacy/>
+>
+> Source file: [`privacy/index.md`](../../privacy/index.md).
+> Published Session 137 (2026-08-27), effective 27 August 2026.
+>
+> Where this historical draft and the published policy differ, **the
+> published policy governs.** Session 137 re-verified this draft's
+> technical claims against `origin/main` `5360f49` and corrected two
+> of them in the published policy — see "Session 137 supersession
+> note" immediately below. Those corrections were **not** back-applied
+> to the body of this draft, which is preserved unedited as the
+> historical record it now is.
 
-This document is a factual first draft of a Privacy Policy for Qur'an
-Companion, prepared for owner and legal review — it is not itself a
-published policy and creates no legally binding disclosure. It exists
-so that an owner or legal reviewer has a concrete, evidence-linked
+## Session 137 supersession note (2026-08-27)
+
+This draft was superseded by the published policy at the URL above.
+Two substantive corrections were made during publication, after
+re-verifying every material claim against `origin/main` `5360f49`:
+
+1. **"Exactly one network call site" was no longer accurate.** This
+   draft (written at `3ca83c0a`, re-checked at `a2d0683`) states that
+   exactly one network call site exists. On `5360f49` there are
+   **three** distinct outbound network behaviours:
+   (a) the `HttpClient` audio download in
+   `lib/core/cache/io_cache_manager.dart:12-28`;
+   (b) audio **streaming**, where remote `https://everyayah.com` URIs
+   built at `lib/features/quran/presentation/audio/audio_controller.dart:257,270`
+   are handed to the platform media engine via `just_audio` and fetched
+   by it directly — a real network request that is not a Dart
+   `HttpClient` call site and so was not counted by the original
+   search; and
+   (c) `launchUrl(https://tanzil.net)` at
+   `lib/features/profile/presentation/profile_screen.dart:194`, added
+   by PR #44 (Session 134) after this draft was last revised, which
+   hands a third-party address to the user's browser on tap.
+   The published policy describes all three.
+
+2. **The HTTPS status of audio requests was listed as UNKNOWN; it is
+   now verified for what the app requests.** All five reciter rows in
+   the bundled `assets/database/quran.sqlite` `reciters` table use
+   `https://everyayah.com/...` templates. The published policy states
+   this as fact, while still declining to warrant how the
+   independently operated everyayah.com servers actually respond.
+
+Everything below this line is the historical draft, unchanged.
+
+---
+
+**HISTORICAL DRAFT TEXT FOLLOWS — SUPERSEDED, DO NOT USE.**
+
+This document was a factual first draft of a Privacy Policy for Qur'an
+Companion, prepared for owner and legal review — it was not itself a
+published policy and created no legally binding disclosure. It existed
+so that an owner or legal reviewer had a concrete, evidence-linked
 starting point instead of a blank page. Both app stores require a
-live, hosted Privacy Policy URL before any store submission; this
-document is not that URL and does not simulate one.
+live, hosted Privacy Policy URL before any store submission; **that URL
+now exists and is the link at the top of this document — it is not this
+file.**
 
 Every factual claim below is drawn directly from repository evidence
 and is labeled **FACT** (directly observable in the codebase, with a
@@ -296,12 +354,22 @@ above for the still-open mailing-address item.
 
 ## Effective date
 
+> **SUPERSEDED (Session 137).** Resolved at publication. The published
+> policy's effective date is **27 August 2026**. The historical text
+> below is retained unchanged.
+
 **REQUIRES OWNER CONFIRMATION / not applicable until published.**
 
 > This policy is not yet in effect. Effective date:
 > **[EFFECTIVE DATE — TO BE SET AT PUBLICATION]**
 
 ## Privacy Policy URL
+
+> **SUPERSEDED (Session 137).** Resolved at publication. The canonical
+> published Privacy Policy URL is
+> **<https://duso201189-nxp.github.io/quran-companion/privacy/>**
+> (source: [`privacy/index.md`](../../privacy/index.md)). The
+> historical text below is retained unchanged.
 
 **REQUIRES OWNER CONFIRMATION / not yet available.** This document is
 not itself hosted anywhere and has no URL. Both Google Play's Data

@@ -35,8 +35,11 @@ và đánh giá rủi ro.
 | 2 | Phiên âm Latin | Quran.com / QUL (Tarteel AI) | QUL không bảo đảm; chưa có tuyên bố của chủ dữ liệu | không rõ | không rõ | ghi nguồn |
 | 3 | Bản dịch Việt (Rowwad) | QuranEnc.com | QuranEnc Terms (7 điều) | không nêu rõ | Cho phép có điều kiện | Ghi nhà phát hành + **QuranEnc.com** + **số phiên bản** |
 | 4 | Bản dịch Anh (Saheeh International) | Tanzil Project | Tanzil translations terms | **CẤM** — "for non-commercial purposes only" | Cho phép phi thương mại | Ghi nguồn; link nếu dùng >3 bản dịch |
-| 5 | Tafsir Al-Muyassar (ar) | نخبة من العلماء · **مجمع الملك فهد** (qua QUL) | chưa có phép | không rõ | **cần phép** | ghi نخبة من العلماء + KFGQPC |
-| 6 | Tafsir Ibn Kathir (en, rút gọn) | **Maktaba Dar-us-Salam 2003** (qua QUL) | **CÒN BẢN QUYỀN HIỆU LỰC** | **cần phép** | **cần phép bằng văn bản** | ghi Darussalam + nhóm dịch |
+| 5 | Tafsir Al-Muyassar (ar) — ⚠ **KHÔNG có trên `main`** | نخبة من العلماء · **مجمع الملك فهد** (qua QUL) | chưa có phép | không rõ | **cần phép** | ghi نخبة من العلماء + KFGQPC |
+| 6 | Tafsir Ibn Kathir (en, rút gọn) — ⚠ **KHÔNG có trên `main`** | **Maktaba Dar-us-Salam 2003** (qua QUL) | **CÒN BẢN QUYỀN HIỆU LỰC** | **cần phép** | **cần phép bằng văn bản** | ghi Darussalam + nhóm dịch |
+
+> ⚠ **Dòng 5–6 mô tả bộ dữ liệu tafsir, KHÔNG mô tả `main`.** Xem ghi
+> chú áp dụng ở đầu tài liệu. `main` chỉ phát hành nguồn 1–4.
 
 ### Nguyên văn điều kiện
 
@@ -94,6 +97,11 @@ trách nhiệm sang chúng ta. Truy ngược từng bộ:
 
 ### Tafsir Ibn Kathir (Abridged, tiếng Anh) — RỦI RO CAO NHẤT
 
+> ⚠ **Không có trong `assets/database/quran.sqlite` trên `main`** (đã
+> kiểm chứng ở `5360f49`: database không có bảng tafsir nào). Mục này
+> mô tả bộ dữ liệu tafsir, không mô tả bản `main` đang phát hành — xem
+> "PHẠM VI ÁP DỤNG CỦA MỤC 4" ở mục 4.
+
 Bản gốc tiếng Ả Rập của Ibn Kathir (mất 1373) thuộc phạm vi công
 cộng. Nhưng thứ app đang phát hành KHÔNG phải bản gốc: đó là bản
 **rút gọn + dịch sang tiếng Anh hiện đại**, do một nhóm học giả thực
@@ -116,6 +124,9 @@ Hai hệ quả:
    dịch rút gọn. Ghi công đúng phải nêu Darussalam và nhóm dịch.
 
 ### Tafsir Al-Muyassar (tiếng Ả Rập)
+
+> ⚠ **Không có trong `assets/database/quran.sqlite` trên `main`** — xem
+> "PHẠM VI ÁP DỤNG CỦA MỤC 4" ở mục 4.
 
 Soạn bởi **نخبة من العلماء** (một nhóm học giả), xuất bản bởi **مجمع
 الملك فهد لطباعة المصحف الشريف** (King Fahd Glorious Qur'an Printing
@@ -214,6 +225,41 @@ bản, hoặc (b) gỡ bộ này khỏi bản phát hành.
 Cho tới khi 1a được giải quyết theo một trong hai hướng ấy, **không có
 bản phát hành công khai nào**, kể cả miễn phí. Miễn phí không phải là
 phòng vệ trước vi phạm bản quyền.
+
+> ### ⚠ PHẠM VI ÁP DỤNG CỦA MỤC 4 — đọc trước khi coi đây là chặn phát hành
+>
+> **Thêm 2026-08-27 (Session 137). Không sửa kết luận nào ở trên; chỉ
+> nêu rõ mục 4 đang nói về BẢN NÀO.**
+>
+> Rủi ro **1a, 1b, 1c** (và dòng 5–6 ở mục 1) mô tả **bộ dữ liệu tafsir**
+> — thứ được nhập trên `sprint1-my-library`, nơi tài liệu này được soạn.
+> Chúng **KHÔNG mô tả những gì `main` đang phát hành**, đúng như ghi chú
+> áp dụng ở đầu tài liệu đã nói.
+>
+> Session 137 đã kiểm chứng trực tiếp trên `origin/main` `5360f49`:
+> `assets/database/quran.sqlite` **không có bảng tafsir nào cả** — không
+> phải bảng rỗng, mà là không tồn tại. Toàn bộ bảng trong database đó là
+> `surahs`, `ayahs`, `translations` (3 nguồn: Tanzil/Saheeh
+> International, QuranEnc/Rowwad, Quran.com/QUL), `reciters`, các bảng
+> `search_index*`, `meta`, và nhóm bảng Lexicon (`lemmas`, `roots`,
+> `lexemes`, `word_instances`, …) hiện **rỗng (0 dòng)**. Cổng CI
+> `test/repository_boundary_test.dart` cũng chặn `tool/data/tafsir_*.json`
+> theo mẫu và **không** miễn trừ hai tệp tafsir nào.
+>
+> Nói thẳng, để không ai phải suy luận: **câu "app đang phân phối lại
+> toàn văn 8,9 triệu ký tự" ở ngay trên KHÔNG đúng với `main`. Trên
+> `main` câu đó mô tả một tình huống chưa xảy ra.** Vì vậy **1a không
+> phải là điều đang chặn bản phát hành hiện tại của `main`**.
+>
+> Toàn văn mục 4 được giữ nguyên, không cắt bớt, vì nó vẫn đúng — và sẽ
+> lập tức có hiệu lực trở lại — với **bất kỳ** bản build nào thực sự
+> đóng gói bộ tafsir đó. Nếu bộ tafsir được hợp nhất vào `main`, mọi kết
+> luận ở trên áp dụng nguyên vẹn, không cần soạn lại.
+>
+> Ghi chú này **không** đưa ra kết luận pháp lý mới, **không** giải toả
+> rủi ro 1a cho bộ dữ liệu tafsir, và **không** đụng tới các rủi ro
+> 2–7 (everyayah, Saheeh International phi thương mại, QuranEnc điều 7,
+> KFGQPC) — những mục đó vẫn áp dụng cho `main` như cũ.
 
 ## 5. Lexicon / dữ liệu hình thái học (F1) — chưa phát sinh nghĩa vụ giấy phép
 
