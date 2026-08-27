@@ -155,6 +155,36 @@ filename or file content.
 
 ## 6. Network requests — complete list
 
+> **CORRECTION (Session 137, 2026-08-27, re-verified against
+> `origin/main` `5360f49`).** The "exactly one" framing below counts
+> **Dart `HttpClient` call sites**, and on that narrow reading it is
+> still right. As a *complete list of network requests* — which is what
+> this section is titled and what a store form actually asks for — it
+> is **incomplete**. Three outbound behaviours exist:
+>
+> 1. The `HttpClient` download described below
+>    (`lib/core/cache/io_cache_manager.dart:12-28`). Prefetch/caching.
+> 2. **Audio streaming.** Remote `https://everyayah.com` URIs are built
+>    at `lib/features/quran/presentation/audio/audio_controller.dart:257,270`
+>    and handed to `just_audio`, whose platform engine (ExoPlayer /
+>    AVPlayer / browser `<audio>`) fetches them **itself**. That is a
+>    genuine device-to-`everyayah.com` request that no Dart-level
+>    `HttpClient` grep will ever show. The paragraph below is accurate
+>    that these packages do not *phone home*; it should not be read as
+>    saying they perform no network I/O — fetching the supplied remote
+>    URL is exactly what they do.
+> 3. **`launchUrl(https://tanzil.net)`** at
+>    `lib/features/profile/presentation/profile_screen.dart:194`, via
+>    `url_launcher` (added by PR #44, Session 134, *after* this section
+>    was written). On tap it hands a third-party address to the user's
+>    browser; the user's browser then contacts tanzil.net with its own
+>    IP, user agent and cookies. The app sends nothing itself.
+>
+> All three are described in the published Privacy Policy
+> (`privacy/index.md`). Answer store questions from that list, not from
+> the "exactly one" sentence below. The original text is preserved
+> unchanged for traceability.
+
 **FACT.** Exactly one network call site exists in the entire `lib/`
 tree: `lib/core/cache/io_cache_manager.dart:12-28`, function
 `httpDownloader`, using `dart:io HttpClient` to download an MP3 file from
@@ -248,6 +278,34 @@ the app's single network call site fetches.
 
 ## 12. Data retention / deletion
 
+> **ADDITION (Session 137, 2026-08-27, verified on `origin/main`
+> `5360f49`).** This section did not record how *individual* deletion
+> works, and it is materially different from what a user expects.
+> **User-content deletion inside the app is a soft delete, not an
+> erase.**
+>
+> `UserContentRepository`'s own contract says so
+> (`lib/features/quran/domain/repositories/user_content_repository.dart:6`:
+> "Mọi thao tác ghi là toggle/upsert idempotent, soft-delete, đánh dấu
+> is_dirty"), and the implementation confirms it: removing a bookmark
+> writes only `deletedAt`/`updatedAt`/`isDirty`
+> (`user_content_repository_impl.dart:203-210`), and clearing a note to
+> empty likewise sets `deletedAt` while **leaving the note's `content`
+> column intact** (`user_content_repository_impl.dart:285-297`). The
+> `deleted_at` column exists on the sync mixin precisely so a deletion
+> can itself be synced (`lib/core/database/user/user_tables.dart:6,14`).
+>
+> Consequence for both store forms and for the policy: a user who
+> deletes a personal note still has that note's text on their device
+> until they clear app data or uninstall. Nothing is transmitted — the
+> SyncEngine referenced in those comments does not exist on `main` —
+> but "deleted in-app" must not be answered as "erased". The published
+> policy (`privacy/index.md`, "Retention and deletion of your data")
+> discloses this explicitly.
+>
+> Only the audio cache is a true delete: `IoCacheManager.clearAll()` /
+> `clearReciter()` remove files from disk outright, as described below.
+
 **FACT.** There is no backend server and no account (§1, §4), so there is
 no server-side data for the app operator to retain or delete — all
 retention is exactly what stays on the user's own device. Locally stored
@@ -288,19 +346,45 @@ as requiring confirmation rather than asserted outright).
 
 ## 14. Privacy Policy URL
 
-**REQUIRES OWNER CONFIRMATION / not yet available.** No Privacy Policy or
-Terms of Use exists in this repository in any form — no file, no in-app
-route, no hosted URL
-(`docs/release/V1_STORE_LEGAL_READINESS.md:56-57,130-133,200-202`,
-already flagged there as blocker **P0-1**). Both Google Play and Apple
-require a live, hosted Privacy Policy URL before a Data Safety / App
-Privacy form can be submitted. This document does not author that
-policy, does not propose placeholder text for it, and does not assert
-one exists.
+**RESOLVED IN REPOSITORY, NOT YET LIVE (Session 137, 2026-08-27).**
 
-**Placeholder for the form field:** `[PRIVACY_POLICY_URL — NOT YET
-CREATED]`. This must be replaced with a real, hosted URL before either
-console form is submitted.
+**Value for the form field:**
+`https://duso201189-nxp.github.io/quran-companion/privacy/`
+
+A single canonical Privacy Policy now exists at `privacy/index.md`,
+effective **27 August 2026**. The earlier draft
+(`docs/release/PRIVACY_POLICY_DRAFT.md`) is marked **SUPERSEDED** and
+is not the policy. There is exactly one authoritative policy.
+
+**Do not paste this URL into either console yet.** GitHub Pages for
+this repository builds from `main` only (`source: {branch: "main",
+path: "/"}`, legacy Jekyll build, `https_enforced: true` — verified via
+the Pages API on 2026-08-27). The Session 137 PR is not merged, so the
+URL still returns 404. It must be confirmed live with an actual HTTP
+request returning **200** before being used in any submission.
+
+Format requirements this URL is designed to meet, re-verified against
+the **Google Play User Data policy** on 2026-08-27: active, publicly
+accessible, non-geofenced, **not a PDF**, non-editable by visitors,
+served over HTTPS, clearly labelled a privacy policy, and naming both
+the app ("Qur'an Companion") and the developer ("DU SÔ"). That is a
+format mapping, **not** a compliance determination.
+
+**Still outstanding for this section, independent of the URL:**
+
+- **No in-app Privacy Policy link exists.** Apple App Store Review
+  Guideline 5.1.1(i) and the Google Play User Data policy each require
+  the policy be linked *within the app* in addition to the store
+  console field. No such route or screen exists in `lib/`. Deferred to
+  **Session 138**. Neither console form should be submitted before it
+  exists.
+- **Terms of Use still does not exist** in any form.
+- **No legal review has occurred.**
+
+The remainder of this document is still a **DRAFT preparation aid**.
+Nothing here submits, pre-fills, or completes either store form, and
+publishing the policy did **not** complete Google Play's Data safety
+section — that remains untouched and unsubmitted.
 
 ## 15. Platform-specific differences
 
@@ -361,12 +445,27 @@ following steps remain, all outside this session's authority:
       requirements tracked in `docs/LICENSING.md` and
       `docs/release/V1_STORE_LEGAL_READINESS.md` (P1-4, P2-2) need to be
       resolved before or alongside store submission.
-- [ ] **Author and publish an actual Privacy Policy** at a real, hosted
-      URL, and replace the §14 placeholder with it. (`P0-1` in
+- [x] **Author an actual Privacy Policy and set its canonical URL
+      (Session 137, 2026-08-27).** Written at `privacy/index.md`,
+      effective 27 August 2026; §14 placeholder replaced with
+      `https://duso201189-nxp.github.io/quran-companion/privacy/`; the
+      old draft is marked SUPERSEDED. **Authoring is done; publication
+      is not** — see the two unchecked items directly below. (`P0-1` in
       `docs/release/V1_STORE_LEGAL_READINESS.md`.)
+- [ ] **Confirm the canonical URL is actually live** (HTTP 200 over
+      HTTPS) after the Session 137 PR merges to `main` and GitHub Pages
+      rebuilds. Until then the URL 404s and must not be submitted.
+- [ ] **Add an in-app Privacy Policy link** (Session 138). Required by
+      Apple 5.1.1(i) and the Google Play User Data policy in addition
+      to the console field; none exists in `lib/` today.
 - [ ] **Confirm HTTPS behavior** of the live `everyayah.com` audio
       endpoint (§13) rather than relying on the documented URL template
-      alone.
+      alone. *Partially advanced (Session 137): all five rows of the
+      `reciters` table in `assets/database/quran.sqlite` were read
+      directly and every `audio_url_template` begins `https://`, so
+      what the app **requests** is verified. What the live server
+      **does** with those requests (redirects, downgrades, TLS
+      configuration) is still unverified, so this stays open.*
 - [x] **Target-audience positioning stated (Session 114).** The owner
       has confirmed Qur'an Companion is a general-audience app, not
       designed or intentionally directed to children under 13 (see

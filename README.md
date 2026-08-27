@@ -20,6 +20,16 @@ provider dựng nó từ các dependency của nó.
 Chi tiết đầy đủ, đã xác minh trực tiếp từ code hiện tại (không suy
 đoán): xem **[docs/architecture/MASTER_ARCHITECTURE.md](docs/architecture/MASTER_ARCHITECTURE.md)**.
 
+## Chính sách quyền riêng tư
+
+Chính sách quyền riêng tư chính thức DUY NHẤT của Qur'an Companion:
+**<https://duso201189-nxp.github.io/quran-companion/privacy/>**
+(nguồn: [`privacy/index.md`](privacy/index.md), hiệu lực 27/08/2026).
+
+Mọi tài liệu khác trong repo bàn về quyền riêng tư — kể cả
+`docs/release/PRIVACY_POLICY_DRAFT.md` — là bản nháp/hồ sơ lịch sử đã
+bị thay thế, **không** phải chính sách hiệu lực.
+
 ## Tài liệu
 
 **Điểm vào chính: [PROJECT_INDEX.md](PROJECT_INDEX.md)** — bản đồ đầy

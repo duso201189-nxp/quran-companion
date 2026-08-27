@@ -14,7 +14,17 @@ log cho chi tiết từng commit). Mục đã ✅ là đã XÁC MINH THẬT (ch�
 ## Pháp lý & chính sách
 - [x] Attribution Tanzil + QuranEnc + everyayah trong màn Giới thiệu
       (đã có: l10n `aboutSourcesDetail` trong Hồ sơ > Nguồn dữ liệu)
-- [ ] Privacy Policy (URL công khai)
+- [ ] Privacy Policy (URL công khai) — **ĐÃ SOẠN XONG, CHỜ MERGE để
+      lên sóng (Session 137, 2026-08-27).** Chính sách chính thức DUY
+      NHẤT đã được viết tại `privacy/index.md`, ngày hiệu lực
+      **27/08/2026**. URL chuẩn tắc:
+      <https://duso201189-nxp.github.io/quran-companion/privacy/>
+      GitHub Pages build từ nhánh `main` (`source: {branch: main,
+      path: /}` — đã xác minh qua API), nên URL này CHƯA trả về 200
+      cho tới khi PR Session 137 được merge vào `main`. Ô này chỉ được
+      tick sau khi đã `curl` thật và thấy HTTP 200. Bản nháp cũ
+      `docs/release/PRIVACY_POLICY_DRAFT.md` đã được đánh dấu
+      SUPERSEDED, không còn là chính sách hiệu lực.
 - [ ] Terms of Use
 - [ ] Apple Privacy Manifest (PrivacyInfo.xcprivacy) + App Privacy labels
 - [ ] Google Play Data Safety form
