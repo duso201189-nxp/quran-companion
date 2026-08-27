@@ -101,7 +101,7 @@ off-device.
 ## Network activity
 
 Using the app can result in three kinds of outbound network activity.
-There are no others.
+The app initiates no others.
 
 1. **Downloading recitation audio.** When you play or download a
    recitation, your device requests the corresponding audio file
@@ -219,13 +219,29 @@ installed. You are in full control of deleting it:
   clear cached recitations, either all of them or those of a single
   reciter, keeping your notes and progress.
 - **Delete individual items:** bookmarks, notes, highlights and similar
-  items can be deleted individually inside the app.
+  items can be removed individually inside the app. **Please read the
+  note below about how those removals work.**
+
+**How individual deletion works, stated plainly.** When you remove a
+bookmark, note, or highlight inside the app, the app marks that record
+as deleted rather than erasing it immediately. The record — including
+the text of a deleted note — stays in the local database on your
+device, hidden from the app's screens. This is how the app is built,
+so that a future optional sync feature could carry the deletion to
+your other devices; that feature does not exist today, and nothing has
+ever been sent anywhere.
+
+The practical consequence, which you should know: **removing a note
+inside the app does not by itself wipe its text from your device's
+storage.** If you want the underlying data actually gone, clear the
+app's data or uninstall the app, as described above. That removes the
+databases entirely.
 
 **Withdrawing consent.** Because the app collects nothing and sends no
 personal information anywhere, there is no ongoing data processing to
-withdraw consent from. To stop the app's only outbound activity, stop
-playing or downloading audio, or uninstall the app. Deleting the app
-deletes the data.
+withdraw consent from. To stop the app's outbound activity, stop
+playing or downloading audio and do not tap the Tanzil.net link; or
+uninstall the app. Deleting the app deletes the data.
 
 There is no "export my data" or "delete my account" feature, because
 there is no account and no server-side data — your data is in your own
@@ -246,7 +262,9 @@ Two limitations are stated plainly rather than glossed over:
   local databases. It relies on the device-level encryption your
   operating system provides, and on your device's lock screen. Anyone
   with unlocked access to your device can read your notes and other
-  app data.
+  app data — including records you have removed inside the app but not
+  yet cleared from storage, as explained under "Retention and deletion"
+  above.
 - All recitation audio addresses shipped with the app use `https://`.
   The app does not control, and this policy does not warrant, how the
   independently operated everyayah.com servers respond to those

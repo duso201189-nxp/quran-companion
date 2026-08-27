@@ -278,6 +278,34 @@ the app's single network call site fetches.
 
 ## 12. Data retention / deletion
 
+> **ADDITION (Session 137, 2026-08-27, verified on `origin/main`
+> `5360f49`).** This section did not record how *individual* deletion
+> works, and it is materially different from what a user expects.
+> **User-content deletion inside the app is a soft delete, not an
+> erase.**
+>
+> `UserContentRepository`'s own contract says so
+> (`lib/features/quran/domain/repositories/user_content_repository.dart:6`:
+> "Mọi thao tác ghi là toggle/upsert idempotent, soft-delete, đánh dấu
+> is_dirty"), and the implementation confirms it: removing a bookmark
+> writes only `deletedAt`/`updatedAt`/`isDirty`
+> (`user_content_repository_impl.dart:203-210`), and clearing a note to
+> empty likewise sets `deletedAt` while **leaving the note's `content`
+> column intact** (`user_content_repository_impl.dart:285-297`). The
+> `deleted_at` column exists on the sync mixin precisely so a deletion
+> can itself be synced (`lib/core/database/user/user_tables.dart:6,14`).
+>
+> Consequence for both store forms and for the policy: a user who
+> deletes a personal note still has that note's text on their device
+> until they clear app data or uninstall. Nothing is transmitted — the
+> SyncEngine referenced in those comments does not exist on `main` —
+> but "deleted in-app" must not be answered as "erased". The published
+> policy (`privacy/index.md`, "Retention and deletion of your data")
+> discloses this explicitly.
+>
+> Only the audio cache is a true delete: `IoCacheManager.clearAll()` /
+> `clearReciter()` remove files from disk outright, as described below.
+
 **FACT.** There is no backend server and no account (§1, §4), so there is
 no server-side data for the app operator to retain or delete — all
 retention is exactly what stays on the user's own device. Locally stored
