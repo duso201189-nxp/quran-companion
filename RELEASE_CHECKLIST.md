@@ -14,17 +14,25 @@ log cho chi tiết từng commit). Mục đã ✅ là đã XÁC MINH THẬT (ch�
 ## Pháp lý & chính sách
 - [x] Attribution Tanzil + QuranEnc + everyayah trong màn Giới thiệu
       (đã có: l10n `aboutSourcesDetail` trong Hồ sơ > Nguồn dữ liệu)
-- [ ] Privacy Policy (URL công khai) — **ĐÃ SOẠN XONG, CHỜ MERGE để
-      lên sóng (Session 137, 2026-08-27).** Chính sách chính thức DUY
-      NHẤT đã được viết tại `privacy/index.md`, ngày hiệu lực
-      **27/08/2026**. URL chuẩn tắc:
+- [x] Privacy Policy (URL công khai) — **ĐÃ LÊN SÓNG.** PR Session 137
+      đã merge vào `main`; `curl` thật thấy **HTTP 200** (Session 138,
+      xác minh lại ở Session 139, 2026-08-27). Chính sách chính thức
+      DUY NHẤT tại `privacy/index.md`, ngày hiệu lực **27/08/2026**.
+      URL chuẩn tắc:
       <https://duso201189-nxp.github.io/quran-companion/privacy/>
-      GitHub Pages build từ nhánh `main` (`source: {branch: main,
-      path: /}` — đã xác minh qua API), nên URL này CHƯA trả về 200
-      cho tới khi PR Session 137 được merge vào `main`. Ô này chỉ được
-      tick sau khi đã `curl` thật và thấy HTTP 200. Bản nháp cũ
-      `docs/release/PRIVACY_POLICY_DRAFT.md` đã được đánh dấu
-      SUPERSEDED, không còn là chính sách hiệu lực.
+      Bản nháp cũ `docs/release/PRIVACY_POLICY_DRAFT.md` đã được đánh
+      dấu SUPERSEDED, không còn là chính sách hiệu lực.
+- [x] Liên kết Chính sách quyền riêng tư TRONG app (Session 139) — Hồ
+      sơ > Giới thiệu có một liên kết chạm được, mở đúng URL chuẩn tắc
+      ở trên bằng `url_launcher` (cùng cơ chế liên kết Tanzil, không
+      thêm package/abstraction mới). Nhãn dịch đủ vi/en/ar (khoá ARB
+      `privacyPolicy`), lộ ra cây semantics như ĐÚNG MỘT node có cờ
+      `isLink` + hành động tap (không đọc trùng). Bằng chứng:
+      `test/profile_screen_privacy_policy_link_test.dart`.
+- [ ] Rà soát pháp lý NỘI DUNG Chính sách quyền riêng tư — chưa có
+      luật sư/chuyên gia nào rà soát. Hai ô đã tick ở trên chỉ nói
+      chính sách đã công bố và đã có liên kết trong app; chúng KHÔNG
+      phải kết luận về tính đầy đủ hay tuân thủ pháp lý.
 - [ ] Terms of Use
 - [ ] Apple Privacy Manifest (PrivacyInfo.xcprivacy) + App Privacy labels
 - [ ] Google Play Data Safety form

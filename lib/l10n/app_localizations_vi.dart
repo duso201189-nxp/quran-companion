@@ -517,6 +517,9 @@ class AppLocalizationsVi extends AppLocalizations {
       'Văn bản Ả Rập & bản dịch: Tanzil.net · QuranEnc.com. Audio: EveryAyah.com. Font: KFGQPC (King Fahd Complex).';
 
   @override
+  String get privacyPolicy => 'Chính sách quyền riêng tư';
+
+  @override
   String get versionLabel => 'Phiên bản';
 
   @override

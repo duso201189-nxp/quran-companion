@@ -251,6 +251,22 @@ exists), **[needs-external-verification]**, or
    whether that suffices is unresolved. The policy remains
    `[needs-owner/legal-approval]` — no counsel has reviewed it — and
    there is still no in-app link (Session 138).
+
+   **[Session 139 update, 2026-08-27 — supersedes the final clause
+   above about the in-app link.]** The canonical URL now returns
+   **HTTP 200** over HTTPS (re-verified by `curl` this session), and
+   an in-app link exists: Profile > About renders a tappable
+   `Privacy Policy` link that opens exactly that URL through the same
+   `url_launcher` path used for the Tanzil link. The label is
+   localised in all three shipped locales (ARB key `privacyPolicy`;
+   vi/en/ar) and is exposed to assistive technology as exactly one
+   semantics node carrying `isLink` plus a tap action — verified in
+   `test/profile_screen_privacy_policy_link_test.dart`. This closes
+   the *mechanical* link requirement only. The policy still remains
+   `[needs-owner/legal-approval]` (no counsel has reviewed it), the
+   public mailing-address question is still unresolved, and no
+   statement of compliance with any privacy regime is made or
+   implied by this change.
 2. **Terms of Use** — [repo-evidence: absent]. No file, no route.
 3. **Data collection disclosure** — [repo-evidence]. No network/backend SDK
    in `pubspec.yaml`; storage is local-only (Drift/SQLite +

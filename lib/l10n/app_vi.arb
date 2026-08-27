@@ -220,6 +220,7 @@
   "sectionAbout": "Giới thiệu",
   "aboutSources": "Nguồn dữ liệu",
   "aboutSourcesDetail": "Văn bản Ả Rập & bản dịch: Tanzil.net · QuranEnc.com. Audio: EveryAyah.com. Font: KFGQPC (King Fahd Complex).",
+  "privacyPolicy": "Chính sách quyền riêng tư",
   "versionLabel": "Phiên bản",
   "audioError": "Không phát được audio. Kiểm tra kết nối mạng.",
   "audioLoading": "Đang tải audio...",
