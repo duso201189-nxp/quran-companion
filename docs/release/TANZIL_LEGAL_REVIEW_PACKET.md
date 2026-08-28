@@ -39,9 +39,9 @@ that such contact has occurred.
 
 The current `assets/database/quran.sqlite` on `origin/main` contains
 **only** sources 1–4 from `docs/LICENSING.md`'s table: Arabic Uthmani
-text (Tanzil), Latin transliteration (Quran.com/QUL), Vietnamese
-translation (QuranEnc.com, Rowwad), and English translation (Tanzil,
-Saheeh International). The Al-Muyassar and Ibn Kathir tafsir sources
+text (Tanzil), Latin transliteration (Quran.com QDC — see U3),
+Vietnamese translation (QuranEnc.com, Rowwad), and English translation
+(Tanzil, Saheeh International). The Al-Muyassar and Ibn Kathir tafsir sources
 `docs/LICENSING.md` §1 also describes — including its "SERIOUS" Ibn
 Kathir copyright finding — belong to a different branch's later import
 and are **not** part of what `main` currently distributes. This packet
@@ -61,7 +61,7 @@ Directly observable in the repository. No interpretation applied.
 | # | Content | Source | In-app attribution string |
 |---|---|---|---|
 | 1 | Arabic Uthmani text | Tanzil Project | Yes — see F3 |
-| 2 | Latin transliteration | Quran.com/QUL (Tarteel AI) | Not individually named — see F3 |
+| 2 | Latin transliteration | Quran.com QDC (`api.qurancdn.com`) — see U3 | Not individually named — see F3 |
 | 3 | Vietnamese translation (Rowwad) | QuranEnc.com | Yes — see F3 |
 | 4 | English translation (Saheeh International) | Tanzil Project | Yes — see F3 (folded into "Tanzil.net") |
 | 5 | Recitation audio (streamed, not bundled) | everyayah.com | Yes — see F3 |
@@ -89,13 +89,20 @@ Directly observable in the repository. No interpretation applied.
   kept inside the document; QuranEnc must be notified of any note on
   the translation; the translation must be updated to match QuranEnc's
   latest version; "inappropriate advertisements must not be included."
-- **Quran.com/QUL (Tarteel AI)** — its own FAQ states resource-by-resource
-  licensing varies, "we recommend reviewing the licensing information
-  provided by each resource's author before use," and that commercial
-  use of QUL data is possible "however, please review the licensing
-  terms for each resource" individually — i.e. QUL does not itself
-  grant a blanket license; it names itself as a distribution point
-  whose underlying resources each carry their own terms.
+- **QUL (Tarteel AI)** — *scope marker added 2026-08-28 (Session 147):
+  these are **QUL's** terms, quoted from **QUL's** FAQ. They are
+  retained here because they are accurately attributed and because QUL
+  was the channel for other datasets discussed in `docs/LICENSING.md`.
+  They are **not** the governing terms document for the transliteration
+  `main` actually ships, which was fetched through Quran.com's QDC
+  endpoint rather than through QUL — see U3.* QUL's FAQ states
+  resource-by-resource licensing varies, "we recommend reviewing the
+  licensing information provided by each resource's author before use,"
+  and that commercial use of QUL data is possible "however, please
+  review the licensing terms for each resource" individually — i.e.
+  QUL does not itself grant a blanket license; it names itself as a
+  distribution point whose underlying resources each carry their own
+  terms.
 - **everyayah.com audio** — no terms page was found for the MP3 audio
   files themselves. A disclaimer file
   (`.../timings_files/000_disclaimer.txt`) states a link-back
@@ -123,21 +130,62 @@ line):
 > `"Arabic text & translations: Tanzil.net · QuranEnc.com. Audio:
 > EveryAyah.com. Font: KFGQPC (King Fahd Complex)."`
 
-Rendered at `lib/features/profile/presentation/profile_screen.dart:132`
-as `subtitle: Text(l10n.aboutSourcesDetail)` — a **plain, non-interactive
-`Text` widget**. Confirmed by reading the widget code directly, not
-inferred from the string content: there is no `InkWell`, `GestureDetector`,
-`url_launcher` call, or `RichText`/`TextSpan` link styling anywhere
-around this string. It is not tappable and contains no hyperlink markup
-of any kind.
+> ### ⚠ Correction 2026-08-28 (Session 147) — the Tanzil hyperlink now exists
+>
+> The paragraph that stood here — describing the attribution as
+> *"rendered at `profile_screen.dart:132` as `subtitle:
+> Text(l10n.aboutSourcesDetail)` — a plain, non-interactive `Text`
+> widget"*, with *"no `InkWell`, `GestureDetector`, `url_launcher` call,
+> or `RichText`/`TextSpan` link styling"* — was accurate for the SHA
+> this packet was prepared against (`99e10c8`, Session 112). It is **no
+> longer accurate for `main`**.
+>
+> **FACT — verified directly in source against `origin/main`
+> `155845a`:** the mechanical in-app Tanzil.net hyperlink **is
+> implemented and present on `main`**.
+>
+> - The attribution subtitle is now `_SourcesAttribution`, not a bare
+>   `Text` — `lib/features/profile/presentation/profile_screen.dart:134`.
+> - `_SourcesAttribution` (same file, `:181`–`:238`) splits the
+>   localised string on the literal substring `Tanzil.net` and renders
+>   that segment as a `TextSpan` carrying a `TapGestureRecognizer`,
+>   underlined and themed in the primary colour.
+> - The tap target is the compile-time constant
+>   `Uri.parse('https://tanzil.net')` (`:192`). The URL is exactly
+>   `https://tanzil.net` — no trailing path, no query, never built from
+>   user input.
+> - It opens through `_launchExternal` (`:166`–`:173`), which calls
+>   `launchUrl(uri, mode: LaunchMode.externalApplication)` from
+>   `url_launcher` — documented in that file as the app's single
+>   mechanism for external links, and the same mechanism the in-app
+>   privacy policy link reuses.
+> - Merged into `main` by **PR #44** (merge commit `5360f49`, feature
+>   commit `a578f62`, "feat(licensing): add Tanzil attribution link"),
+>   verified to be an ancestor of `155845a`.
+> - **Existing tests cover the link.**
+>   `test/profile_screen_tanzil_link_test.dart`, added in the same
+>   commit, asserts that the full attribution renders, that exactly one
+>   semantics node is flagged `isLink` with a tap action (TalkBack), and
+>   that tapping launches `https://tanzil.net` and nothing else.
+>   `test/profile_screen_privacy_policy_link_test.dart:208` adds a
+>   non-regression test for the same URL.
+>
+> **OPEN / COUNSEL REQUIRED.** The above records the *mechanical*
+> implementation only. Whether that implementation satisfies every
+> applicable Tanzil licence obligation — the text-licence link term,
+> the separate "source (Tanzil Project) is clearly indicated" term, or
+> any obligation arising from the distinct Tanzil **translation** terms
+> — **remains unresolved, and is not decided here.** See U2 as
+> corrected, and Q2.
 
-Two attribution facts follow directly:
+One attribution fact stated here originally still follows directly and
+is **unchanged** by the correction above:
 
-- **No hyperlink to tanzil.net exists**, despite Tanzil's text-license
-  term requiring "a link is made to tanzil.net."
-- **Quran.com/QUL (transliteration) is not individually named** in this
+- **Quran.com (transliteration) is not individually named** in this
   string — it is omitted, not folded under a visible label the way
-  Tanzil/QuranEnc/EveryAyah/KFGQPC are.
+  Tanzil/QuranEnc/EveryAyah/KFGQPC are. (On the source of that dataset
+  see the Session 147 correction in `docs/LICENSING.md` §1: it was
+  fetched through Quran.com's QDC endpoint, not through QUL.)
 
 ### F4. Current license language recorded in this repository
 
@@ -204,18 +252,41 @@ Repository evidence is insufficient to answer these. Not guessed here.
   with no monetization — vs. whether any future monetization would
   require separate Tanzil permission or a source change. `PROJ-P-005`
   states the constraint; it does not adjudicate compliance.
-- **U2.** Whether the current in-app attribution string (F3) — naming
-  "Tanzil.net" as plain text with no hyperlink — satisfies Tanzil's "a
-  link is made to tanzil.net" term, or whether a tappable link is
-  required. Already flagged as P1-4 in
-  `docs/release/V1_STORE_LEGAL_READINESS.md`.
-- **U3.** Whether omitting Quran.com/QUL from the visible attribution
-  string (F3) is consistent with QUL's own recommendation to review
-  and honor each underlying resource's terms — QUL's FAQ does not
-  itself state a specific attribution format requirement, so this is
-  an open question about the underlying transliteration resource's own
-  (unstated) terms, not something QUL's FAQ text answers directly.
-  Already flagged as P2-2 in `V1_STORE_LEGAL_READINESS.md`.
+- **U2.** *(Factual premise corrected 2026-08-28, Session 147 — the
+  premise changed; the question did **not** close.)* This entry
+  previously read that the in-app attribution names "Tanzil.net" **as
+  plain text with no hyperlink**. That premise is stale. **FACT:** on
+  `main` `155845a` the tappable `https://tanzil.net` link is
+  implemented and covered by tests (F3). What remains **UNKNOWN** is
+  whether that implementation — its placement inside the Sources
+  subtitle, its wording, and the absence of an explicit "Tanzil
+  Project" source label distinct from the "Tanzil.net" link text —
+  satisfies Tanzil's "a link is made to tanzil.net" term together with
+  its companion "source (Tanzil Project) is clearly indicated" term.
+  Adding the link **does not by itself close this item**, and nothing
+  in this repository establishes that it does. Still flagged as P1-4 in
+  `docs/release/V1_STORE_LEGAL_READINESS.md`, which this session does
+  not modify.
+- **U3.** *(Framing corrected 2026-08-28, Session 147 — the question
+  stays open; only its subject is corrected.)* This entry previously
+  framed the transliteration question around **QUL's** FAQ. That
+  framing does not fit the dataset `main` actually ships. **FACT:** the
+  shipped transliteration dataset was fetched through **Quran.com's QDC
+  endpoint** (`api.qurancdn.com`) — `tool/fetch_transliteration.py:30`–`:34`
+  — and the shipped database records its source as Quran.com, so QUL's
+  FAQ is **not** the governing terms document for it. **FACT:** the
+  repository does not currently establish a definitive upstream
+  redistribution licence or permission for this dataset. What remains
+  **UNKNOWN** is (a) the licence or permission that actually governs
+  it, (b) the terms applicable at the 2026-07-06 fetch date recorded in
+  the dataset and database metadata, and (c) whether omitting Quran.com
+  from the visible attribution string (F3) is consistent with those
+  terms. Nothing in this repository resolves any of the three, and this
+  packet does not infer an answer — in particular it does **not**
+  conclude that Quran.com has granted, or that Quran.com has denied,
+  redistribution rights. Detailed evidence: the Session 147 correction
+  in `docs/LICENSING.md` §1. Still flagged as P2-2 in
+  `V1_STORE_LEGAL_READINESS.md`.
 - **U4.** Whether the everyayah.com audio's actual licensing terms
   (never located, per F2) permit the app's current streaming/caching
   behavior, or whether the project's own cautious "non-commercial"
@@ -241,13 +312,21 @@ not resolved by this packet.
   of this SHA) sufficient to proceed toward v1.0 release under Tanzil's
   translation term, or should legal counsel be engaged *before* release
   to confirm that reading?
-- **Q2.** Should a hyperlink to tanzil.net be added near the in-app
-  attribution string (addressing U2), or should a legal opinion be
-  sought first on whether the current plain-text form already
-  satisfies the term?
-- **Q3.** Should Quran.com/QUL be added as an individually named source
-  in the attribution string (addressing U3), independent of whether
-  QUL's terms strictly require it?
+- **Q2.** *(Restated 2026-08-28, Session 147.)* The hyperlink this
+  question originally proposed **has since been added** to `main` by
+  PR #44 (see F3), so the "should it be added" half is answered by
+  events rather than by this packet. The half that remains for the
+  owner or counsel is narrower and still open: is the implemented link,
+  as currently placed and worded, sufficient for Tanzil's text-licence
+  terms — or should a legal opinion be obtained before P1-4 is treated
+  as closed? This packet does not answer that.
+- **Q3.** *(Subject corrected 2026-08-28, Session 147 — the question
+  itself is unchanged.)* Should **Quran.com** be added as an
+  individually named source in the attribution string (addressing U3),
+  independent of whether the terms governing that dataset strictly
+  require it? Named here as Quran.com rather than "Quran.com/QUL":
+  the shipped transliteration came through Quran.com's QDC endpoint,
+  and QUL's terms are not the governing document for it (U3).
 - **Q4.** Should outreach be made to everyayah.com (a contact channel,
   `quran.zendesk.com`, is recorded in `docs/LICENSING.md` §4 risk item
   2, itself sourced from prior audit work — not verified or contacted
@@ -267,8 +346,13 @@ not resolved by this packet.
 
 ## What this packet explicitly does not conclude
 
-- It does not state that Tanzil's, QuranEnc's, QUL's, everyayah.com's,
-  or KFGQPC's terms are satisfied by current app behavior.
+- It does not state that Tanzil's, QuranEnc's, QUL's, Quran.com's,
+  everyayah.com's, or KFGQPC's terms are satisfied by current app
+  behavior.
+- It does not state that the in-app `https://tanzil.net` hyperlink now
+  present on `main` (F3) satisfies Tanzil's link term, its
+  source-attribution term, or any other licence obligation. The
+  hyperlink is recorded as a mechanical fact only.
 - It does not state that the app is cleared for commercial release,
   monetization, or v1.0 store submission.
 - It does not state that QAC permission has been sought, denied, or
@@ -286,6 +370,16 @@ not resolved by this packet.
 `docs/adr/DR-2026-0029-qac-lexicon-licensing-decision.md`,
 `docs/adr/DR-2026-0030-formal-deferral-lexicon-flashcards-v1.md`,
 `docs/release/V1_STORE_LEGAL_READINESS.md` (P0-2, P1-4, P2-2),
-`lib/features/profile/presentation/profile_screen.dart:132`,
-`lib/l10n/app_en.arb:222`, `lib/l10n/app_vi.arb:222`,
-`lib/l10n/app_ar.arb:222`, `pubspec.yaml`.
+`lib/features/profile/presentation/profile_screen.dart:134` (attribution
+subtitle), `:166`–`:173` (`_launchExternal`), `:181`–`:238`
+(`_SourcesAttribution`), `lib/l10n/app_en.arb:222`,
+`lib/l10n/app_vi.arb:222`, `lib/l10n/app_ar.arb:222`,
+`test/profile_screen_tanzil_link_test.dart`,
+`test/profile_screen_privacy_policy_link_test.dart:208`,
+`tool/fetch_transliteration.py:30`–`:34`, `pubspec.yaml`.
+
+Added 2026-08-28 (Session 147):
+`docs/release/SESSION_146_COPY_SHARE_LICENSING_PACKET.md` — the detailed
+Copy/Share and transliteration analysis, so a reader does not need this
+packet to duplicate it. That file is on `main` as of `953382b`, merged
+from PR #48 (branch `session146-licensing-reconciliation`).
