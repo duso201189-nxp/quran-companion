@@ -355,8 +355,11 @@ exists), **[needs-external-verification]**, or
 6. **Qur'an text source attribution** — [repo-evidence]. Source: Tanzil
    Project. In-app string (`lib/features/profile/presentation/profile_screen.dart:131-132`,
    `lib/l10n/app_{vi,en,ar}.arb`) reads: *"Arabic text & translations:
-   Tanzil.net · QuranEnc.com. Audio: EveryAyah.com. Font: KFGQPC."* Plain
-   text only, **no hyperlink** to tanzil.net — see P1-4 below.
+   Tanzil.net · QuranEnc.com. Audio: EveryAyah.com. Font: KFGQPC."*
+   **[Corrected Session 146]** The "Tanzil.net" substring is a tappable
+   hyperlink to `https://tanzil.net` (Session 133/134, merged; see P1-4
+   for the evidence and for what remains open). Whether that satisfies
+   Tanzil's link term is still a legal question, not settled here.
 7. **Transliteration attribution** — [repo-evidence]. Source: Quran.com/QUL
    (Tarteel AI). Not individually named in the in-app attribution string
    (folded generically, or omitted) — see P2-2 below.
@@ -494,12 +497,34 @@ exists), **[needs-external-verification]**, or
 - **P1-3** — Android launcher icon and adaptive icon are unverified
   against the project's own checklist admission that they're not done.
   *Category B/C*.
-- **P1-4** — Tanzil's terms require "a link is made to tanzil.net"; the
-  in-app attribution string is plain text with no hyperlink.
-  *Category C* — this is a legal-interpretation-adjacent question (does
-  the current text satisfy the term?) and a code change to
-  `lib/features/profile/` strings, both outside this session's safe scope.
-  Flagged for owner/legal review, not fixed here.
+- **P1-4 — MECHANICAL PORTION CLOSED / IMPLEMENTED; LEGAL SUFFICIENCY
+  STILL OPEN (corrected Session 146, 2026-08-28, `origin/main`
+  `155845a`).** Originally recorded as "the in-app attribution string is
+  plain text with no hyperlink" — that statement went stale when the
+  Session 133/134 work merged, and is corrected here.
+  - **Closed with repository evidence (mechanical only):** the
+    "Tanzil.net" substring of the attribution line is now a tappable
+    link that opens `https://tanzil.net` via `url_launcher`.
+    Implementation: `_SourcesAttribution`
+    (`lib/features/profile/presentation/profile_screen.dart:183-239`) —
+    `Uri.parse('https://tanzil.net')` at line 192, a
+    `TapGestureRecognizer` on the `Tanzil.net` `TextSpan` at lines
+    228-229, dispatched through `_launchExternal`
+    (`profile_screen.dart:167-173`) with
+    `LaunchMode.externalApplication`. The destination is a
+    compile-time constant, never built from user input, and a fallback
+    renders the plain sentence if a future translation stops containing
+    the literal `Tanzil.net`.
+  - **Still open, and NOT closed by the above:** whether the resulting
+    attribution — as worded, placed, and linked — actually satisfies
+    Tanzil's "a link is made to tanzil.net" term. **Implementation is
+    not legal clearance.** Shipping a hyperlink is evidence about app
+    behaviour, not a determination that the term is met.
+    *Category C* — external legal review.
+  - **Explicitly NOT closed by this correction:** **P0-2** (Tanzil
+    translation licence legal review) and every other Tanzil licensing
+    question in this document remain **OPEN** and untouched. This item
+    records one mechanical fact only.
 
 ## P2 / P3 findings
 
