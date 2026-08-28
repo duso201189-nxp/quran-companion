@@ -180,6 +180,64 @@ open — never resolved, narrowed, or implied-resolved.
 > (`DR-2026-0016`, `DR-2026-0029`, `DR-2026-0030`) was reopened,
 > reinterpreted, or modified.
 
+> **Session 150 amendment (2026-08-28, documentation reconciliation —
+> no app code, no Android/iOS config, no ADR changes, no version change
+> — re-verified against `origin/main` `0d2a7a5`).** This amendment
+> corrects one stale attribution only. It makes **no legal
+> determination**, resolves no licence question, and closes nothing.
+>
+> **Stale transliteration-source attribution.** Four places in this
+> document identified the shipped Latin-transliteration dataset as
+> **"Quran.com/QUL"** (one of them adding "(Tarteel AI)"): legal-
+> inventory items 5 and 7, **P2-2**, and the Category C matrix entry.
+> That attribution predates the Session 147 correction already merged on
+> `main` (`b0b80ad`, PR #49) and does not match the repository evidence.
+>
+> **The repository evidence.** The shipped transliteration is fetched
+> through **Quran.com's QDC endpoint**, not through QUL:
+> - `tool/fetch_transliteration.py:30`–`:34` calls
+>   `https://api.qurancdn.com/api/qdc/verses/by_chapter/{chapter}` with
+>   `word_fields=transliteration,text_uthmani`. This is the dataset's
+>   only fetch path.
+> - The shipped database (`assets/database/quran.sqlite`, table
+>   `translation_sources`, row `code = 'translit_latin'`) records
+>   `name = 'Phiên âm Latin (Quran.com)'`, `author = 'Quran.com
+>   word-by-word transliteration'`, `source_url = 'https://quran.com'`.
+>
+> This matches `docs/LICENSING.md` §1 (Session 147 correction) and U3 /
+> F3 / Q3 of `docs/release/TANZIL_LEGAL_REVIEW_PACKET.md`. Those two
+> documents were **not** modified by this session; this document is
+> being brought into agreement with them.
+>
+> **What this amendment does NOT claim.** It does **not** state that
+> Quran.com licensed, permitted, authorized, approved, or cleared
+> redistribution of this dataset, and it does **not** state that
+> Quran.com denied or refused it. Which licence or permission governs
+> the dataset — and which terms were in force at the `2026-07-06` fetch
+> date recorded in the shipped metadata — remains **CHƯA XÁC ĐỊNH /
+> UNKNOWN — COUNSEL REQUIRED**. The `license` string in the database
+> (*"Quran.com/QUL community data — ghi nguồn khi phân phối"*) was
+> written by this project itself, is not a statement by any rights
+> holder, and is not treated as authority here.
+>
+> **Nothing is closed.** **P0-2** (Tanzil translation licence legal
+> review), **P1-4** (Tanzil attribution hyperlink), and **P2-2**
+> (transliteration not individually named) all remain **OPEN** and are
+> unchanged in substance — only the source's name is corrected inside
+> P2-2 and the matrix. All four "QUL" attributions in this document
+> named the shipped transliteration, and all four are corrected; every
+> "QUL" string that remains below is a **quotation** — of the wording
+> this amendment replaced, or of the database's own self-authored
+> `license` field — kept deliberately as the audit trail. This
+> amendment does not reinterpret QUL's FAQ, which continues to govern
+> any dataset actually obtained through QUL.
+>
+> Legal-inventory items 5 and 7, P2-2, the Category C matrix entry, and
+> the evidence-path list are updated in place; nothing else in this
+> document was altered, and no governance record (`DR-2026-0016`,
+> `DR-2026-0029`, `DR-2026-0030`) was reopened, reinterpreted, or
+> modified.
+
 ## Executive status
 
 - No store submission has occurred. No Apple Developer or Google Play
@@ -350,7 +408,7 @@ exists), **[needs-external-verification]**, or
    `pubspec.yaml`: `audio_service`, `drift`, `flutter_riverpod`,
    `go_router`, `just_audio`, `shared_preferences`, `sqlite3_flutter_libs`,
    etc. — no ad or analytics networks. Content sources needing disclosure
-   (per `docs/LICENSING.md`): Tanzil.net, QuranEnc.com, Quran.com/QUL,
+   (per `docs/LICENSING.md`): Tanzil.net, QuranEnc.com, Quran.com QDC,
    everyayah.com (streamed, not bundled), KFGQPC font.
 6. **Qur'an text source attribution** — [repo-evidence]. Source: Tanzil
    Project. In-app string (`lib/features/profile/presentation/profile_screen.dart:131-132`,
@@ -360,9 +418,24 @@ exists), **[needs-external-verification]**, or
    hyperlink to `https://tanzil.net` (Session 133/134, merged; see P1-4
    for the evidence and for what remains open). Whether that satisfies
    Tanzil's link term is still a legal question, not settled here.
-7. **Transliteration attribution** — [repo-evidence]. Source: Quran.com/QUL
-   (Tarteel AI). Not individually named in the in-app attribution string
-   (folded generically, or omitted) — see P2-2 below.
+7. **Transliteration attribution** — [repo-evidence]. Source: **Quran.com
+   QDC**. **[Corrected Session 150]** This item previously read
+   "Quran.com/QUL (Tarteel AI)". That attribution does not match the
+   repository evidence: the shipped transliteration is fetched from
+   `https://api.qurancdn.com/api/qdc/verses/by_chapter`
+   (`tool/fetch_transliteration.py:30`–`:34`), and the shipped database
+   (`assets/database/quran.sqlite`, table `translation_sources`, row
+   `code = 'translit_latin'`) records `name = 'Phiên âm Latin
+   (Quran.com)'`, `author = 'Quran.com word-by-word transliteration'`,
+   `source_url = 'https://quran.com'`. QUL's FAQ is therefore **not** the
+   governing terms document for this dataset (Session 147 correction,
+   `docs/LICENSING.md` §1; U3 in
+   `docs/release/TANZIL_LEGAL_REVIEW_PACKET.md`). The licence or
+   permission governing it remains **CHƯA XÁC ĐỊNH / UNKNOWN** — this
+   correction does **not** assert that Quran.com granted redistribution
+   permission, and does **not** assert that it denied one. Not
+   individually named in the in-app attribution string (folded
+   generically, or omitted) — see P2-2 below.
 8. **Tanzil license terms** — [repo-evidence, quoted verbatim in
    `docs/LICENSING.md:43-58`]. Qur'an text: verbatim copying permitted,
    source must be indicated, a link to tanzil.net required, no
@@ -534,10 +607,17 @@ exists), **[needs-external-verification]**, or
   *Category B* — owner confirms canonical spelling; this session did not
   change `ios/Runner/Info.plist` to avoid touching iOS project files
   without that confirmation.
-- **P2-2** — Transliteration source (Quran.com/QUL) is not individually
-  named in the in-app attribution string, unlike Tanzil/QuranEnc/EveryAyah/
-  KFGQPC. *Category C* — whether QUL's terms require named attribution is
-  a legal-interpretation question, not decided here.
+- **P2-2** — **OPEN.** Transliteration source (**Quran.com QDC**) is not
+  individually named in the in-app attribution string, unlike Tanzil/
+  QuranEnc/EveryAyah/KFGQPC. *Category C* — whether the terms governing
+  that dataset require named attribution is a legal-interpretation
+  question, not decided here. **[Source attribution corrected Session
+  150]** — this finding previously read "Quran.com/QUL" and attributed
+  the governing terms to QUL; see legal-inventory item 7 for the
+  evidence. The correction changes the **source identity only**. P2-2 is
+  **not closed**: the in-app attribution string is unchanged, and which
+  licence or permission governs the dataset remains **CHƯA XÁC ĐỊNH /
+  UNKNOWN**.
 - **P3-1** — `web/manifest.json` `theme_color`/`background_color` remain
   Flutter's default `#0175C2`. Cosmetic/design, not a factual defect.
   *Category B*.
@@ -573,8 +653,10 @@ exists), **[needs-external-verification]**, or
 - Google Play Console registration, Play App Signing enrollment (P0-5).
 - QAC permission outreach and MASAQ-alternative sourcing decision (governed
   by DR-2026-0029; not reopened here).
-- Tanzil attribution hyperlink / QUL attribution completeness — legal
-  interpretation required (P1-4, P2-2).
+- Tanzil attribution hyperlink / Quran.com QDC attribution completeness —
+  legal interpretation required (P1-4, P2-2). **[Source name corrected
+  Session 150]** — this entry previously read "QUL"; both P1-4 and P2-2
+  remain **OPEN**.
 
 ## Owner action checklist
 
@@ -615,7 +697,10 @@ exists), **[needs-external-verification]**, or
 `ios/Runner/Info.plist`, `ios/.gitignore`, `web/manifest.json`,
 `web/index.html`, `pubspec.yaml`, `RELEASE_DASHBOARD.md`,
 `docs/release/RELEASE_PLAN_V1.md`, `RELEASE_CHECKLIST.md`,
-`docs/LICENSING.md`, `docs/adr/DR-2026-0029-qac-lexicon-licensing-decision.md`,
+`docs/LICENSING.md`, `docs/release/TANZIL_LEGAL_REVIEW_PACKET.md`,
+`tool/fetch_transliteration.py` (Session 150 addition),
+`assets/database/quran.sqlite` (Session 150 addition),
+`docs/adr/DR-2026-0029-qac-lexicon-licensing-decision.md`,
 `docs/adr/DR-2026-0030-formal-deferral-lexicon-flashcards-v1.md`,
 `docs/adr/DR-2026-0028-decision-record-authority-over-main.md`,
 `constitution/PROJ-P-005-non-commercial-translation-license.md`,
