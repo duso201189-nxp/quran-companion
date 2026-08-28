@@ -34,7 +34,29 @@ log cho chi tiết từng commit). Mục đã ✅ là đã XÁC MINH THẬT (ch�
       chính sách đã công bố và đã có liên kết trong app; chúng KHÔNG
       phải kết luận về tính đầy đủ hay tuân thủ pháp lý.
 - [ ] Terms of Use
-- [ ] Apple Privacy Manifest (PrivacyInfo.xcprivacy) + App Privacy labels
+- [ ] Apple Privacy Manifest (`ios/Runner/PrivacyInfo.xcprivacy`) —
+      **ĐÃ SOẠN + ĐÃ NỐI VÀO pbxproj, CHƯA XÁC MINH BẰNG XCODE.**
+      (Tách khỏi ô "App Privacy labels" ở Session 142, 2026-08-28: hai
+      việc khác nhau, không được tick chung.) File có thật, khai
+      `NSPrivacyTracking = false` và ba mảng `NSPrivacyTrackingDomains`
+      / `NSPrivacyCollectedDataTypes` / `NSPrivacyAccessedAPITypes`
+      đều RỖNG (Session 107); đã nối vào
+      `ios/Runner.xcodeproj/project.pbxproj` tại 4 điểm — PBXBuildFile
+      (dòng 10), PBXFileReference (dòng 63), nhóm Runner (dòng 124),
+      và Resources build phase của target Runner (dòng 235) —
+      Session 109. Ô này VẪN ĐỂ TRỐNG: dự án chưa từng build bằng
+      Xcode/CocoaPods (không có `ios/Podfile.lock`, môi trường không
+      có macOS), nên bước manifest-merge lúc archive của Xcode CHƯA
+      HỀ CHẠY và phần `NSPrivacyAccessedAPITypes` chưa thể kết luận.
+      Sự tồn tại của file KHÔNG phải căn cứ để tick. Chỉ tick sau khi
+      `flutter build ios`/archive thật chạy sạch trên máy macOS.
+- [ ] Apple App Privacy labels (bảng "nutrition label" trong App Store
+      Connect) — **MỞ, CẦN THAO TÁC TRÊN CONSOLE.** Không có phần nào
+      của việc này nằm trong repo: phải do người giữ tài khoản App
+      Store Connect điền và nộp trực tiếp. Bản nháp câu trả lời (chưa
+      nộp, chưa rà soát pháp lý) ở
+      `docs/release/STORE_PRIVACY_FORM_DRAFT.md`. Việc Privacy
+      Manifest đã tồn tại KHÔNG hoàn thành ô này.
 - [ ] Google Play Data Safety form
 - [ ] Xác nhận điều khoản phi-thương-mại của bản dịch Tanzil với mô
       hình phát hành (app miễn phí)

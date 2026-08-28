@@ -11,6 +11,32 @@ time. Nothing in this document constitutes legal advice, a completed
 disclosure, or evidence that either store's requirements have been
 satisfied.
 
+**Session 142 update (2026-08-28, re-verified against `origin/main`
+SHA `ad505cb`).** Two classes of statement in this document had gone
+stale and are corrected below **in place, with the original wording
+preserved** wherever this document's supersession convention requires
+historical traceability:
+
+1. **§6 counted three outbound behaviours. There are now four.** An
+   in-app Privacy Policy link shipped in Session 139 (PR #46) and
+   introduces a fourth outbound destination,
+   **duso201189-nxp.github.io**. See the Session 142 correction block
+   in §6, and the extended owner-confirmation nuance in §4.
+2. **§14's blockers are no longer accurate.** The canonical Privacy
+   Policy URL no longer 404s (live HTTP 200 re-confirmed by this
+   session), an in-app Privacy Policy link now exists, and the work
+   §14 deferred to "Session 138" was completed in Sessions 138/139.
+   §15's "no `PrivacyInfo.xcprivacy` exists yet" is also stale — the
+   manifest exists and is wired into `project.pbxproj`, though it
+   remains Xcode-unverified.
+
+**Nothing here completes, submits, or pre-fills either console form,
+and no legal review has occurred.** The Google Play Data safety form
+and the Apple App Privacy questionnaire both remain unsubmitted. The
+store-classification question raised in §4 — whether handing a URL to
+the user's browser counts as "sharing" for either form's purposes —
+is **UNKNOWN / LEGAL REVIEW REQUIRED** and is not resolved here.
+
 **Session 114 update (2026-08-25):** the OWNER SUBMISSION CHECKLIST's
 target-audience bullet has been updated to reflect the owner's
 confirmed general-audience positioning — see
@@ -113,6 +139,40 @@ standard HTTP/TCP metadata (§9) — but IP address and standard request
 headers are sent to `everyayah.com` as an inherent property of any
 network request, exactly as they would be to any web server.
 
+**REQUIRES OWNER CONFIRMATION / LEGAL REVIEW — extended nuance for the
+two `launchUrl` destinations (added Session 142, 2026-08-28).** The app
+now hands two fixed third-party addresses to the user's browser via
+`url_launcher`: `https://tanzil.net` (Session 134) and
+`https://duso201189-nxp.github.io/quran-companion/privacy/`
+(Session 139). Both are compile-time constants in
+`lib/features/profile/presentation/profile_screen.dart` (lines 192 and
+267-268), never built from user input, and both go through the single
+`_launchExternal` helper at line 166. **The app transmits nothing
+itself in either case** — it asks the operating system to open an
+address, and the user's own browser then makes the request, carrying
+that browser's own IP, user agent, and cookies.
+
+Whether that hand-off counts as "sharing data with a third party" for
+Google Play Data safety or Apple App Privacy purposes is **UNKNOWN**.
+It is a store-policy classification question, not a code question, and
+this repository's evidence cannot settle it. Two further points the
+owner should carry into that determination rather than assume:
+
+- The `duso201189-nxp.github.io` destination is a **GitHub Pages**
+  address serving this app's own published Privacy Policy. The pages
+  are hosted by GitHub, Inc.; the developer operates no server. It is
+  a first-party *document* served from third-party *infrastructure* —
+  which of those framings each console's form asks about is not
+  determined here.
+- Neither store's answer is inherited from the `everyayah.com` answer
+  above: audio fetching is an app-initiated request, whereas both
+  `launchUrl` cases are user-initiated browser hand-offs. They may or
+  may not be classified alike.
+
+**No classification is asserted by this document.** Both entries must
+be read against each console's current form wording, with legal review
+where the owner deems it appropriate.
+
 ## 5. Local-only data — full inventory
 
 **FACT.** Two separate on-device SQLite databases (via Drift), opened
@@ -184,6 +244,45 @@ filename or file content.
 > (`privacy/index.md`). Answer store questions from that list, not from
 > the "exactly one" sentence below. The original text is preserved
 > unchanged for traceability.
+
+> **FURTHER CORRECTION (Session 142, 2026-08-28, re-verified against
+> `origin/main` `ad505cb`).** The Session 137 correction block above is
+> itself now stale in one respect and is **preserved unchanged for
+> traceability**: its count of **three** outbound behaviours became
+> **four** when PR #46 (Session 139) added an in-app Privacy Policy
+> link. Its citation of `profile_screen.dart:194` for the Tanzil
+> `launchUrl` has also shifted with that edit. The current, re-verified
+> list at `ad505cb` is:
+>
+> 1. **`HttpClient` audio download.** `httpDownloader` at
+>    `lib/core/cache/io_cache_manager.dart:12-28`, fetching a URL built
+>    by `buildAyahAudioUrl` (`lib/core/audio/audio_url.dart:6-14`).
+>    Host: `everyayah.com`.
+> 2. **Platform-engine audio streaming.** Remote URIs built at
+>    `lib/features/quran/presentation/audio/audio_controller.dart:257,270`
+>    and handed to `just_audio`, whose platform engine fetches them
+>    itself. Host: `everyayah.com`.
+> 3. **`launchUrl(https://tanzil.net)`** — URI constant at
+>    `lib/features/profile/presentation/profile_screen.dart:192`,
+>    dispatched through `_launchExternal` (same file, line 166) from
+>    the tap handler at line 208. Host: `tanzil.net`.
+> 4. **`launchUrl(https://duso201189-nxp.github.io/quran-companion/privacy/`)**
+>    — **NEW in Session 139 (PR #46).** URI constant at
+>    `lib/features/profile/presentation/profile_screen.dart:267-268`,
+>    dispatched through the same `_launchExternal` helper from the tap
+>    handler at line 277. Host: **duso201189-nxp.github.io** (GitHub
+>    Pages). This is the app's own published Privacy Policy.
+>
+> **The complete external host set at `ad505cb` is exactly three:
+> `everyayah.com`, `tanzil.net`, `duso201189-nxp.github.io`.** Verified
+> by a repository-wide scan of every `http(s)://` literal under `lib/`
+> and by reading all five `audio_url_template` rows out of
+> `assets/database/quran.sqlite` directly (all five begin `https://` and
+> all five point at `everyayah.com`). All four behaviours are described
+> in the published Privacy Policy (`privacy/index.md`, "Network
+> activity"). Answer store questions from **this** list. Whether
+> behaviours 3 and 4 constitute "sharing" for either store's form is
+> **UNKNOWN / LEGAL REVIEW REQUIRED** — see §4.
 
 **FACT.** Exactly one network call site exists in the entire `lib/`
 tree: `lib/core/cache/io_cache_manager.dart:12-28`, function
@@ -346,6 +445,37 @@ as requiring confirmation rather than asserted outright).
 
 ## 14. Privacy Policy URL
 
+> **SUPERSEDED IN PART (Session 142, 2026-08-28).** The three blockers
+> this section records below are no longer all open. The original text
+> is **preserved unchanged for traceability**; read this block first.
+>
+> - **"the URL still returns 404" — SUPERSEDED.** The Session 137 PR
+>   merged (PR #45, `0fef4f3`) and GitHub Pages rebuilt. Re-verified
+>   live by this session on 2026-08-28:
+>   `GET https://duso201189-nxp.github.io/quran-companion/privacy/` →
+>   **HTTP 200**, `Server: GitHub.com`,
+>   `Content-Type: text/html; charset=utf-8`, 0 redirects, HTTPS. The
+>   instruction "do not paste this URL into either console yet" no
+>   longer applies **on liveness grounds**; the other conditions in
+>   this section and in the Owner Submission Checklist still do.
+> - **"No in-app Privacy Policy link exists … Deferred to Session
+>   138" — SUPERSEDED.** The link shipped in **Session 139 (PR #46,
+>   merged at `ad505cb`)**, not Session 138. It lives in the Profile
+>   screen's About section
+>   (`lib/features/profile/presentation/profile_screen.dart:264-298`),
+>   opens the canonical URL through `url_launcher`, is localised in
+>   vi/en/ar via the `privacyPolicy` ARB key, and is covered by
+>   `test/profile_screen_privacy_policy_link_test.dart`. This closes
+>   the *mechanical* requirement only; it is **not** a determination
+>   that Apple 5.1.1(i) or the Google Play User Data policy is
+>   satisfied.
+> - **"Terms of Use still does not exist" — STILL TRUE, unchanged.**
+> - **"No legal review has occurred" — STILL TRUE, unchanged.** This
+>   session performed none and claims none.
+>
+> Neither console form has been prepared, completed, or submitted, and
+> this section does not authorise submitting either.
+
 **RESOLVED IN REPOSITORY, NOT YET LIVE (Session 137, 2026-08-27).**
 
 **Value for the form field:**
@@ -406,6 +536,24 @@ section — that remains untouched and unsubmitted.
 - **No `PrivacyInfo.xcprivacy` (Apple Privacy Manifest) exists yet** —
   see Phase 4 of this session's work,
   `docs/release/V1_STORE_LEGAL_READINESS.md:229-231` (P1-1).
+  > **SUPERSEDED (Session 142, 2026-08-28).** The bullet above is
+  > stale; the original wording is kept for traceability.
+  > `ios/Runner/PrivacyInfo.xcprivacy` **does exist** at `ad505cb`
+  > (drafted Session 107) and **is wired into**
+  > `ios/Runner.xcodeproj/project.pbxproj` (Session 109) at four
+  > verified points: `PBXBuildFile` (line 10), `PBXFileReference`
+  > (line 63), the Runner `PBXGroup` children list (line 124), and the
+  > Runner target's `PBXResourcesBuildPhase` files list (line 235).
+  > Its declared arrays are `NSPrivacyTracking = false`,
+  > `NSPrivacyTrackingDomains`, `NSPrivacyCollectedDataTypes`, and
+  > `NSPrivacyAccessedAPITypes` — the last three all **empty**. The
+  > manifest carries its own in-file caveat that it is a repository
+  > draft that **has never been Xcode-verified** (no Xcode/macOS
+  > toolchain exists in this environment; no `ios/Podfile.lock`), and
+  > that Xcode's archive-time manifest merge could still surface
+  > Required-Reason API usage. Existence and wiring are therefore
+  > closed-with-evidence; **Apple App Privacy label completion and
+  > Xcode verification remain OPEN**.
 - Both platforms therefore present the **same** underlying data profile
   (no accounts, no analytics/ads/crash SDK, one audio-streaming network
   call, local-only storage) — there is no known platform-specific
@@ -440,7 +588,10 @@ following steps remain, all outside this session's authority:
       (this draft reflects `origin/main` SHA `3d5da90` as of
       2026-08-24 — re-verify if the codebase has since changed).
 - [ ] **Legal review**, where appropriate, of the third-party-sharing
-      nuance in §4 (direct device-to-`everyayah.com` requests) and of
+      nuance in §4 — both the direct device-to-`everyayah.com` requests
+      **and (added Session 142) the two `launchUrl` browser hand-offs
+      to `tanzil.net` and `duso201189-nxp.github.io`, whose store-form
+      classification is UNKNOWN** — and of
       whether the Tanzil/QuranEnc/QUL/EveryAyah content-attribution
       requirements tracked in `docs/LICENSING.md` and
       `docs/release/V1_STORE_LEGAL_READINESS.md` (P1-4, P2-2) need to be
@@ -452,12 +603,22 @@ following steps remain, all outside this session's authority:
       old draft is marked SUPERSEDED. **Authoring is done; publication
       is not** — see the two unchecked items directly below. (`P0-1` in
       `docs/release/V1_STORE_LEGAL_READINESS.md`.)
-- [ ] **Confirm the canonical URL is actually live** (HTTP 200 over
-      HTTPS) after the Session 137 PR merges to `main` and GitHub Pages
-      rebuilds. Until then the URL 404s and must not be submitted.
-- [ ] **Add an in-app Privacy Policy link** (Session 138). Required by
-      Apple 5.1.1(i) and the Google Play User Data policy in addition
-      to the console field; none exists in `lib/` today.
+- [x] **Canonical URL confirmed live (Session 138; re-verified
+      Session 142, 2026-08-28).** `GET` over HTTPS to
+      `https://duso201189-nxp.github.io/quran-companion/privacy/`
+      returns **HTTP 200**, `Server: GitHub.com`, `text/html`, no
+      redirects. Liveness is evidence-backed and closed. *This ticks
+      liveness only — it is not permission to submit either console
+      form, and says nothing about the policy's legal adequacy.*
+- [x] **In-app Privacy Policy link added (Session 139, PR #46 —
+      not Session 138 as originally written).** Profile → About shows
+      a tappable link opening the canonical URL via `url_launcher`
+      (`lib/features/profile/presentation/profile_screen.dart:264-298`),
+      localised vi/en/ar (`privacyPolicy` ARB key), covered by
+      `test/profile_screen_privacy_policy_link_test.dart`. *This ticks
+      the mechanical existence of the link only. Whether it satisfies
+      Apple 5.1.1(i) or the Google Play User Data policy is **not
+      determined** — that remains part of the open legal review below.*
 - [ ] **Confirm HTTPS behavior** of the live `everyayah.com` audio
       endpoint (§13) rather than relying on the documented URL template
       alone. *Partially advanced (Session 137): all five rows of the
@@ -486,6 +647,9 @@ following steps remain, all outside this session's authority:
 - [ ] Cross-check both submissions against the final
       `ios/Runner/PrivacyInfo.xcprivacy` manifest (Phase 4 of this
       session, if produced) for internal consistency before submitting.
+      *(Session 142 note: the manifest now exists and is pbxproj-wired
+      — see §15 — but is **Xcode-unverified**, so this cross-check
+      stays open and must be redone after a real archive build.)*
 
 **This document does not claim, assert, or imply that either store form
 has been submitted, that a Privacy Policy exists or has been reviewed, or

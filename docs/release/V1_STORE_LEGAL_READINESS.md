@@ -118,6 +118,68 @@ open — never resolved, narrowed, or implied-resolved.
 > Policy bullet and P0-1 below are updated in place; nothing else in
 > this document was altered.
 
+> **Session 142 amendment (2026-08-28, documentation reconciliation —
+> no app code, no Android/iOS config, no ADR changes — re-verified
+> against `origin/main` `ad505cb`).** This amendment corrects stale
+> statements only. It makes **no legal determination** and closes
+> nothing that requires one.
+>
+> **1. Apple Privacy Manifest — the "does not exist" statements are
+> WRONG at `ad505cb`.** The iOS-readiness table row and **P1-1** below
+> both record `ios/Runner/PrivacyInfo.xcprivacy` as absent. That was
+> true at Session 95's baseline (`866fdc4`); it is not true now. Both
+> are updated in place, with this amendment as the audit trail.
+> Independently verified this session:
+> - The file **exists** at `ios/Runner/PrivacyInfo.xcprivacy` (drafted
+>   Session 107, 2026-08-24), declaring `NSPrivacyTracking = false`
+>   with `NSPrivacyTrackingDomains`, `NSPrivacyCollectedDataTypes`, and
+>   `NSPrivacyAccessedAPITypes` all **empty arrays**.
+> - It **is wired into** `ios/Runner.xcodeproj/project.pbxproj`
+>   (Session 109) at four confirmed references, read directly this
+>   session: `PBXBuildFile` line 10 (`… PrivacyInfo.xcprivacy in
+>   Resources … fileRef = 63DEFB52…`), `PBXFileReference` line 63
+>   (`lastKnownFileType = text.plist.xml; path = PrivacyInfo.xcprivacy`),
+>   the Runner `PBXGroup` children list line 124 (beside `Info.plist`),
+>   and the Runner target's `PBXResourcesBuildPhase` files list line
+>   235 (build phase `97C146EC1CF9000F007C117D /* Resources */`).
+>
+> **What this amendment does NOT claim.** Drafting and pbxproj wiring
+> are mechanical facts verifiable by reading this repository, and are
+> marked closed **with that evidence and no more**. This project has
+> never been built with Xcode/CocoaPods — no `ios/Podfile.lock` exists,
+> and no macOS toolchain is available here — so Xcode's archive-time
+> manifest-merge step has **never run** against it. Accordingly this
+> document does **not** claim: Xcode archive verification, that the
+> manifest is complete or correct, that `NSPrivacyAccessedAPITypes`
+> needs no entries, that Apple's App Privacy ("nutrition label")
+> questionnaire is prepared or submitted, Apple approval, App Store
+> approval, or legal compliance of any kind. The manifest's own
+> in-file comment states the same limits and remains authoritative
+> about them.
+>
+> **2. Privacy Policy — P0-1 sub-items 1 and 2 are closed; P0-1
+> itself remains OPEN.** The canonical URL is live (re-verified this
+> session: **HTTP 200**, `Server: GitHub.com`, HTTPS, no redirects),
+> and the in-app link shipped in **Session 139 (PR #46)**, not Session
+> 138 as previously written. Sub-item 3 — **no legal review** — is
+> untouched and still blocks P0-1, as does the continued absence of
+> Terms of Use.
+>
+> **3. A new outbound destination now exists.** The in-app policy link
+> makes **duso201189-nxp.github.io** (GitHub Pages) a third external
+> host alongside `everyayah.com` and `tanzil.net`, so the outbound
+> behaviours the Session 137 amendment counted as **three** are now
+> **four**. `privacy/index.md` and
+> `docs/release/STORE_PRIVACY_FORM_DRAFT.md` are updated to match.
+> Whether that hand-off is "data sharing" for either store's form is
+> **UNKNOWN / LEGAL REVIEW REQUIRED** and is not decided here.
+>
+> The executive-status Privacy Policy bullet, the iOS-readiness table
+> row for the Privacy Manifest, P0-1, and P1-1 are updated in place;
+> nothing else in this document was altered, and no governance record
+> (`DR-2026-0016`, `DR-2026-0029`, `DR-2026-0030`) was reopened,
+> reinterpreted, or modified.
+
 ## Executive status
 
 - No store submission has occurred. No Apple Developer or Google Play
@@ -141,11 +203,16 @@ open — never resolved, narrowed, or implied-resolved.
   exists as a finished, public-facing document at `privacy/index.md`,
   effective **27 August 2026**, superseding the working draft in
   `docs/release/PRIVACY_POLICY_DRAFT.md`. Canonical URL:
-  <https://duso201189-nxp.github.io/quran-companion/privacy/>. It is
-  **staged, not yet live** — GitHub Pages builds from `main` only, and
-  the Session 137 PR is unmerged. It is still **not legally approved**
-  (no counsel has reviewed it), and there is still **no in-app link**,
-  which both stores separately require (Session 138). A full street
+  <https://duso201189-nxp.github.io/quran-companion/privacy/>.
+  **[Session 142 update, 2026-08-28]** It is now **live** — the
+  Session 137 PR merged (PR #45) and the URL returns **HTTP 200** over
+  HTTPS from GitHub Pages (re-verified this session) — and an **in-app
+  link now exists**, shipped by **Session 139 (PR #46)** in Profile →
+  About. Both are mechanical facts, closed with the evidence cited in
+  the Session 142 amendment above and nothing further. It is still
+  **not legally approved** (no counsel has reviewed it), and whether
+  the in-app link satisfies Apple 5.1.1(i) or the Google Play User
+  Data policy is **not determined here**. A full street
   address remains unpublished by owner choice (a reduced public
   locality is used instead); whether that satisfies any store's
   publisher-address rule is unresolved. Terms of Use still does not
@@ -182,7 +249,7 @@ open — never resolved, narrowed, or implied-resolved.
 | AppIcon | Full 19-slot set present, real file sizes | `ios/Runner/Assets.xcassets/AppIcon.appiconset/` | Appears ready (not pixel-verified) |
 | Launch screen | 1×1 pixel placeholder PNGs, unedited template `README.md` still present | `ios/Runner/Assets.xcassets/LaunchImage.imageset/` | Placeholder — never customized |
 | Signing / Team ID / provisioning | None configured anywhere | `ios/Runner.xcodeproj/project.pbxproj` (no `DEVELOPMENT_TEAM`, no `CODE_SIGN_IDENTITY` on the app target) | Not started — requires macOS + Apple Developer enrollment |
-| Apple Privacy Manifest (`PrivacyInfo.xcprivacy`) | Does not exist | confirmed absent under `ios/` | Open, flagged at `docs/release/RELEASE_PLAN_V1.md:73-74` |
+| Apple Privacy Manifest (`PrivacyInfo.xcprivacy`) | **[Session 142 correction]** Exists (drafted Session 107) and is wired into the Xcode project (Session 109). Previously recorded here as "Does not exist" — stale since Session 107. | `ios/Runner/PrivacyInfo.xcprivacy`; `ios/Runner.xcodeproj/project.pbxproj:10,63,124,235` (PBXBuildFile / PBXFileReference / Runner group / Runner target Resources phase) | Drafting + pbxproj wiring **closed with repository evidence**. **Xcode-UNVERIFIED** — never archived (no `ios/Podfile.lock`, no macOS toolchain), so `NSPrivacyAccessedAPITypes` completeness is unresolved. Apple **App Privacy labels remain OPEN** (console action). No Apple/App Store approval or compliance claimed. |
 | App Store Connect | No app record, SKU, or account evidence | `docs/release/RELEASE_PLAN_V1.md:79-82`; `docs/release/PRODUCT_READINESS_REVIEW.md:154-158` | Not started |
 
 ## Web/PWA readiness
@@ -340,23 +407,38 @@ exists), **[needs-external-verification]**, or
   and the old draft is marked SUPERSEDED. Canonical URL:
   <https://duso201189-nxp.github.io/quran-companion/privacy/>.
   Three distinct things still block this item:
-  1. **The URL is not live yet.** GitHub Pages builds only from
-     `main`; the Session 137 PR is unmerged, so the URL still 404s.
-     This closes on merge + Pages rebuild, and must be confirmed with
-     an actual HTTP request returning 200 before this sub-item is
-     ticked. Nothing else is needed for it.
-  2. **No in-app Privacy Policy link exists.** Apple 5.1.1(i) and the
-     Google Play User Data policy each require the link *inside the
-     app* as well as in the store console. No such route or screen
-     exists in `lib/`. Deferred to **Session 138**.
-  3. **No legal review.** The policy was written from repository
-     evidence, not by counsel, and claims no compliance with any law
-     or store policy. Whether the reduced public locality satisfies
-     any publisher-address rule is still unresolved (decision packet
-     Section C item 8).
-  Terms of Use still does not exist in any form. *Category C* for
-  item 3 (external legal review); items 1 and 2 are now ordinary
-  in-repo work.
+  1. ~~**The URL is not live yet.**~~ **CLOSED WITH EVIDENCE
+     (Session 138; re-verified Session 142, 2026-08-28).** The
+     Session 137 PR merged (PR #45) and GitHub Pages rebuilt. A live
+     request to
+     <https://duso201189-nxp.github.io/quran-companion/privacy/>
+     returns **HTTP 200** over HTTPS (`Server: GitHub.com`,
+     `text/html; charset=utf-8`, 0 redirects). Liveness only — this
+     is not permission to submit any store form.
+  2. ~~**No in-app Privacy Policy link exists.**~~ **MECHANICALLY
+     CLOSED WITH EVIDENCE (Session 139, PR #46 — not Session 138 as
+     originally written).** Profile → About shows a tappable link
+     opening the canonical URL via `url_launcher`
+     (`lib/features/profile/presentation/profile_screen.dart:264-298`),
+     localised vi/en/ar via the `privacyPolicy` ARB key, covered by
+     `test/profile_screen_privacy_policy_link_test.dart`. **Whether
+     that link satisfies Apple 5.1.1(i) or the Google Play User Data
+     policy is NOT determined** — that is part of item 3.
+  3. **No legal review. STILL OPEN — this alone keeps P0-1 open.**
+     The policy was written from repository evidence, not by counsel,
+     and claims no compliance with any law or store policy. Whether
+     the reduced public locality satisfies any publisher-address rule
+     is still unresolved (decision packet Section C item 8).
+     **[Session 142 addition]** The in-app link introduced a fourth
+     outbound behaviour and a third external host,
+     **duso201189-nxp.github.io** (GitHub Pages, hosted by GitHub,
+     Inc.). It is disclosed factually in `privacy/index.md`; whether
+     it must additionally be **classified** as third-party data
+     sharing on either store's form is **UNKNOWN / LEGAL REVIEW
+     REQUIRED**, and this document asserts no classification.
+  Terms of Use still does not exist in any form — also unresolved.
+  *Category C* for item 3 (external legal review); items 1 and 2 were
+  ordinary in-repo work and are now done. **P0-1 REMAINS OPEN.**
 - **P0-2** — Tanzil translation license legal review has not returned a
   result. *Category C* (external legal review).
 - **P0-3 — RESOLVED (re-verified Session 104, 2026-08-24, `origin/main`
@@ -383,9 +465,28 @@ exists), **[needs-external-verification]**, or
 
 ## P1 findings
 
-- **P1-1** — Apple Privacy Manifest (`PrivacyInfo.xcprivacy`) does not
-  exist. *Category B* — draftable once iOS signing work begins, but
-  requires Xcode/macOS integration to verify.
+- **P1-1 — PARTIALLY CLOSED WITH EVIDENCE, NOT VERIFIED (corrected
+  Session 142, 2026-08-28).** Originally recorded as "Apple Privacy
+  Manifest (`PrivacyInfo.xcprivacy`) does not exist" — that statement
+  went stale at Session 107 and is corrected here.
+  - **Closed with repository evidence:** the manifest exists at
+    `ios/Runner/PrivacyInfo.xcprivacy` (Session 107) and is wired into
+    `ios/Runner.xcodeproj/project.pbxproj` (Session 109) at lines
+    10, 63, 124, and 235 — PBXBuildFile, PBXFileReference, Runner
+    group, and the Runner target's Resources build phase respectively.
+  - **Still open, and not closable from this repository:** the
+    manifest has **never been Xcode-verified**. No `ios/Podfile.lock`
+    exists and no macOS/Xcode toolchain is available here, so Apple's
+    archive-time manifest-merge step has never run. Whether
+    `NSPrivacyAccessedAPITypes` needs entries for plugins that ship no
+    manifest of their own is therefore unresolved — absence of a
+    bundled plugin manifest is not evidence of absence of
+    Required-Reason API usage.
+  - **Separate and untouched:** Apple **App Privacy labels** (the App
+    Store Connect questionnaire) are **not** part of this item and
+    remain **OPEN** — see P1-2. Nothing here claims Apple approval,
+    App Store approval, or compliance.
+  *Category B/C* — the remaining work requires macOS + Xcode.
 - **P1-2** — Data safety (Play) / App Privacy (Apple) console forms not
   yet prepared. The underlying facts are known (local-only storage, no
   analytics) — *Category B*, drafting the form answers is safe, submitting

@@ -11,7 +11,7 @@ iOS bundle identifier `com.duso.qurancompanion`)
 
 **Effective date:** 27 August 2026
 
-**Last updated:** 27 August 2026
+**Last updated:** 28 August 2026
 
 This is the Privacy Policy for the Qur'an Companion application. It
 describes what the app does and does not do with your information.
@@ -100,7 +100,7 @@ off-device.
 
 ## Network activity
 
-Using the app can result in three kinds of outbound network activity.
+Using the app can result in four kinds of outbound network activity.
 The app initiates no others.
 
 1. **Downloading recitation audio.** When you play or download a
@@ -115,6 +115,13 @@ The app initiates no others.
    `https://tanzil.net`. If — and only if — you tap that link, the app
    asks your device to open that address in your browser or another
    app. The app itself sends nothing to tanzil.net.
+4. **Opening the Privacy Policy link.** The "About" section of the
+   Profile screen shows a link to this policy, at
+   `https://duso201189-nxp.github.io/quran-companion/privacy/`. If —
+   and only if — you tap that link, the app asks your device to open
+   that address in your browser or another app. The app itself sends
+   nothing to that address; it is your browser that then requests the
+   page from the GitHub Pages servers this policy is published on.
 
 In every case the request is made directly from your device to that
 website. It is not routed through any server operated by the developer,
@@ -156,13 +163,23 @@ processing or for that party's own use, no third party holds user data
 on the app's behalf, and no third party is in a position to apply a
 lower standard of protection to it than this policy states.
 
-The two websites your device may contact — **everyayah.com** (audio)
-and **tanzil.net** (only if you tap the credit link) — are independent
-services operated by other parties. They receive only the connection
-metadata inherent in the request, as described above. This policy does
-not, and cannot, make representations on their behalf: their own
-policies and practices govern what they do with the requests their
-servers receive.
+The three websites your device may contact — **everyayah.com**
+(audio), **tanzil.net** (only if you tap the credit link), and
+**duso201189-nxp.github.io** (only if you tap the in-app link to this
+policy) — are independent services operated by other parties. They
+receive only the connection metadata inherent in the request, as
+described above. This policy does not, and cannot, make representations
+on their behalf: their own policies and practices govern what they do
+with the requests their servers receive.
+
+**duso201189-nxp.github.io** is a GitHub Pages address: the page you
+are reading is published through GitHub Pages and served from GitHub's
+servers, operated by GitHub, Inc., not from any server run by the
+developer. Opening the in-app link therefore results in an ordinary web
+request from your browser to GitHub's servers, which receive the
+connection metadata described above. What GitHub does with that request
+is governed by GitHub's own policies, which this policy does not state,
+summarise, or make representations about.
 
 Other sources are credited in the app because their licences require
 attribution for content bundled with it — the Tanzil Project (Arabic
@@ -240,8 +257,9 @@ databases entirely.
 **Withdrawing consent.** Because the app collects nothing and sends no
 personal information anywhere, there is no ongoing data processing to
 withdraw consent from. To stop the app's outbound activity, stop
-playing or downloading audio and do not tap the Tanzil.net link; or
-uninstall the app. Deleting the app deletes the data.
+playing or downloading audio and do not tap the links the app shows —
+the Tanzil.net credit link, or the link to this policy; or uninstall
+the app. Deleting the app deletes the data.
 
 There is no "export my data" or "delete my account" feature, because
 there is no account and no server-side data — your data is in your own
