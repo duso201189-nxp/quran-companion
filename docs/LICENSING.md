@@ -55,7 +55,7 @@ kiện, và đánh giá rủi ro.
 | # | Nội dung | Nguồn | Giấy phép | Thương mại | Phân phối lại | Bắt buộc kèm |
 |---|---|---|---|---|---|---|
 | 1 | Văn bản Ả Rập Uthmani | Tanzil Project | Tanzil Terms of Use | **Không nêu** | Cho phép, **cấm sửa** | Ghi "Tanzil Project" + **link tanzil.net** |
-| 2 | Phiên âm Latin | Quran.com / QUL (Tarteel AI) | QUL không bảo đảm; chưa có tuyên bố của chủ dữ liệu | không rõ | không rõ | ghi nguồn |
+| 2 | Phiên âm Latin | **Quran.com QDC** (`api.qurancdn.com`) — xem đính chính Session 147 bên dưới | **CHƯA XÁC ĐỊNH** — kho mã không xác lập được giấy phép/sự cho phép phân phối lại từ thượng nguồn | không rõ | không rõ | ghi nguồn |
 | 3 | Bản dịch Việt (Rowwad) | QuranEnc.com | QuranEnc Terms (7 điều) | không nêu rõ | Cho phép có điều kiện | Ghi nhà phát hành + **QuranEnc.com** + **số phiên bản** |
 | 4 | Bản dịch Anh (Saheeh International) | Tanzil Project | Tanzil translations terms | **CẤM** — "for non-commercial purposes only" | Cho phép phi thương mại | Ghi nguồn; link nếu dùng >3 bản dịch |
 | 5 | Tafsir Al-Muyassar (ar) — ⚠ **KHÔNG có trên `main`** | نخبة من العلماء · **مجمع الملك فهد** (qua QUL) | chưa có phép | không rõ | **cần phép** | ghi نخبة من العلماء + KFGQPC |
@@ -100,8 +100,10 @@ kiện "hơn ba bản dịch" chưa áp dụng. Điều kiện phi thương mạ
 Điều 7 là một ràng buộc THỰC SỰ với bất kỳ mô hình quảng cáo nào sau
 này — đứng độc lập với `PROJ-P-005`.
 
-**Quran.com / QUL (Tarteel AI)** — FAQ chính thức
-(https://qul.tarteel.ai/faq) nói rõ, nguyên văn:
+**QUL (Tarteel AI)** — FAQ chính thức (https://qul.tarteel.ai/faq) nói
+rõ, nguyên văn. *(Nhãn sửa 2026-08-28, Session 147: trước đây ghi
+"Quran.com / QUL"; đây là FAQ của QUL, không phải điều khoản do
+Quran.com phát hành.)*
 
 > "The resources available on QUL vary in their copyright status. Some
 > are in the public domain, while others may be subject to specific
@@ -117,6 +119,15 @@ Nói cách khác: **QUL KHÔNG bảo đảm giấy phép cho bất kỳ bộ d�
 nào.** Nghĩa vụ rơi về đúng chủ sở hữu của từng bộ. Trước Sprint này
 dự án ghi "không xác minh được"; thực ra điều khoản CÓ và nó chuyển
 trách nhiệm sang chúng ta. Truy ngược từng bộ:
+
+> **Phạm vi của phần trích QUL ở trên (đánh dấu 2026-08-28, Session
+> 147).** Hai đoạn trích nguyên văn ngay trên là điều khoản **của QUL**,
+> dẫn từ FAQ **của QUL**, và chỉ áp dụng cho những bộ dữ liệu thực sự
+> lấy qua QUL. Trong ba bộ được truy ngược bên dưới, **bộ phiên âm Latin
+> KHÔNG lấy qua QUL** — nó được tải qua điểm cuối QDC của Quran.com
+> (`api.qurancdn.com`). Xem đính chính Session 147 ở tiểu mục "Phiên âm
+> Latin". Không được đọc điều khoản QUL như điều khoản chi phối bộ phiên
+> âm đó.
 
 ### Tafsir Ibn Kathir (Abridged, tiếng Anh) — RỦI RO CAO NHẤT
 
@@ -167,9 +178,68 @@ TÁC PHẨM (và còn sai chính tả: dùng ی U+06CC của tiếng Ba Tư thay
 
 ### Phiên âm Latin (Quran.com word-by-word)
 
-Dữ liệu do chính cộng đồng Quran.com/Tarteel tạo ra, không truy ngược
-về một nhà xuất bản bên thứ ba. Rủi ro thấp nhất trong ba bộ QUL,
-nhưng vẫn chưa có tuyên bố giấy phép rõ ràng.
+> ### ⚠ Đính chính 2026-08-28 (Session 147) — nguồn thật của bộ phiên âm đang phát hành
+>
+> Đoạn trước đây đứng ở chỗ này — *"Dữ liệu do chính cộng đồng
+> Quran.com/Tarteel tạo ra, không truy ngược về một nhà xuất bản bên thứ
+> ba. Rủi ro thấp nhất trong ba bộ QUL, nhưng vẫn chưa có tuyên bố giấy
+> phép rõ ràng"* — quy bộ dữ liệu này về **QUL**. Cách quy đó KHÔNG khớp
+> với bằng chứng trong kho mã.
+>
+> **SỰ THẬT.** Bộ phiên âm đang phát hành được tải qua **điểm cuối QDC
+> của Quran.com** (`api.qurancdn.com`), không qua QUL:
+>
+> - `tool/fetch_transliteration.py:30`–`:34` gọi
+>   `https://api.qurancdn.com/api/qdc/verses/by_chapter/{chapter}` với
+>   `word_fields=transliteration,text_uthmani`. Đây là đường lấy dữ liệu
+>   duy nhất của bộ phiên âm.
+> - Siêu dữ liệu trong chính database đang phát hành
+>   (`assets/database/quran.sqlite`, bảng `translation_sources`, dòng
+>   `code = 'translit_latin'`) ghi `name = 'Phiên âm Latin (Quran.com)'`,
+>   `author = 'Quran.com word-by-word transliteration'`,
+>   `source_url = 'https://quran.com'`, `version` = `updated_at` =
+>   `'2026-07-06'`.
+>
+> **Hệ quả:** **FAQ của QUL KHÔNG phải văn bản điều khoản chi phối** bộ
+> phiên âm đang phát hành. Phần trích FAQ của QUL ở mục "Nguyên văn điều
+> kiện" phía trên được **giữ nguyên** vì nó được dẫn nguồn chính xác và
+> vẫn áp dụng cho các bộ dữ liệu khác lấy qua QUL — nhưng nó không được
+> đọc như điều khoản của bộ phiên âm này.
+>
+> **SỰ THẬT.** Kho mã **không xác lập được** một giấy phép hoặc sự cho
+> phép phân phối lại dứt khoát từ thượng nguồn cho bộ dữ liệu này.
+> Trường `license` trong database ghi *"Quran.com/QUL community data —
+> ghi nguồn khi phân phối"*; chuỗi đó do **chính dự án tự đặt** (sao từ
+> `tool/data/transliteration.json`, do `tool/fetch_transliteration.py`
+> sinh ra) — **không** phải tuyên bố của Quran.com hay của bất kỳ chủ sở
+> hữu nào, và không được coi là căn cứ.
+>
+> **CHƯA XÁC ĐỊNH — CẦN Ý KIẾN CHUYÊN MÔN.** Giấy phép/sự cho phép nào
+> thực sự chi phối bộ dữ liệu này, và điều khoản nào có hiệu lực tại
+> **ngày tải 2026-07-06** ghi trong siêu dữ liệu, đều chưa được giải
+> quyết.
+>
+> Đính chính này **không** kết luận rằng Quran.com đã cho phép phân phối
+> lại, **không** kết luận rằng Quran.com cấm điều đó, và **không** khẳng
+> định có bất kỳ vi phạm nào. Nó chỉ sửa lại việc quy nguồn trong kho mã.
+>
+> **Không gọi đây là dữ liệu "AI".** "Tarteel AI" trong tài liệu cũ là
+> tên tổ chức vận hành QUL, không mô tả cách bộ phiên âm được tạo ra.
+> Kho mã không chứa bằng chứng nào cho thấy bộ dữ liệu này do mô hình
+> sinh ra, nên tài liệu này không gọi nó là dữ liệu "AI".
+>
+> Phân tích chi tiết (đường dẫn API đã dùng, biến đổi biên tập đã áp
+> dụng, khoảng trống bằng chứng, điểm lệch quản trị với `PROJ-P-005`):
+> `docs/release/SESSION_146_COPY_SHARE_LICENSING_PACKET.md` — đã có trên
+> `main` từ `953382b` (PR #48).
+>
+> Lưu ý: các nhãn "Quran.com/QUL" còn sót ở chỗ khác trong tài liệu này
+> (ví dụ trong khối kiểm chứng đề ngày của Session 137 ở mục 4) có TRƯỚC
+> đính chính này và được giữ nguyên như bản ghi lịch sử; chúng không phủ
+> nhận sự thật nêu ở đây.
+
+Ở mức sự thật kho mã: bộ phiên âm đến từ Quran.com QDC, và **vẫn chưa
+có tuyên bố giấy phép rõ ràng từ thượng nguồn.**
 
 > **Session 146 — chỉ dẫn tham chiếu, không phải kết luận mới.** Nguồn
 > gốc và điều kiện phân phối lại của bộ phiên âm này cần phân tích rộng
@@ -287,7 +357,7 @@ Software typefaces."
 | 1a | **Ibn Kathir (Abridged) là tác phẩm còn bản quyền của Darussalam** | **NGHIÊM TRỌNG** | CÒN TREO — cần phép bằng văn bản, HOẶC gỡ khỏi bản phát hành |
 | 1b | Ghi công Ibn Kathir sai (ghi tác giả thế kỷ 14 thay vì nhà xuất bản bản dịch) | **Cao** | CÒN TREO — sửa được ngay ở lần build dữ liệu kế tiếp |
 | 1c | Al-Muyassar: chủ sở hữu đã xác định (KFGQPC) nhưng chưa có phép | **Cao** | CÒN TREO — cần liên hệ KFGQPC |
-| 1d | Phiên âm Quran.com: chưa có tuyên bố giấy phép | Trung bình | CÒN TREO — rủi ro thấp nhất nhóm QUL |
+| 1d | Phiên âm Quran.com: chưa có tuyên bố giấy phép | Trung bình | CÒN TREO — bộ dữ liệu lấy qua QDC `api.qurancdn.com`, KHÔNG qua QUL; xem đính chính Session 147 ở mục 1 |
 | 2 | Giấy phép bản thu everyayah.com không xác minh được | **Cao** | CÒN TREO — đã có kênh liên hệ: quran.zendesk.com |
 | 3 | Saheeh International phi thương mại (`PROJ-P-005`) | Cao nếu thu phí | Đã ghi nhận, chặn mọi mô hình có phí |
 | 4 | QuranEnc điều 7 cấm quảng cáo không phù hợp | Trung bình | Đã ghi nhận, chặn mô hình quảng cáo |
