@@ -185,10 +185,17 @@ Other sources are credited in the app because their licences require
 attribution for content bundled with it — the Tanzil Project (Arabic
 Qur'an text and the Saheeh International English translation),
 QuranEnc.com (Vietnamese translation by the Rowwad Translation Center),
-Quran.com / QUL (transliteration), and the King Fahd Glorious Qur'an
-Printing Complex (the UthmanicHafs font). These are content-attribution
-relationships only. That content ships inside the app; those
-organisations receive no data from the app and are not contacted by it.
+and the King Fahd Glorious Qur'an Printing Complex (the UthmanicHafs
+font). The bundled Latin transliteration is identified here for
+transparency rather than under any established licence term: it was
+obtained from Quran.com's QDC interface (api.qurancdn.com) when the
+app's content database was built, before release; it is not at present
+named individually in the app's own attribution line; and the governing
+licence or permission for that dataset has not been established — this
+policy does not state, summarise, or make representations about it.
+These are content-attribution relationships only. That content ships
+inside the app; those organisations receive no data from the app and
+are not contacted by it.
 
 ## No advertising, analytics, or tracking
 
