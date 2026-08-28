@@ -8,12 +8,99 @@ they deserve different levels of trust:
 
 - **Facts about this repository** — measured directly today (content
   database queried, licences read from `translation_sources`, schema
-  inspected). Trust these.
+  inspected). Trust these. ⚠ **[Scope corrected 2026-08-28, Session
+  157A — see the correction block below.]** "Trust these" covers what
+  was *measured*: that a `translation_sources.license` string exists,
+  and what it says. It does **not** extend to reading that string as
+  authoritative **upstream** licensing evidence. For the
+  transliteration row the string is project-authored metadata written
+  by this repository's own pipeline, not a grant by any rights holder.
 - **Claims about competitor apps** — from my knowledge as of early 2026,
   not freshly researched. The *structural* conclusions (what categories
   of value are unserved) are durable; the *feature-level* specifics
   ("app X does Y") should be verified before anyone acts on them
   commercially. I have marked the load-bearing ones.
+
+> ### ⚠ Correction 2026-08-28 (Session 157A) — transliteration source and licensing claims
+>
+> This block corrects four claims made below about the shipped Latin
+> transliteration dataset. It is a **documentation correction only**.
+>
+> **What this correction does NOT conclude.** It does **not** establish
+> that permission exists. It does **not** establish that permission is
+> denied. It does **not** establish that redistribution is permitted, and
+> does **not** establish that redistribution is prohibited. It does
+> **not** declare the dataset legally cleared, and it does **not**
+> conclude that any violation has occurred. It makes no legal
+> determination of any kind, resolves no open item, and closes nothing.
+>
+> **1. Source identity — corrected.** The shipped transliteration is
+> **not** obtained through QUL (Tarteel AI). It is fetched through
+> **Quran.com's QDC endpoint**, `api.qurancdn.com`:
+>
+> - `tool/fetch_transliteration.py:30`–`:34` calls
+>   `https://api.qurancdn.com/api/qdc/verses/by_chapter/{chapter}` with
+>   `?words=true&word_fields=transliteration,text_uthmani`. This is the
+>   dataset's only fetch path.
+> - The shipped database (`assets/database/quran.sqlite`, table
+>   `translation_sources`, row `code = 'translit_latin'`) records
+>   `name = 'Phiên âm Latin (Quran.com)'`, `author = 'Quran.com
+>   word-by-word transliteration'`, `source_url = 'https://quran.com'`,
+>   `version` = `updated_at` = `'2026-07-06'`.
+>
+> **QDC and QUL are distinct and must not be conflated.** QUL's FAQ is
+> **not** the governing terms document for this dataset; it continues to
+> govern datasets actually obtained through QUL. This brings the document
+> into agreement with the Session 147 correction in `docs/LICENSING.md`
+> §1 and with U3 / Q3 of
+> `docs/release/TANZIL_LEGAL_REVIEW_PACKET.md`. Neither of those files,
+> nor `docs/release/SESSION_146_COPY_SHARE_LICENSING_PACKET.md`, nor
+> `privacy/index.md`, is modified by this session.
+>
+> **2. "Data already licensed and in hand" — RETRACTED.** Finding 1's
+> transliteration row previously asserted *"Unblocked. Data already
+> licensed and in hand; only the pipeline discards the structure."* The
+> repository establishes no such licence. That clause is **withdrawn** as
+> an unsupported licensing conclusion. What the repository does support
+> is only mechanical: the data was fetched word-by-word and is stored
+> flattened per ayah.
+>
+> **3. The database `license` field is not upstream licensing evidence.**
+> The epistemic note above previously invited the reader to trust
+> "licences read from `translation_sources`" as measured repository fact.
+> The *existence and contents* of that field are indeed measurable; what
+> it cannot be read as is an upstream grant. For the transliteration row
+> the stored value is *"Quran.com/QUL community data — ghi nguồn khi
+> phân phối"* (read from `assets/database/quran.sqlite`, and quoted
+> identically in `docs/LICENSING.md` §1). That value is
+> **project-authored**: it is a hard-coded literal in this repository's
+> own fetch script (`tool/fetch_transliteration.py:206`–`:207`), copied
+> into `tool/data/transliteration.json` and from there into the shipped
+> database. It is not a statement by Quran.com or by any other rights
+> holder, and it is not authority for anything. Note that §0's Finding 2
+> block below renders this value in English — see the scope marker there.
+>
+> **4. "Need no new licence" — corrected.** The §5 roadmap claim that
+> five of six word-level capabilities "need no new licence" is not
+> supported for the transliteration capability. Which licence or
+> permission actually governs the QDC transliteration — and which terms
+> were in force at the `2026-07-06` fetch date recorded in the shipped
+> metadata — remains **CHƯA XÁC ĐỊNH / UNKNOWN — COUNSEL REQUIRED**.
+>
+> **What is unaffected.** Finding 1's *QAC/morphology* analysis stands:
+> the QDC transliteration is genuinely not governed by the QAC lexicon
+> licence, which is the question that column asks. This correction does
+> not touch the independently supported positions on the Tanzil Arabic
+> text, the Tanzil / Saheeh International English translation, QuranEnc,
+> EveryAyah, or the KFGQPC font, and it does not weaken or reinterpret
+> any existing legal constraint — `PROJ-P-005` included. **P0-2, P1-4
+> and P2-2 all remain OPEN**; no status label in this document is
+> changed.
+>
+> **Historical wording is preserved, not erased.** The superseded
+> sentences are quoted — in this block and at their original locations —
+> and marked as historical. They are retained solely as an audit trail
+> and are **not** current statements of fact.
 
 ---
 
@@ -32,7 +119,7 @@ things**, and only one is blocked:
 | Capability | Needs QAC/morphology licence? | Status |
 |---|---|---|
 | Word **segmentation** (token boundaries, positions) | **No** — derivable from the Uthmani text already shipped | Unblocked. `basmalah.dart` already does exactly this, splitting on spaces. |
-| Word **transliteration** | **No** — already sourced word-by-word from Quran.com/QUL, then *flattened to per-ayah* in the pipeline | Unblocked. Data already licensed and in hand; only the pipeline discards the structure. |
+| Word **transliteration** | **No** — already sourced word-by-word from **Quran.com QDC** (`api.qurancdn.com`), then *flattened to per-ayah* in the pipeline | **Pipeline**-unblocked: the word-level structure exists upstream and only the pipeline discards it. **Licensing is a separate and open question — UNKNOWN / COUNSEL REQUIRED.** ⚠ **[Corrected 2026-08-28, Session 157A]** this row previously read "already sourced word-by-word from Quran.com/QUL" and "Unblocked. Data already licensed and in hand" (quoted as historical wording, not current fact): the source is QDC, not QUL, and the licence claim is **retracted**. See the correction block above. |
 | Word **audio timing** (segment timings per reciter) | **No** — separate published datasets, separate terms | Unblocked, pending sourcing. |
 | Word-by-word **translation** | **No** — separate datasets under their own terms | Unblocked, pending sourcing. |
 | Word **morphology** (root, lemma, grammar) | **Yes** | Blocked on 2026-08-24. |
@@ -56,6 +143,28 @@ vi_main   → "QuranEnc — use with attribution, see quranenc.com"
 translit  → "Quran.com/QUL community data — attribution on distribution"
 arabic    → "Tanzil Terms — distribute verbatim, attribution + link"
 ```
+
+> ⚠ **Scope of the block above (marked 2026-08-28, Session 157A — the
+> block itself is left exactly as written).** Two things about it.
+>
+> **It is this document's own English rendering of the database's
+> `translation_sources.license` column, not a verbatim transcript of it.**
+> The stored `translit_latin` value is *"Quran.com/QUL community data —
+> ghi nguồn khi phân phối"*, as quoted in `docs/LICENSING.md` §1. The
+> block is preserved unedited as the historical wording; it should not be
+> cited as the literal column contents.
+>
+> **Whatever the column says, it is not an upstream licence grant.** The
+> `translit` line in particular is **not** evidence of a grant by
+> Quran.com: that value is project-authored, hard-coded in this
+> repository's own `tool/fetch_transliteration.py:206`–`:207`. Its
+> "Quran.com/QUL" wording is additionally **stale as to source** — the
+> dataset comes through Quran.com QDC (`api.qurancdn.com`), not QUL. The
+> licence or permission governing that dataset remains **UNKNOWN —
+> COUNSEL REQUIRED**; see the correction block at the top of this
+> document. The `en_sahih` non-commercial reading below is unaffected by
+> this marker and rests on the Tanzil terms, quoted independently in
+> `docs/LICENSING.md`.
 
 The English translation ships under an explicitly **non-commercial**
 licence. Any paid tier — subscription, one-time purchase, institutional
@@ -171,7 +280,13 @@ Assessed honestly; flattery here would be useless.
 7. **Multiple qira'āt / riwāyāt** — Hafs only.
 8. **Reciter breadth** — 5 vs dozens.
 9. **Word-by-word display** — Quran.com's is excellent; ours is blocked
-   only by pipeline work (Finding 1), not by licensing.
+   by pipeline work (Finding 1). ⚠ **[Corrected 2026-08-28, Session
+   157A]** This item previously read *"ours is blocked only by pipeline
+   work (Finding 1), not by licensing"* — quoted as historical wording,
+   not as a current statement. Pipeline work is what blocks *rendering*
+   word-by-word; the licence or permission governing the Quran.com QDC
+   transliteration is a separate question and remains **UNKNOWN —
+   COUNSEL REQUIRED**.
 
 Deliberately **not** listed as gaps: prayer times, qibla, duas, halal
 restaurant finders, hijri calendars. Muslim Pro owns that bundle and
@@ -306,9 +421,19 @@ Making the **word (token)** addressable is *one* change that unlocks
 5. **Tap a word → meaning → add to study list** (the study/read loop)
 6. Precise memorization loops (repeat *this phrase*, not this ayah)
 
-Per Finding 1, five of those six need no new licence. This is
-infrastructure that *directly unlocks product value* — the exact
-exception the strategy brief allows.
+Per Finding 1, five of those six are unblocked by the **QAC/morphology**
+licence specifically. ⚠ **[Corrected 2026-08-28, Session 157A]** This
+sentence previously read *"Per Finding 1, five of those six need no new
+licence"* — quoted as historical wording, not as a current statement.
+That was too broad. Finding 1 supports only the narrower point that
+these capabilities do not depend on the QAC lexicon licence; it does
+**not** establish that no other licence or permission is required. For
+capability 1 in particular, the licence or permission governing the
+Quran.com QDC transliteration remains **CHƯA XÁC ĐỊNH / UNKNOWN —
+COUNSEL REQUIRED**, and the transliteration licensing question is open
+pending legal / counsel review — see the correction block at the top of
+this document. This is infrastructure that *directly unlocks product
+value* — the exact exception the strategy brief allows.
 
 **The conceptual model** (four ideas, no implementation):
 
@@ -455,7 +580,7 @@ addressability foundation that Phase 5 depends on.
 |---|---|---|
 | E4.1 | **Beta launch readiness** — store assets, privacy policy, translation legal review, real-device a11y pass, Android performance measurement, version bump | The existing R3/R4/R5 work |
 | E4.2 | **Audio completion** — background playback, lock-screen/media-session controls, cache management UI | Highest user-value-per-hour item on the board |
-| E4.3 | **Word addressability foundation** — token segmentation, word-transliteration re-derivation, reciter segment-timing ingestion | Infrastructure that directly unlocks product value; unblocked by Finding 1 |
+| E4.3 | **Word addressability foundation** — token segmentation, word-transliteration re-derivation, reciter segment-timing ingestion | Infrastructure that directly unlocks product value; unblocked by Finding 1 **as corrected 2026-08-28 (Session 157A)** — that is, unblocked by the QAC/morphology licence. The licence or permission governing the Quran.com QDC transliteration is a separate open question (**UNKNOWN — COUNSEL REQUIRED**) |
 | E4.4 | **Tafsīr v1** — one well-licensed work, ayah-linked | Start licensing now; lead time is the risk, not engineering |
 | E4.5 | **Lexicon resolution** — decide on 2026-08-24, don't drift | Decide, then act; do not extend |
 | E4.6 | **Translation licensing for commerce** — see §7 | Long lead time; must start in Phase 4 even though revenue is Phase 6 |
