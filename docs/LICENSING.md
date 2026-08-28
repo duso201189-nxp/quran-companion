@@ -22,10 +22,33 @@ khoản của chính nguồn** hoặc **trích từ metadata nhúng trong file**
 ngày 2026-07-26. Chỗ nào không tìm được điều khoản chính thức thì ghi
 thẳng là KHÔNG XÁC MINH ĐƯỢC — không suy đoán.
 
-Màn hình Ghi nguồn trong app (Hồ sơ → Nguồn dữ liệu) đọc thẳng từ
-database, nên nó không thể lệch với dữ liệu đang phát hành. Tài liệu
-này là phần điều khoản mà database KHÔNG chứa: nguyên văn điều kiện,
-và đánh giá rủi ro.
+> ### ⚠ Đính chính 2026-08-28 (Session 146) — kiến trúc màn hình Ghi nguồn
+>
+> Câu trước đây đứng ở chỗ này — *"Màn hình Ghi nguồn trong app (Hồ sơ →
+> Nguồn dữ liệu) đọc thẳng từ database, nên nó không thể lệch với dữ
+> liệu đang phát hành"* — **KHÔNG đúng với `main` `155845a`**. Kiến trúc
+> đã kiểm chứng trực tiếp trong mã nguồn:
+>
+> - Phần ghi nguồn hiển thị ở Hồ sơ là một **chuỗi ARB đã bản địa hoá**,
+>   viết cứng riêng cho từng ngôn ngữ: `aboutSourcesDetail` ở
+>   `lib/l10n/app_vi.arb:222`, `app_en.arb:222`, `app_ar.arb:222`; được
+>   dựng ra màn hình ở
+>   `lib/features/profile/presentation/profile_screen.dart:133-134`.
+> - **`getEnabledSources()` KHÔNG phải nguồn của màn hình này.** Hàm này
+>   khai báo ở `lib/features/quran/domain/repositories/quran_repository.dart:16`
+>   và hiện thực ở `lib/features/quran/data/quran_repository_impl.dart:56`,
+>   nhưng trên `main` nó **không có nơi gọi nào trong `lib/`** — chỉ các
+>   test gọi tới.
+> - **Hệ quả:** phần ghi nguồn hiển thị **CÓ THỂ lệch** khỏi siêu dữ liệu
+>   nguồn nằm trong database (`translation_sources`, `meta`). Không có cơ
+>   chế nào trong mã ràng buộc hai bên với nhau.
+>
+> Đính chính này chỉ nêu sự thật kiến trúc; nó **không** kết luận rằng
+> chuỗi ARB hiện tại đủ hay không đủ để thỏa bất kỳ điều kiện ghi nguồn
+> nào của bên cấp phép.
+
+Tài liệu này là phần điều khoản mà database KHÔNG chứa: nguyên văn điều
+kiện, và đánh giá rủi ro.
 
 ## 1. Nội dung trong `assets/database/quran.sqlite`
 
@@ -148,6 +171,13 @@ Dữ liệu do chính cộng đồng Quran.com/Tarteel tạo ra, không truy ng�
 về một nhà xuất bản bên thứ ba. Rủi ro thấp nhất trong ba bộ QUL,
 nhưng vẫn chưa có tuyên bố giấy phép rõ ràng.
 
+> **Session 146 — chỉ dẫn tham chiếu, không phải kết luận mới.** Nguồn
+> gốc và điều kiện phân phối lại của bộ phiên âm này cần phân tích rộng
+> hơn phạm vi một đính chính tài liệu, và **không** được quyết ở đây. Hồ
+> sơ dẫn chứng đầy đủ (đường dẫn API đã dùng, biến đổi biên tập đã áp
+> dụng, khoảng trống bằng chứng, và điểm lệch quản trị với `PROJ-P-005`)
+> nằm ở `docs/release/SESSION_146_COPY_SHARE_LICENSING_PACKET.md`.
+
 ## 2. Audio (phát trực tuyến, không đóng gói)
 
 | Nội dung | Nguồn | Giấy phép | Ghi chú |
@@ -170,9 +200,36 @@ GIẢ ĐỊNH THẬN TRỌNG do dự án tự đặt, không phải trích dẫn
 ## 3. Phông chữ đóng gói trong APK
 
 Trích thẳng từ bảng `name` của file `.ttf` (id 0 = bản quyền,
-id 13 = mô tả giấy phép). Văn bản đầy đủ nằm trong `assets/licenses/`
-và hiển thị qua `showLicensePage` (Hồ sơ → Nguồn dữ liệu → Giấy phép
-phần mềm & phông chữ).
+id 13 = mô tả giấy phép).
+
+> ### ⚠ Đính chính 2026-08-28 (Session 146) — nơi chứa văn bản giấy phép
+>
+> Câu trước đây đứng ở chỗ này — *"Văn bản đầy đủ nằm trong
+> `assets/licenses/` và hiển thị qua `showLicensePage` (Hồ sơ → Nguồn dữ
+> liệu → Giấy phép phần mềm & phông chữ)"* — **KHÔNG đúng với `main`
+> `155845a`**. Sự thật kho mã, đã kiểm chứng trực tiếp:
+>
+> - **Thư mục `assets/licenses/` KHÔNG tồn tại trên `main`.** `assets/`
+>   chỉ có `assets/database/` và `assets/fonts/`. `pubspec.yaml:56-57`
+>   khai báo đúng **một** asset duy nhất: `assets/database/quran.sqlite`.
+> - **KHÔNG có hiện thực `showLicensePage` / `LicenseRegistry` nào trên
+>   `main`** — không tệp nào trong `lib/` nhắc tới hai định danh này.
+> - Chuỗi `assets/licenses/Amiri-OFL.txt` xuất hiện **đúng một lần** trong
+>   toàn kho mã, tại `test/repository_boundary_test.dart:313`. Đó là một
+>   **đường dẫn GIẢ ĐỊNH trong danh sách `shouldPass` của cổng CI** — nó
+>   chứng minh cổng ranh giới không chặn nhầm dạng đường dẫn ấy; nó
+>   **không** chứng minh tệp tồn tại.
+> - Thứ **thực sự** có trên `main` là **siêu dữ liệu trong bảng `name` của
+>   chính các tệp `.ttf`** — tức đúng những gì bảng ngay dưới đây trích ra,
+>   và không có gì khác.
+>
+> **Tài liệu này KHÔNG khẳng định** rằng siêu dữ liệu `name` nhúng trong
+> font là đủ về mặt pháp lý để thỏa điều kiện thông báo giấy phép của
+> OFL 1.1 hay của EULA KFGQPC. Đó là câu hỏi CHƯA XÁC ĐỊNH — xem đính
+> chính ở cuối mục này và rủi ro 5 ở mục 4.
+>
+> Đính chính này **không đề xuất UI thay thế**: chọn cơ chế hiển thị giấy
+> phép là quyết định kỹ thuật/chủ dự án, không phải một sửa lỗi tài liệu.
 
 | Font | Bản quyền | Giấy phép | Thương mại | Sửa đổi |
 |---|---|---|---|---|
@@ -194,8 +251,34 @@ chứa font — một điểm mơ hồ cần hỏi KFGQPC trước khi thu phí.
 
 **OFL 1.1** bắt buộc: "The above copyright notice and this license
 notice shall be included in all copies of one or more of the Font
-Software typefaces." Trước Sprint 33.0 app KHÔNG kèm thông báo nào —
-đây là vi phạm giấy phép đã tồn tại suốt và nay đã sửa.
+Software typefaces."
+
+> ### ⚠ Đính chính 2026-08-28 (Session 146) — "đã sửa Sprint 33.0" không đúng với `main`
+>
+> Câu trước đây đứng ở chỗ này — *"Trước Sprint 33.0 app KHÔNG kèm thông
+> báo nào — đây là vi phạm giấy phép đã tồn tại suốt và nay đã sửa"* — mô
+> tả một biện pháp khắc phục **không có mặt trên `main`**. Tách rõ ba
+> việc khác nhau:
+>
+> 1. **Biện pháp khắc phục CÓ TỒN TẠI trong lịch sử.** Commit `bb445ef`
+>    ("Sprint 35.0: Release Candidate engineering and distribution
+>    readiness", 2026-07-26) thêm 4 tệp `assets/licenses/*.txt`
+>    (Amiri-OFL, Inter-OFL, NotoNaskhArabic-OFL, UthmanicHafs-KFGQPC-EULA),
+>    `lib/core/licenses/bundled_font_licenses.dart` — hàm
+>    `registerBundledFontLicenses()` gọi `LicenseRegistry.addLicense()` —
+>    và `test/font_licenses_test.dart`.
+> 2. **`bb445ef` KHÔNG phải tổ tiên của `main`.** Đã kiểm chứng:
+>    `git merge-base --is-ancestor bb445ef origin/main` trả về SAI. Commit
+>    này chỉ nằm trên `sprint1-my-library` và
+>    `ci/dataset-verification-workflow`.
+> 3. **Do đó phần "nay đã sửa" KHÔNG đúng với `main`.** Trên `main` không
+>    có tệp văn bản giấy phép nào và không có cơ chế đăng ký giấy phép nào.
+>
+> Thứ còn lại trên `main` là siêu dữ liệu bảng `name` nhúng trong chính
+> các tệp `.ttf`. **Tài liệu này KHÔNG kết luận** siêu dữ liệu ấy có tự nó
+> thỏa điều kiện thông báo của OFL 1.1 hay không. Đó là **câu hỏi pháp lý
+> CHƯA XÁC ĐỊNH (cần ý kiến chuyên môn)** — không giải được bằng suy luận
+> trong kho mã, và đính chính này không giải nó.
 
 ## 4. Kết luận rủi ro
 
@@ -208,9 +291,16 @@ Software typefaces." Trước Sprint 33.0 app KHÔNG kèm thông báo nào —
 | 2 | Giấy phép bản thu everyayah.com không xác minh được | **Cao** | CÒN TREO — đã có kênh liên hệ: quran.zendesk.com |
 | 3 | Saheeh International phi thương mại (`PROJ-P-005`) | Cao nếu thu phí | Đã ghi nhận, chặn mọi mô hình có phí |
 | 4 | QuranEnc điều 7 cấm quảng cáo không phù hợp | Trung bình | Đã ghi nhận, chặn mô hình quảng cáo |
-| 5 | OFL thiếu thông báo giấy phép | Trung bình | **ĐÃ SỬA** Sprint 33.0 |
+| 5 | OFL thiếu thông báo giấy phép | Trung bình | **CÒN TREO trên `main`** — biện pháp khắc phục nằm ở `bb445ef`, không phải tổ tiên của `main`; xem đính chính Session 146 ở mục 3 |
 | 6 | Thiếu màn hình ghi nguồn | Trung bình | **ĐÃ SỬA** Sprint 33.0 |
 | 7 | KFGQPC mơ hồ với app có phí | Thấp (miễn phí) | Ghi nhận, chỉ quan trọng khi thu phí |
+
+> **Session 146 — bảng rủi ro trên KHÔNG bao gồm hành vi Sao chép/Chia
+> sẻ.** Bảng này chỉ đánh giá nội dung **đóng gói kèm app**. Việc app
+> phát nội dung ra NGOÀI qua chức năng Sao chép/Chia sẻ là một diện phân
+> phối lại riêng, chưa từng được đánh giá ở tài liệu này, và **không**
+> được kết luận ở đây. Hồ sơ leo thang dành cho chủ dự án/luật sư:
+> `docs/release/SESSION_146_COPY_SHARE_LICENSING_PACKET.md`.
 
 Không rủi ro nào ở nhóm 1-2 **đóng được bằng cách viết mã**. Chúng cần
 câu trả lời từ người giữ quyền.
