@@ -1066,6 +1066,12 @@ abstract class AppLocalizations {
   /// **'Văn bản Ả Rập & bản dịch: Tanzil.net · QuranEnc.com. Audio: EveryAyah.com. Font: KFGQPC (King Fahd Complex).'**
   String get aboutSourcesDetail;
 
+  /// No description provided for @privacyPolicy.
+  ///
+  /// In vi, this message translates to:
+  /// **'Chính sách quyền riêng tư'**
+  String get privacyPolicy;
+
   /// No description provided for @versionLabel.
   ///
   /// In vi, this message translates to:

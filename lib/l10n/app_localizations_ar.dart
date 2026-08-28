@@ -514,6 +514,9 @@ class AppLocalizationsAr extends AppLocalizations {
       'النص العربي والترجمات: Tanzil.net · QuranEnc.com. الصوت: EveryAyah.com. الخط: مجمع الملك فهد.';
 
   @override
+  String get privacyPolicy => 'سياسة الخصوصية';
+
+  @override
   String get versionLabel => 'الإصدار';
 
   @override

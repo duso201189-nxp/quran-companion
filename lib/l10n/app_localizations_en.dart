@@ -517,6 +517,9 @@ class AppLocalizationsEn extends AppLocalizations {
       'Arabic text & translations: Tanzil.net · QuranEnc.com. Audio: EveryAyah.com. Font: KFGQPC (King Fahd Complex).';
 
   @override
+  String get privacyPolicy => 'Privacy Policy';
+
+  @override
   String get versionLabel => 'Version';
 
   @override

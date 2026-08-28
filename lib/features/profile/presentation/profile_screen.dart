@@ -135,6 +135,10 @@ class ProfileScreen extends ConsumerWidget {
             isThreeLine: true,
           ),
           ListTile(
+            leading: const Icon(Icons.privacy_tip_outlined),
+            title: _PrivacyPolicyLink(label: l10n.privacyPolicy),
+          ),
+          ListTile(
             leading: const Icon(Icons.info_outline_rounded),
             title: Text(l10n.versionLabel),
             subtitle: Text(
@@ -149,6 +153,21 @@ class ProfileScreen extends ConsumerWidget {
         ],
       ),
     );
+  }
+}
+
+/// Mở một đích NGOÀI cố định bằng `url_launcher` — cơ chế duy nhất của
+/// app cho liên kết ngoài (dựng từ Session 134 cho liên kết Tanzil).
+///
+/// Đích luôn là hằng số biên dịch trong file này, KHÔNG bao giờ dựng từ
+/// input người dùng. Nuốt lỗi thay vì crash: `launchUrl` ném
+/// PlatformException (hoặc lỗi tuỳ nền tảng) khi máy không có handler
+/// nào mở được https.
+Future<void> _launchExternal(Uri uri) async {
+  try {
+    await launchUrl(uri, mode: LaunchMode.externalApplication);
+  } catch (_) {
+    // Không có trình duyệt/handler để mở — im lặng bỏ qua, không crash.
   }
 }
 
@@ -186,16 +205,7 @@ class _SourcesAttributionState extends State<_SourcesAttribution> {
     super.dispose();
   }
 
-  Future<void> _openTanzil() async {
-    // Đích cố định, không dựng từ input người dùng (Phase 6). Nuốt lỗi
-    // thay vì crash nếu máy không có gì mở được https — launchUrl ném
-    // PlatformException/ném lỗi tuỳ nền tảng khi không tìm được handler.
-    try {
-      await launchUrl(_tanzilUri, mode: LaunchMode.externalApplication);
-    } catch (_) {
-      // Không có trình duyệt/handler để mở — im lặng bỏ qua, không crash.
-    }
-  }
+  Future<void> _openTanzil() => _launchExternal(_tanzilUri);
 
   @override
   Widget build(BuildContext context) {
@@ -224,6 +234,65 @@ class _SourcesAttributionState extends State<_SourcesAttribution> {
           ),
           if (after.isNotEmpty) TextSpan(text: after),
         ],
+      ),
+    );
+  }
+}
+
+/// Liên kết "Chính sách quyền riêng tư" trong mục Giới thiệu.
+///
+/// Chính sách đã công bố công khai (Session 137) phải truy cập được từ
+/// BÊN TRONG app, không chỉ từ trang cửa hàng — xem
+/// `docs/release/V1_STORE_LEGAL_READINESS.md`. Đây là phần hiện thực kỹ
+/// thuật của yêu cầu đó; nó KHÔNG phải kết luận pháp lý về nội dung
+/// chính sách (khâu rà soát pháp lý vẫn đang mở).
+///
+/// Dùng lại đúng khuôn TextSpan + [TapGestureRecognizer] của liên kết
+/// Tanzil: `RenderParagraph` tự phát ra MỘT node semantics con mang cờ
+/// `isLink` kèm hành động tap, nên không bọc thêm `Semantics` (bọc thêm
+/// sẽ sinh node trùng, TalkBack/VoiceOver đọc lặp).
+class _PrivacyPolicyLink extends StatefulWidget {
+  const _PrivacyPolicyLink({required this.label});
+
+  /// Nhãn đã dịch (`l10n.privacyPolicy`) — không hard-code chuỗi hiển thị.
+  final String label;
+
+  @override
+  State<_PrivacyPolicyLink> createState() => _PrivacyPolicyLinkState();
+}
+
+class _PrivacyPolicyLinkState extends State<_PrivacyPolicyLink> {
+  /// URL chuẩn tắc của chính sách đã công bố (hiệu lực 27/08/2026).
+  /// Hằng số cố định, không ghép chuỗi, không nhận từ input.
+  static final Uri _privacyPolicyUri = Uri.parse(
+    'https://duso201189-nxp.github.io/quran-companion/privacy/',
+  );
+
+  late final TapGestureRecognizer _recognizer;
+
+  @override
+  void initState() {
+    super.initState();
+    _recognizer = TapGestureRecognizer()
+      ..onTap = () => _launchExternal(_privacyPolicyUri);
+  }
+
+  @override
+  void dispose() {
+    _recognizer.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Text.rich(
+      TextSpan(
+        text: widget.label,
+        recognizer: _recognizer,
+        style: TextStyle(
+          color: Theme.of(context).colorScheme.primary,
+          decoration: TextDecoration.underline,
+        ),
       ),
     );
   }

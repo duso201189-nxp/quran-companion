@@ -220,6 +220,7 @@
   "sectionAbout": "About",
   "aboutSources": "Data sources",
   "aboutSourcesDetail": "Arabic text & translations: Tanzil.net · QuranEnc.com. Audio: EveryAyah.com. Font: KFGQPC (King Fahd Complex).",
+  "privacyPolicy": "Privacy Policy",
   "versionLabel": "Version",
   "audioError": "Playback failed. Check your connection.",
   "audioLoading": "Loading audio...",

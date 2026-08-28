@@ -220,6 +220,7 @@
   "sectionAbout": "حول",
   "aboutSources": "مصادر البيانات",
   "aboutSourcesDetail": "النص العربي والترجمات: Tanzil.net · QuranEnc.com. الصوت: EveryAyah.com. الخط: مجمع الملك فهد.",
+  "privacyPolicy": "سياسة الخصوصية",
   "versionLabel": "الإصدار",
   "audioError": "تعذر التشغيل. تحقق من الاتصال.",
   "audioLoading": "جارٍ تحميل الصوت...",
