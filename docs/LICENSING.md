@@ -197,8 +197,11 @@ TÁC PHẨM (và còn sai chính tả: dùng ی U+06CC của tiếng Ba Tư thay
 >   (`assets/database/quran.sqlite`, bảng `translation_sources`, dòng
 >   `code = 'translit_latin'`) ghi `name = 'Phiên âm Latin (Quran.com)'`,
 >   `author = 'Quran.com word-by-word transliteration'`,
->   `source_url = 'https://quran.com'`, `version` = `updated_at` =
->   `'2026-07-06'`.
+>   `source_url = 'https://quran.com'`, `version = '2026-07-06'` (ngày
+>   tải). Tại thời điểm Session 147, `updated_at` cũng là `'2026-07-06'`;
+>   sau lần dựng lại CSDL của Session 162 nó là `'2026-08-29'` — đó là
+>   dấu thời gian dựng bản, **không** phải ngày tải dữ liệu, vốn không
+>   đổi.
 >
 > **Hệ quả:** **FAQ của QUL KHÔNG phải văn bản điều khoản chi phối** bộ
 > phiên âm đang phát hành. Phần trích FAQ của QUL ở mục "Nguyên văn điều
@@ -208,8 +211,12 @@ TÁC PHẨM (và còn sai chính tả: dùng ی U+06CC của tiếng Ba Tư thay
 >
 > **SỰ THẬT.** Kho mã **không xác lập được** một giấy phép hoặc sự cho
 > phép phân phối lại dứt khoát từ thượng nguồn cho bộ dữ liệu này.
-> Trường `license` trong database ghi *"Quran.com/QUL community data —
-> ghi nguồn khi phân phối"*; chuỗi đó do **chính dự án tự đặt** (sao từ
+> Trường `license` trong database ghi, **tại thời điểm Session 147**,
+> *"Quran.com/QUL community data — ghi nguồn khi phân phối"* (trích lại
+> làm dấu vết lịch sử; giá trị đó đã được sửa ở nguồn trong Session 161
+> và đồng bộ vào CSDL phát hành trong Session 162 — xem khối ngay dưới,
+> nay là *"UNKNOWN — COUNSEL REQUIRED"*). Dù là giá trị cũ hay mới,
+> chuỗi đó do **chính dự án tự đặt** (sao từ
 > `tool/data/transliteration.json`, do `tool/fetch_transliteration.py`
 > sinh ra) — **không** phải tuyên bố của Quran.com hay của bất kỳ chủ sở
 > hữu nào, và không được coi là căn cứ.
@@ -237,6 +244,48 @@ TÁC PHẨM (và còn sai chính tả: dùng ی U+06CC của tiếng Ba Tư thay
 > (ví dụ trong khối kiểm chứng đề ngày của Session 137 ở mục 4) có TRƯỚC
 > đính chính này và được giữ nguyên như bản ghi lịch sử; chúng không phủ
 > nhận sự thật nêu ở đây.
+
+> ### ⚠ Đồng bộ 2026-08-29 (Session 162) — CSDL phát hành đã khớp nguồn
+>
+> Session 161 sửa siêu dữ liệu ở **nguồn** (`tool/fetch_transliteration.py`,
+> `tool/data/transliteration.json`) nhưng chưa dựng lại
+> `assets/database/quran.sqlite`, nên tệp phát hành vẫn mang chuỗi cũ.
+> Session 162 dựng lại CSDL bằng đúng pipeline tài liệu hóa
+> (`tool/build_quran_db.py`) và thay tệp phát hành. Đây là **đồng bộ hiện
+> vật với nguồn — KHÔNG phải kết luận pháp lý, KHÔNG phải thay đổi trạng
+> thái giấy phép.**
+>
+> **SỰ THẬT — nguồn.** Đường tải bộ phiên âm vẫn là **QDC của Quran.com**
+> (`api.qurancdn.com`). **QUL KHÔNG phải nguồn** của bộ dữ liệu này.
+> Điều đó không đổi so với đính chính Session 147 ở trên.
+>
+> **SỰ THẬT — trường `license` trong CSDL.** Giá trị hiện hành là
+> *"UNKNOWN — COUNSEL REQUIRED"*. Nó vẫn là **siêu dữ liệu do chính dự án
+> tự đặt**, **không** phải tuyên bố của Quran.com hay của bất kỳ chủ sở
+> hữu quyền nào, và **không** được coi là căn cứ cho bất cứ điều gì. Việc
+> chuỗi này đổi từ một câu nghe như nghĩa vụ ghi nguồn sang "UNKNOWN"
+> **không** làm thay đổi bất kỳ quyền hay nghĩa vụ nào; nó chỉ khiến siêu
+> dữ liệu thôi khẳng định điều mà kho mã không chứng minh được.
+>
+> **Đã kiểm chứng.** Trong CSDL phát hành không còn chuỗi
+> `"Quran.com/QUL community data"` hay `"ghi nguồn khi phân phối"` nào.
+> Đối chiếu CSDL cũ ↔ mới: lược đồ giống hệt, số dòng mọi bảng bằng nhau,
+> nội dung trùng khớp từng dòng (`ayahs` 6.236, `translations` 18.708,
+> `surahs` 114, `reciters` 5, `search_index` 43.652). Khác biệt duy nhất
+> là 5 ô siêu dữ liệu: chuỗi `license` nói trên và bốn dấu thời gian dựng
+> bản. Văn bản Ả Rập, phiên âm, bản dịch Anh/Việt **không đổi**.
+>
+> **VẪN CHƯA XÁC ĐỊNH.** Giấy phép hay sự cho phép thượng nguồn thực sự
+> chi phối bộ phiên âm QDC — và điều khoản nào có hiệu lực tại ngày tải
+> `2026-07-06` — vẫn **CHƯA XÁC ĐỊNH / UNKNOWN — CẦN Ý KIẾN CHUYÊN MÔN**.
+> Khối này **không** kết luận rằng có sự cho phép, **không** kết luận
+> rằng sự cho phép bị từ chối, **không** khẳng định việc phân phối lại
+> được cho phép và **không** khẳng định nó bị cấm. **P2-2 vẫn ĐANG MỞ.**
+>
+> **Bản ghi lịch sử được giữ nguyên.** Khối đính chính Session 147 ở
+> trên, khối kiểm chứng đề ngày Session 137 ở mục 4, và mọi chỗ khác
+> trích lại chuỗi cũ đều **không bị viết lại** — chúng là bản ghi những
+> gì tài liệu và CSDL từng ghi.
 
 Ở mức sự thật kho mã: bộ phiên âm đến từ Quran.com QDC, và **vẫn chưa
 có tuyên bố giấy phép rõ ràng từ thượng nguồn.**
