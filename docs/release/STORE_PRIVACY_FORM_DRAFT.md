@@ -37,6 +37,33 @@ store-classification question raised in §4 — whether handing a URL to
 the user's browser counts as "sharing" for either form's purposes —
 is **UNKNOWN / LEGAL REVIEW REQUIRED** and is not resolved here.
 
+**Session 159A update (2026-08-29) — transliteration source
+attribution corrected.** Two stale references to "QUL" as the
+transliteration source are corrected in place: one in §11 ("Qur'an/content
+data") and one in the OWNER SUBMISSION CHECKLIST's legal-review bullet.
+Both previously read *"Quran.com/QUL"* / *"Tanzil/QuranEnc/QUL/EveryAyah"*
+— quoted here as historical wording, not as current statements.
+
+**The corrected fact is source identity only.** The bundled Latin
+transliteration is fetched through **Quran.com's QDC endpoint**,
+`api.qurancdn.com` — `tool/fetch_transliteration.py:30`–`:34` calls
+`https://api.qurancdn.com/api/qdc/verses/by_chapter/{chapter}`, the
+dataset's only fetch path. **QDC is not QUL**; QUL's FAQ is not the
+governing terms document for this dataset and continues to govern only
+datasets actually obtained through QUL. This matches the Session 147
+correction in `docs/LICENSING.md` §1 and P2-2 in
+`docs/release/V1_STORE_LEGAL_READINESS.md`.
+
+**Nothing else changes.** This update does **not** assert that permission
+exists, does **not** assert that permission is denied, does **not** assert
+that redistribution is permitted or prohibited, does **not** declare any
+dataset legally cleared, and does **not** conclude that any violation has
+occurred. The licence or permission governing the QDC transliteration
+remains **CHƯA XÁC ĐỊNH / UNKNOWN — COUNSEL REQUIRED**. **P1-4 and P2-2
+both remain OPEN**, no checklist item's completion state is changed, no
+legal review has occurred, and this document's **DRAFT ONLY / NOT
+SUBMITTED** status is unchanged.
+
 **Session 114 update (2026-08-25):** the OWNER SUBMISSION CHECKLIST's
 target-audience bullet has been updated to reflect the owner's
 confirmed general-audience positioning — see
@@ -363,7 +390,8 @@ Submission Checklist's re-verification step before actual submission.
 ## 11. Qur'an/content data
 
 **FACT.** Qur'an text, translations (Tanzil.net, QuranEnc.com),
-transliteration (Quran.com/QUL), and the Mushaf font (KFGQPC) are
+transliteration (**Quran.com QDC**, `api.qurancdn.com`), and the
+Mushaf font (KFGQPC) are
 **bundled** in the app (`assets/database/quran.sqlite`,
 `pubspec.yaml:49-63`) — not fetched at runtime, not personal data.
 Recitation audio (EveryAyah.com, 5 reciters) is **streamed/downloaded on
@@ -592,7 +620,8 @@ following steps remain, all outside this session's authority:
       **and (added Session 142) the two `launchUrl` browser hand-offs
       to `tanzil.net` and `duso201189-nxp.github.io`, whose store-form
       classification is UNKNOWN** — and of
-      whether the Tanzil/QuranEnc/QUL/EveryAyah content-attribution
+      whether the Tanzil / QuranEnc / **Quran.com QDC** / EveryAyah
+      content-attribution
       requirements tracked in `docs/LICENSING.md` and
       `docs/release/V1_STORE_LEGAL_READINESS.md` (P1-4, P2-2) need to be
       resolved before or alongside store submission.
