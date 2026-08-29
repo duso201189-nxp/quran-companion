@@ -203,8 +203,19 @@ def main() -> int:
                 "source": {
                     "name": "Quran.com word-by-word transliteration",
                     "url": "https://quran.com",
-                    "license": "Quran.com/QUL community data — "
-                               "ghi nguồn khi phân phối",
+                    # SIÊU DỮ LIỆU DO DỰ ÁN TỰ GHI — KHÔNG phải
+                    # tuyên bố của Quran.com hay của bất kỳ chủ
+                    # thể quyền nào, và KHÔNG phải căn cứ cho bất
+                    # cứ điều gì. Giá trị cũ ("Quran.com/QUL
+                    # community data — ghi nguồn khi phân phối")
+                    # quy nhầm bộ này về QUL: đường lấy dữ liệu
+                    # duy nhất là điểm cuối QDC ở API phía trên
+                    # (api.qurancdn.com), không phải QUL. Giấy
+                    # phép/sự cho phép thượng nguồn vẫn CHƯA xác
+                    # định — không khẳng định có, cũng không
+                    # khẳng định không có. Xem docs/LICENSING.md
+                    # và P2-2.
+                    "license": "UNKNOWN — COUNSEL REQUIRED",
                     "fetched_at": date.today().isoformat(),
                     "standard": "quran.com-wbw",
                 },
