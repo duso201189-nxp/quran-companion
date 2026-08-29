@@ -263,6 +263,43 @@ reads `https://…`
 reporting SDK is integrated anywhere in this app — see "Analytics,
 crash reporting, and advertising" below.
 
+> ⚠ **Scope of the paragraph below (marked 2026-08-29, Session 159A —
+> the historical paragraph itself is left exactly as written).**
+>
+> **The transliteration attribution below is superseded as to source.**
+> That paragraph attributes the bundled Latin transliteration to
+> *"Quran.com/QUL — Tarteel AI"*. The dataset is **not** obtained through
+> QUL: it is fetched through **Quran.com's QDC endpoint**,
+> `api.qurancdn.com` — `tool/fetch_transliteration.py:30`–`:34` calls
+> `https://api.qurancdn.com/api/qdc/verses/by_chapter/{chapter}`, the
+> dataset's only fetch path. **QDC is not QUL**, and the two must not be
+> conflated; QUL's FAQ is not the governing terms document for this
+> dataset and continues to govern only datasets actually obtained
+> through QUL.
+>
+> **The published policy already says this correctly.** The current,
+> authoritative wording lives in
+> [`privacy/index.md`](../../privacy/index.md) — published at
+> <https://duso201189-nxp.github.io/quran-companion/privacy/> — which
+> already identifies the transliteration as obtained from Quran.com's
+> QDC interface (`api.qurancdn.com`). That file is **not** modified by
+> this session, and nothing below is back-applied to it.
+>
+> **This file remains an historical record.** The paragraph below is
+> preserved unedited, exactly as drafted, and is retained solely as an
+> audit trail. It is not a current statement of fact and must not be
+> cited as one — as the supersession banner at the top of this document
+> already establishes for the document as a whole.
+>
+> **No legal conclusion is drawn by this marker.** The licence or
+> permission governing the Quran.com QDC transliteration remains
+> **UNKNOWN — COUNSEL REQUIRED**. This marker does **not** assert that
+> permission exists, does **not** assert that permission is denied, does
+> **not** assert that redistribution is permitted or prohibited, does
+> **not** declare the dataset legally cleared, and does **not** conclude
+> that any violation has occurred. **P2-2 remains OPEN.** No status is
+> closed and no legal clearance is asserted here.
+
 **FACT.** Content sources that supply bundled or streamed content, and
 therefore warrant disclosure as external sources even though none of
 them receive user data from the app (except the audio-streaming

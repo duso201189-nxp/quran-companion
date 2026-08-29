@@ -713,6 +713,15 @@ selection so engineering is never idle waiting on them.
   engineering, but a hard submission gate — status of each item is
   not otherwise tracked in the five source documents for this
   dashboard.
+  (**Added 2026-08-29, Session 159A** — the legal-review scope named in
+  this bullet is not the only open licensing question. The licence or
+  permission governing the **Quran.com QDC** transliteration
+  (`api.qurancdn.com`) is separately **UNKNOWN — COUNSEL REQUIRED**,
+  tracked as `P2-2` **OPEN** in
+  `docs/release/V1_STORE_LEGAL_READINESS.md` and now mirrored into the
+  §7 Go/No-Go list. Recording it here does not assert non-compliance,
+  does not assert that permission is absent, and closes nothing; the
+  bullet's own wording above is unchanged.)
 
 ### High
 
@@ -1093,6 +1102,15 @@ A release candidate is v1.0-ready only when all of the following hold:
   slow v1.0 down — it can force a translation-source change late in
   the process. This is the one risk worth de-risking earliest (start
   the review now, in parallel with R1).
+  (**Added 2026-08-29, Session 159A** — the same binary shape applies to
+  a second, independent licensing question this entry did not cover: the
+  terms governing the **Quran.com QDC** transliteration
+  (`api.qurancdn.com`) are **UNKNOWN — COUNSEL REQUIRED**, `P2-2`
+  **OPEN**. Because it is unknown rather than adverse, it is neither a
+  known blocker nor known to be clear — which is precisely why it should
+  be resolved early alongside the Tanzil review. This note asserts no
+  violation and no clearance, and does not change the risk wording
+  above.)
 - **Single-person team** (per `PROJECT_INDEX.md`'s pointer to
   `ROLES.md`: all six governance roles currently held by one person).
   Every sprint above is sequential capacity on one person, not
@@ -1150,6 +1168,21 @@ A release candidate is v1.0-ready only when all of the following hold:
 - [ ] All 16 outdated packages triaged; load-bearing/EOL ones upgraded
 - [ ] `RELEASE_CHECKLIST.md` fully signed off (assets, legal, signing)
 - [ ] Tanzil translation license legal review returned a clear result
+- [ ] Quran.com QDC transliteration licence question reached a clear
+      result — **added 2026-08-29 (Session 159A)**. Source: the bundled
+      Latin transliteration is fetched through **Quran.com QDC**,
+      `api.qurancdn.com` (`tool/fetch_transliteration.py:30`–`:34`), not
+      through QUL. Licence/permission: **CHƯA XÁC ĐỊNH / UNKNOWN —
+      COUNSEL REQUIRED**; `P2-2` in
+      `docs/release/V1_STORE_LEGAL_READINESS.md` is **OPEN**. This box
+      **mirrors an already-open item** into this dashboard so the
+      Go/No-Go list stops under-reporting it — it is **not** a newly
+      discovered problem, and it does **not** assert that the app is
+      legally non-compliant, that permission is absent, or that
+      redistribution is prohibited. It asks only that the open question
+      be *answered*, either way. (The Sprint R3b note below says "the 14
+      boxes above"; that count is historical — with this addition the
+      list holds 15.)
 - [ ] `pubspec.yaml` version bumped; `CHANGELOG.md` release entry cut
 - [ ] `dart format` / `flutter analyze --fatal-infos` / `flutter test
       --coverage` all clean on the release branch
