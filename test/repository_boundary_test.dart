@@ -69,7 +69,7 @@ final List<({RegExp pattern, String reason})> _restricted = [
   ),
   (
     pattern: RegExp(r'^tool/data/transliteration.*\.json$'),
-    reason: 'bộ phiên âm Quran.com/QUL — giấy phép chưa xác minh',
+    reason: 'bộ phiên âm Quran.com QDC — giấy phép chưa xác minh',
   ),
   (
     pattern: RegExp(r'\.(sqlite3?|db)$'),

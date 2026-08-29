@@ -15,7 +15,7 @@
 | Dữ liệu | Nguồn | Giấy phép / điều kiện |
 |---|---|---|
 | Arabic Uthmani | Tanzil.net (text verified) | Phân phối nguyên văn, cấm sửa văn bản, PHẢI ghi nguồn + link tanzil.net |
-| Transliteration | **Quran.com QDC** (`api.qurancdn.com`) — word-by-word transliteration API; `tool/fetch_transliteration.py` → `tool/data/transliteration.json`, nguồn duy nhất hiện dùng — **sửa lại 2026-08-23, Session 89**, dòng này trước đó ghi Tanzil.net, đã lỗi thời từ khi `fetch_transliteration.py` được thêm; **nguồn đính chính lại 2026-08-29, Session 159A**, dòng này trước đó ghi "Quran.com / QUL" — xem khối đính chính ngay dưới bảng | **CHƯA XÁC ĐỊNH / UNKNOWN — CẦN Ý KIẾN PHÁP LÝ.** Kho mã không xác lập được điều khoản thượng nguồn nào chi phối bộ dữ liệu này (xem `docs/LICENSING.md` mục 1, dòng 2). Chuỗi `license` lưu trong CSDL — *"Quran.com/QUL community data — ghi nguồn khi phân phối"* — là **siêu dữ liệu do chính dự án này viết ra** (hằng chuỗi trong `tool/fetch_transliteration.py:206`–`:207`), **không phải** bằng chứng cấp phép từ thượng nguồn. Dự phòng: nếu thiếu `tool/data/transliteration.json`, `build_quran_db.py` tự tải từ Tanzil.net (en.transliteration, điều khoản phi thương mại, ghi nguồn) |
+| Transliteration | **Quran.com QDC** (`api.qurancdn.com`) — word-by-word transliteration API; `tool/fetch_transliteration.py` → `tool/data/transliteration.json`, nguồn duy nhất hiện dùng — **sửa lại 2026-08-23, Session 89**, dòng này trước đó ghi Tanzil.net, đã lỗi thời từ khi `fetch_transliteration.py` được thêm; **nguồn đính chính lại 2026-08-29, Session 159A**, dòng này trước đó ghi "Quran.com / QUL" — xem khối đính chính ngay dưới bảng | **CHƯA XÁC ĐỊNH / UNKNOWN — CẦN Ý KIẾN PHÁP LÝ.** Kho mã không xác lập được điều khoản thượng nguồn nào chi phối bộ dữ liệu này (xem `docs/LICENSING.md` mục 1, dòng 2). Chuỗi `license` lưu trong CSDL phát hành hiện là *"UNKNOWN — COUNSEL REQUIRED"* (hằng chuỗi trong `tool/fetch_transliteration.py:218`, kèm chú thích `:206`–`:217`); đó vẫn là **siêu dữ liệu do chính dự án này viết ra**, **không phải** bằng chứng cấp phép từ thượng nguồn. Giá trị cũ *"Quran.com/QUL community data — ghi nguồn khi phân phối"* đã được sửa ở nguồn (Session 161) và đồng bộ vào `assets/database/quran.sqlite` (**Session 162, 2026-08-29**) — trích lại ở đây làm dấu vết lịch sử, **không** phải phát biểu hiện hành. Dự phòng: nếu thiếu `tool/data/transliteration.json`, `build_quran_db.py` tự tải từ Tanzil.net (en.transliteration, điều khoản phi thương mại, ghi nguồn) |
 | English (Sahih International) | Tanzil.net (en.sahih) | Tanzil terms — phi thương mại, ghi nguồn |
 | Tiếng Việt | QuranEnc.com (tự phát hiện key; ưu tiên Hasan Abdul Karim) | Sử dụng với ghi nguồn — kiểm tra điều khoản từng bản trên quranenc.com |
 | Audio | everyayah.com (URL trong bảng `reciters`) | Phi thương mại — xem everyayah.com |
@@ -42,10 +42,14 @@
 > `docs/release/TANZIL_LEGAL_REVIEW_PACKET.md`.
 >
 > **2. Chuỗi `license` trong CSDL không phải bằng chứng cấp phép thượng
-> nguồn.** Giá trị lưu cho `translit_latin` là *"Quran.com/QUL community
-> data — ghi nguồn khi phân phối"*. Giá trị đó **do chính dự án này
-> viết**: nó là hằng chuỗi mã cứng trong
-> `tool/fetch_transliteration.py:206`–`:207`, được chép vào
+> nguồn.** Giá trị lưu cho `translit_latin` **tại thời điểm Session 159A**
+> là *"Quran.com/QUL community data — ghi nguồn khi phân phối"* — giá trị
+> đó đã được sửa ở nguồn trong Session 161 và đồng bộ vào CSDL phát hành
+> trong Session 162 (xem khối ngay dưới), nên câu trích này là **dấu vết
+> lịch sử**, không phải phát biểu hiện hành. Giá trị đó **do chính dự án
+> này viết**: nó là hằng chuỗi mã cứng trong
+> `tool/fetch_transliteration.py` (nay ở `:218`, kèm chú thích
+> `:206`–`:217`), được chép vào
 > `tool/data/transliteration.json` rồi vào CSDL phát hành. Nó **không**
 > phải phát biểu của Quran.com hay của bất kỳ chủ thể quyền nào, và
 > **không** phải căn cứ cho bất cứ điều gì. Câu *"Ghi nguồn Quran.com/QUL
@@ -71,6 +75,48 @@
 > `privacy/index.md`, `docs/release/TANZIL_LEGAL_REVIEW_PACKET.md`, hay
 > bất kỳ Decision Record / ràng buộc pháp lý hiện hành nào — `PROJ-P-005`
 > bao gồm.
+
+> ### ⚠ Đồng bộ 2026-08-29 (Session 162) — CSDL phát hành đã khớp nguồn
+>
+> Session 161 sửa siêu dữ liệu ở **nguồn** (`tool/fetch_transliteration.py`,
+> `tool/data/transliteration.json`) nhưng **chưa** dựng lại
+> `assets/database/quran.sqlite`, nên tệp phát hành vẫn mang chuỗi cũ.
+> Session 162 dựng lại CSDL bằng đúng pipeline tài liệu hóa ở mục
+> "Chạy pipeline" bên dưới rồi thay tệp đã phát hành. Đây là **đồng bộ
+> hiện vật với nguồn, không phải kết luận pháp lý**.
+>
+> **1. Trạng thái hiện hành (SỰ THẬT).** `translation_sources.license`
+> của `translit_latin` nay là *"UNKNOWN — COUNSEL REQUIRED"*, chép
+> nguyên văn từ `tool/data/transliteration.json` qua
+> `tool/build_quran_db.py:549`. Trong CSDL phát hành **không còn** chuỗi
+> `"Quran.com/QUL community data"` hay `"ghi nguồn khi phân phối"` nào.
+> Đường tải vẫn là **QDC** (`api.qurancdn.com`), **không** phải QUL.
+>
+> **2. Đối chiếu CSDL cũ ↔ mới (đã kiểm chứng).** Lược đồ giống hệt
+> (42 đối tượng, cùng SHA lược đồ), số dòng mọi bảng bằng nhau, và toàn
+> bộ nội dung trùng khớp từng dòng: `ayahs` 6.236, `translations` 18.708,
+> `surahs` 114, `reciters` 5, `search_index` 43.652 — kể cả các bảng nội
+> bộ FTS5. Khác biệt **duy nhất** là 5 ô siêu dữ liệu: chuỗi `license`
+> nói trên, cùng bốn dấu thời gian dựng bản (`meta.built_at` và
+> `translation_sources.updated_at` của cả ba nguồn, `2026-07-06` →
+> `2026-08-29`). **Không** có trôi dạt dữ liệu thượng nguồn: văn bản
+> Ả Rập, phiên âm, bản dịch Anh và Việt đều không đổi.
+> `meta.data_version` giữ nguyên `4` — **không** bump phiên bản dữ liệu.
+>
+> **3. Khối này KHÔNG kết luận điều gì.** Việc chuỗi siêu dữ liệu đã
+> được sửa **không** xác lập rằng có sự cho phép, **không** xác lập rằng
+> sự cho phép bị từ chối, **không** xác lập rằng việc phân phối lại được
+> cho phép và **không** xác lập rằng nó bị cấm. Điều khoản hay sự cho
+> phép thượng nguồn chi phối bộ phiên âm QDC vẫn **CHƯA XÁC ĐỊNH /
+> UNKNOWN — CẦN Ý KIẾN PHÁP LÝ**. **P2-2 vẫn ĐANG MỞ**; không nhãn
+> trạng thái nào bị đóng lại ở đây.
+>
+> **Phần không bị ảnh hưởng.** Mệnh đề dự phòng Tanzil.net, dấu đính
+> chính Session 89, khối đính chính Session 159A ở trên, và mọi dòng
+> nguồn khác trong bảng đều giữ nguyên. Session này không sửa
+> `tool/fetch_transliteration.py`, `tool/data/transliteration.json`,
+> `privacy/index.md`, `docs/release/TANZIL_LEGAL_REVIEW_PACKET.md`, hay
+> bất kỳ Decision Record nào — `PROJ-P-005` bao gồm.
 
 ⚠️ **Lưu ý pháp lý trước khi phát hành Store:** điều khoản Tanzil cho
 bản DỊCH ghi "non-commercial". App miễn phí thường được chấp nhận,
