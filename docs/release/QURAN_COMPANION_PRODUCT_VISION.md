@@ -46,7 +46,10 @@ they deserve different levels of trust:
 >   `translation_sources`, row `code = 'translit_latin'`) records
 >   `name = 'Phiên âm Latin (Quran.com)'`, `author = 'Quran.com
 >   word-by-word transliteration'`, `source_url = 'https://quran.com'`,
->   `version` = `updated_at` = `'2026-07-06'`.
+>   `version = '2026-07-06'` — the fetch date. At the time of Session
+>   157A `updated_at` also read `'2026-07-06'`; after the Session 162
+>   database rebuild it reads `'2026-08-29'`, which is a build stamp and
+>   **not** the fetch date, and the fetch date is unchanged.
 >
 > **QDC and QUL are distinct and must not be conflated.** QUL's FAQ is
 > **not** the governing terms document for this dataset; it continues to
@@ -70,12 +73,18 @@ they deserve different levels of trust:
 > "licences read from `translation_sources`" as measured repository fact.
 > The *existence and contents* of that field are indeed measurable; what
 > it cannot be read as is an upstream grant. For the transliteration row
-> the stored value is *"Quran.com/QUL community data — ghi nguồn khi
-> phân phối"* (read from `assets/database/quran.sqlite`, and quoted
-> identically in `docs/LICENSING.md` §1). That value is
-> **project-authored**: it is a hard-coded literal in this repository's
-> own fetch script (`tool/fetch_transliteration.py:206`–`:207`), copied
-> into `tool/data/transliteration.json` and from there into the shipped
+> the stored value, **at the time of Session 157A**, was
+> *"Quran.com/QUL community data — ghi nguồn khi phân phối"* (read from
+> `assets/database/quran.sqlite`, and quoted identically in
+> `docs/LICENSING.md` §1) — quoted here as historical wording, **not**
+> as a current statement: it was corrected at source in Session 161 and
+> synchronised into the shipped database in Session 162, and now reads
+> *"UNKNOWN — COUNSEL REQUIRED"* (see the Session 163 amendment block
+> below). Old value or new, that value is **project-authored**: it is a
+> hard-coded literal in this repository's own fetch script
+> (`tool/fetch_transliteration.py`, the literal now at `:218` with its
+> explanatory comment at `:206`–`:217`), copied into
+> `tool/data/transliteration.json` and from there into the shipped
 > database. It is not a statement by Quran.com or by any other rights
 > holder, and it is not authority for anything. Note that §0's Finding 2
 > block below renders this value in English — see the scope marker there.
@@ -101,6 +110,53 @@ they deserve different levels of trust:
 > sentences are quoted — in this block and at their original locations —
 > and marked as historical. They are retained solely as an audit trail
 > and are **not** current statements of fact.
+
+> ### ⚠ Amendment 2026-08-29 (Session 163) — the shipped database now matches its source
+>
+> Session 161 corrected the transliteration `license` metadata at
+> **source** (`tool/fetch_transliteration.py`,
+> `tool/data/transliteration.json`) but did not rebuild the artifact;
+> Session 162 rebuilt `assets/database/quran.sqlite` with the documented
+> pipeline (`tool/build_quran_db.py`) so the shipped file matches its
+> source. This amendment re-dates the sentences in this document that
+> described the **previous** stored value as the current one. It is an
+> **artifact-to-source synchronisation record, not a legal conclusion.**
+>
+> **Current state — FACT.** `translation_sources.license` for
+> `translit_latin` now reads *"UNKNOWN — COUNSEL REQUIRED"*. No
+> `"Quran.com/QUL community data"` and no `"ghi nguồn khi phân phối"`
+> string remains anywhere in the shipped database. `version` stays
+> `'2026-07-06'` (the fetch date); `updated_at` and `meta.built_at` now
+> read `'2026-08-29'` (build stamps). `meta.data_version` stays `4`.
+>
+> **Source identity — unchanged.** The fetch path is still **Quran.com
+> QDC** (`api.qurancdn.com`), not QUL. Nothing in §1 of the Session 157A
+> block above is weakened or reopened by this amendment.
+>
+> **Still project-authored metadata.** The new string is, exactly like
+> the old one, written by this repository's own pipeline — **not** a
+> statement by Quran.com or by any other rights holder, and not authority
+> for anything. That the string stopped reading like an attribution
+> obligation and now reads "UNKNOWN" alters **no** right and **no**
+> obligation; it only stops the metadata from asserting what the
+> repository cannot show.
+>
+> **This amendment concludes nothing.** It does **not** establish that
+> permission exists. It does **not** establish that permission is denied.
+> It does **not** establish that redistribution is permitted, and does
+> **not** establish that redistribution is prohibited. It does **not**
+> declare the dataset legally cleared, and it does **not** conclude that
+> any violation has occurred. Which licence or permission governs the QDC
+> transliteration — and which terms were in force at the `2026-07-06`
+> fetch date recorded in the shipped metadata — remains **CHƯA XÁC ĐỊNH
+> / UNKNOWN — COUNSEL REQUIRED**. **P0-2, P1-4 and P2-2 all remain
+> OPEN**; no status label in this document is changed.
+>
+> **Historical wording is preserved.** The superseded value is quoted in
+> §3 above and in §0's Finding 2 block below, marked as historical in
+> both places and retained solely as an audit trail. The Finding 2 code
+> block itself is left byte-identical, as the Session 157A scope marker
+> beside it already records.
 
 ---
 
@@ -149,15 +205,19 @@ arabic    → "Tanzil Terms — distribute verbatim, attribution + link"
 >
 > **It is this document's own English rendering of the database's
 > `translation_sources.license` column, not a verbatim transcript of it.**
-> The stored `translit_latin` value is *"Quran.com/QUL community data —
-> ghi nguồn khi phân phối"*, as quoted in `docs/LICENSING.md` §1. The
+> At the time of Session 157A the stored `translit_latin` value was
+> *"Quran.com/QUL community data — ghi nguồn khi phân phối"*, as quoted
+> in `docs/LICENSING.md` §1 — historical wording, **not** a current
+> statement: since the Session 162 rebuild the column reads *"UNKNOWN —
+> COUNSEL REQUIRED"* (see the Session 163 amendment block above). The
 > block is preserved unedited as the historical wording; it should not be
-> cited as the literal column contents.
+> cited as the literal column contents, and no longer matches them.
 >
 > **Whatever the column says, it is not an upstream licence grant.** The
 > `translit` line in particular is **not** evidence of a grant by
 > Quran.com: that value is project-authored, hard-coded in this
-> repository's own `tool/fetch_transliteration.py:206`–`:207`. Its
+> repository's own `tool/fetch_transliteration.py` (the literal now at
+> `:218`, with its explanatory comment at `:206`–`:217`). Its
 > "Quran.com/QUL" wording is additionally **stale as to source** — the
 > dataset comes through Quran.com QDC (`api.qurancdn.com`), not QUL. The
 > licence or permission governing that dataset remains **UNKNOWN —

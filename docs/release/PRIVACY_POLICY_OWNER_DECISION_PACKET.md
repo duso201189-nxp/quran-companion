@@ -28,6 +28,15 @@ for store/publisher disclosure purposes) is **not** resolved by this
 update and stays flagged **LEGAL REVIEW REQUIRED** below. B5 is now
 fully resolved. No other Section B or C item was touched this session.
 
+**Session 163 update (2026-08-29):** Section C item 5 named the
+transliteration source as "Quran.com/QUL". That is a **source-identity**
+correction only — the shipped dataset is fetched through Quran.com's QDC
+endpoint, not through QUL — and it is annotated in place below. The
+question itself is unchanged and stays **unanswered**; no Section B or C
+item is resolved, closed, or reworded otherwise, and no legal conclusion
+is drawn. Which licence or permission governs that dataset remains
+**CHƯA XÁC ĐỊNH / UNKNOWN — COUNSEL REQUIRED**.
+
 This document exists to let the owner answer every open Privacy-Policy
 question **once**, in one place, instead of re-deriving them from
 `docs/release/PRIVACY_POLICY_DRAFT.md` and
@@ -294,9 +303,23 @@ unilaterally. None is answered here.
    code, not merely the string. Whether that satisfies the term, or
    whether a tappable link must be added, is a legal-interpretation
    question already flagged as P1-4 in `V1_STORE_LEGAL_READINESS.md`.
-5. **Whether the transliteration source (Quran.com/QUL) needs
+5. **Whether the transliteration source (Quran.com QDC) needs
    individual named attribution** beyond the current combined string
-   (P2-2 in `V1_STORE_LEGAL_READINESS.md`).
+   (P2-2 in `V1_STORE_LEGAL_READINESS.md`). **[Source identity
+   corrected 2026-08-29, Session 163]** — this item previously read
+   "Quran.com/QUL", quoted here as historical wording, not as a current
+   statement. The shipped transliteration is fetched through Quran.com's
+   QDC endpoint, `api.qurancdn.com`
+   (`tool/fetch_transliteration.py:30`–`:34`, the dataset's only fetch
+   path); **QDC is not QUL**, and QUL's FAQ is not the governing terms
+   document for it, matching the Session 147 correction in
+   `docs/LICENSING.md` §1 and legal-inventory item 7 / P2-2 in
+   `V1_STORE_LEGAL_READINESS.md`. The correction changes the **source
+   identity only**: the question is unchanged and remains unanswered,
+   P2-2 remains **OPEN**, nothing is asserted about whether permission
+   exists or is denied or about whether redistribution is permitted or
+   prohibited, and which licence or permission governs the dataset
+   remains **CHƯA XÁC ĐỊNH / UNKNOWN — COUNSEL REQUIRED**.
 6. **Which privacy-law regime(s) apply, now that B2's jurisdiction
    (Vietnam) is known** (Vietnam's PDPD at minimum, plus GDPR,
    CCPA/CPRA, or others depending on where users are actually located,
