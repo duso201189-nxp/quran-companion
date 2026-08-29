@@ -58,8 +58,8 @@ kiện, và đánh giá rủi ro.
 | 2 | Phiên âm Latin | **Quran.com QDC** (`api.qurancdn.com`) — xem đính chính Session 147 bên dưới | **CHƯA XÁC ĐỊNH** — kho mã không xác lập được giấy phép/sự cho phép phân phối lại từ thượng nguồn | không rõ | không rõ | ghi nguồn |
 | 3 | Bản dịch Việt (Rowwad) | QuranEnc.com | QuranEnc Terms (7 điều) | không nêu rõ | Cho phép có điều kiện | Ghi nhà phát hành + **QuranEnc.com** + **số phiên bản** |
 | 4 | Bản dịch Anh (Saheeh International) | Tanzil Project | Tanzil translations terms | **CẤM** — "for non-commercial purposes only" | Cho phép phi thương mại | Ghi nguồn; link nếu dùng >3 bản dịch |
-| 5 | Tafsir Al-Muyassar (ar) — ⚠ **KHÔNG có trên `main`** | نخبة من العلماء · **مجمع الملك فهد** (qua QUL) | chưa có phép | không rõ | **cần phép** | ghi نخبة من العلماء + KFGQPC |
-| 6 | Tafsir Ibn Kathir (en, rút gọn) — ⚠ **KHÔNG có trên `main`** | **Maktaba Dar-us-Salam 2003** (qua QUL) | **CÒN BẢN QUYỀN HIỆU LỰC** | **cần phép** | **cần phép bằng văn bản** | ghi Darussalam + nhóm dịch |
+| 5 | Tafsir Al-Muyassar (ar) — ⚠ **KHÔNG có trên `main`** | نخبة من العلماء · **مجمع الملك فهد** — nguồn lấy qua QDC, KHÔNG qua QUL (xem đính chính Session 173 bên dưới) | chưa có phép | không rõ | **cần phép** | ghi نخبة من العلماء + KFGQPC |
+| 6 | Tafsir Ibn Kathir (en, rút gọn) — ⚠ **KHÔNG có trên `main`** | **Maktaba Dar-us-Salam 2003** — nguồn lấy qua QDC, KHÔNG qua QUL (xem đính chính Session 173 bên dưới) | **CÒN BẢN QUYỀN HIỆU LỰC** | **cần phép** | **cần phép bằng văn bản** | ghi Darussalam + nhóm dịch |
 
 > ⚠ **Dòng 5–6 mô tả bộ dữ liệu tafsir, KHÔNG mô tả `main`.** Xem ghi
 > chú áp dụng ở đầu tài liệu. `main` chỉ phát hành nguồn 1–4.
@@ -128,6 +128,49 @@ trách nhiệm sang chúng ta. Truy ngược từng bộ:
 > (`api.qurancdn.com`). Xem đính chính Session 147 ở tiểu mục "Phiên âm
 > Latin". Không được đọc điều khoản QUL như điều khoản chi phối bộ phiên
 > âm đó.
+
+> ### ⚠ Đính chính 2026-08-29 (Session 173) — nguồn thật của hai bộ tafsir
+>
+> Dòng 5–6 ở mục 1, và đoạn ngay trên đây, từng ghi cả hai bộ tafsir là
+> lấy **"qua QUL"**. Cách quy nguồn đó KHÔNG khớp với bằng chứng trong
+> kho mã — đây là cùng một kiểu sai mà đính chính Session 147 đã sửa cho
+> bộ phiên âm Latin, nhưng chưa từng được áp dụng cho hai bộ tafsir.
+>
+> **SỰ THẬT.** Đường lấy dữ liệu duy nhất cho cả hai bộ là
+> `tool/fetch_tafsir.py`, gọi tới **QDC của Quran.com**
+> (`api.qurancdn.com`), không phải QUL:
+>
+> - Tafsir Al-Muyassar, resource id **16**:
+>   `api.qurancdn.com/api/qdc/tafsirs/16/by_chapter/{chapter}`
+> - Tafsir Ibn Kathir (rút gọn), resource id **169**:
+>   `api.qurancdn.com/api/qdc/tafsirs/169/by_chapter/{chapter}`
+>
+> Trên toàn bộ cây mã từng đề xuất hai bộ tafsir này (nhánh đã đóng, PR
+> #1), chỗ duy nhất nhắc tới `qul.tarteel` là chính `docs/LICENSING.md`
+> — không script, không tệp dữ liệu, không đường mã nào trong đó gọi
+> tới QUL.
+>
+> **Hệ quả.** Phần trích FAQ của QUL ở mục "Nguyên văn điều kiện" phía
+> trên KHÔNG phải văn bản điều khoản chi phối hai bộ tafsir này — cũng
+> như nó không chi phối bộ phiên âm Latin. Phần trích đó được **giữ
+> nguyên** vì vẫn áp dụng cho những bộ dữ liệu khác thực sự lấy qua QUL.
+>
+> **KHÔNG đổi.** Đính chính này chỉ sửa nguồn lấy dữ liệu (retrieval
+> path). Nó **không** kết luận Quran Foundation, Quran.com hay QDC sở
+> hữu hai bộ tafsir; **không** kết luận việc phân phối lại được phép hay
+> bị cấm; **không** khẳng định có vi phạm nào; và **không** đổi trạng
+> thái giấy phép của rủi ro 1a/1c ở mục 4 — cả hai vẫn **CHƯA XÁC ĐỊNH /
+> UNKNOWN — CẦN Ý KIẾN CHUYÊN MÔN**, y như trước đính chính này.
+>
+> Hồ sơ dẫn chứng đầy đủ (quét toàn bộ cây mã PR #1 tìm tham chiếu QUL,
+> đối chiếu mọi bề mặt thượng nguồn, và đánh giá rủi ro giấy phép cho cả
+> hai bộ): `docs/release/SESSION_172_TAFSIR_LICENSING_EVIDENCE_PACKET.md`
+> (PR #61).
+>
+> Nhắc lại: hai bộ tafsir này **không có trên `main`** — xem ghi chú áp
+> dụng ở đầu tài liệu và "PHẠM VI ÁP DỤNG CỦA MỤC 4" ở mục 4. Đính chính
+> này chỉ sửa việc quy nguồn trong tài liệu; nó có hiệu lực ngay khi hai
+> bộ đó được xét lại, dù `main` hiện chưa phát hành chúng.
 
 ### Tafsir Ibn Kathir (Abridged, tiếng Anh) — RỦI RO CAO NHẤT
 
