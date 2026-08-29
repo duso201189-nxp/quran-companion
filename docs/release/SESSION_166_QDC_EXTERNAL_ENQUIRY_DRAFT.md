@@ -7,6 +7,12 @@ Latin transliteration shipped in `assets/database/quran.sqlite` (`translation_so
 (Session 165 §1). It adds no evidence and reaches no legal conclusion. It does not state that any upstream
 terms govern this dataset, and it does not state that they do not.
 
+> **Session 167 addendum, 2026-08-29 — SENT.** The status line above and §9 describe this file's state at the
+> time it was drafted and are preserved unchanged as the historical record. Owner decision **D-A** has since
+> been taken: the owner personally sent this enquiry from the owner's own Gmail account on **2026-08-29**. See
+> §10 for the full, dated record. `P2-2` remains **OPEN**; the licence remains **UNKNOWN — COUNSEL REQUIRED**;
+> no legal conclusion has been reached by the sending of this enquiry.
+
 ## 1. Purpose
 
 Session 164 §10 **O-2** recorded that a direct answer from the operator of `api.qurancdn.com` would resolve
@@ -218,3 +224,37 @@ The licence of the shipped transliteration remains **UNKNOWN — COUNSEL REQUIRE
 — this file is what it now decides on. Application code, the database, and all ADR/DR records are unchanged
 by this file. No clearance of any kind is asserted or implied; this file does not clear, and does not block,
 any release.
+
+## 10. Addendum — Session 167, 2026-08-29 — Enquiry sent
+
+This section is additive only. Nothing above it is edited, removed, or reinterpreted; §9 remains the accurate
+record of this file's state at the time it was drafted.
+
+**OWNER-CONFIRMED FACT.** The owner personally sent the enquiry text at §4 from the owner's own Gmail account
+on **2026-08-29**, satisfying owner decision **D-A** (Session 165 §1). This repository holds no copy of the
+sent message or of any reply; the fact of sending is recorded here on the owner's own confirmation, not on
+repository evidence.
+
+| Field | Value |
+|---|---|
+| Sent by | The owner, personally, from the owner's own Gmail account |
+| Sent on | 2026-08-29 |
+| To | `developers@quran.com` |
+| Subject | "Terms applying to word-by-word transliteration from api.qurancdn.com" |
+| Content | Q1–Q12 from §4 above, sent as drafted |
+| Response | **None received. Awaiting external response.** |
+
+**What this does and does not change.**
+
+- **`P2-2` remains OPEN.** Sending the enquiry does not resolve whether the in-app attribution string must
+  individually name the Quran.com QDC source; that is a separate, still-open question.
+- **Licence remains UNKNOWN — COUNSEL REQUIRED.** No answer has been received. This addendum asserts nothing
+  about what terms apply, whether Quran Foundation or Quran.com owns or licenses the transliteration, or
+  whether current use is permitted or prohibited. It reaches no legal conclusion.
+- **No repository code, database, or ADR/DR record is changed by this addendum.**
+- **Next decision:** none is required until a response arrives, or the owner decides otherwise. When a
+  response is received, it should be recorded as new evidence in a further-numbered session file rather than
+  by editing this one, consistent with the audit-trail convention already used across this document.
+
+This enquiry has now been sent to exactly one recipient. No further outbound communication was made, and none
+is proposed by this addendum.
