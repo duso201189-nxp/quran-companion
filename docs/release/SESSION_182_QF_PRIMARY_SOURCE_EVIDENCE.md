@@ -9,6 +9,13 @@ reply email now supplied by the owner, and reconcile it against
 [PR #63](https://github.com/duso201189-nxp/quran-companion/pull/63)),
 which recorded that no such evidence was accessible to that session.
 
+> **Session 190 (2026-09-03) addendum — merge-status correction.** PR #63
+> merged to `origin/main` at commit `bf87aca6c5d40f7fa57c099e84ca94f9c125a0e0`
+> (2026-09-03T09:23:45Z). The "not yet merged / open" description above
+> reflects this document's own baseline (2026-08-31, `origin/main` at
+> `ad947bc9`) and is preserved unedited as historical text — it is no
+> longer the current state.
+
 **`P2-2` = OPEN. Licence = UNKNOWN — COUNSEL REQUIRED. Not closed by this
 document (§16).** A concrete, QF-authored compliance pathway now exists
 for one dataset (the Latin word-by-word transliteration) — see §16 for
@@ -742,6 +749,14 @@ branched from `origin/main` at `ad947bc9ee40fb935240a1c46ce0627d546815d2`
 moved since Session 180 (PR #63, containing the Session 180 document
 itself, is still open and unmerged).
 
+> **Session 190 (2026-09-03) addendum — merge-status correction.** PR #63
+> merged to `origin/main` at commit `bf87aca6c5d40f7fa57c099e84ca94f9c125a0e0`
+> (2026-09-03T09:23:45Z), and `SESSION_180_QF_RESPONSE_RECONCILIATION.md`
+> is now present on `origin/main`. The "still open and unmerged"
+> description above is historical (accurate as of this document's own
+> 2026-08-31 baseline) and is left unedited; `main` moving since then is
+> expected and does not reopen this document's findings.
+
 ---
 
 ## References
@@ -750,6 +765,8 @@ itself, is still open and unmerged).
 
 - `docs/release/SESSION_180_QF_RESPONSE_RECONCILIATION.md` (unmerged,
   [PR #63](https://github.com/duso201189-nxp/quran-companion/pull/63))
+  - _Session 190 (2026-09-03) addendum: PR #63 merged to `origin/main`
+    at `bf87aca6c5d40f7fa57c099e84ca94f9c125a0e0` (2026-09-03T09:23:45Z)._
 - `docs/release/SESSION_164_QDC_LICENSING_EVIDENCE_PACKET.md`
 - `docs/release/SESSION_165_QDC_OWNER_DECISION_BRIEF.md`
 - `docs/release/SESSION_166_QDC_EXTERNAL_ENQUIRY_DRAFT.md` (including

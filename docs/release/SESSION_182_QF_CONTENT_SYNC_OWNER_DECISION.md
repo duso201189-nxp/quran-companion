@@ -15,6 +15,11 @@ history is changed by this document or this session.**
 > (`origin/main`) and hands the owner a decision matrix. Where this
 > session's own findings differ from what PR #64 recorded, that is
 > called out explicitly (§3).
+>
+> **Session 190 (2026-09-03) addendum — merge-status correction.** PR #64
+> merged to `origin/main` at commit `c66032d2add144715e5fceac3a788ef1959f8516`
+> (2026-09-03T09:21:29Z). "Still unmerged" above reflects this document's
+> own 2026-09-03 pre-merge baseline and is preserved as historical text.
 
 ---
 
@@ -44,6 +49,17 @@ that as the actual state and proceeds by reading the PR branch content
 directly (`git show <ref>:<path>`, a read-only operation), rather than
 assuming it is merged.
 
+> **Session 190 (2026-09-03) addendum — merge-status correction.** The
+> table above (rows for PR #64 and PR #63) and the discrepancy note both
+> describe a since-changed state: PR #64 merged at
+> `c66032d2add144715e5fceac3a788ef1959f8516` (2026-09-03T09:21:29Z) and
+> PR #63 merged at `bf87aca6c5d40f7fa57c099e84ca94f9c125a0e0`
+> (2026-09-03T09:23:45Z). Both `SESSION_182_QF_PRIMARY_SOURCE_EVIDENCE.md`
+> and `SESSION_180_QF_RESPONSE_RECONCILIATION.md` are now present on
+> `origin/main`. The "OPEN" / "does not exist on `origin/main`" statuses
+> above are preserved unedited as this document's own 2026-09-03
+> pre-merge baseline, not current state.
+
 ---
 
 ## 1. Evidence Chain — What Was Actually Read
@@ -64,6 +80,12 @@ assuming it is merged.
    #63 could not access — but PR #63 remains open and unmerged in its
    own right, and its methodology notes (e.g., on Git-history questions,
    §9 of that document) still stand.
+
+   > **Session 190 (2026-09-03) addendum — merge-status correction.** PR
+   > #63 merged to `origin/main` at commit
+   > `bf87aca6c5d40f7fa57c099e84ca94f9c125a0e0` (2026-09-03T09:23:45Z). The
+   > "remains open and unmerged" description above is preserved as
+   > historical text from this document's 2026-09-03 pre-merge baseline.
 3. **Current `origin/main` tree** — read directly (not from either PR)
    for: `tool/fetch_transliteration.py`, `tool/data/transliteration.json`
    (existence only, not diffed line-by-line — not necessary for this
@@ -202,6 +224,12 @@ is **still unmerged**, so anything built "on top of" it (this document
 included) is built on an evidence base that has not yet landed on
 `main` — a fact this document surfaces explicitly rather than assuming
 away.
+
+> **Session 190 (2026-09-03) addendum — merge-status correction.** PR #64
+> merged to `origin/main` at commit `c66032d2add144715e5fceac3a788ef1959f8516`
+> (2026-09-03T09:21:29Z). The "still unmerged" statement above is
+> preserved as historical text from this document's 2026-09-03 pre-merge
+> baseline; the evidence base has since landed on `main`.
 
 ---
 
@@ -435,6 +463,10 @@ This document does **not** conclude, state, or imply:
 
 - `docs/release/SESSION_182_QF_PRIMARY_SOURCE_EVIDENCE.md` (unmerged, [PR #64](https://github.com/duso201189-nxp/quran-companion/pull/64))
 - `docs/release/SESSION_180_QF_RESPONSE_RECONCILIATION.md` (unmerged, [PR #63](https://github.com/duso201189-nxp/quran-companion/pull/63))
+  - _Session 190 (2026-09-03) addendum: both PRs merged to `origin/main`
+    — PR #64 at `c66032d2add144715e5fceac3a788ef1959f8516`
+    (2026-09-03T09:21:29Z), PR #63 at
+    `bf87aca6c5d40f7fa57c099e84ca94f9c125a0e0` (2026-09-03T09:23:45Z)._
 - `docs/release/SESSION_164_QDC_LICENSING_EVIDENCE_PACKET.md`
 - `docs/release/SESSION_165_QDC_OWNER_DECISION_BRIEF.md`
 - `docs/release/SESSION_172_TAFSIR_LICENSING_EVIDENCE_PACKET.md`

@@ -25,6 +25,11 @@ Full reasoning is in `SESSION_186_DR_RATIFICATION_REVIEW.md`.
 - Baseline re-verified: `origin/main` at `c212f61b`, PR #67 merged, PR
   #63/#64 open, P2-2 open, primary worktree's 22-line dirty state
   unchanged and preserved.
+  - _Session 190 (2026-09-03) addendum: PR #63 and PR #64 have since
+    merged to `origin/main` — PR #63 at
+    `bf87aca6c5d40f7fa57c099e84ca94f9c125a0e0` (2026-09-03T09:23:45Z), PR
+    #64 at `c66032d2add144715e5fceac3a788ef1959f8516` (2026-09-03T09:21:29Z).
+    P2-2 remains OPEN — unaffected by this correction._
 - DR-2026-0008…0013 and 0028 read in full, matrixed by decision,
   reversibility, and phase dependency.
 - QF credential/CI configuration audited — see §4.
@@ -192,3 +197,10 @@ no email sent, as a result of this audit.
 Per this session's own governing rules, this document stays in the
 repository (on a documentation-only PR, unmerged) for the owner to read
 at their own pace. Nothing here is broadcast externally.
+
+> **Session 190 (2026-09-03) addendum — merge-status correction.** This
+> brief merged to `origin/main` via PR #68 at commit
+> `7de82ea58f7cd8c2eff94318b7e358167e720303` (2026-09-03T04:45:51Z). The
+> "unmerged" description above is preserved as historical text from this
+> document's own pre-merge state; it does not change §§1–6 above, which
+> remain this session's findings as recorded.
