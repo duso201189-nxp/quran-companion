@@ -297,9 +297,13 @@ not a reason to withhold this document.)
 
 A single, isolated, docs+code PR was opened from this session's branch
 (`session192-phase1-credential-independent-scope`) against `main`,
-containing exactly the files in §G. **Not merged** — left for normal
-review/CI, per the governing brief ("không merge nếu chưa đạt full
-merge gate").
+containing exactly the files in §G:
+
+- **PR:** [#70](https://github.com/duso201189-nxp/quran-companion/pull/70)
+- **Head SHA at open:** `e8a3d054c0d4e34a67435601de611394913adae1`
+
+**Not merged** — left for normal review/CI, per the governing brief
+("không merge nếu chưa đạt full merge gate").
 
 ---
 
